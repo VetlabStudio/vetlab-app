@@ -1,0 +1,29 @@
+import { useNavigate, useLocation } from 'react-router-dom'
+
+const titres = {
+  '/accueil': 'Accueil',
+  '/calculateurs': 'Calculateur de dosage',
+  '/drogues': 'Drogues',
+  '/profil': 'Profil',
+  '/drogues/anesthesiques': 'Drogues anesthésiques',
+  '/admin/medicaments': 'Admin — Médicaments',
+  '/calculateurs/cri': 'CRI',
+}
+
+export default function Header() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const titre = titres[location.pathname] || 'Vetlab Studio'
+  const peutReculer = location.pathname !== '/accueil'
+
+  return (
+    <div className="header">
+      {peutReculer && (
+        <button className="header-back" onClick={() => navigate(-1)}>
+          <i className="ti ti-arrow-left"></i>
+        </button>
+      )}
+      <span>{titre}</span>
+    </div>
+  )
+}
