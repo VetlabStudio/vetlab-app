@@ -8,6 +8,7 @@ const titres = {
   '/drogues/anesthesiques': 'Drogues anesthésiques',
   '/admin/medicaments': 'Admin — Médicaments',
   '/calculateurs/cri': 'CRI',
+  '/calculateurs/fluido': 'Fluidothérapie',
 }
 
 export default function Header() {
@@ -16,14 +17,16 @@ export default function Header() {
   const titre = titres[location.pathname] || 'Vetlab Studio'
   const peutReculer = location.pathname !== '/accueil'
 
-  return (
-    <div className="header">
-      {peutReculer && (
-        <button className="header-back" onClick={() => navigate(-1)}>
-          <i className="ti ti-arrow-left"></i>
-        </button>
-      )}
-      <span>{titre}</span>
-    </div>
-  )
+if (location.pathname === '/accueil') return null
+
+return (
+  <div className="header">
+    {peutReculer && (
+      <button className="header-back" onClick={() => navigate(-1)}>
+        <i className="ti ti-arrow-left"></i>
+      </button>
+    )}
+    <span>{titre}</span>
+  </div>
+)
 }

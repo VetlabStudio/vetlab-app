@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabase'
+import { useLocation } from 'react-router-dom'
 
 import Connexion from './pages/Connexion'
 import Inscription from './pages/Inscription'
@@ -18,8 +19,11 @@ import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 
 function LayoutPrincipal({ children }) {
+  const location = useLocation()
+  const estAccueil = location.pathname === '/accueil'
+
   return (
-    <div className="app-layout">
+    <div className={`app-layout ${estAccueil ? 'app-layout-accueil' : ''}`}>
       <Header />
       <main className="contenu-principal">
         {children}

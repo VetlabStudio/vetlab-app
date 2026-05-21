@@ -132,21 +132,24 @@ const debitHoraire = useMemo(() => {
 
         {/* ─── POIDS ──────────────────────────── */}
         <div className="champ">
-          <label>Poids de l'animal</label>
-          <div className="input-avec-unite input-avec-radio">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={poids}
-              onChange={e => setPoids(e.target.value)}
-              placeholder="Ex: 10"
-            />
-            <div className="radio-groupe">
-              <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
-              <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
-            </div>
-          </div>
-        </div>
+  <label>Poids de l'animal</label>
+  <div className="champ-input">
+    <div className="champ-icone-wrapper">
+      <img src="/icone-poids.svg" alt="poids" />
+    </div>
+    <input
+      type="text"
+      inputMode="decimal"
+      value={poids}
+      onChange={e => setPoids(e.target.value)}
+      placeholder="Ex: 10"
+    />
+    <div className="radio-groupe">
+      <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
+      <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
+    </div>
+  </div>
+</div>
 
         {/* ─── FORMULES MAINTENANCE ───────────── */}
         <div className="champ">
@@ -244,29 +247,29 @@ const debitHoraire = useMemo(() => {
 
         <div className="champ">
           <label>Débit</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={debitGttsManuel !== '' ? debitGttsManuel : debitHoraire || ''}
-              onChange={e => setDebitGttsManuel(e.target.value)}
-              placeholder="ml/h"
-            />
-            <span className="unite-fixe">ml/h</span>
-          </div>
+          <div className="champ-input">
+  <input
+    type="text"
+    inputMode="decimal"
+    value={debitGttsManuel !== '' ? debitGttsManuel : debitHoraire || ''}
+    onChange={e => setDebitGttsManuel(e.target.value)}
+    placeholder="ml/h"
+  />
+  <span className="unite-fixe">ml/h</span>
+</div>
         </div>
 
         <div className="champ">
           <label>Facteur de gtts/ml</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={facteurGtts}
-              onChange={e => { setFacteurGtts(Number(e.target.value)); setDebitGttsManuel(debitGttsManuel || String(debitHoraire)) }}
-            />
-            <span className="unite-fixe">gtts/ml</span>
-          </div>
+         <div className="champ-input">
+  <input
+    type="text"
+    inputMode="decimal"
+    value={facteurGtts}
+    onChange={e => { setFacteurGtts(Number(e.target.value)); setDebitGttsManuel(debitGttsManuel || String(debitHoraire)) }}
+  />
+  <span className="unite-fixe">gtts/ml</span>
+</div>
           <p className="range-hint">
             {debitPourGtts > 0 && debitPourGtts < 100
               ? '💧 Débit < 100 ml/h — utiliser un microgoutteur (60 gtt/ml)'
@@ -278,15 +281,15 @@ const debitHoraire = useMemo(() => {
 
         <div className="champ">
           <label>Temps en minutes</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={tempsMin}
-              onChange={e => setTempsMin(Number(e.target.value))}
-            />
-            <span className="unite-fixe">min</span>
-          </div>
+          <div className="champ-input">
+  <input
+    type="text"
+    inputMode="decimal"
+    value={tempsMin}
+    onChange={e => setTempsMin(Number(e.target.value))}
+  />
+  <span className="unite-fixe">min</span>
+</div>
         </div>
 
         {gttsParMin > 0 && (
@@ -308,29 +311,29 @@ const debitHoraire = useMemo(() => {
 
         <div className="champ">
           <label>Débit</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={debitCRIManuel !== '' ? debitCRIManuel : debitHoraire || ''}
-              onChange={e => setDebitCRIManuel(e.target.value)}
-              placeholder="ml/h"
-            />
-            <span className="unite-fixe">ml/h</span>
-          </div>
+          <div className="champ-input">
+  <input
+    type="text"
+    inputMode="decimal"
+    value={debitCRIManuel !== '' ? debitCRIManuel : debitHoraire || ''}
+    onChange={e => setDebitCRIManuel(e.target.value)}
+    placeholder="ml/h"
+  />
+  <span className="unite-fixe">ml/h</span>
+</div>
         </div>
 
         <div className="champ">
           <label>Volume du sac de fluide</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={volumeSac}
-              onChange={e => setVolumeSac(Number(e.target.value))}
-            />
-            <span className="unite-fixe">ml</span>
-          </div>
+          <div className="champ-input">
+  <input
+    type="text"
+    inputMode="decimal"
+    value={volumeSac}
+    onChange={e => setVolumeSac(Number(e.target.value))}
+  />
+  <span className="unite-fixe">ml</span>
+</div>
           {dureeSac > 0 && (
             <p className="range-hint" style={{ color: 'var(--accent-red)', fontWeight: 600 }}>
               Durée du sac de fluide : {dureeSac} hrs
@@ -340,44 +343,44 @@ const debitHoraire = useMemo(() => {
 
         <div className="champ">
           <label>Dose de charge (facultatif)</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={doseCharge}
-              onChange={e => setDoseCharge(e.target.value)}
-              placeholder="0"
-            />
-            <span className="unite-fixe">mg/kg IV</span>
-          </div>
+          <div className="champ-input">
+  <input
+    type="text"
+    inputMode="decimal"
+    value={doseCharge}
+    onChange={e => setDoseCharge(e.target.value)}
+    placeholder="0"
+  />
+  <span className="unite-fixe">mg/kg IV</span>
+</div>
         </div>
 
         <div className="champ">
           <label>Dosage du CRI</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={dosageCRI}
-              onChange={e => setDosageCRI(e.target.value)}
-              placeholder="0"
-            />
-            <span className="unite-fixe">mg/kg/h</span>
-          </div>
+          <div className="champ-input">
+  <input
+    type="text"
+    inputMode="decimal"
+    value={dosageCRI}
+    onChange={e => setDosageCRI(e.target.value)}
+    placeholder="0"
+  />
+  <span className="unite-fixe">mg/kg/h</span>
+</div>
         </div>
 
         <div className="champ">
           <label>Concentration</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={concentrationCRI}
-              onChange={e => setConcentrationCRI(e.target.value)}
-              placeholder="0"
-            />
-            <span className="unite-fixe">mg/ml</span>
-          </div>
+          <div className="champ-input">
+  <input
+    type="text"
+    inputMode="decimal"
+    value={concentrationCRI}
+    onChange={e => setConcentrationCRI(e.target.value)}
+    placeholder="0"
+  />
+  <span className="unite-fixe">mg/ml</span>
+</div>
         </div>
 
         {mlDansSac > 0 && (

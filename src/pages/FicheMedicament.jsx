@@ -219,75 +219,99 @@ export default function FicheMedicament() {
 
           {/* Poids */}
           <div className="champ">
-            <label>Poids de l'animal</label>
-            <div className="input-avec-unite input-avec-radio">
-              <input
-  type="text"
-  inputMode="decimal"
-  value={poids}
-  onChange={e => setPoids(e.target.value)}
-  placeholder="Ex: 5.2"
-/>
-              <div className="radio-groupe">
-                <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
-                <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
-              </div>
-            </div>
-          </div>
+  <label>Poids de l'animal</label>
+  <div className="champ-input">
+    <div className="champ-icone-wrapper">
+      <img src="/icone-poids.svg" alt="poids" />
+    </div>
+    <input
+      type="text"
+      inputMode="decimal"
+      value={poids}
+      onChange={e => setPoids(e.target.value)}
+      placeholder="Ex: 5.2"
+    />
+    <div className="radio-groupe">
+      <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
+      <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
+    </div>
+  </div>
+</div>
 
           {/* Posologie */}
           <div className="champ">
-            <label>Posologie</label>
-            <div className="input-avec-unite">
-            <input
-  type="text"
-  inputMode="decimal"
-  value={posologie}
-  onChange={e => { setPosologie(e.target.value); setHorsPlage(false) }}
-  placeholder="Ex: 0.05"
-/>
-              <span className="unite-fixe">{medicament.unite_dose || 'mg/kg'}</span>
-            </div>
-            {plageTexte && <p className="range-hint">{plageTexte}</p>}
-            {horsPlage && (
-              <div className="avertissement-plage">
-                <i className="ti ti-alert-triangle"></i>
-                Dosage hors de la plage recommandée — veuillez confirmer avec le vétérinaire responsable.
-              </div>
-            )}
-          </div>
+  <label>Posologie</label>
+  <div className="champ-input">
+    <div className="champ-icone-wrapper">
+      <img src="/icone-seringue.svg" alt="posologie" />
+    </div>
+    <input
+      type="text"
+      inputMode="decimal"
+      value={posologie}
+      onChange={e => { setPosologie(e.target.value); setHorsPlage(false) }}
+      placeholder="Ex: 0.05"
+    />
+    <span className="unite-fixe">{medicament.unite_dose || 'mg/kg'}</span>
+  </div>
+  {plageTexte && <p className="range-hint">{plageTexte}</p>}
+  {horsPlage && (
+    <div className="avertissement-plage">
+      <i className="ti ti-alert-triangle"></i>
+      Dosage hors de la plage recommandée — veuillez confirmer avec le vétérinaire responsable.
+    </div>
+  )}
+</div>
 
           {/* Concentration */}
           <div className="champ">
-            <label>Concentration</label>
-            <div className="input-avec-unite">
-             <input
-  type="text"
-  inputMode="decimal"
-  value={concentration}
-  onChange={e => setConcentration(e.target.value)}
-  placeholder="Ex: 10"
-/>
-              <span className="unite-fixe">{medicament.unite_concentration || 'mg/mL'}</span>
-            </div>
-          </div>
+  <label>Concentration</label>
+  <div className="champ-input">
+    <div className="champ-icone-wrapper">
+      <img src="/icone-fluido.svg" alt="concentration" />
+    </div>
+    <input
+      type="text"
+      inputMode="decimal"
+      value={concentration}
+      onChange={e => setConcentration(e.target.value)}
+      placeholder="Ex: 10"
+    />
+    <span className="unite-fixe">{medicament.unite_concentration || 'mg/mL'}</span>
+  </div>
+</div>
 
           {/* Résultats */}
           <div className="resultat-card">
-            <h2>Résultats</h2>
-            <div className="resultat-ligne">
-              <span>Dose totale</span>
-              <strong>{resultat ? `${resultat.doseTotale} ${resultat.uniteDose === 'mcg/kg' ? 'mg' : 'mg'}` : '—'}</strong>
-            </div>
-            <div className="resultat-ligne">
-              <span>Volume à administrer</span>
-              <strong>{resultat ? `${resultat.volume} mL` : '—'}</strong>
-            </div>
-            <div className="resultat-ligne">
-              <span>Voies</span>
-              <strong>{medicament.voies_admin?.join(', ') || '—'}</strong>
-            </div>
-          </div>
+  <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+    <div className="champ-icone-wrapper">
+      <img src="/icone-calc.svg" alt="résultats" />
+    </div>
+    Résultats
+  </h2>
+  <div className="resultat-ligne">
+    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div className="champ-icone-wrapper">
+        <img src="/icone-seringue.svg" alt="dose" />
+      </div>
+      Dose totale
+    </span>
+    <strong>{resultat ? `${resultat.doseTotale} mg` : '—'}</strong>
+  </div>
+  <div className="resultat-ligne">
+    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div className="champ-icone-wrapper">
+        <img src="/icone-fluido.svg" alt="volume" />
+      </div>
+      Volume à administrer
+    </span>
+    <strong>{resultat ? `${resultat.volume} mL` : '—'}</strong>
+  </div>
+  <div className="resultat-ligne">
+    <span>Voies</span>
+    <strong>{medicament.voies_admin?.join(', ') || '—'}</strong>
+  </div>
+</div>
           <div className="calc-avertissement">
   <i className="ti ti-alert-circle"></i>
   Valide toujours le dosage avec un vétérinaire avant d'administrer un médicament. Ce calculateur est un outil d'aide, ton jugement clinique prime en tout temps.

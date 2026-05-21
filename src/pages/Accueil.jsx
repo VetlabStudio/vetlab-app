@@ -1,77 +1,97 @@
 import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase'
 
-const calculateurs = [
-  { id: 'fluido',      label: 'Fluido' },
-  { id: 'cri',         label: 'CRI' },
-  { id: 'conversion',  label: 'Conversion' },
-  { id: 'dilution',    label: 'Dilution\nC1V1-C2V2' },
-  { id: 'rcr',         label: 'RCR\nUrgence' },
-  { id: 'mise-bas',    label: 'Date de\nmise bas' },
-  { id: 'besoin',      label: 'Besoin\nénergétique' },
-  { id: 'transfusion', label: 'Transfusion\nsanguine' },
-  { id: 'toxicite',    label: 'Toxicité\nchocolat' },
+const CALCULATEURS = [
+  { id: 'fluido',      label: 'Fluido',              icone: '/icone-fluido.svg',      route: '/calculateurs/fluido' },
+  { id: 'cri',         label: 'CRI',                 icone: '/icone-cri.svg',         route: '/calculateurs/cri' },
+  { id: 'conversion',  label: 'Conversion',          icone: '/icone-conversion.svg',  route: '/calculateurs/conversion' },
+  { id: 'dilution',    label: 'Dilution\nC1V1-C2V2', icone: '/icone-dilution.svg',    route: '/calculateurs/dilution' },
+  { id: 'rcr',         label: 'RCR\nUrgence',        icone: '/icone-ecg.svg',         route: '/calculateurs/rcr' },
+  { id: 'mise-bas',    label: 'Date de\nmise bas',   icone: '/icone-calendrier.svg',  route: '/calculateurs/mise-bas' },
+  { id: 'besoin',      label: 'Besoin\nénergétique', icone: '/icone-energie.svg',     route: '/calculateurs/besoin' },
+  { id: 'transfusion', label: 'Transfusion\nsanguine', icone: '/icone-sang.svg',      route: '/calculateurs/transfusion' },
+  { id: 'toxicite',    label: 'Toxicité\nchocolat',  icone: '/icone-chocolat.svg',    route: '/calculateurs/toxicite' },
 ]
 
-const drogues = [
-  { id: 'anesthesiques',    label: 'Anesthésiques /\nAnalgésiques' },
-  { id: 'antibiotiques',    label: 'Antibiotiques' },
-  { id: 'antidiarrheiques', label: 'Antidiarrhéiques' },
-  { id: 'antiemetiques',    label: 'Antiémétiques' },
-  { id: 'antihistaminiques',label: 'Antihistaminiques' },
-  { id: 'urgence',          label: 'Urgence' },
-  { id: 'cardiovasculaires',label: 'Cardiovasculaires' },
-  { id: 'gastroprotecteurs',label: 'Gastroprotecteurs' },
-  { id: 'neurologiques',    label: 'Neurologiques' },
-  { id: 'respiratoires',    label: 'Respiratoires' },
-  { id: 'antagonistes',     label: 'Antagonistes' },
-  { id: 'mes-drogues',      label: 'Mes drogues' },
-]
-
-const laboratoire = [
-  { id: 'biochimie',      label: 'Biochimie' },
-  { id: 'parasitologie',  label: 'Parasitologie' },
-  { id: 'urologie',       label: 'Urologie' },
-  { id: 'cytologie',      label: 'Cytologie' },
+const DROGUES = [
+  { id: 'anesthesiques',     label: 'Anesthésiques /\nAnalgésiques', route: '/drogues/anesthesiques', accent: false },
+  { id: 'antibiotiques',     label: 'Antibiotiques',                  route: '/drogues/antibiotiques',  accent: false },
+  { id: 'antidiarrheiques',  label: 'Antidiarrhéiques',               route: '/drogues/antidiarrheiques', accent: false },
+  { id: 'antiemetiques',     label: 'Antiémétiques',                  route: '/drogues/antiemetiques',  accent: false },
+  { id: 'antihistaminiques', label: 'Antihistaminiques',              route: '/drogues/antihistaminiques', accent: false },
+  { id: 'urgence',           label: 'Urgence',                        route: '/drogues/urgence',        accent: true },
+  { id: 'cardiovasculaires', label: 'Cardiovasculaires',              route: '/drogues/cardiovasculaires', accent: false },
+  { id: 'gastroprotecteurs', label: 'Gastroprotecteurs',              route: '/drogues/gastroprotecteurs', accent: false },
+  { id: 'neurologiques',     label: 'Neurologiques',                  route: '/drogues/neurologiques',  accent: false },
+  { id: 'respiratoires',     label: 'Respiratoires',                  route: '/drogues/respiratoires',  accent: false },
+  { id: 'antagonistes',      label: 'Antagonistes',                   route: '/drogues/antagonistes',   accent: false },
+  { id: 'mes-drogues',       label: 'Mes drogues',                    route: '/drogues/mes-drogues',    accent: false, favori: true },
 ]
 
 export default function Accueil() {
   const navigate = useNavigate()
+  const [prenom, setPrenom] = useState('')
+
+  useEffect(() => {
+    async function chargerProfil() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
+      if (data?.nom) setPrenom(data.nom.split(' ')[0])
+    }
+    chargerProfil()
+  }, [])
 
   return (
-    <div className="accueil">
-      {/* CALCULATEURS — petites tuiles compactes */}
-      <section className="accueil-section">
-        <h2 className="section-titre">Calculateurs</h2>
-        <div className="tuiles-grid tuiles-grid--calc">
-          {calculateurs.map(c => (
+    <div className="accueil-v2">
+
+      {/* HEADER */}
+      <div className="accueil-v2-header">
+  <div>
+    <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
+    <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
+  </div>
+  <img src="/logo-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
+</div>
+
+      {/* SECTION CALCULATEURS */}
+      <section className="accueil-v2-section">
+        <h2 className="accueil-v2-titre-section">Calculateurs</h2>
+        <div className="accueil-v2-calc-grid">
+          {CALCULATEURS.map(c => (
             <button
               key={c.id}
-              className="tuile tuile--calc"
-              onClick={() => navigate(`/calculateurs/${c.id}`)}
+              className="accueil-v2-calc-tuile"
+              onClick={() => navigate(c.route)}
             >
-              {c.label}
+              <img src={c.icone} alt={c.label} className="accueil-v2-calc-icone" />
+              <span className="accueil-v2-calc-label">{c.label}</span>
             </button>
           ))}
         </div>
       </section>
 
-      {/* DROGUES — tuiles larges 2 colonnes */}
-      <section className="accueil-section">
-        <h2 className="section-titre">Drogues</h2>
-        <div className="tuiles-grid tuiles-grid--large">
-          {drogues.map(d => (
+      {/* SECTION DROGUES */}
+      <section className="accueil-v2-section">
+        <h2 className="accueil-v2-titre-section">Drogues</h2>
+        <div className="accueil-v2-drogues-grid">
+          {DROGUES.map(d => (
             <button
               key={d.id}
-              className="tuile tuile--large"
-              onClick={() => navigate(`/drogues/${d.id}`)}
+              className={`accueil-v2-drogue-item ${d.accent ? 'accent' : ''} ${d.favori ? 'favori' : ''}`}
+              onClick={() => navigate(d.route)}
             >
-              {d.label}
+              {d.favori && <i className="ti ti-star" style={{ fontSize: 13, marginRight: 4 }}></i>}
+              {d.accent && <i className="ti ti-alert-triangle" style={{ fontSize: 13, marginRight: 4 }}></i>}
+              <span>{d.label}</span>
+              <i className="ti ti-chevron-right accueil-v2-chevron"></i>
             </button>
           ))}
         </div>
       </section>
 
-    
+      <div style={{ height: 32 }} />
     </div>
   )
 }

@@ -1,27 +1,31 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 
+const ONGLETS = [
+  { id: 'accueil',    label: 'Accueil',              icone: 'ti-home',        route: '/accueil' },
+  { id: 'calculateurs', label: 'Calcul rapide\nde dosage', icone: 'ti-calculator', route: '/calculateurs' },
+  { id: 'drogues',    label: 'Drogues',              icone: 'ti-pill',        route: '/drogues' },
+  { id: 'profil',     label: 'Profil',               icone: 'ti-user',        route: '/profil' },
+]
+
 export default function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
-  const actif = location.pathname
 
-  const onglets = [
-    { chemin: '/accueil', icone: 'ti-home', label: 'Accueil' },
-    { chemin: '/calculateurs', icone: 'ti-calculator', label: 'Calcul rapide de dosage' },
-    { chemin: '/drogues', icone: 'ti-pill', label: 'Drogues' },
-    { chemin: '/profil', icone: 'ti-user', label: 'Profil' },
-  ]
+  function estActif(route) {
+    if (route === '/accueil') return location.pathname === '/accueil'
+    return location.pathname.startsWith(route)
+  }
 
   return (
-    <nav className="bottom-nav">
-      {onglets.map((onglet) => (
+    <nav className="bottom-nav-v2">
+      {ONGLETS.map(o => (
         <button
-          key={onglet.chemin}
-          className={`bottom-nav-btn ${actif === onglet.chemin ? 'active' : ''}`}
-          onClick={() => navigate(onglet.chemin)}
+          key={o.id}
+          className={`bottom-nav-v2-btn ${estActif(o.route) ? 'active' : ''}`}
+          onClick={() => navigate(o.route)}
         >
-          <i className={`ti ${onglet.icone}`}></i>
-          {onglet.label}
+          <i className={`ti ${o.icone}`}></i>
+          <span>{o.label}</span>
         </button>
       ))}
     </nav>
