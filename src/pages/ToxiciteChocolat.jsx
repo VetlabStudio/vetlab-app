@@ -8,9 +8,10 @@ function arrondir(val, decimales = 1) {
 const TYPES_CHOCOLAT = [
   { id: 'blanc',        label: 'Chocolat blanc',          theobromine: 0,    description: '~0 mg/g — Non toxique' },
   { id: 'lait',         label: 'Chocolat au lait',         theobromine: 2.5,  description: '~2.5 mg/g' },
-  { id: 'noir',         label: 'Chocolat noir (50-70%)',   theobromine: 10,   description: '~10 mg/g' },
-  { id: 'noir_intense', label: 'Chocolat noir intense (>70%)', theobromine: 16, description: '~16 mg/g' },
-  { id: 'cacao',        label: 'Cacao pur / poudre',       theobromine: 28,   description: '~28 mg/g — Très dangereux' },
+  { id: 'noir', label: 'Chocolat noir mi-sucré (50-70%)', theobromine: 5.3, description: '~5.3 mg/g' },
+  { id: 'noir_intense', label: 'Chocolat noir intense / à cuire', theobromine: 14, description: '~14 mg/g' },
+  { id: 'cacao_inst', label: 'Cacao instantané (Nesquik, chocolat chaud)', theobromine: 4.8, description: '~4.8 mg/g' },
+  { id: 'cacao',      label: 'Cacao pur non sucré (poudre à pâtisserie)',   theobromine: 26,  description: '~26 mg/g — Très dangereux' },
 ]
 
 const SEUILS = [

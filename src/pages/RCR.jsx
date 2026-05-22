@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 
 const BPM = 110
 const INTERVALLE_COMPRESSION = 60000 / BPM
@@ -10,6 +10,11 @@ function formaterTemps(ms) {
   const min = Math.floor(totalSec / 60)
   const sec = totalSec % 60
   return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+}
+
+function arrondir(val, decimales = 1) {
+  if (!val || isNaN(val) || !isFinite(val)) return 0
+  return Math.round(val * Math.pow(10, decimales)) / Math.pow(10, decimales)
 }
 
 function creerSon(audioCtx, type) {
@@ -40,6 +45,7 @@ function creerSon(audioCtx, type) {
 }
 
 export default function RCR() {
+  // ─── CHRONOMÈTRE ────────────────────────────
   const [actif, setActif] = useState(false)
   const [tempsTotal, setTempsTotal] = useState(0)
   const [tempsCycle, setTempsCycle] = useState(0)
@@ -56,6 +62,16 @@ export default function RCR() {
   const tempsAccumuléRef = useRef(0)
   const tempsCycleAccumuléRef = useRef(0)
   const ventilDebutRef = useRef(null)
+
+  // ─── DROGUES / DÉFIBRILLATION ────────────────
+  const [poidsDefib, setPoidsDefib] = useState('')
+  const [unitePoidsDefib, setUnitePoidsDefib] = useState('kg')
+
+  const poidsDefibKg = useMemo(() => {
+    const p = parseFloat(poidsDefib)
+    if (!p || p <= 0) return 0
+    return unitePoidsDefib === 'lb' ? arrondir(p / 2.205, 2) : p
+  }, [poidsDefib, unitePoidsDefib])
 
   function getAudioCtx() {
     if (!audioCtxRef.current) {
@@ -97,13 +113,11 @@ export default function RCR() {
         setTempsTotal(newTempsTotal)
         setTempsCycle(newTempsCycle)
 
-        // Progression ventilation
         if (ventilDebutRef.current) {
           const ventilElapsed = now - ventilDebutRef.current
           setProgressionVentilation(1 - Math.min(ventilElapsed / INTERVALLE_VENTILATION, 1))
         }
 
-        // Fin de cycle
         if (newTempsCycle >= DUREE_CYCLE) {
           tempsCycleAccumuléRef.current = 0
           debutRef.current = Date.now()
@@ -153,7 +167,7 @@ export default function RCR() {
     setTempsTotal(0)
     setTempsCycle(0)
     setCycles(0)
-    setProgressionVentilation(0)
+    setProgressionVentilation(1)
     tempsAccumuléRef.current = 0
     tempsCycleAccumuléRef.current = 0
     debutRef.current = null
@@ -170,6 +184,8 @@ export default function RCR() {
   const circonference = 2 * Math.PI * rayon
   const offset = circonference * (1 - progressionCycle)
 
+  const p = poidsDefibKg
+
   return (
     <div className="rcr-page">
 
@@ -183,7 +199,6 @@ export default function RCR() {
 
       {/* ─── CERCLE + BARRE VENTILATION ─────── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-
         <div className="rcr-cercle-wrapper">
           <svg width="200" height="200" viewBox="0 0 200 200">
             <circle cx="100" cy="100" r={rayon} fill="none" stroke="var(--border)" strokeWidth="12" />
@@ -210,7 +225,6 @@ export default function RCR() {
           </svg>
         </div>
 
-        {/* BARRE VENTILATION */}
         <div className="rcr-ventil-wrapper">
           <div className="rcr-ventil-barre-container">
             <div
@@ -220,7 +234,6 @@ export default function RCR() {
           </div>
           <span className="rcr-ventil-label">Ventilation</span>
         </div>
-
       </div>
 
       {/* ─── INFOS ──────────────────────────── */}
@@ -261,6 +274,110 @@ export default function RCR() {
           <i className="ti ti-refresh"></i>
           <span>Changer de compresseur à chaque cycle de 2 minutes pour maintenir l'efficacité.</span>
         </div>
+      </div>
+
+      {/* ─── DROGUES ET DÉFIBRILLATION ──────── */}
+      <div className="rcr-section-titre">Drogues d'urgence & Défibrillation</div>
+
+      <div className="champ" style={{ width: '100%' }}>
+        <label>Poids de l'animal</label>
+        <div className="champ-input">
+          <div className="champ-icone-wrapper">
+            <img src="/icone-poids.svg" alt="poids" />
+          </div>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={poidsDefib}
+            onChange={e => setPoidsDefib(e.target.value)}
+            placeholder="Ex: 10"
+          />
+          <div className="radio-groupe">
+            <button className={`radio-btn ${unitePoidsDefib === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoidsDefib('kg')}>kg</button>
+            <button className={`radio-btn ${unitePoidsDefib === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoidsDefib('lb')}>lb</button>
+          </div>
+        </div>
+      </div>
+
+      <div className="rcr-drogues-tableau" style={{ width: '100%' }}>
+
+        <div className="rcr-drogue-header">Vasoconstriction</div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Épinéphrine</span><span className="rcr-drogue-dose">0.01 mg/kg IV/IO</span></div>
+          <strong>{p ? arrondir(0.01 * p, 2) + ' mg' : '—'}</strong>
+        </div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Vasopressine</span><span className="rcr-drogue-dose">0.8 U/kg IV/IO</span></div>
+          <strong>{p ? arrondir(0.8 * p, 2) + ' U' : '—'}</strong>
+        </div>
+
+        <div className="rcr-drogue-header">Vagolytique</div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Atropine</span><span className="rcr-drogue-dose">0.04–0.054 mg/kg IV/IO</span></div>
+          <strong>{p ? arrondir(0.04 * p, 2) + '–' + arrondir(0.054 * p, 2) + ' mg' : '—'}</strong>
+        </div>
+
+        <div className="rcr-drogue-header">Antiarythmique</div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Lidocaïne <span style={{ color: 'var(--accent-red)', fontSize: 11 }}>(chien seulement)</span></span><span className="rcr-drogue-dose">2 mg/kg IV lent sur 2–4 min</span></div>
+          <strong>{p ? arrondir(2 * p, 2) + ' mg' : '—'}</strong>
+        </div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Amiodarone</span><span className="rcr-drogue-dose">5 mg/kg IV lent sur 2–4 min</span></div>
+          <strong>{p ? arrondir(5 * p, 2) + ' mg' : '—'}</strong>
+        </div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Esmolol</span><span className="rcr-drogue-dose">0.5 mg/kg IV lent sur 3–5 min + CRI 50 µg/kg/min</span></div>
+          <strong>{p ? arrondir(0.5 * p, 2) + ' mg' : '—'}</strong>
+        </div>
+
+        <div className="rcr-drogue-header">Antagonistes / Reversal</div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Naloxone</span><span className="rcr-drogue-dose">0.04 mg/kg IV/IO</span></div>
+          <strong>{p ? arrondir(0.04 * p, 2) + ' mg' : '—'}</strong>
+        </div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Atipamézole</span><span className="rcr-drogue-dose">100 µg/kg IV lent</span></div>
+          <strong>{p ? arrondir(100 * p) + ' µg' : '—'}</strong>
+        </div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Flumazénil</span><span className="rcr-drogue-dose">0.01 mg/kg IV/IO</span></div>
+          <strong>{p ? arrondir(0.01 * p, 2) + ' mg' : '—'}</strong>
+        </div>
+
+        <div className="rcr-drogue-header">Thérapie tampon</div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Bicarbonate de sodium</span><span className="rcr-drogue-dose">1 mEq/kg IV/IO</span></div>
+          <strong>{p ? arrondir(1 * p, 1) + ' mEq' : '—'}</strong>
+        </div>
+
+        <div className="rcr-drogue-header">
+  <img src="/icone-energie.svg" alt="défibrillation" style={{ width: 20, height: 20, verticalAlign: 'middle', marginRight: 6, filter: 'invert(25%) sepia(80%) saturate(600%) hue-rotate(140deg)' }} />
+  Défibrillation électrique
+</div>
+        <div className="rcr-drogue-note">Choquable : FV, TV sans pouls | Non-choquable : Asystolie, AESP</div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Biphasique externe</span><span className="rcr-drogue-dose">2–4 J/kg</span></div>
+          <strong>{p ? arrondir(2 * p) + '–' + arrondir(4 * p) + ' J' : '—'}</strong>
+        </div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Biphasique interne</span><span className="rcr-drogue-dose">0.2–0.4 J/kg</span></div>
+          <strong>{p ? arrondir(0.2 * p, 1) + '–' + arrondir(0.4 * p, 1) + ' J' : '—'}</strong>
+        </div>
+        <div className="rcr-drogue-ligne">
+          <div><span className="rcr-drogue-nom">Monophasique externe</span><span className="rcr-drogue-dose">4–6 J/kg</span></div>
+          <strong>{p ? arrondir(4 * p) + '–' + arrondir(6 * p) + ' J' : '—'}</strong>
+        </div>
+        <div className="rcr-drogue-ligne" style={{ borderBottom: 'none' }}>
+          <div><span className="rcr-drogue-nom">Monophasique interne</span><span className="rcr-drogue-dose">0.5–1 J/kg</span></div>
+          <strong>{p ? arrondir(0.5 * p, 1) + '–' + arrondir(1 * p) + ' J' : '—'}</strong>
+        </div>
+
+      </div>
+
+      <div className="calc-avertissement">
+        <i className="ti ti-alert-circle"></i>
+         Doses basées sur les lignes directrices RECOVER 2024 de l'American College of Veterinary Emergency and Critical Care (ACVECC). Valider avec le vétérinaire responsable. La lidocaïne est contre-indiquée chez le chat.
       </div>
 
       {/* ─── MODAL PAUSE ────────────────────── */}
