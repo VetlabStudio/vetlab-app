@@ -2541,4 +2541,422 @@ input[type="number"] {
   margin: 0;
   line-height: 1.5;
 }
+/* ─── PAGE DATE MISE BAS ─────────────────────── */
 
+.mise-bas-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mise-bas-titre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.mise-bas-etapes {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.mise-bas-etape {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mise-bas-etape:last-child {
+  border-bottom: none;
+}
+
+.mise-bas-jours {
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  background: var(--primary);
+  border-radius: 6px;
+  padding: 2px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.mise-bas-texte {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.mise-bas-note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: rgba(37,77,86,0.06);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin: 0;
+  line-height: 1.5;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.mise-bas-note .ti {
+  color: var(--primary);
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+/* ─── PAGE TOXICITÉ CHOCOLAT ─────────────────── */
+
+.choco-types {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.choco-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: var(--font);
+  text-align: left;
+  transition: all 0.15s;
+  gap: 2px;
+}
+
+.choco-type-btn.actif {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.choco-type-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.choco-type-btn.actif .choco-type-label {
+  color: white;
+}
+
+.choco-type-desc {
+  font-size: 11px;
+  color: var(--text-hint);
+}
+
+.choco-type-btn.actif .choco-type-desc {
+  color: rgba(255,255,255,0.7);
+}
+
+/* ─── ALERTE ─────────────────────────────────── */
+.choco-alerte {
+  width: 100%;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.choco-alerte-titre {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.choco-alerte-conseil {
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ─── TABLEAU SEUILS ─────────────────────────── */
+.choco-tableau {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.choco-tableau-titre {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.choco-seuil {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.choco-seuil-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.choco-seuil-label {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.choco-seuil-dose {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+.choco-icone-attention {
+  filter: brightness(0) saturate(100%) invert(30%) sepia(90%) saturate(600%) hue-rotate(10deg) brightness(0.8);
+}
+
+.choco-icone-danger {
+  filter: brightness(0) saturate(100%) invert(25%) sepia(80%) saturate(800%) hue-rotate(15deg) brightness(0.75);
+}
+
+.choco-icone-critique {
+  filter: brightness(0) saturate(100%) invert(20%) sepia(60%) saturate(900%) hue-rotate(320deg) brightness(0.8);
+}
+
+.choco-icone-check {
+  filter: brightness(0) saturate(100%) invert(30%) sepia(60%) saturate(600%) hue-rotate(100deg) brightness(0.85);
+}
+/* ─── PAGE RCR ───────────────────────────────── */
+
+.rcr-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 16px 100px;
+  background: var(--bg);
+  min-height: 100dvh;
+}
+
+/* ─── STATUS ─────────────────────────────────── */
+.rcr-status {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+}
+
+.rcr-status.actif {
+  background: rgba(112, 47, 58, 0.08);
+  border-color: var(--accent-red);
+}
+
+.rcr-status.pause {
+  background: rgba(215, 163, 92, 0.08);
+  border-color: var(--accent-gold);
+}
+
+.rcr-status-texte {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+}
+
+.rcr-temps-total {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── CERCLE ─────────────────────────────────── */
+.rcr-cercle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── BARRE VENTILATION ──────────────────────── */
+.rcr-ventil-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.rcr-ventil-barre-container {
+  width: 28px;
+  height: 160px;
+  background: var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.rcr-ventil-barre-fill {
+  width: 100%;
+  background: var(--primary-light);
+  border-radius: 14px;
+  transition: height 0.05s linear;
+}
+
+.rcr-ventil-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-hint);
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  letter-spacing: 0.05em;
+}
+
+/* ─── INFOS ──────────────────────────────────── */
+.rcr-infos {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.rcr-info-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.rcr-info-label {
+  font-size: 10px;
+  color: var(--text-hint);
+  font-weight: 500;
+}
+
+.rcr-info-valeur {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ─── BOUTON PRINCIPAL ───────────────────────── */
+.rcr-btn-principal {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.rcr-btn-principal.start {
+  background: var(--primary);
+  color: white;
+}
+
+.rcr-btn-principal.stop {
+  background: var(--accent-red);
+  color: white;
+}
+
+.rcr-btn-principal:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.rcr-btn-terminer {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1.5px solid var(--accent-red);
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-red);
+  cursor: pointer;
+}
+
+/* ─── RAPPELS ────────────────────────────────── */
+.rcr-rappels {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.rcr-rappel {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.rcr-rappel:last-child {
+  border-bottom: none;
+}
+
+.rcr-rappel .ti {
+  color: var(--primary);
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ─── MODAL PULSE CHECK ──────────────────────── */
+.rcr-pulse-card {
+  text-align: center;
+}
+
+.rcr-pulse-titre {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent-red);
+  margin: 0 0 4px 0;
+}
+
+.rcr-pulse-sous-titre {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 16px 0;
+  font-weight: 600;
+}

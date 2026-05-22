@@ -18,6 +18,9 @@ import Conversion from './pages/Conversion'
 import BesoinEnergetique from './pages/BesoinEnergetique'
 import Dilution from './pages/Dilution'
 import TransfusionSanguine from './pages/TransfusionSanguine'
+import DateMiseBas from './pages/DateMiseBas'
+import ToxiciteChocolat from './pages/ToxiciteChocolat'
+import RCR from './pages/RCR'
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -101,8 +104,17 @@ export default function App() {
           <RouteProtegee session={session}><Dilution /></RouteProtegee>
         } />
         <Route path="/calculateurs/transfusion" element={
-  <RouteProtegee session={session}><TransfusionSanguine /></RouteProtegee>
-} />
+          <RouteProtegee session={session}><TransfusionSanguine /></RouteProtegee>
+        } />
+        <Route path="/calculateurs/mise-bas" element={
+          <RouteProtegee session={session}><DateMiseBas /></RouteProtegee>
+        } />
+        <Route path="/calculateurs/toxicite" element={
+          <RouteProtegee session={session}><ToxiciteChocolat /></RouteProtegee>
+        } />
+        <Route path="/calculateurs/rcr" element={
+          <RouteProtegee session={session}><RCR /></RouteProtegee>
+        } />
 
         {/* DROGUES */}
         <Route path="/drogues/anesthesiques" element={

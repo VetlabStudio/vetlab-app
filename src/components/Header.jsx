@@ -13,6 +13,9 @@ const titres = {
   '/calculateurs/besoin': 'Besoin énergétique',
   '/calculateurs/dilution': 'Dilution C1V1-C2V2',
   '/calculateurs/transfusion': 'Transfusion sanguine',
+  '/calculateurs/mise-bas': 'Date de mise bas',
+  '/calculateurs/toxicite': 'Toxicité chocolat',
+  '/calculateurs/rcr': 'RCR Urgence',
 }
 
 export default function Header() {
