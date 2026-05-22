@@ -58,41 +58,43 @@ export default function CRI() {
         {/* ─── POIDS ──────────────────────────── */}
         <div className="champ">
           <label>Poids de l'animal</label>
-          <div className="input-avec-unite input-avec-radio">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={poids}
-              onChange={e => setPoids(e.target.value)}
-              placeholder="Ex: 10"
-            />
-            <div className="radio-groupe">
-              <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
-              <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
-            </div>
-          </div>
+         <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-poids.svg" alt="poids" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={poids}
+    onChange={e => setPoids(e.target.value)}
+    placeholder="Ex: 10"
+  />
+  <div className="radio-groupe">
+    <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
+    <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
+  </div>
+</div>
         </div>
 
         {/* DÉBIT */}
 <div className="champ">
   <label>Débit</label>
-  <div className="champ-avec-select">
-    <input
-      type="text"
-      inputMode="decimal"
-      value={debit}
-      onChange={e => setDebit(e.target.value)}
-      placeholder="Ex: 5"
-    />
-    <select
-      className="form-select-unite"
-      value={uniteDebit}
-      onChange={e => setUniteDebit(e.target.value)}
-    >
-      <option value="ml/kg/h">ml/kg/h</option>
-      <option value="ml/h">ml/h</option>
-    </select>
+<div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-debit.svg" alt="débit" />
   </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={debit}
+    onChange={e => setDebit(e.target.value)}
+    placeholder="Ex: 5"
+  />
+  <select className="cri-select" value={uniteDebit} onChange={e => setUniteDebit(e.target.value)}>
+    <option value="ml/kg/h">ml/kg/h</option>
+    <option value="ml/h">ml/h</option>
+  </select>
+</div>
   {debitMlH > 0 && uniteDebit === 'ml/kg/h' && (
     <p className="range-hint">Débit : <strong>{debitMlH} ml/h</strong></p>
   )}
@@ -101,15 +103,18 @@ export default function CRI() {
         {/* ─── VOLUME SAC ─────────────────────── */}
         <div className="champ">
           <label>Volume du sac de fluide</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={volumeSac}
-              onChange={e => setVolumeSac(Number(e.target.value))}
-            />
-            <span className="unite-fixe">ml</span>
-          </div>
+         <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-sac.svg" alt="volume" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={volumeSac}
+    onChange={e => setVolumeSac(Number(e.target.value))}
+  />
+  <span className="unite-fixe">ml</span>
+</div>
           {dureeSac > 0 && (
             <p className="range-hint" style={{ color: 'var(--accent-red)', fontWeight: 600 }}>
               Durée du sac de fluide : {dureeSac} hrs
@@ -120,53 +125,58 @@ export default function CRI() {
         {/* ─── DOSE DE CHARGE ─────────────────── */}
         <div className="champ">
           <label>Dose de charge (facultatif)</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={doseCharge}
-              onChange={e => setDoseCharge(e.target.value)}
-              placeholder="0"
-            />
-            <span className="unite-fixe">mg/kg IV</span>
-          </div>
+         <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-seringue.svg" alt="dose de charge" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={doseCharge}
+    onChange={e => setDoseCharge(e.target.value)}
+    placeholder="0"
+  />
+  <span className="unite-fixe">mg/kg IV</span>
+</div>
         </div>
 
         {/* DOSAGE CRI */}
 <div className="champ">
   <label>Dosage du CRI</label>
-  <div className="champ-avec-select">
-    <input
-      type="text"
-      inputMode="decimal"
-      value={dosageCRI}
-      onChange={e => setDosageCRI(e.target.value)}
-      placeholder="0"
-    />
-    <select
-      className="form-select-unite"
-      value={uniteDosage}
-      onChange={e => setUniteDosage(e.target.value)}
-    >
-      <option value="mg/kg/h">mg/kg/h</option>
-      <option value="mg/kg/jour">mg/kg/jour</option>
-    </select>
+  <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-dosage.svg" alt="dosage" />
   </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={dosageCRI}
+    onChange={e => setDosageCRI(e.target.value)}
+    placeholder="0"
+  />
+  <select className="cri-select" value={uniteDosage} onChange={e => setUniteDosage(e.target.value)}>
+    <option value="mg/kg/h">mg/kg/h</option>
+    <option value="mg/kg/jour">mg/kg/jour</option>
+  </select>
+</div>
 </div>
 
         {/* ─── CONCENTRATION ──────────────────── */}
         <div className="champ">
           <label>Concentration</label>
-          <div className="input-avec-unite">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={concentration}
-              onChange={e => setConcentration(e.target.value)}
-              placeholder="0"
-            />
-            <span className="unite-fixe">mg/ml</span>
-          </div>
+          <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-seringue.svg" alt="concentration" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={concentration}
+    onChange={e => setConcentration(e.target.value)}
+    placeholder="0"
+  />
+  <span className="unite-fixe">mg/ml</span>
+</div>
         </div>
 
         {/* ─── RÉSULTATS ──────────────────────── */}

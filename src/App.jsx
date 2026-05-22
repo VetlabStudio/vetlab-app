@@ -14,6 +14,10 @@ import AdminMedicamentForm from './pages/AdminMedicamentForm'
 import FicheMedicament from './pages/FicheMedicament'
 import Fluidotherapie from './pages/Fluidotherapie'
 import CRI from './pages/CRI'
+import Conversion from './pages/Conversion'
+import BesoinEnergetique from './pages/BesoinEnergetique'
+import Dilution from './pages/Dilution'
+import TransfusionSanguine from './pages/TransfusionSanguine'
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -82,10 +86,22 @@ export default function App() {
           <RouteProtegee session={session}><FicheMedicament /></RouteProtegee>
         } />
         <Route path="/calculateurs/fluido" element={
-  <RouteProtegee session={session}><Fluidotherapie /></RouteProtegee>
-} />
+         <RouteProtegee session={session}><Fluidotherapie /></RouteProtegee>
+        } />
         <Route path="/calculateurs/cri" element={
-  <RouteProtegee session={session}><CRI /></RouteProtegee>
+           <RouteProtegee session={session}><CRI /></RouteProtegee>
+        } />
+        <Route path="/calculateurs/conversion" element={
+          <RouteProtegee session={session}><Conversion /></RouteProtegee>
+        } />
+        <Route path="/calculateurs/besoin" element={
+         <RouteProtegee session={session}><BesoinEnergetique /></RouteProtegee>
+        } />
+        <Route path="/calculateurs/dilution" element={
+          <RouteProtegee session={session}><Dilution /></RouteProtegee>
+        } />
+        <Route path="/calculateurs/transfusion" element={
+  <RouteProtegee session={session}><TransfusionSanguine /></RouteProtegee>
 } />
 
         {/* DROGUES */}

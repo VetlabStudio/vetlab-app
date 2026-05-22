@@ -11,10 +11,13 @@ export default function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  function estActif(route) {
-    if (route === '/accueil') return location.pathname === '/accueil'
-    return location.pathname.startsWith(route)
-  }
+function estActif(route) {
+  if (route === '/accueil') return location.pathname === '/accueil'
+  if (route === '/calculateurs') return location.pathname === '/calculateurs'
+  if (route === '/drogues') return location.pathname === '/drogues'
+  if (route === '/profil') return location.pathname === '/profil'
+  return false
+}
 
   return (
     <nav className="bottom-nav-v2">

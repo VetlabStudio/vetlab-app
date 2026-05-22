@@ -371,12 +371,14 @@ input  { font-family: var(--font); }
   font-size: 24px;
 }
 
-.bottom-nav-v2-btn.active {
+.bottom-nav-v2-btn.active span {
+  font-weight: 700;
   color: var(--primary);
 }
 
 .bottom-nav-v2-btn.active i {
-  font-weight: 700;
+  color: var(--primary);
+  font-weight: 400;
 }
 
 /* ===========================
@@ -704,17 +706,32 @@ input  { font-family: var(--font); }
   white-space: nowrap;
 }
 
-.input-avec-radio {
-  background: transparent !important;
-  border-radius: 0 !important;
-  overflow: visible !important;
-  gap: 0.75rem;
+.champ-input .cri-select {
+  background: transparent;
+  border: none;
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-hint);
+  padding: 8px 1rem 8px 0.5rem;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7F7A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.25rem center;
+  flex-shrink: 0;
+  min-width: 80px;
+  flex-shrink: 0;
+  width: auto;
+  min-width: 80px;
+  max-width: 120px;
 }
-
-.input-avec-radio input {
-  background: var(--champ-bg) !important;
-  border-radius: var(--radius-pill) !important;
-  padding: 0.75rem 1.25rem !important;
+.champ-input input {
+  flex: 1;
+  min-width: 0;
+  width: 0;
 }
 
 /* ─── RADIO BOUTONS kg/lb ────────────────────── */
@@ -2195,12 +2212,14 @@ input[type="number"] {
 
 /* ─── SECTIONS ───────────────────────────────── */
 .fluido-section-titre {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--text-primary);
-  padding-top: 8px;
-  border-top: 1px solid var(--border);
+  color: white;
+  background: var(--primary);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
   width: 100%;
+  margin: 0;
 }
 
 /* ─── INSTRUCTION CRI ────────────────────────── */
@@ -2304,5 +2323,222 @@ input[type="number"] {
   appearance: none;
   -webkit-appearance: none;
 }
+/* ─── PAGE CONVERSION ────────────────────────── */
+.conversion-section-titre {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  margin: 0;
+}
+.conversion-deux-colonnes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
 
+.conversion-select {
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 13px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  appearance: auto;
+}
+/* ─── PAGE BESOIN ÉNERGÉTIQUE ────────────────── */
+
+.bee-card {
+  background: var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.bee-titre {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  margin: 0;
+}
+
+.bee-formule {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  margin: 0;
+}
+
+.bee-resultat {
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  margin: 4px 0 0 0;
+}
+
+/* ─── TABLEAU FACTEURS ───────────────────────── */
+.bee-tableau {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.bee-tableau-header {
+  display: flex;
+  justify-content: space-between;
+  background: var(--primary);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 10px 14px;
+}
+
+.bee-tableau-header span:last-child {
+  text-align: right;
+}
+
+.bee-tableau-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  gap: 8px;
+}
+
+.bee-tableau-condition {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.bee-tableau-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.bee-tableau-facteur {
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.bee-tableau-resultat {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: right;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+/* ─── PAGE DILUTION ──────────────────────────── */
+
+.dilution-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.dilution-mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font);
+  text-align: center;
+}
+
+.dilution-mode-btn.actif {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.dilution-mode-btn .ti {
+  font-size: 22px;
+  color: var(--text-hint);
+}
+
+.dilution-mode-btn.actif .ti {
+  color: white;
+}
+
+.dilution-mode-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.dilution-mode-btn.actif .dilution-mode-label {
+  color: white;
+}
+
+.dilution-mode-desc {
+  font-size: 10px;
+  color: var(--text-hint);
+  line-height: 1.3;
+}
+
+.dilution-mode-btn.actif .dilution-mode-desc {
+  color: rgba(255,255,255,0.7);
+}
+
+.dilution-mode-formule {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary-light);
+  margin-top: 2px;
+}
+
+.dilution-mode-btn.actif .dilution-mode-formule {
+  color: rgba(255,255,255,0.9);
+}
+
+/* ─── RÉSULTAT DILUTION ──────────────────────── */
+.dilution-resultat {
+  background: var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+.dilution-resultat-valeur {
+  font-size: 16px;
+  color: rgba(255,255,255,0.9);
+  margin: 0;
+}
+
+.dilution-resultat-valeur strong {
+  font-size: 20px;
+  color: white;
+}
+
+.dilution-resultat-texte {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  margin: 0;
+  line-height: 1.5;
+}
 

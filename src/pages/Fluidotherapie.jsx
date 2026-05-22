@@ -248,6 +248,9 @@ const debitHoraire = useMemo(() => {
         <div className="champ">
           <label>Débit</label>
           <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-debit.svg" alt="débit" />
+  </div>
   <input
     type="text"
     inputMode="decimal"
@@ -262,6 +265,9 @@ const debitHoraire = useMemo(() => {
         <div className="champ">
           <label>Facteur de gtts/ml</label>
          <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-facteur.svg" alt="facteur" />
+  </div>
   <input
     type="text"
     inputMode="decimal"
@@ -281,7 +287,10 @@ const debitHoraire = useMemo(() => {
 
         <div className="champ">
           <label>Temps en minutes</label>
-          <div className="champ-input">
+         <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-duree.svg" alt="durée" />
+  </div>
   <input
     type="text"
     inputMode="decimal"
@@ -312,6 +321,9 @@ const debitHoraire = useMemo(() => {
         <div className="champ">
           <label>Débit</label>
           <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-debit.svg" alt="débit" />
+  </div>
   <input
     type="text"
     inputMode="decimal"
@@ -326,6 +338,9 @@ const debitHoraire = useMemo(() => {
         <div className="champ">
           <label>Volume du sac de fluide</label>
           <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-sac.svg" alt="sac" />
+  </div>
   <input
     type="text"
     inputMode="decimal"
@@ -343,7 +358,10 @@ const debitHoraire = useMemo(() => {
 
         <div className="champ">
           <label>Dose de charge (facultatif)</label>
-          <div className="champ-input">
+         <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-seringue.svg" alt="dose" />
+  </div>
   <input
     type="text"
     inputMode="decimal"
@@ -358,6 +376,9 @@ const debitHoraire = useMemo(() => {
         <div className="champ">
           <label>Dosage du CRI</label>
           <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-dosage.svg" alt="dosage" />
+  </div>
   <input
     type="text"
     inputMode="decimal"
@@ -371,7 +392,10 @@ const debitHoraire = useMemo(() => {
 
         <div className="champ">
           <label>Concentration</label>
-          <div className="champ-input">
+         <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-seringue.svg" alt="concentration" />
+  </div>
   <input
     type="text"
     inputMode="decimal"

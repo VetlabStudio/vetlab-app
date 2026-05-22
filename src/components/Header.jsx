@@ -9,6 +9,10 @@ const titres = {
   '/admin/medicaments': 'Admin — Médicaments',
   '/calculateurs/cri': 'CRI',
   '/calculateurs/fluido': 'Fluidothérapie',
+  '/calculateurs/conversion': 'Conversion',
+  '/calculateurs/besoin': 'Besoin énergétique',
+  '/calculateurs/dilution': 'Dilution C1V1-C2V2',
+  '/calculateurs/transfusion': 'Transfusion sanguine',
 }
 
 export default function Header() {
