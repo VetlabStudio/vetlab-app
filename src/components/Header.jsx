@@ -31,7 +31,10 @@ const titres = {
   '/labo/nouveau': 'Nouveau protocole',
   '/admin': 'Panneau admin',
   '/admin/labo': 'Admin — Laboratoire',
-}
+  '/labo/aeac9309-185f-4f2c-81b2-dfed3d4e55aa': 'Urologie',
+  '/labo/urologie/valeurs': 'Valeurs de référence',
+  '/labo/urologie/sediments': 'Sédiments urinaires',
+  }
 
 export default function Header() {
   const navigate = useNavigate()

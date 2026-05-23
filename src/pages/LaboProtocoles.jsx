@@ -62,7 +62,7 @@ export default function LaboProtocoles() {
       <div style={{ display: 'flex', justifyContent: 'center' }}>
   <button
     className="labo-btn-ajouter"
-    style={{ width: '80%' }}
+    style={{ width: '100%' }}
     onClick={() => setShowProMsg(true)}
   >
     <i className="ti ti-plus"></i> Ajouter un protocole

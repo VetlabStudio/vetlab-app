@@ -224,7 +224,7 @@ useEffect(() => {
   {medicament.especes?.length === 2 ? 'Chiens et Chats'
     : medicament.especes?.includes('chien') ? 'Chien' : 'Chat'}
         </span>
-        <button className="labo-btn-secondary" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => setShowProMsg(true)}>
+        <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => setShowProMsg(true)}>
     <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Personnaliser
   </button>
       </div>

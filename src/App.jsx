@@ -37,6 +37,9 @@ import LaboAccueil from './pages/LaboAccueil'
 import LaboProtocoles from './pages/LaboProtocoles'
 import LaboProtocoleDetail from './pages/LaboProtocoleDetail'
 import LaboNouveauProtocole from './pages/LaboNouveauProtocole'
+import LaboUrologie from './pages/LaboUrologie'
+import LaboUrologieValeurs from './pages/LaboUrologieValeurs'
+import LaboUrologieSediments from './pages/LaboUrologieSediments'
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -153,7 +156,10 @@ export default function App() {
         <Route path="/labo" element={<RouteProtegee session={session}><LaboAccueil /></RouteProtegee>} />
         <Route path="/labo/nouveau" element={<RouteProtegee session={session}><LaboNouveauProtocole /></RouteProtegee>} />
         <Route path="/labo/protocole/:protocoleId" element={<RouteProtegee session={session}><LaboProtocoleDetail /></RouteProtegee>} />
+        <Route path="/labo/aeac9309-185f-4f2c-81b2-dfed3d4e55aa" element={<RouteProtegee session={session}><LaboUrologie /></RouteProtegee>} />
         <Route path="/labo/:categorieId" element={<RouteProtegee session={session}><LaboProtocoles /></RouteProtegee>} />
+        <Route path="/labo/urologie/valeurs" element={<RouteProtegee session={session}><LaboUrologieValeurs /></RouteProtegee>} />
+        <Route path="/labo/urologie/sediments" element={<RouteProtegee session={session}><LaboUrologieSediments /></RouteProtegee>} />
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />
