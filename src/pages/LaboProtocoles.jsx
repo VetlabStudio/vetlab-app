@@ -11,6 +11,7 @@ export default function LaboProtocoles() {
   const [protocoles, setProtocoles] = useState([])
   const [loading, setLoading] = useState(true)
   const { setTitreCustom } = useContext(TitreContext)
+  const [showProMsg, setShowProMsg] = useState(false)
 
   useEffect(() => {
   chargerDonnees()
@@ -39,7 +40,7 @@ export default function LaboProtocoles() {
   if (loading) return <div className="admin-loading">Chargement...</div>
 
   return (
-    <div className="page-calculateurs">
+    <div className="drogues-page">
       <div className="labo-section-titre">Procédures d'analyse</div>
 
       <div className="labo-protocoles-grid">
@@ -58,12 +59,39 @@ export default function LaboProtocoles() {
       </div>
 
       {/* Bouton ajouter */}
-      <button
-        className="labo-btn-ajouter"
-        onClick={() => navigate(`/labo/nouveau?categorie=${categorieId}`)}
-      >
-        <i className="ti ti-plus"></i> Ajouter un protocole
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+  <button
+    className="labo-btn-ajouter"
+    style={{ width: '80%' }}
+    onClick={() => setShowProMsg(true)}
+  >
+    <i className="ti ti-plus"></i> Ajouter un protocole
+  </button>
+</div>
+      {showProMsg && (
+  <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
+    <div className="popup-card" onClick={e => e.stopPropagation()}>
+      <div className="popup-header">
+        <span>Fonctionnalité Pro</span>
+        <button className="popup-close" onClick={() => setShowProMsg(false)}>✕</button>
+      </div>
+      <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
+        <i className="ti ti-lock" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
+        <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 8 }}>
+          L'ajout de protocoles personnalisés est réservé au forfait <strong>Pro</strong>.
+        </p>
+        <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
+          Le forfait Pro sera disponible prochainement. Reste à l'affût !
+        </p>
+      </div>
+      <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
+        Compris
       </button>
     </div>
+  </div>
+)}
+    </div>
+    
   )
+  
 }

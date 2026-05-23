@@ -96,6 +96,7 @@ const { setTitreCustom } = useContext(TitreContext)
   const [concentration, setConcentration] = useState('')
   const [resultat, setResultat] = useState(null)
   const [horsPlage, setHorsPlage] = useState(false)
+  const [showProMsg, setShowProMsg] = useState(false)
 
 useEffect(() => {
   chargerDonnees()
@@ -217,11 +218,15 @@ useEffect(() => {
         >
           {estFavori ? '★' : '☆'}
         </button>
+        
      <IconesEspeces especes={medicament.especes} taille={40} />
 <span className="fiche-espece-label">
   {medicament.especes?.length === 2 ? 'Chiens et Chats'
     : medicament.especes?.includes('chien') ? 'Chien' : 'Chat'}
-</span>
+        </span>
+        <button className="labo-btn-secondary" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => setShowProMsg(true)}>
+    <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Personnaliser
+  </button>
       </div>
 
       <div className="fiche-scroll">
@@ -368,6 +373,29 @@ useEffect(() => {
         <div style={{ height: 40 }} />
 
       </div>
+      {showProMsg && (
+  <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
+    <div className="popup-card" onClick={e => e.stopPropagation()}>
+      <div className="popup-header">
+        <span>Fonctionnalité Pro</span>
+        <button className="popup-close" onClick={() => setShowProMsg(false)}>✕</button>
+      </div>
+      <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
+        <i className="ti ti-lock" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
+        <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 8 }}>
+          La personnalisation des fiches médicaments est réservée au forfait <strong>Pro</strong>.
+        </p>
+        <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
+          Le forfait Pro sera disponible prochainement. Reste à l'affût !
+        </p>
+      </div>
+      <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
+        Compris
+      </button>
     </div>
+  </div>
+)}
+    </div>
+    
   )
 }

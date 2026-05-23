@@ -20,6 +20,7 @@ export default function LaboProtocoleDetail() {
   const fileInputRef = useRef(null)
   const [etapePhotoId, setEtapePhotoId] = useState(null)
   const { setTitreCustom } = useContext(TitreContext)
+  const [showProMsg, setShowProMsg] = useState(false)
 
   useEffect(() => {
   chargerDonnees()
@@ -212,7 +213,13 @@ export default function LaboProtocoleDetail() {
             </button>
           </>
         ) : (
-          <button className="labo-btn-secondary" onClick={() => setModeEdit(true)}>
+          <button className="labo-btn-secondary" onClick={() => {
+  if (type === 'base') {
+    setShowProMsg(true)
+  } else {
+    setModeEdit(true)
+  }
+}}>
   {type === 'base' ? 'Personnaliser ce protocole' : 'Modifier le protocole'}
 </button>
         )}
@@ -437,7 +444,28 @@ export default function LaboProtocoleDetail() {
     </div>
   </div>
 )}
-
+{showProMsg && (
+  <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
+    <div className="popup-card" onClick={e => e.stopPropagation()}>
+      <div className="popup-header">
+        <span>Fonctionnalité Pro</span>
+        <button className="popup-close" onClick={() => setShowProMsg(false)}>✕</button>
+      </div>
+      <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
+        <i className="ti ti-lock" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
+        <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 8 }}>
+          La personnalisation des protocoles est réservée au forfait <strong>Pro</strong>.
+        </p>
+        <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
+          Le forfait Pro sera disponible prochainement. Reste à l'affût !
+        </p>
+      </div>
+      <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
+        Compris
+      </button>
+    </div>
+  </div>
+)}
     </div>
   )
 }
