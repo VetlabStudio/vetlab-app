@@ -26,7 +26,14 @@ const DROGUES = [
   { id: 'neurologiques',     label: 'Neurologiques',                  route: '/drogues/neurologiques',  accent: false },
   { id: 'respiratoires',     label: 'Respiratoires',                  route: '/drogues/respiratoires',  accent: false },
   { id: 'antagonistes',      label: 'Antagonistes',                   route: '/drogues/antagonistes',   accent: false },
-  { id: 'mes-drogues',       label: 'Mes drogues',                    route: '/drogues/mes-drogues',    accent: false, favori: true },
+  { id: 'mes-drogues',       label: 'Médicaments favoris',            route: '/drogues/mes-drogues',    accent: false, favori: true },
+]
+const LABO = [
+  { id: 'biochimie',     label: 'Biochimie',     route: '/labo/4efe71ce-bfa9-4ea9-a8af-ecbd6dc97320' },
+  { id: 'parasitologie', label: 'Parasitologie',  route: '/labo/2e0222f2-5733-4d01-bc99-8c380bec5abe' },
+  { id: 'urologie',      label: 'Urologie',       route: '/labo/aeac9309-185f-4f2c-81b2-dfed3d4e55aa' },
+  { id: 'cytologie',     label: 'Cytologie',      route: '/labo/173fb58a-988c-4202-8b14-bfcd15c4a16f' },
+  { id: 'microbiologie', label: 'Microbiologie',  route: '/labo/e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5' },
 ]
 
 export default function Accueil() {
@@ -48,7 +55,8 @@ export default function Accueil() {
 
       {/* HEADER */}
       <div className="accueil-v2-header">
-  <div>
+        <div>
+    <h1 className="accueil-v2-accueil">Accueil</h1>
     <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
     <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
   </div>
@@ -74,7 +82,7 @@ export default function Accueil() {
 
       {/* SECTION DROGUES */}
       <section className="accueil-v2-section">
-        <h2 className="accueil-v2-titre-section">Drogues</h2>
+        <h2 className="accueil-v2-titre-section">Médicaments</h2>
         <div className="accueil-v2-drogues-grid">
           {DROGUES.map(d => (
             <button
@@ -90,8 +98,26 @@ export default function Accueil() {
           ))}
         </div>
       </section>
+      {/* SECTION LABORATOIRE */}
+<section className="accueil-v2-section">
+  <h2 className="accueil-v2-titre-section">Laboratoire</h2>
+  <div className="accueil-v2-drogues-grid">
+    {LABO.map(l => (
+      <button
+        key={l.id}
+        className="accueil-v2-drogue-item"
+        onClick={() => navigate(l.route)}
+      >
+        <span>{l.label}</span>
+        <i className="ti ti-chevron-right accueil-v2-chevron"></i>
+      </button>
+    ))}
+  </div>
+</section>
 
       <div style={{ height: 32 }} />
     </div>
   )
 }
+
+

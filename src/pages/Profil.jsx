@@ -193,13 +193,13 @@ export default function Profil() {
 
       {/* PANNEAU ADMIN */}
       {profil?.role === 'admin' && (
-        <div className="profil-section">
-          <button className="profil-admin-btn" onClick={() => navigate('/admin/medicaments')}>
-            <i className="ti ti-shield"></i>
-            Panneau admin
-          </button>
-        </div>
-      )}
+  <div className="profil-section">
+    <button className="profil-admin-btn" onClick={() => navigate('/admin')}>
+      <i className="ti ti-shield"></i>
+      Panneau admin
+    </button>
+  </div>
+)}
 
       {/* FORFAIT */}
       <div className="profil-section">

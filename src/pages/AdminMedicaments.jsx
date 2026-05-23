@@ -45,16 +45,7 @@ export default function AdminMedicaments() {
 
   return (
     <div className="admin-page">
-      <div className="admin-header">
-        <button className="btn-retour" onClick={() => navigate(-1)}>←</button>
-        <h1>Médicaments</h1>
-        <button
-          className="btn-ajouter"
-          onClick={() => navigate('/admin/medicaments/nouveau')}
-        >
-          + Ajouter
-        </button>
-      </div>
+      
 
       <div className="admin-filtres">
         <input
@@ -105,6 +96,7 @@ export default function AdminMedicaments() {
       <div className="admin-stats">
         {medicamentsFiltres.length} médicament{medicamentsFiltres.length !== 1 ? 's' : ''}
       </div>
+      <button className="btn-fab" onClick={() => navigate('/admin/medicaments/nouveau')}>+</button>
     </div>
   )
 }

@@ -196,11 +196,7 @@ export default function AdminMedicamentForm() {
 
  return (
     <div className="admin-page">
-      <div className="admin-header">
-        <button className="btn-retour" onClick={() => navigate(-1)}>←</button>
-        <h1>{estNouveau ? 'Ajouter un médicament' : 'Modifier'}</h1>
-        <div style={{ width: 40 }} />
-      </div>
+      
 
       <div className="form-scroll">
 

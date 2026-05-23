@@ -26,6 +26,11 @@ const titres = {
   '/drogues/urgence': 'Urgence',
   '/admin/medicaments': 'Admin — Médicaments',
   '/profil': 'Profil',
+  '/drogues/mes-drogues': 'Médicaments favoris',
+  '/labo': 'Laboratoire',
+  '/labo/nouveau': 'Nouveau protocole',
+  '/admin': 'Panneau admin',
+  '/admin/labo': 'Admin — Laboratoire',
 }
 
 export default function Header() {
