@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import IconesEspeces from '../components/IconesEspeces'
+import { useContext } from 'react'
+import { TitreContext } from '../App'
 
 // ─── DÉMARCHE DE CALCUL ───────────────────────────────────
 function DemarcheCollapsible({ resultat, poids, unitePoids }) {
@@ -86,7 +88,7 @@ export default function FicheMedicament() {
   const [loading, setLoading] = useState(true)
   const [estFavori, setEstFavori] = useState(false)
   const [estAdmin, setEstAdmin] = useState(false)
-
+const { setTitreCustom } = useContext(TitreContext)
   // Calculateur
   const [poids, setPoids] = useState('')
   const [unitePoids, setUnitePoids] = useState('kg')
@@ -95,9 +97,19 @@ export default function FicheMedicament() {
   const [resultat, setResultat] = useState(null)
   const [horsPlage, setHorsPlage] = useState(false)
 
+useEffect(() => {
+  chargerDonnees()
+}, [id])
+
+useEffect(() => {
+  if (medicament?.nom) {
+    document.title = medicament.nom
+  }
+}, [medicament])
   useEffect(() => {
-    chargerDonnees()
-  }, [id])
+  if (medicament?.nom) setTitreCustom(medicament.nom)
+  return () => setTitreCustom('')
+}, [medicament])
 
   // Calcul automatique
   useEffect(() => {

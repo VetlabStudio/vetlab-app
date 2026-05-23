@@ -268,7 +268,7 @@ export default function RCR() {
         </div>
         <div className="rcr-rappel">
           <i className="ti ti-wind"></i>
-          <span>Ventilation : 1 insufflation toutes les 6 secondes — se fier à la barre de progression.</span>
+          <span>Ventilation : 1 insufflation toutes les 6 secondes : se fier à la barre de progression.</span>
         </div>
         <div className="rcr-rappel">
           <i className="ti ti-refresh"></i>

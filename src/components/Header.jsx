@@ -1,12 +1,9 @@
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useContext } from 'react'
+import { TitreContext } from '../App'
 
 const titres = {
-  '/accueil': 'Accueil',
   '/calculateurs': 'Calculateur de dosage',
-  '/drogues': 'Drogues',
-  '/profil': 'Profil',
-  '/drogues/anesthesiques': 'Drogues anesthésiques',
-  '/admin/medicaments': 'Admin — Médicaments',
   '/calculateurs/cri': 'CRI',
   '/calculateurs/fluido': 'Fluidothérapie',
   '/calculateurs/conversion': 'Conversion',
@@ -16,24 +13,41 @@ const titres = {
   '/calculateurs/mise-bas': 'Date de mise bas',
   '/calculateurs/toxicite': 'Toxicité chocolat',
   '/calculateurs/rcr': 'RCR Urgence',
+  '/drogues/anesthesiques': 'Anesthésiques / Analgésiques',
+  '/drogues/antagonistes': 'Antagonistes',
+  '/drogues/antibiotiques': 'Antibiotiques',
+  '/drogues/antidiarrheiques': 'Antidiarrhéiques',
+  '/drogues/antiemetiques': 'Antiémétiques',
+  '/drogues/antihistaminiques': 'Antihistaminiques',
+  '/drogues/cardiovasculaires': 'Cardiovasculaires',
+  '/drogues/gastroprotecteurs': 'Gastroprotecteurs',
+  '/drogues/neurologiques': 'Neurologiques',
+  '/drogues/respiratoires': 'Respiratoires',
+  '/drogues/urgence': 'Urgence',
+  '/admin/medicaments': 'Admin — Médicaments',
+  '/profil': 'Profil',
 }
 
 export default function Header() {
   const navigate = useNavigate()
   const location = useLocation()
-  const titre = titres[location.pathname] || 'Vetlab Studio'
-  const peutReculer = location.pathname !== '/accueil'
+  const { titreCustom } = useContext(TitreContext)
 
-if (location.pathname === '/accueil') return null
+  if (location.pathname === '/accueil') return null
 
-return (
-  <div className="header">
-    {peutReculer && (
+  const titre = titreCustom ||
+    titres[location.pathname] ||
+    Object.entries(titres)
+      .sort((a, b) => b[0].length - a[0].length)
+      .find(([key]) => location.pathname.startsWith(key))?.[1] ||
+    null
+
+  return (
+    <div className="header">
       <button className="header-back" onClick={() => navigate(-1)}>
         <i className="ti ti-arrow-left"></i>
       </button>
-    )}
-    <span>{titre}</span>
-  </div>
-)
+      <span>{titre}</span>
+    </div>
+  )
 }

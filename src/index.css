@@ -761,9 +761,9 @@ input  { font-family: var(--font); }
 
 /* ─── SELECT DANS CHAMP ──────────────────────── */
 .champ select {
-  background: var(--champ-bg);
-  border: none;
-  border-radius: var(--radius-pill);
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   padding: 0.75rem 1.25rem;
   padding-right: 2.5rem;
   font-size: 1rem;
@@ -2323,6 +2323,18 @@ input[type="number"] {
   appearance: none;
   -webkit-appearance: none;
 }
+.select option {
+    border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text-primary);
+  padding: 10px 14px;
+  width: 100%;
+  outline: none;
+  cursor: pointer;
+}
 /* ─── PAGE CONVERSION ────────────────────────── */
 .conversion-section-titre {
   font-size: 15px;
@@ -2348,11 +2360,12 @@ input[type="number"] {
   border-radius: 8px;
   font-family: var(--font);
   font-size: 13px;
-  background: var(--bg-card);
+  background: white;
   color: var(--text-primary);
   cursor: pointer;
   appearance: auto;
 }
+
 /* ─── PAGE BESOIN ÉNERGÉTIQUE ────────────────── */
 
 .bee-card {
@@ -3024,4 +3037,34 @@ input[type="number"] {
   color: var(--primary);
   white-space: nowrap;
   flex-shrink: 0;
+}
+.drogues-filtres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 1rem;
+}
+
+.drogues-filtre-btn {
+  padding: 6px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.drogues-filtre-btn.actif {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+.recherche-wrapper {
+  margin-bottom: 10px;
+  margin-top: 10px;
 }

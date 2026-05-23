@@ -1,7 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useEffect, useState, createContext } from 'react'
 import { supabase } from './lib/supabase'
-import { useLocation } from 'react-router-dom'
 
 import Connexion from './pages/Connexion'
 import Inscription from './pages/Inscription'
@@ -9,6 +8,16 @@ import Accueil from './pages/Accueil'
 import Calculateurs from './pages/Calculateurs'
 import Profil from './pages/Profil'
 import DroguesAnesthesiques from './pages/DroguesAnesthesiques'
+import DroguesAntagonistes from './pages/DroguesAntagonistes'
+import DroguesAntibiotiques from './pages/DroguesAntibiotiques'
+import DroguesAntidiarrheiques from './pages/DroguesAntidiarrheiques'
+import DroguesAntiemetiques from './pages/DroguesAntiemetiques'
+import DroguesAntihistaminiques from './pages/DroguesAntihistaminiques'
+import DroguesCardiovasculaires from './pages/DroguesCardiovasculaires'
+import DroguesGastroprotecteurs from './pages/DroguesGastroprotecteurs'
+import DroguesNeurologiques from './pages/DroguesNeurologiques'
+import DroguesRespiratoires from './pages/DroguesRespiratoires'
+import DroguesUrgence from './pages/DroguesUrgence'
 import AdminMedicaments from './pages/AdminMedicaments'
 import AdminMedicamentForm from './pages/AdminMedicamentForm'
 import FicheMedicament from './pages/FicheMedicament'
@@ -25,18 +34,31 @@ import RCR from './pages/RCR'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 
+export const TitreContext = createContext({ titreCustom: '', setTitreCustom: () => {} })
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
+
 function LayoutPrincipal({ children }) {
   const location = useLocation()
   const estAccueil = location.pathname === '/accueil'
+  const [titreCustom, setTitreCustom] = useState('')
 
   return (
-    <div className={`app-layout ${estAccueil ? 'app-layout-accueil' : ''}`}>
-      <Header />
-      <main className="contenu-principal">
-        {children}
-      </main>
-      <BottomNav />
-    </div>
+    <TitreContext.Provider value={{ titreCustom, setTitreCustom }}>
+      <div className={`app-layout ${estAccueil ? 'app-layout-accueil' : ''}`}>
+        <Header />
+        <main className="contenu-principal">
+          {children}
+        </main>
+        <BottomNav />
+      </div>
+    </TitreContext.Provider>
   )
 }
 
@@ -69,36 +91,30 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
 
-        {/* AUTH */}
         <Route path="/connexion" element={<Connexion />} />
         <Route path="/inscription" element={<Inscription />} />
 
-        {/* APP PRINCIPALE */}
         <Route path="/accueil" element={
           <RouteProtegee session={session}><Accueil /></RouteProtegee>
         } />
+
         <Route path="/calculateurs" element={
           <RouteProtegee session={session}><Calculateurs /></RouteProtegee>
         } />
-        <Route path="/profil" element={
-          <RouteProtegee session={session}><Profil /></RouteProtegee>
-        } />
-        <Route path="/drogues/fiche/:id" element={
-          <RouteProtegee session={session}><FicheMedicament /></RouteProtegee>
-        } />
         <Route path="/calculateurs/fluido" element={
-         <RouteProtegee session={session}><Fluidotherapie /></RouteProtegee>
+          <RouteProtegee session={session}><Fluidotherapie /></RouteProtegee>
         } />
         <Route path="/calculateurs/cri" element={
-           <RouteProtegee session={session}><CRI /></RouteProtegee>
+          <RouteProtegee session={session}><CRI /></RouteProtegee>
         } />
         <Route path="/calculateurs/conversion" element={
           <RouteProtegee session={session}><Conversion /></RouteProtegee>
         } />
         <Route path="/calculateurs/besoin" element={
-         <RouteProtegee session={session}><BesoinEnergetique /></RouteProtegee>
+          <RouteProtegee session={session}><BesoinEnergetique /></RouteProtegee>
         } />
         <Route path="/calculateurs/dilution" element={
           <RouteProtegee session={session}><Dilution /></RouteProtegee>
@@ -116,12 +132,47 @@ export default function App() {
           <RouteProtegee session={session}><RCR /></RouteProtegee>
         } />
 
-        {/* DROGUES */}
         <Route path="/drogues/anesthesiques" element={
           <RouteProtegee session={session}><DroguesAnesthesiques /></RouteProtegee>
         } />
+        <Route path="/drogues/antagonistes" element={
+          <RouteProtegee session={session}><DroguesAntagonistes /></RouteProtegee>
+        } />
+        <Route path="/drogues/antibiotiques" element={
+          <RouteProtegee session={session}><DroguesAntibiotiques /></RouteProtegee>
+        } />
+        <Route path="/drogues/antidiarrheiques" element={
+          <RouteProtegee session={session}><DroguesAntidiarrheiques /></RouteProtegee>
+        } />
+        <Route path="/drogues/antiemetiques" element={
+          <RouteProtegee session={session}><DroguesAntiemetiques /></RouteProtegee>
+        } />
+        <Route path="/drogues/antihistaminiques" element={
+          <RouteProtegee session={session}><DroguesAntihistaminiques /></RouteProtegee>
+        } />
+        <Route path="/drogues/cardiovasculaires" element={
+          <RouteProtegee session={session}><DroguesCardiovasculaires /></RouteProtegee>
+        } />
+        <Route path="/drogues/gastroprotecteurs" element={
+          <RouteProtegee session={session}><DroguesGastroprotecteurs /></RouteProtegee>
+        } />
+        <Route path="/drogues/neurologiques" element={
+          <RouteProtegee session={session}><DroguesNeurologiques /></RouteProtegee>
+        } />
+        <Route path="/drogues/respiratoires" element={
+          <RouteProtegee session={session}><DroguesRespiratoires /></RouteProtegee>
+        } />
+        <Route path="/drogues/urgence" element={
+          <RouteProtegee session={session}><DroguesUrgence /></RouteProtegee>
+        } />
+        <Route path="/drogues/fiche/:id" element={
+          <RouteProtegee session={session}><FicheMedicament /></RouteProtegee>
+        } />
 
-        {/* ADMIN — pas de BottomNav */}
+        <Route path="/profil" element={
+          <RouteProtegee session={session}><Profil /></RouteProtegee>
+        } />
+
         <Route path="/admin/medicaments" element={
           <RouteProtegeeAdmin session={session}><AdminMedicaments /></RouteProtegeeAdmin>
         } />
@@ -129,7 +180,6 @@ export default function App() {
           <RouteProtegeeAdmin session={session}><AdminMedicamentForm /></RouteProtegeeAdmin>
         } />
 
-        {/* FALLBACK */}
         <Route path="*" element={
           <Navigate to={session ? '/accueil' : '/connexion'} replace />
         } />
