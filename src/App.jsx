@@ -40,6 +40,21 @@ import LaboNouveauProtocole from './pages/LaboNouveauProtocole'
 import LaboUrologie from './pages/LaboUrologie'
 import LaboUrologieValeurs from './pages/LaboUrologieValeurs'
 import LaboUrologieSediments from './pages/LaboUrologieSediments'
+import LaboParasitologie from './pages/LaboParasitologie'
+import LaboParasitologieOeufs from './pages/LaboParasitologieOeufs'
+import LaboParasitologieHotes from './pages/LaboParasitologieHotes'
+import LaBiochimie from './pages/LaBiochimie'
+import LaBiochimieTubes from './pages/LaBiochimieTubes'
+import LaBiochimieValeurs from './pages/LaBiochimieValeurs'
+import LaCytologie from './pages/LaCytologie'
+import LaCytologiePrelevement from './pages/LaCytologiePrelevement'
+import LaCytologieCellules from './pages/LaCytologieCellules'
+import LaMicrobiologie from './pages/LaMicrobiologie'
+import LaMicrobiologiePrelevement from './pages/LaMicrobiologiePrelevement'
+import LaMicrobiologieCultures from './pages/LaMicrobiologieCultures'
+import LaMicrobiologieAntibiogramme from './pages/LaMicrobiologieAntibiogramme'
+import LaMicrobiologieBacteries from './pages/LaMicrobiologieBacteries'
+import LaParasitologieExternes from './pages/LaParasitologieExternes'
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -157,9 +172,26 @@ export default function App() {
         <Route path="/labo/nouveau" element={<RouteProtegee session={session}><LaboNouveauProtocole /></RouteProtegee>} />
         <Route path="/labo/protocole/:protocoleId" element={<RouteProtegee session={session}><LaboProtocoleDetail /></RouteProtegee>} />
         <Route path="/labo/aeac9309-185f-4f2c-81b2-dfed3d4e55aa" element={<RouteProtegee session={session}><LaboUrologie /></RouteProtegee>} />
-        <Route path="/labo/:categorieId" element={<RouteProtegee session={session}><LaboProtocoles /></RouteProtegee>} />
         <Route path="/labo/urologie/valeurs" element={<RouteProtegee session={session}><LaboUrologieValeurs /></RouteProtegee>} />
         <Route path="/labo/urologie/sediments" element={<RouteProtegee session={session}><LaboUrologieSediments /></RouteProtegee>} />
+        <Route path="/labo/2e0222f2-5733-4d01-bc99-8c380bec5abe" element={<RouteProtegee session={session}><LaboParasitologie /></RouteProtegee>} />
+        <Route path="/labo/parasitologie/oeufs" element={<RouteProtegee session={session}><LaboParasitologieOeufs /></RouteProtegee>} />
+        <Route path="/labo/parasitologie/hotes" element={<RouteProtegee session={session}><LaboParasitologieHotes /></RouteProtegee>} />
+        <Route path="/labo/4efe71ce-bfa9-4ea9-a8af-ecbd6dc97320" element={<RouteProtegee session={session}><LaBiochimie /></RouteProtegee>} />
+        <Route path="/labo/biochimie/tubes" element={<RouteProtegee session={session}><LaBiochimieTubes /></RouteProtegee>} />
+        <Route path="/labo/biochimie/valeurs" element={<RouteProtegee session={session}><LaBiochimieValeurs /></RouteProtegee>} />
+        <Route path="/labo/173fb58a-988c-4202-8b14-bfcd15c4a16f" element={<RouteProtegee session={session}><LaCytologie /></RouteProtegee>} />
+        <Route path="/labo/cytologie/prelevement" element={<RouteProtegee session={session}><LaCytologiePrelevement /></RouteProtegee>} />
+        <Route path="/labo/cytologie/cellules" element={<RouteProtegee session={session}><LaCytologieCellules /></RouteProtegee>} />
+        <Route path="/labo/parasitologie/oeufs" element={<RouteProtegee session={session}><LaboParasitologieOeufs /></RouteProtegee>} />
+        <Route path="/labo/parasitologie/hotes" element={<RouteProtegee session={session}><LaboParasitologieHotes /></RouteProtegee>} />
+        <Route path="/labo/e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5" element={<RouteProtegee session={session}><LaMicrobiologie /></RouteProtegee>} />
+        <Route path="/labo/microbiologie/prelevement" element={<RouteProtegee session={session}><LaMicrobiologiePrelevement /></RouteProtegee>} />
+        <Route path="/labo/microbiologie/cultures" element={<RouteProtegee session={session}><LaMicrobiologieCultures /></RouteProtegee>} />
+        <Route path="/labo/microbiologie/antibiogramme" element={<RouteProtegee session={session}><LaMicrobiologieAntibiogramme /></RouteProtegee>} />
+        <Route path="/labo/parasitologie/externes" element={<RouteProtegee session={session}><LaParasitologieExternes /></RouteProtegee>} />
+        <Route path="/labo/microbiologie/bacteries" element={<RouteProtegee session={session}><LaMicrobiologieBacteries /></RouteProtegee>} />
+        <Route path="/labo/:categorieId" element={<RouteProtegee session={session}><LaboProtocoles /></RouteProtegee>} />
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />

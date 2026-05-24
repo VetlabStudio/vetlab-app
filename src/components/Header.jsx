@@ -34,6 +34,20 @@ const titres = {
   '/labo/aeac9309-185f-4f2c-81b2-dfed3d4e55aa': 'Urologie',
   '/labo/urologie/valeurs': 'Valeurs de référence',
   '/labo/urologie/sediments': 'Sédiments urinaires',
+  '/labo/2e0222f2-5733-4d01-bc99-8c380bec5abe': 'Parasitologie',
+  '/labo/parasitologie/oeufs': 'Œufs de parasites',
+  '/labo/parasitologie/hotes': 'Hôtes & espèces affectées',
+  '/labo/4efe71ce-bfa9-4ea9-a8af-ecbd6dc97320': 'Biochimie',
+  '/labo/biochimie/tubes': 'Choix du tube',
+  '/labo/biochimie/valeurs': 'Valeurs normales',
+  '/labo/173fb58a-988c-4202-8b14-bfcd15c4a16f': 'Cytologie',
+  '/labo/cytologie/prelevement': 'Guide de prélèvement',
+  '/labo/cytologie/cellules': 'Types cellulaires',
+  '/labo/e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5': 'Microbiologie',
+  '/labo/microbiologie/prelevement': 'Guide de prélèvement',
+  '/labo/microbiologie/cultures': 'Interprétation des cultures',
+  '/labo/microbiologie/antibiogramme': 'Antibiogramme',
+  '/labo/microbiologie/bacteries': 'Bactéries courantes',
   }
 
 export default function Header() {

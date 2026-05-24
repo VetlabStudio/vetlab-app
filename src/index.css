@@ -17,8 +17,8 @@
   --bg-card:        #FFFFFF;
   --border:         #D1DBD8;
   --text-primary:   #1A2E2A;
-  --text-secondary: #6B7F7A;
-  --text-hint:      #9EB3AE;
+  --text-secondary: #475552;
+  --text-hint:      #538073;
   --font:           'Montserrat', system-ui, sans-serif;
   --radius-sm:      8px;
   --radius-md:      12px;
@@ -719,7 +719,7 @@ input  { font-family: var(--font); }
   background: transparent;
   border: none;
   font-family: var(--font);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-hint);
   padding: 8px 1rem 8px 0.5rem;
@@ -2628,7 +2628,7 @@ input[type="number"] {
   font-size: 11px;
   font-weight: 700;
   color: white;
-  background: var(--primary);
+  background: var(--primary-light);
   border-radius: 6px;
   padding: 5px 10px;
   white-space: nowrap;
@@ -3338,9 +3338,11 @@ input[type="number"] {
 
 .labo-etape-photo {
   width: 100%;
-  max-height: 220px;
-  object-fit: cover;
+  max-height: 150px;
+  object-fit: contain;
   display: block;
+  margin-top:20px;
+  margin-bottom:20px;
 }
 
 .labo-photo-supprimer {
@@ -3669,7 +3671,7 @@ input[type="number"] {
 .labo-sediment-photo {
   width: 100%;
   max-height: 200px;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -3707,4 +3709,86 @@ input[type="number"] {
   color: var(--text-secondary);
   line-height: 1.5;
   margin: 0;
+}
+/* ─── PARASITOLOGIE — tableau 5 colonnes ────── */
+.labo-ref-header--5col {
+  grid-template-columns: 1.6fr 0.45fr 0.45fr 1.4fr 1.2fr;
+}
+.labo-ref-ligne--5col {
+  grid-template-columns: 1.6fr 0.45fr 0.45fr 1.4fr 1.2fr;
+  font-size: 11px;
+}
+.labo-ref-ligne--5col span:nth-child(4),
+.labo-ref-ligne--5col span:nth-child(5) {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+/* ─── TUBES ──────────────────────────────────── */
+
+.labo-tubes-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.labo-tube-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.labo-tube-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.labo-tube-couleur {
+  width: 20px;
+  height: 36px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.labo-tube-nom {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.labo-tube-analyses {
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.labo-tube-analyse-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.labo-tube-note {
+  font-size: 11px;
+  color: var(--text-hint);
+  background: var(--bg);
+  padding: 8px 14px;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  line-height: 1.5;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.labo-tube-note .ti {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 1px;
 }
