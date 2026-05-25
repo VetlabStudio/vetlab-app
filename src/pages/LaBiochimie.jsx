@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import BadgePro from '../components/BadgePro'
+import { useProfil } from '../context/ProfilContext'
 
 const CATEGORIE_ID = '4efe71ce-bfa9-4ea9-a8af-ecbd6dc97320'
 
@@ -14,6 +16,7 @@ export default function LaBiochimie() {
   const [protocoles, setProtocoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [showProMsg, setShowProMsg] = useState(false)
+  const { estPro } = useProfil()
 
   useEffect(() => {
     chargerProtocoles()
@@ -60,7 +63,7 @@ export default function LaBiochimie() {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <button className="labo-btn-ajouter" style={{ width: '80%' }} onClick={() => setShowProMsg(true)}>
+        <button className="labo-btn-ajouter" style={{ width: '80%' }} onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
           <i className="ti ti-plus"></i> Ajouter un protocole
         </button>
       </div>
@@ -71,13 +74,15 @@ export default function LaBiochimie() {
       <div className="labo-protocoles-grid">
         {REFERENCES.map(r => (
           <button
-            key={r.id}
-            className="labo-protocole-btn"
-            onClick={() => navigate(r.route)}
-          >
-            <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
-            {r.label}
-          </button>
+  key={r.id}
+  className="labo-protocole-btn"
+  onClick={() => navigate(r.route)}
+  style={{ position: 'relative' }}
+>
+  <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
+  {r.label}
+  {r.pro && <BadgePro />}
+</button>
         ))}
       </div>
 

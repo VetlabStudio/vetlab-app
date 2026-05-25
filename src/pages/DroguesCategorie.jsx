@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import IconesEspeces from '../components/IconesEspeces'
+import { useProfil } from '../context/ProfilContext'
 
 export default function DroguesCategorie({ categorie }) {
   const navigate = useNavigate()
@@ -12,6 +13,7 @@ export default function DroguesCategorie({ categorie }) {
   const [dropdownOuvert, setDropdownOuvert] = useState(false)
   const [sousCategorieFiltree, setSousCategorieFiltree] = useState('Tous')
   const [showProMsg, setShowProMsg] = useState(false)
+  const { estPro } = useProfil()
 
   useEffect(() => {
     chargerDonnees()
@@ -22,22 +24,28 @@ export default function DroguesCategorie({ categorie }) {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
-      const [{ data: meds }, { data: favs }] = await Promise.all([
-        supabase
-          .from('medicaments')
-          .select('*')
-          .eq('categorie', categorie)
-          .order('nom', { ascending: true }),
-        supabase
-          .from('favoris')
-          .select('medicament_id')
-          .eq('user_id', user.id),
-      ])
+      const [{ data: meds }, { data: medsCustom }, { data: favs }] = await Promise.all([
+  supabase
+    .from('medicaments')
+    .select('*')
+    .eq('categorie', categorie)
+    .order('nom', { ascending: true }),
+  supabase
+    .from('medicaments_custom')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('categorie', categorie)
+    .is('medicament_id', null),
+  supabase
+    .from('favoris')
+    .select('medicament_id')
+    .eq('user_id', user.id),
+])
 
       const ids = new Set((favs || []).map(f => f.medicament_id))
       setFavorisIds(ids)
 
-      const tries = [...(meds || [])].sort((a, b) => {
+      const tries = [...(meds || []), ...(medsCustom || []).map(m => ({ ...m, estCustom: true }))].sort((a, b) => {
         const aFav = ids.has(a.id)
         const bFav = ids.has(b.id)
         if (aFav && !bFav) return -1
@@ -201,29 +209,8 @@ export default function DroguesCategorie({ categorie }) {
           )}
         </div>
       )}
-      <button className="btn-fab" onClick={() => setShowProMsg(true)}>+</button>
-      {showProMsg && (
-  <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
-    <div className="popup-card" onClick={e => e.stopPropagation()}>
-      <div className="popup-header">
-        <span>Fonctionnalité Pro</span>
-        <button className="popup-close" onClick={() => setShowProMsg(false)}>✕</button>
-      </div>
-      <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
-        <i className="ti ti-lock" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
-        <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 8 }}>
-          L'ajout de médicaments personnalisés est réservé au forfait <strong>Pro</strong>.
-        </p>
-        <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-          Le forfait Pro sera disponible prochainement. Reste à l'affût !
-        </p>
-      </div>
-      <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
-        Compris
-      </button>
-    </div>
-  </div>
-)}
+      <button className="btn-fab" onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}>+</button>
+      
 
     </div>
   )

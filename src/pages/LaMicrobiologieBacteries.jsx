@@ -29,7 +29,7 @@ const BACTERIES = [
     morphologie: 'Coque en chaînes',
     infections: ['Septicémie néonatale', 'Pharyngite', 'Pneumonie', 'Lymphadénite'],
     resistances: 'Généralement sensible aux pénicillines.',
-    notes: 'Pathogène opportuniste — peut causer des infections sévères chez les chiots et chats immunodéprimés.',
+    notes: 'Pathogène opportuniste : peut causer des infections sévères chez les chiots et chats immunodéprimés.',
   },
   {
     nom: 'Pasteurella multocida',
@@ -61,14 +61,14 @@ const BACTERIES = [
     morphologie: 'Bacille sporulé anaérobie',
     infections: ['Entérite hémorragique', 'Nécrose tissulaire', 'Tétanos (C. tetani)'],
     resistances: 'Sensible à la pénicilline et métronidazole.',
-    notes: 'Anaérobie strict — prélèvement en milieu anaérobie obligatoire. Spores résistantes dans l\'environnement.',
+    notes: 'Anaérobie strict : prélèvement en milieu anaérobie obligatoire. Spores résistantes dans l\'environnement.',
   },
 ]
 
 export default function LaMicrobiologieBacteries() {
   return (
     <div className="labo-detail-page">
-      <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: '0 0 8px 0', lineHeight: 1.5 }}>
+      <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: '0 0 8px 0', lineHeight: 1.5 }}>
         Bactéries les plus fréquemment isolées en clinique vétérinaire pour chiens et chats.
       </p>
 
@@ -78,24 +78,24 @@ export default function LaMicrobiologieBacteries() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
               <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0, fontStyle: 'italic' }}>{b.nom}</h3>
               <span style={{
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: 700,
                 padding: '2px 8px',
                 borderRadius: 6,
                 background: b.gram === '+' ? 'rgba(112,47,58,0.1)' : 'rgba(37,77,86,0.1)',
                 color: b.gram === '+' ? 'var(--accent-red)' : 'var(--primary)',
               }}>
-                Gram {b.gram} — {b.morphologie}
+                Gram {b.gram} / {b.morphologie}
               </span>
             </div>
           </div>
 
           <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border)' }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-hint)', margin: '0 0 6px 0', textTransform: 'uppercase' }}>Infections associées</p>
+            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', margin: '0 0 6px 0', textTransform: 'uppercase' }}>Infections associées</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {b.infections.map((inf, j) => (
                 <span key={j} style={{
-                  fontSize: 11,
+                  fontSize: 12,
                   padding: '3px 8px',
                   background: 'var(--bg)',
                   border: '1px solid var(--border)',
@@ -108,12 +108,12 @@ export default function LaMicrobiologieBacteries() {
 
           <div style={{ padding: '8px 14px', borderBottom: '1px solid var(--border)', display: 'flex', gap: 8 }}>
             <i className="ti ti-shield-exclamation" style={{ color: 'var(--accent-red)', flexShrink: 0, marginTop: 1 }}></i>
-            <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>{b.resistances}</p>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>{b.resistances}</p>
           </div>
 
-          <div style={{ padding: '8px 14px', background: 'var(--bg)', display: 'flex', gap: 8 }}>
+          <div style={{ padding: '8px 14px', display: 'flex', gap: 8 }}>
             <i className="ti ti-info-circle" style={{ color: 'var(--primary)', flexShrink: 0, marginTop: 1 }}></i>
-            <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: 0, lineHeight: 1.4 }}>{b.notes}</p>
+            <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: 0, lineHeight: 1.4 }}>{b.notes}</p>
           </div>
         </div>
       ))}

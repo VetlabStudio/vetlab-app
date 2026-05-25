@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useContext } from 'react'
 import { TitreContext } from '../App'
+import { useProfil } from '../context/ProfilContext'
 
 export default function LaboProtocoleDetail() {
   const navigate = useNavigate()
@@ -21,6 +22,8 @@ export default function LaboProtocoleDetail() {
   const [etapePhotoId, setEtapePhotoId] = useState(null)
   const { setTitreCustom } = useContext(TitreContext)
   const [showProMsg, setShowProMsg] = useState(false)
+  const { estPro } = useProfil()
+  const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(false)
 
   useEffect(() => {
   chargerDonnees()
@@ -181,7 +184,11 @@ export default function LaboProtocoleDetail() {
       isNew: true,
     }])
   }
-
+async function supprimerProtocole() {
+  await supabase.from('labo_etapes_user_custom').delete().eq('protocole_user_id', protocoleId)
+  await supabase.from('labo_protocoles_user').delete().eq('id', protocoleId)
+  navigate(-1)
+}
   async function supprimerEtape(etapeId) {
     if (type === 'user') {
       await supabase.from('labo_etapes_user_custom').delete().eq('id', etapeId)
@@ -214,7 +221,7 @@ export default function LaboProtocoleDetail() {
           </>
         ) : (
           <button className="labo-btn-secondary" onClick={() => {
-  if (type === 'base') {
+  if (type === 'base' && !estPro) {
     setShowProMsg(true)
   } else {
     setModeEdit(true)
@@ -371,7 +378,22 @@ export default function LaboProtocoleDetail() {
 )}
       </div>
       {/* ─── BOUTON ENREGISTRER BAS ─────────── */}
-{modeEdit && (
+{modeEdit && type === 'user' && (
+  <div className="labo-actions-bas" style={{ flexDirection: 'column', gap: 8 }}>
+    <div style={{ display: 'flex', gap: 8 }}>
+      <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); chargerDonnees() }}>
+        Annuler
+      </button>
+      <button className="labo-btn-primary" onClick={sauvegarderModifications}>
+        Enregistrer
+      </button>
+    </div>
+    <button className="btn-supprimer-medicament" onClick={() => setShowConfirmSupprimer(true)}>
+      Supprimer ce protocole
+    </button>
+  </div>
+)}
+{modeEdit && type === 'base' && (
   <div className="labo-actions">
     <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); chargerDonnees() }}>
       Annuler
@@ -463,6 +485,30 @@ export default function LaboProtocoleDetail() {
       <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
         Compris
       </button>
+    </div>
+  </div>
+      )}
+      {showConfirmSupprimer && (
+  <div className="popup-overlay" onClick={() => setShowConfirmSupprimer(false)}>
+    <div className="popup-card" onClick={e => e.stopPropagation()}>
+      <div className="popup-header">
+        <span>Supprimer le protocole</span>
+        <button className="popup-close" onClick={() => setShowConfirmSupprimer(false)}>✕</button>
+      </div>
+      <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
+        <i className="ti ti-trash" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
+        <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          Supprimer <strong>{protocole.titre}</strong> ? Cette action est irréversible.
+        </p>
+      </div>
+      <div className="popup-actions-centrees">
+        <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setShowConfirmSupprimer(false)}>
+          Annuler
+        </button>
+        <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={supprimerProtocole}>
+          Supprimer
+        </button>
+      </div>
     </div>
   </div>
 )}

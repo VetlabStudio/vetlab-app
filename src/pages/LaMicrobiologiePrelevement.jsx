@@ -57,7 +57,7 @@ export default function LaMicrobiologiePrelevement() {
               ))}
             </div>
           </div>
-          <div style={{ padding: '8px 14px', background: 'var(--bg)', display: 'flex', gap: 8 }}>
+          <div style={{ padding: '8px 14px', display: 'flex', gap: 8 }}>
             <i className="ti ti-info-circle" style={{ color: 'var(--primary)', flexShrink: 0, marginTop: 1 }}></i>
             <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: 0, lineHeight: 1.5 }}>{t.notes}</p>
           </div>

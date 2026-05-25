@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useEffect, useState, createContext } from 'react'
 import { supabase } from './lib/supabase'
+import { ProfilProvider } from './context/ProfilContext'
 
 import Connexion from './pages/Connexion'
 import Inscription from './pages/Inscription'
@@ -55,6 +56,11 @@ import LaMicrobiologieCultures from './pages/LaMicrobiologieCultures'
 import LaMicrobiologieAntibiogramme from './pages/LaMicrobiologieAntibiogramme'
 import LaMicrobiologieBacteries from './pages/LaMicrobiologieBacteries'
 import LaParasitologieExternes from './pages/LaParasitologieExternes'
+import MedicamentCustomForm from './pages/MedicamentCustomForm'
+import AjouterMedicament from './pages/AjouterMedicament'
+import LaboParasitologieDipylidium from './pages/LaboParasitologieDipylidium'
+import LaboParasitologiePuce from './pages/LaboParasitologiePuce'
+import ProGate from './components/ProGate'
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -129,6 +135,7 @@ export default function App() {
   if (session === undefined) return null
 
   return (
+    <ProfilProvider>
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
@@ -165,7 +172,9 @@ export default function App() {
         <Route path="/drogues/respiratoires" element={<RouteProtegee session={session}><DroguesRespiratoires /></RouteProtegee>} />
         <Route path="/drogues/urgence" element={<RouteProtegee session={session}><DroguesUrgence /></RouteProtegee>} />
         <Route path="/drogues/mes-drogues" element={<RouteProtegee session={session}><MesDrogues /></RouteProtegee>} />
+        <Route path="/drogues/ajouter" element={<RouteProtegee session={session}><AjouterMedicament /></RouteProtegee>} />
         <Route path="/drogues/fiche/:id" element={<RouteProtegee session={session}><FicheMedicament /></RouteProtegee>} />
+        <Route path="/drogues/fiche/:id/personnaliser" element={<RouteProtegee session={session}><MedicamentCustomForm /></RouteProtegee>} />
 
         {/* LABO */}
         <Route path="/labo" element={<RouteProtegee session={session}><LaboAccueil /></RouteProtegee>} />
@@ -173,7 +182,7 @@ export default function App() {
         <Route path="/labo/protocole/:protocoleId" element={<RouteProtegee session={session}><LaboProtocoleDetail /></RouteProtegee>} />
         <Route path="/labo/aeac9309-185f-4f2c-81b2-dfed3d4e55aa" element={<RouteProtegee session={session}><LaboUrologie /></RouteProtegee>} />
         <Route path="/labo/urologie/valeurs" element={<RouteProtegee session={session}><LaboUrologieValeurs /></RouteProtegee>} />
-        <Route path="/labo/urologie/sediments" element={<RouteProtegee session={session}><LaboUrologieSediments /></RouteProtegee>} />
+        <Route path="/labo/urologie/sediments" element={<RouteProtegee session={session}><ProGate><LaboUrologieSediments /></ProGate></RouteProtegee>} />
         <Route path="/labo/2e0222f2-5733-4d01-bc99-8c380bec5abe" element={<RouteProtegee session={session}><LaboParasitologie /></RouteProtegee>} />
         <Route path="/labo/parasitologie/oeufs" element={<RouteProtegee session={session}><LaboParasitologieOeufs /></RouteProtegee>} />
         <Route path="/labo/parasitologie/hotes" element={<RouteProtegee session={session}><LaboParasitologieHotes /></RouteProtegee>} />
@@ -191,6 +200,8 @@ export default function App() {
         <Route path="/labo/microbiologie/antibiogramme" element={<RouteProtegee session={session}><LaMicrobiologieAntibiogramme /></RouteProtegee>} />
         <Route path="/labo/parasitologie/externes" element={<RouteProtegee session={session}><LaParasitologieExternes /></RouteProtegee>} />
         <Route path="/labo/microbiologie/bacteries" element={<RouteProtegee session={session}><LaMicrobiologieBacteries /></RouteProtegee>} />
+        <Route path="/labo/parasitologie/dipylidium" element={<RouteProtegee session={session}><ProGate><LaboParasitologieDipylidium /></ProGate></RouteProtegee>} />
+        <Route path="/labo/parasitologie/puce" element={<RouteProtegee session={session}><ProGate><LaboParasitologiePuce /></ProGate></RouteProtegee>} />
         <Route path="/labo/:categorieId" element={<RouteProtegee session={session}><LaboProtocoles /></RouteProtegee>} />
 
         {/* PROFIL */}
@@ -206,6 +217,7 @@ export default function App() {
         <Route path="*" element={<Navigate to={session ? '/accueil' : '/connexion'} replace />} />
 
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+     </ProfilProvider> 
   )
 }

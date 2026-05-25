@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useContext } from 'react'
 import { TitreContext } from '../App'
+import { useProfil } from '../context/ProfilContext'
 
 export default function LaboProtocoles() {
   const navigate = useNavigate()
@@ -12,6 +13,8 @@ export default function LaboProtocoles() {
   const [loading, setLoading] = useState(true)
   const { setTitreCustom } = useContext(TitreContext)
   const [showProMsg, setShowProMsg] = useState(false)
+  const { estPro } = useProfil()
+  console.log('estPro labo:', estPro)
 
   useEffect(() => {
   chargerDonnees()
@@ -63,7 +66,7 @@ export default function LaboProtocoles() {
   <button
     className="labo-btn-ajouter"
     style={{ width: '100%' }}
-    onClick={() => setShowProMsg(true)}
+    onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${categorieId}`) : setShowProMsg(true)}
   >
     <i className="ti ti-plus"></i> Ajouter un protocole
   </button>

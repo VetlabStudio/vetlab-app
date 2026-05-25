@@ -48,6 +48,10 @@ const titres = {
   '/labo/microbiologie/cultures': 'Interprétation des cultures',
   '/labo/microbiologie/antibiogramme': 'Antibiogramme',
   '/labo/microbiologie/bacteries': 'Bactéries courantes',
+  '/drogues/ajouter': 'Ajouter un médicament',
+  '/labo/parasitologie/dipylidium': 'Dipylidium caninum',
+  '/labo/parasitologie/puce': 'Cycle de vie de la puce',
+  
   }
 
 export default function Header() {

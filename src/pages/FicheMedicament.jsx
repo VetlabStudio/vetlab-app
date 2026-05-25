@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase'
 import IconesEspeces from '../components/IconesEspeces'
 import { useContext } from 'react'
 import { TitreContext } from '../App'
+import { useProfil } from '../context/ProfilContext'
+
 
 // ─── DÉMARCHE DE CALCUL ───────────────────────────────────
 function DemarcheCollapsible({ resultat, poids, unitePoids }) {
@@ -97,6 +99,8 @@ const { setTitreCustom } = useContext(TitreContext)
   const [resultat, setResultat] = useState(null)
   const [horsPlage, setHorsPlage] = useState(false)
   const [showProMsg, setShowProMsg] = useState(false)
+  const { estPro } = useProfil()
+  console.log('estPro:', estPro)
 
 useEffect(() => {
   chargerDonnees()
@@ -166,11 +170,16 @@ useEffect(() => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
-      const [{ data: med }, { data: fav }, { data: profil }] = await Promise.all([
-        supabase.from('medicaments').select('*').eq('id', id).single(),
-        supabase.from('favoris').select('id').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
-        supabase.from('profiles').select('role').eq('id', user.id).single(),
-      ])
+      const [{ data: medBase }, { data: medCustomParId }, { data: medCustomDirect }, { data: fav }, { data: profil }] = await Promise.all([
+  supabase.from('medicaments').select('*').eq('id', id).maybeSingle(),
+  supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
+  supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('id', id).maybeSingle(),
+  supabase.from('favoris').select('id').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
+  supabase.from('profiles').select('role').eq('id', user.id).single(),
+])
+
+const medCustom = medCustomParId || medCustomDirect
+const med = (estPro && medCustom) ? medCustom : (medBase || medCustomDirect)
 
       if (med) {
         setMedicament(med)
@@ -224,9 +233,9 @@ useEffect(() => {
   {medicament.especes?.length === 2 ? 'Chiens et Chats'
     : medicament.especes?.includes('chien') ? 'Chien' : 'Chat'}
         </span>
-        <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => setShowProMsg(true)}>
-    <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Personnaliser
-  </button>
+        <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => estPro ? navigate(`/drogues/fiche/${id}/personnaliser`) : setShowProMsg(true)}>
+  <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Personnaliser
+</button>
       </div>
 
       <div className="fiche-scroll">

@@ -98,7 +98,7 @@ export default function LaboNouveauProtocole() {
             visible: true,
           })
         }
-        navigate(`/labo/protocole/${proto.id}?type=user`)
+        navigate(`/labo/protocole/${proto.id}?type=user`, { replace: true })
       }
     } catch (err) {
       console.error('Erreur sauvegarde:', err)
@@ -119,7 +119,7 @@ export default function LaboNouveauProtocole() {
               type="text"
               value={titre}
               onChange={e => setTitre(e.target.value)}
-              placeholder="Ex: Coprologie par flottaison"
+              placeholder="Ex: Coprologie par flottation"
             />
           </div>
         </div>

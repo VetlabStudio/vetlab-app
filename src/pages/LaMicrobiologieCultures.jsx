@@ -2,15 +2,15 @@ const RESULTATS = [
   { resultat: 'Croissance absente', interpretation: 'Absence de bactéries cultivables. Peut indiquer une infection virale, fongique, ou un prélèvement sous antibiotiques.', couleur: 'var(--primary)' },
   { resultat: 'Croissance légère (< 10³ UFC/mL)', interpretation: 'Souvent considéré comme contaminant pour les urines. Peut être significatif pour des prélèvements stériles (LCR, sang).', couleur: 'var(--accent-gold)' },
   { resultat: 'Croissance modérée (10³–10⁵ UFC/mL)', interpretation: 'Significatif pour les urines selon les signes cliniques. À corréler avec la cytologie.', couleur: 'var(--accent-gold)' },
-  { resultat: 'Croissance abondante (> 10⁵ UFC/mL)', interpretation: 'Significatif — infection bactérienne confirmée pour les urines par cystocentèse.', couleur: 'var(--accent-red)' },
+  { resultat: 'Croissance abondante (> 10⁵ UFC/mL)', interpretation: 'Significatif : infection bactérienne confirmée pour les urines par cystocentèse.', couleur: 'var(--accent-red)' },
 ]
 
 const MILIEUX = [
-  { milieu: 'Gélose sang (GS)', description: 'Milieu universel — permet la croissance de la majorité des bactéries. Permet d\'observer l\'hémolyse (α, β, γ).' },
+  { milieu: 'Gélose sang (GS)', description: 'Milieu universel : permet la croissance de la majorité des bactéries. Permet d\'observer l\'hémolyse (α, β, γ).' },
   { milieu: 'MacConkey', description: 'Sélectif pour les entérobactéries (gram -). Différencie les fermenteurs de lactose (rose) des non-fermenteurs (incolore).' },
   { milieu: 'Sabouraud', description: 'Dédié aux champignons et levures. Utilisé pour la dermatophytose et les infections fongiques.' },
-  { milieu: 'Gélose chocolat', description: 'Enrichi — pour les bactéries fastidieuses (Haemophilus, Pasteurella). Utile pour les prélèvements respiratoires.' },
-  { milieu: 'CLED (urines)', description: 'Milieu différentiel pour les urines — permet de quantifier et différencier les bactéries urinaires.' },
+  { milieu: 'Gélose chocolat', description: 'Enrichi : pour les bactéries fastidieuses (Haemophilus, Pasteurella). Utile pour les prélèvements respiratoires.' },
+  { milieu: 'CLED (urines)', description: 'Milieu différentiel pour les urines : permet de quantifier et différencier les bactéries urinaires.' },
 ]
 
 export default function LaMicrobiologieCultures() {
@@ -49,9 +49,9 @@ export default function LaMicrobiologieCultures() {
         <h2 className="labo-ref-titre">Hémolyse sur gélose sang</h2>
         <div className="labo-etape-card">
           {[
-            { type: 'Hémolyse β (complète)', description: 'Zone claire autour des colonies — lyse totale des hématies. Ex: Streptococcus β-hémolytique, Staphylococcus aureus.', couleur: 'var(--accent-red)' },
-            { type: 'Hémolyse α (partielle)', description: 'Halo verdâtre autour des colonies — oxydation partielle. Ex: Streptococcus viridans, Enterococcus.', couleur: 'var(--accent-gold)' },
-            { type: 'Hémolyse γ (absence)', description: 'Pas de halo — pas de lyse des hématies. Ex: Staphylococcus epidermidis.', couleur: 'var(--primary)' },
+            { type: 'Hémolyse β (complète)', description: 'Zone claire autour des colonies : lyse totale des hématies. Ex: Streptococcus β-hémolytique, Staphylococcus aureus.', couleur: 'var(--accent-red)' },
+            { type: 'Hémolyse α (partielle)', description: 'Halo verdâtre autour des colonies : oxydation partielle. Ex: Streptococcus viridans, Enterococcus.', couleur: 'var(--accent-gold)' },
+            { type: 'Hémolyse γ (absence)', description: 'Pas de halo : pas de lyse des hématies. Ex: Staphylococcus epidermidis.', couleur: 'var(--primary)' },
           ].map((h, i) => (
             <div key={i} style={{ padding: '10px 14px', borderBottom: i < 2 ? '1px solid var(--border)' : 'none', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
               <span style={{ width: 12, height: 12, borderRadius: '50%', background: h.couleur, flexShrink: 0, marginTop: 3 }}></span>

@@ -11,7 +11,7 @@ const MODES = [
     id: 'concentration',
     label: 'Concentration',
     description: 'Calculer une nouvelle concentration',
-    formule: 'C1V1 = C2V2',
+    formule: 'C1V1 = <span style="color: var(--accent-gold)">C2</span>V2',
     icone: 'ti-test-pipe',
   },
   {
@@ -25,7 +25,7 @@ const MODES = [
     id: 'volume',
     label: 'Volume',
     description: 'Calculer le volume de départ',
-    formule: 'C1V1 = C2V2',
+    formule: 'C1<span style="color: var(--accent-gold)">V1</span> = C2V2',
     icone: 'ti-flask',
   },
 ]
@@ -95,7 +95,7 @@ export default function Dilution() {
               <i className={`ti ${m.icone}`}></i>
               <span className="dilution-mode-label">{m.label}</span>
               <span className="dilution-mode-desc">{m.description}</span>
-              <span className="dilution-mode-formule">{m.formule}</span>
+              <span className="dilution-mode-formule" dangerouslySetInnerHTML={{ __html: m.formule }} />
             </button>
           ))}
         </div>

@@ -2017,6 +2017,7 @@ input[type="number"] {
   color: white;
   cursor: pointer;
   transition: opacity 0.15s;
+  margin-top:20px;
 }
 
 .btn-supprimer-medicament:active {
@@ -3222,6 +3223,11 @@ input[type="number"] {
   gap: 8px;
   justify-content: flex-end;
 }
+.labo-actions-bas div {
+   display: flex;
+  gap: 8px;
+  justify-content: flex-end !important;
+}
 
 .labo-btn-primary {
   padding: 10px 18px;
@@ -3268,7 +3274,26 @@ input[type="number"] {
   cursor: pointer;
   padding: 4px;
 }
+.popup-actions-centrees {
+  display: flex;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.popup-actions-centrees .btn-supprimer-medicament {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent-red);
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  margin-top:0px;
 
+}
 /* ─── ÉTAPES ─────────────────────────────────── */
 .labo-materiel-liste {
   display: flex;
