@@ -51,7 +51,10 @@ const titres = {
   '/drogues/ajouter': 'Ajouter un médicament',
   '/labo/parasitologie/dipylidium': 'Dipylidium caninum',
   '/labo/parasitologie/puce': 'Cycle de vie de la puce',
-  
+  '/labo/biochimie/organes': 'Tests par organe',
+  '/labo/biochimie/immuno': 'Tests immunologiques',
+  '/labo/microbiologie/colonies': 'Colonies bactériennes',
+  '/labo/microbiologie/levures': 'Caractéristiques des levures',
   }
 
 export default function Header() {

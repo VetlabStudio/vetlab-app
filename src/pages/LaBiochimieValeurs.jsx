@@ -56,7 +56,7 @@ const SECTIONS = [
 export default function LaBiochimieValeurs() {
   return (
     <div className="labo-detail-page">
-      <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: '0 0 8px 0', lineHeight: 1.5 }}>
+      <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: '0 0 8px 0', lineHeight: 1.5 }}>
         Valeurs indicatives; toujours se référer aux intervalles de référence de ton laboratoire.
       </p>
 
@@ -74,7 +74,7 @@ export default function LaBiochimieValeurs() {
                 <span>
                   {p.nom}
                   <br />
-                  <span style={{ fontSize: 10, color: 'var(--text-hint)' }}>{p.unite}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>{p.unite}</span>
                 </span>
                 <span className="labo-ref-normal">{p.chien}</span>
                 <span className="labo-ref-normal">{p.chat}</span>

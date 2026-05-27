@@ -9,6 +9,8 @@ const CATEGORIE_ID = '4efe71ce-bfa9-4ea9-a8af-ecbd6dc97320'
 const REFERENCES = [
   { id: 'tubes', label: 'Choix du tube', icone: 'ti-test-pipe', route: '/labo/biochimie/tubes' },
   { id: 'valeurs', label: 'Valeurs normales', icone: 'ti-clipboard-list', route: '/labo/biochimie/valeurs' },
+  { id: 'organes', label: 'Tests par organe', icone: 'ti-heart-rate-monitor', route: '/labo/biochimie/organes', pro: true },
+  { id: 'immuno', label: 'Tests immunologiques', icone: 'ti-shield-check', route: '/labo/biochimie/immuno', pro: true },
 ]
 
 export default function LaBiochimie() {

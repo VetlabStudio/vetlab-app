@@ -3800,7 +3800,7 @@ input[type="number"] {
 }
 
 .labo-tube-note {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-hint);
   background: var(--bg);
   padding: 8px 14px;
@@ -3816,4 +3816,157 @@ input[type="number"] {
   color: var(--primary);
   flex-shrink: 0;
   margin-top: 1px;
+}
+/* ─── BIOCHIMIE ORGANES ──────────────────────── */
+.bio-organe-section {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 50px;
+  padding-left:20px;
+  background: white;
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.bio-organe-droite {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.bio-organe-titre {
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+.bio-organe-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  padding:15px;
+}
+.bio-organe-image-wrapper {
+  width: 90px;
+  height: 90px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(134, 202, 183, 0.1);
+  border-radius: 99px;
+}
+
+.bio-organe-titre {
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+.bio-tests-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.bio-test-btn {
+  background: rgba(134, 202, 183, 0.1);
+  border: 2px solid white;
+  border-radius: 14px;
+  padding: 15px 30px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bio-popup-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.bio-popup-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.bio-popup-label--primaire { color: var(--primary); }
+.bio-popup-label--eleve { color: var(--accent-red); }
+.bio-popup-label--bas { color: var(--primary-light); }
+
+.bio-popup-texte {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.bio-popup-ref {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 2px 0 0;
+}
+
+.bio-popup-ref img {
+  width: 18px;
+  height: 18px;
+}
+/* ─── COLONIES BACTÉRIENNES ──────────────────── */
+.colonies-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.colonie-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.colonie-image-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.colonie-image {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.colonie-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+/* ─── PRÉLÈVEMENT 3 COLONNES ─────────────────── */
+.labo-ref-header--3col-prelevement {
+  grid-template-columns: 1.2fr 1.2fr 1.4fr;
+}
+.labo-ref-ligne--3col-prelevement {
+  grid-template-columns: 1.2fr 1.2fr 1.4fr;
+  font-size: 12px;
+}
+/* ─── LEVURES 4 COLONNES ─────────────────────── */
+.labo-ref-header--4col-levures {
+  grid-template-columns: 1fr 1.2fr 1.4fr 1.2fr;
+}
+.labo-ref-ligne--4col-levures {
+  grid-template-columns: 1fr 1.2fr 1.4fr 1.2fr;
+  font-size: 12px;
 }

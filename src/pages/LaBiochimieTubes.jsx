@@ -43,7 +43,7 @@ export default function LaBiochimieTubes() {
 
       <div className="labo-ref-section">
         <h2 className="labo-ref-titre">Choix du tube selon l'analyse</h2>
-        <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: '0 0 8px 0', lineHeight: 1.5 }}>
+        <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: '0 0 8px 0', lineHeight: 1.5 }}>
           Toujours vérifier les exigences spécifiques de ton laboratoire. L'ordre de remplissage recommandé : tube bleu → rouge → vert → violet.
         </p>
       </div>

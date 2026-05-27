@@ -61,6 +61,10 @@ import AjouterMedicament from './pages/AjouterMedicament'
 import LaboParasitologieDipylidium from './pages/LaboParasitologieDipylidium'
 import LaboParasitologiePuce from './pages/LaboParasitologiePuce'
 import ProGate from './components/ProGate'
+import LaBiochimieOrganes from './pages/LaBiochimieOrganes'
+import LaBiochimieImmuno from './pages/LaBiochimieImmuno'
+import LaMicrobiologieColonies from './pages/LaMicrobiologieColonies'
+import LaMicrobiologieLevures from './pages/LaMicrobiologieLevures'
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -202,6 +206,10 @@ export default function App() {
         <Route path="/labo/microbiologie/bacteries" element={<RouteProtegee session={session}><LaMicrobiologieBacteries /></RouteProtegee>} />
         <Route path="/labo/parasitologie/dipylidium" element={<RouteProtegee session={session}><ProGate><LaboParasitologieDipylidium /></ProGate></RouteProtegee>} />
         <Route path="/labo/parasitologie/puce" element={<RouteProtegee session={session}><ProGate><LaboParasitologiePuce /></ProGate></RouteProtegee>} />
+        <Route path="/labo/biochimie/immuno" element={<RouteProtegee session={session}><ProGate><LaBiochimieImmuno /></ProGate></RouteProtegee>} />
+        <Route path="/labo/biochimie/organes" element={<RouteProtegee session={session}><ProGate><LaBiochimieOrganes /></ProGate></RouteProtegee>} />
+        <Route path="/labo/microbiologie/colonies" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieColonies /></ProGate></RouteProtegee>} /> 
+        <Route path="/labo/microbiologie/levures" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieLevures /></ProGate></RouteProtegee>} />  
         <Route path="/labo/:categorieId" element={<RouteProtegee session={session}><LaboProtocoles /></RouteProtegee>} />
 
         {/* PROFIL */}
