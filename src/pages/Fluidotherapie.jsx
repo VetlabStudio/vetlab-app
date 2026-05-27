@@ -427,7 +427,7 @@ const debitHoraire = useMemo(() => {
 
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
-          Valide toujours le dosage avec le vétérinaire responsable avant d'administrer. Ce calculateur est un outil d'aide — ton jugement clinique prime en tout temps.
+          Valide toujours le dosage avec le vétérinaire responsable avant d'administrer. Ce calculateur est un outil d'aide, ton jugement clinique prime en tout temps.
         </div>
 
       </div>

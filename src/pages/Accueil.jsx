@@ -82,7 +82,7 @@ export default function Accueil() {
 
       {/* SECTION DROGUES */}
       <section className="accueil-v2-section">
-        <h2 className="accueil-v2-titre-section">Médicaments</h2>
+        <h2 className="accueil-v2-titre-section">Pharmacologie</h2>
         <div className="accueil-v2-drogues-grid">
           {DROGUES.map(d => (
             <button
