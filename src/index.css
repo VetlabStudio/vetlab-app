@@ -2635,6 +2635,8 @@ input[type="number"] {
   white-space: nowrap;
   flex-shrink: 0;
   margin-top: 1px;
+  min-width: 72px;
+  text-align: center;
 }
 
 .mise-bas-texte {

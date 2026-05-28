@@ -38,9 +38,20 @@ const INFO_GESTATION = {
 }
 
 function ajouterJours(date, jours) {
-  const d = new Date(date)
+  const [annee, mois, jour] = typeof date === 'string'
+    ? date.split('-').map(Number)
+    : [date.getFullYear(), date.getMonth() + 1, date.getDate()]
+  const d = new Date(annee, mois - 1, jour)
   d.setDate(d.getDate() + jours)
   return d
+}
+
+function extraireJours(joursStr) {
+  const str = joursStr.replace('~', '').replace('Avant ', '')
+  const matches = str.match(/\d+/g)
+  if (!matches) return null
+  if (matches.length >= 2) return { min: parseInt(matches[0]), max: parseInt(matches[1]) }
+  return { min: parseInt(matches[0]), max: null }
 }
 
 function formaterDate(date) {
@@ -60,7 +71,8 @@ export default function DateMiseBas() {
 
   const dates = useMemo(() => {
     if (!dateAccouplement) return null
-    const base = new Date(dateAccouplement)
+    const [a, m, j] = dateAccouplement.split('-').map(Number)
+const base = new Date(a, m - 1, j)
     return {
       tot:     ajouterJours(base, info.dureeMin),
       moyenne: ajouterJours(base, info.dureeMoyenne),
@@ -144,12 +156,28 @@ export default function DateMiseBas() {
         <div className="mise-bas-section">
           <h3 className="mise-bas-titre">Suivi de la gestation — {espece === 'chien' ? 'Chien' : 'Chat'}</h3>
           <div className="mise-bas-etapes">
-            {info.etapes.map((e, i) => (
-              <div key={i} className="mise-bas-etape">
-                <span className="mise-bas-jours">{e.jours} j</span>
-                <span className="mise-bas-texte">{e.texte}</span>
-              </div>
-            ))}
+            {info.etapes.map((e, i) => {
+  const joursRange = extraireJours(e.jours)
+const [a2, m2, j2] = dateAccouplement.split('-').map(Number)
+const dateEtape = dates && joursRange
+  ? joursRange.max
+    ? `${ajouterJours(new Date(a2, m2 - 1, j2), joursRange.min).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })} au ${ajouterJours(new Date(a2, m2 - 1, j2), joursRange.max).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })}`
+    : ajouterJours(new Date(a2, m2 - 1, j2), joursRange.min).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
+  : null
+  return (
+    <div key={i} className="mise-bas-etape">
+      <span className="mise-bas-jours">{e.jours} j</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <span className="mise-bas-texte">{e.texte}</span>
+        {dateEtape && (
+  <span style={{ fontSize: 12, color: 'var(--primary)', fontWeight: 600 }}>
+    {dateEtape}
+  </span>
+)}
+      </div>
+    </div>
+  )
+})}
           </div>
           <p className="mise-bas-note">
             <i className="ti ti-info-circle"></i>
