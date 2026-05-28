@@ -45,14 +45,14 @@ const TECHNIQUES = [
       'Déposer le matériel directement sur une lame.',
       'Poser une lamelle avec une goutte d\'huile minérale ou colorer selon l\'objectif.',
     ],
-    conseils: 'Grattage superficiel pour les éléments fongiques — grattage profond (jusqu\'au saignement) pour la recherche de Demodex.',
+    conseils: 'Grattage superficiel pour les éléments fongiques, grattage profond (jusqu\'au saignement) pour la recherche de Demodex.',
   },
 ]
 
 const FIXATION = [
   { type: 'Air libre (séchage rapide)', usage: 'Colorations Diff-Quik, May-Grünwald Giemsa. Standard pour la plupart des cytologies.', recommande: true },
   { type: 'Fixateur humide (alcool 95%)', usage: 'Coloration de Papanicolaou. Réservé aux cytologies gynécologiques ou respiratoires.', recommande: false },
-  { type: 'Formol 10%', usage: 'À éviter pour la cytologie — réservé aux biopsies histologiques.', recommande: false },
+  { type: 'Formol 10%', usage: 'À éviter pour la cytologie : réservé aux biopsies histologiques.', recommande: false },
 ]
 
 export default function LaCytologiePrelevement() {
@@ -126,10 +126,10 @@ export default function LaCytologiePrelevement() {
         <h2 className="labo-ref-titre">Erreurs pré-analytiques fréquentes</h2>
         <div className="labo-etape-card">
           {[
-            'Étalement trop épais — cellules superposées, morphologie difficile à interpréter',
-            'Séchage trop lent — artéfacts cellulaires, mauvaise coloration',
-            'Contamination sanguine excessive — dilution du matériel diagnostique',
-            'Délai trop long avant fixation — lyse cellulaire et dégradation',
+            'Étalement trop épais = cellules superposées, morphologie difficile à interpréter',
+            'Séchage trop lent = artéfacts cellulaires, mauvaise coloration',
+            'Contamination sanguine excessive = dilution du matériel diagnostique',
+            'Délai trop long avant fixation = lyse cellulaire et dégradation',
             'Lame étiquetée incorrectement ou illisiblement',
           ].map((e, i) => (
             <div key={i} className="labo-materiel-item" style={{ borderBottom: i < 4 ? '1px solid var(--border)' : 'none' }}>

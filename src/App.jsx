@@ -65,6 +65,7 @@ import LaBiochimieOrganes from './pages/LaBiochimieOrganes'
 import LaBiochimieImmuno from './pages/LaBiochimieImmuno'
 import LaMicrobiologieColonies from './pages/LaMicrobiologieColonies'
 import LaMicrobiologieLevures from './pages/LaMicrobiologieLevures'
+import Toxicologie from './pages/Toxicologie'
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -178,6 +179,7 @@ export default function App() {
         <Route path="/drogues/mes-drogues" element={<RouteProtegee session={session}><MesDrogues /></RouteProtegee>} />
         <Route path="/drogues/ajouter" element={<RouteProtegee session={session}><AjouterMedicament /></RouteProtegee>} />
         <Route path="/drogues/fiche/:id" element={<RouteProtegee session={session}><FicheMedicament /></RouteProtegee>} />
+        <Route path="/drogues/toxicologie" element={<RouteProtegee session={session}><ProGate><Toxicologie /></ProGate></RouteProtegee>} />
         <Route path="/drogues/fiche/:id/personnaliser" element={<RouteProtegee session={session}><MedicamentCustomForm /></RouteProtegee>} />
 
         {/* LABO */}

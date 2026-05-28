@@ -1536,16 +1536,16 @@ input  { font-family: var(--font); }
 }
 
 .popup-especes {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .popup-espece-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-primary);
   cursor: pointer;
@@ -3968,5 +3968,13 @@ input[type="number"] {
 }
 .labo-ref-ligne--4col-levures {
   grid-template-columns: 1fr 1.2fr 1.4fr 1.2fr;
+  font-size: 12px;
+}
+/* ─── CULTURES 3 COLONNES ────────────────────── */
+.labo-ref-header--3col-cultures {
+  grid-template-columns: 1fr 1.4fr 1.6fr;
+}
+.labo-ref-ligne--3col-cultures {
+  grid-template-columns: 1fr 1.4fr 1.6fr;
   font-size: 12px;
 }

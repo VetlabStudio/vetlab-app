@@ -320,15 +320,34 @@ export default function AjouterMedicament() {
             </div>
             <div className="popup-especes">
               {[
-                { id: 'chien', label: 'Chien', icone: '/icone-chien.svg' },
-                { id: 'chat',  label: 'Chat',  icone: '/icone-chat.svg'  },
-              ].map(esp => (
-                <label key={esp.id} className="popup-espece-item">
-                  <input type="checkbox" checked={form.especes.includes(esp.id)} onChange={() => toggleEspece(esp.id)} />
-                  <img src={esp.icone} alt={esp.label} className="espece-icone-popup" />
-                  <span>{esp.label}</span>
-                </label>
-              ))}
+  { id: 'chien',        label: 'Chien',              icone: '/icone-chien.svg' },
+  { id: 'chat',         label: 'Chat',               icone: '/icone-chat.svg' },
+  { id: 'cheval',       label: 'Cheval',             icone: '/icone-cheval.png' },
+  { id: 'vache',        label: 'Vache',              icone: '/icone-vache.png' },
+  { id: 'mouton',       label: 'Mouton',             icone: '/icone-mouton.png' },
+  { id: 'lama',         label: 'Lama',               icone: '/icone-lama.png' },
+  { id: 'lapin',        label: 'Lapin',              icone: null },
+  { id: 'furet',        label: 'Furet',              icone: null },
+  { id: 'oiseau',       label: 'Oiseaux',            icone: '/icone-oiseau.png' },
+  { id: 'serpent',      label: 'Serpent',            icone: '/icone-serpent.png' },
+  { id: 'lezard',       label: 'Lézard',             icone: '/icone-lezard.png' },
+  { id: 'tortue',       label: 'Tortue',             icone: null },
+  { id: 'poisson',      label: 'Poissons',           icone: null },
+  { id: 'amphibien',    label: 'Amphibiens',         icone: '/icone-grenouille.png' },
+  { id: 'rongeur',      label: 'Rongeurs',           icone: '/icone-rongeurs.png' },
+  { id: 'chinchilla',   label: 'Chinchilla',         icone: null },
+  { id: 'cobaye',       label: 'Cochon d\'Inde',     icone: '/icone-cobaye.png' },
+  { id: 'herisson',     label: 'Hérisson',           icone: null },
+].map(esp => (
+  <label key={esp.id} className="popup-espece-item">
+    <input type="checkbox" checked={form.especes.includes(esp.id)} onChange={() => toggleEspece(esp.id)} />
+    {esp.icone
+      ? <img src={esp.icone} alt={esp.label} className="espece-icone-popup" />
+      : <div className="espece-icone-popup espece-icone-placeholder"></div>
+    }
+    <span>{esp.label}</span>
+  </label>
+))}
             </div>
             <button className="btn-sauvegarder" onClick={() => setPopupEspece(false)}>Confirmer</button>
           </div>

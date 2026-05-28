@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import BadgePro from '../components/BadgePro'
 
 const CALCULATEURS = [
   { id: 'fluido',      label: 'Fluido',              icone: '/icone-fluido.svg',      route: '/calculateurs/fluido' },
@@ -26,7 +27,8 @@ const DROGUES = [
   { id: 'neurologiques',     label: 'Neurologiques',                  route: '/drogues/neurologiques',  accent: false },
   { id: 'respiratoires',     label: 'Respiratoires',                  route: '/drogues/respiratoires',  accent: false },
   { id: 'antagonistes',      label: 'Antagonistes',                   route: '/drogues/antagonistes',   accent: false },
-  { id: 'mes-drogues',       label: 'Médicaments favoris',            route: '/drogues/mes-drogues',    accent: false, favori: true },
+  { id: 'mes-drogues', label: 'Médicaments favoris', route: '/drogues/mes-drogues', accent: false, favori: true },
+  { id: 'toxicologie', label: 'Toxicologie', route: '/drogues/toxicologie', accent: false, pro: true },
 ]
 const LABO = [
   { id: 'biochimie',     label: 'Biochimie',     route: '/labo/4efe71ce-bfa9-4ea9-a8af-ecbd6dc97320' },
@@ -86,15 +88,17 @@ export default function Accueil() {
         <div className="accueil-v2-drogues-grid">
           {DROGUES.map(d => (
             <button
-              key={d.id}
-              className={`accueil-v2-drogue-item ${d.accent ? 'accent' : ''} ${d.favori ? 'favori' : ''}`}
-              onClick={() => navigate(d.route)}
-            >
-              {d.favori && <i className="ti ti-star" style={{ fontSize: 13, marginRight: 4 }}></i>}
-              {d.accent && <i className="ti ti-alert-triangle" style={{ fontSize: 13, marginRight: 4 }}></i>}
-              <span>{d.label}</span>
-              <i className="ti ti-chevron-right accueil-v2-chevron"></i>
-            </button>
+  key={d.id}
+  className={`accueil-v2-drogue-item ${d.accent ? 'accent' : ''} ${d.favori ? 'favori' : ''}`}
+  onClick={() => navigate(d.route)}
+  style={{ position: 'relative' }}
+>
+  {d.favori && <i className="ti ti-star" style={{ fontSize: 13, marginRight: 4 }}></i>}
+  {d.accent && <i className="ti ti-alert-triangle" style={{ fontSize: 13, marginRight: 4 }}></i>}
+  <span>{d.label}</span>
+  <i className="ti ti-chevron-right accueil-v2-chevron"></i>
+  {d.pro && <BadgePro />}
+</button>
           ))}
         </div>
       </section>

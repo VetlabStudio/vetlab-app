@@ -55,6 +55,7 @@ const titres = {
   '/labo/biochimie/immuno': 'Tests immunologiques',
   '/labo/microbiologie/colonies': 'Colonies bactériennes',
   '/labo/microbiologie/levures': 'Caractéristiques des levures',
+  '/drogues/toxicologie': 'Toxicologie',
   }
 
 export default function Header() {
