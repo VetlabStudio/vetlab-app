@@ -89,33 +89,58 @@ export default function LaboProtocoleDetail() {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (type === 'base') {
-    // Créer une copie personnelle
-    const { data: protoUser } = await supabase
+  // Vérifier si une copie existe déjà
+  const { data: existant } = await supabase
+    .from('labo_protocoles_user')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('protocole_base_id', protocoleId)
+    .maybeSingle()
+
+  let protoUser = existant
+
+  if (!existant) {
+    const { data: nouveau } = await supabase
       .from('labo_protocoles_user')
       .insert({
         user_id: user.id,
         categorie_id: protocole.categorie_id,
+        protocole_base_id: protocoleId,
         titre: protocole.titre,
         description: materiel.filter(m => m.trim()).join('\n'),
       })
       .select()
       .single()
+    protoUser = nouveau
+  } else {
+    await supabase
+      .from('labo_protocoles_user')
+      .update({
+        titre: protocole.titre,
+        description: materiel.filter(m => m.trim()).join('\n'),
+      })
+      .eq('id', existant.id)
+  }
 
     if (protoUser) {
-      for (const etape of etapes) {
-        await supabase.from('labo_etapes_user_custom').insert({
-          protocole_user_id: protoUser.id,
-          ordre: etape.ordre,
-          titre: etape.titre,
-          description: etape.description,
-          photo_url: etape.photo_url,
-          visible: etape.visible ?? true,
-        })
-      }
-      setModeEdit(false)
-      navigate(`/labo/protocole/${protoUser.id}?type=user`, { replace: true })
-      return
-    }
+  if (existant) {
+    // Supprimer les anciennes étapes et réinsérer
+    await supabase.from('labo_etapes_user_custom').delete().eq('protocole_user_id', protoUser.id)
+  }
+  for (const etape of etapes) {
+    await supabase.from('labo_etapes_user_custom').insert({
+      protocole_user_id: protoUser.id,
+      ordre: etape.ordre,
+      titre: etape.titre,
+      description: etape.description,
+      photo_url: etape.photo_url,
+      visible: etape.visible ?? true,
+    })
+  }
+  setModeEdit(false)
+  navigate(`/labo/protocole/${protoUser.id}?type=user`, { replace: true })
+  return
+}
   } else {
     await supabase.from('labo_protocoles_user').update({
       titre: protocole.titre,

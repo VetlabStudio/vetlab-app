@@ -31,10 +31,11 @@ export default function LaCytologie() {
       supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', CATEGORIE_ID).order('ordre'),
     ])
 
-    setProtocoles([
-      ...(protos || []).map(p => ({ ...p, type: 'base' })),
-      ...(protosUser || []).map(p => ({ ...p, type: 'user' })),
-    ])
+    const protosBaseIds = (protosUser || []).map(p => p.protocole_base_id).filter(Boolean)
+setProtocoles([
+  ...(protos || []).filter(p => !protosBaseIds.includes(p.id)).map(p => ({ ...p, type: 'base' })),
+  ...(protosUser || []).map(p => ({ ...p, type: 'user' })),
+])
     setLoading(false)
   }
 
