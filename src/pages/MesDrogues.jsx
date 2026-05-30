@@ -31,17 +31,25 @@ if (!favs || favs.length === 0) {
 const idsBase = favs.map(f => f.medicament_id).filter(Boolean)
 const idsCustom = favs.map(f => f.custom_medicament_id).filter(Boolean)
 
-const [{ data: meds }, { data: medsCustom }] = await Promise.all([
+const [{ data: meds }, { data: medsCustom }, { data: medsCustomBase }] = await Promise.all([
   idsBase.length > 0
     ? supabase.from('medicaments').select('*').in('id', idsBase).order('nom', { ascending: true })
     : { data: [] },
   idsCustom.length > 0
     ? supabase.from('medicaments_custom').select('*').in('id', idsCustom).order('nom', { ascending: true })
     : { data: [] },
+  idsBase.length > 0
+    ? supabase.from('medicaments_custom').select('*').eq('user_id', user.id).in('medicament_id', idsBase).order('nom', { ascending: true })
+    : { data: [] },
 ])
 
+const medsBaseAvecCustom = (meds || []).map(m => {
+  const custom = (medsCustomBase || []).find(c => c.medicament_id === m.id)
+  return custom ? { ...custom, estCustom: true } : m
+})
+
 setFavoris([
-  ...(meds || []),
+  ...medsBaseAvecCustom,
   ...(medsCustom || []).map(m => ({ ...m, estCustom: true })),
 ].sort((a, b) => a.nom.localeCompare(b.nom)))
     } catch (err) {

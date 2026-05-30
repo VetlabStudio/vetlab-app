@@ -5,23 +5,23 @@ const ESPECES_CONFIG = {
   vache:      { icone: '/icone-vache.png', label: 'Vache' },
   mouton:     { icone: '/icone-mouton.png', label: 'Mouton' },
   lama:       { icone: '/icone-lama.png', label: 'Lama' },
-  lapin:      { icone: null, label: 'Lapin' },
-  furet:      { icone: null, label: 'Furet' },
+  lapin:      { icone: '/icone-lapin.png', label: 'Lapin' },
+  furet:      { icone: '/icone-furet.png', label: 'Furet' },
   oiseau:     { icone: '/icone-oiseau.png', label: 'Oiseau' },
   serpent:    { icone: '/icone-serpent.png', label: 'Serpent' },
   lezard:     { icone: '/icone-lezard.png', label: 'Lézard' },
-  tortue:     { icone: null, label: 'Tortue' },
-  poisson:    { icone: null, label: 'Poisson' },
+  tortue:     { icone: '/icone-tortue.png', label: 'Tortue' },
+  poisson:    { icone: '/icone-poisson.png', label: 'Poisson' },
   amphibien:  { icone: '/icone-grenouille.png', label: 'Amphibien' },
   rongeur:    { icone: '/icone-rongeurs.png', label: 'Rongeur' },
-  chinchilla: { icone: null, label: 'Chinchilla' },
-  cobaye:     { icone: '/icone-cobaye.png', label: 'Cobaye' },
-  herisson:   { icone: null, label: 'Hérisson' },
+  chinchilla: { icone: '/icone-chinchilla.png', label: 'Chinchilla' },
+  cobaye:     { icone: '/icone-cobaye.png', label: 'Cochon d\'Inde' },
+  herisson:   { icone: '/icone-herisson.png', label: 'Hérisson' },
 }
 
 export default function IconesEspeces({ especes = [], taille = 28 }) {
   return (
-    <div style={{ display: 'flex', gap: 4 }}>
+    <div style={{ display: 'flex', gap: 8 }}>
       {especes?.map(esp => {
         const config = ESPECES_CONFIG[esp]
         if (!config) return null

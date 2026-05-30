@@ -25,7 +25,7 @@ function estActif(route) {
         <button
           key={o.id}
           className={`bottom-nav-v2-btn ${estActif(o.route) ? 'active' : ''}`}
-          onClick={() => navigate(o.route)}
+          onClick={() => { navigate('/accueil', { replace: true }); navigate(o.route) }}
         >
           <i className={`ti ${o.icone}`}></i>
           <span>{o.label}</span>

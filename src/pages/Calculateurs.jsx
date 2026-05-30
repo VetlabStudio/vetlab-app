@@ -92,17 +92,22 @@ export default function Calculateurs() {
 
   // Charger tous les médicaments depuis Supabase
   useEffect(() => {
-    async function charger() {
-      const { data } = await supabase
-        .from('medicaments')
-        .select('*')
-        .order('categorie', { ascending: true })
-        .order('nom', { ascending: true })
-      setMedicaments(data || [])
-      setChargement(false)
-    }
-    charger()
-  }, [])
+  async function charger() {
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const [{ data: meds }, { data: medsCustom }] = await Promise.all([
+      supabase.from('medicaments').select('*').order('categorie').order('nom'),
+      supabase.from('medicaments_custom').select('*').eq('user_id', user.id).is('medicament_id', null).order('nom'),
+    ])
+
+    setMedicaments([
+      ...(meds || []),
+      ...(medsCustom || []).map(m => ({ ...m, estCustom: true })),
+    ].sort((a, b) => a.nom.localeCompare(b.nom)))
+    setChargement(false)
+  }
+  charger()
+}, [])
 
   // Pré-remplir posologie et concentration quand on choisit un médicament
   useEffect(() => {

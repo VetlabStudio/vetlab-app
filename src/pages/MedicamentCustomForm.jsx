@@ -52,7 +52,9 @@ const { data: customDirect } = await supabase
   .eq('user_id', user.id)
   .eq('id', id)
   .maybeSingle()
-
+console.log('id URL:', id)
+console.log('customParMedId:', customParMedId)
+console.log('customDirect:', customDirect)
 const custom = customParMedId || customDirect
 
 if (custom) {
@@ -121,7 +123,7 @@ if (custom) {
 
     const payload = {
   user_id:             user.id,
-  medicament_id:       form.medicament_id || null,
+  medicament_id: form.medicament_id || (customId ? null : id),
       nom:                 form.nom.trim(),
       categorie:           form.categorie,
       indication:          form.indication,
@@ -139,7 +141,7 @@ if (custom) {
       especes:             form.especes,
       updated_at:          new Date().toISOString(),
     }
-
+console.log('customId:', customId)
     if (customId) {
       const { error } = await supabase
         .from('medicaments_custom')
@@ -154,7 +156,7 @@ if (custom) {
     }
 
     setSauvegarde(false)
-    navigate(`/drogues/fiche/${id}`, { replace: true })
+    navigate(-1)
   }
 
   async function reinitialiser() {
@@ -322,24 +324,24 @@ if (custom) {
             </div>
             <div className="popup-especes">
               {[
-  { id: 'chien',      label: 'Chien',        icone: '/icone-chien.svg' },
-  { id: 'chat',       label: 'Chat',         icone: '/icone-chat.svg' },
-  { id: 'cheval',     label: 'Cheval',       icone: '/icone-cheval.png' },
-  { id: 'vache',      label: 'Vache',        icone: '/icone-vache.png' },
-  { id: 'mouton',     label: 'Mouton',       icone: '/icone-mouton.png' },
-  { id: 'lama',       label: 'Lama',         icone: '/icone-lama.png' },
-  { id: 'lapin',      label: 'Lapin',        icone: null },
-  { id: 'furet',      label: 'Furet',        icone: null },
-  { id: 'oiseau',     label: 'Oiseaux',      icone: '/icone-oiseau.png' },
-  { id: 'serpent',    label: 'Serpent',      icone: '/icone-serpent.png' },
-  { id: 'lezard',     label: 'Lézard',       icone: '/icone-lezard.png' },
-  { id: 'tortue',     label: 'Tortue',       icone: null },
-  { id: 'poisson',    label: 'Poissons',     icone: null },
-  { id: 'amphibien',  label: 'Amphibiens',   icone: '/icone-grenouille.png' },
-  { id: 'rongeur',    label: 'Rongeurs',     icone: '/icone-rongeurs.png' },
-  { id: 'chinchilla', label: 'Chinchilla',   icone: null },
-  { id: 'cobaye',     label: 'Cochon d\'Inde', icone: '/icone-cobaye.png' },
-  { id: 'herisson',   label: 'Hérisson',     icone: null },
+  { id: 'chien',        label: 'Chien',              icone: '/icone-chien.svg' },
+  { id: 'chat',         label: 'Chat',               icone: '/icone-chat.svg' },
+  { id: 'cheval',       label: 'Cheval',             icone: '/icone-cheval.png' },
+  { id: 'vache',        label: 'Vache',              icone: '/icone-vache.png' },
+  { id: 'mouton',       label: 'Mouton',             icone: '/icone-mouton.png' },
+  { id: 'lama',         label: 'Lama',               icone: '/icone-lama.png' },
+  { id: 'lapin',        label: 'Lapin',              icone: '/icone-lapin.png' },
+  { id: 'furet',        label: 'Furet',              icone: '/icone-furet.png' },
+  { id: 'oiseau',       label: 'Oiseaux',            icone: '/icone-oiseau.png' },
+  { id: 'serpent',      label: 'Serpent',            icone: '/icone-serpent.png' },
+  { id: 'lezard',       label: 'Lézard',             icone: '/icone-lezard.png' },
+  { id: 'tortue',       label: 'Tortue',             icone: '/icone-tortue.png' },
+  { id: 'poisson',      label: 'Poissons',           icone: '/icone-poisson.png' },
+  { id: 'amphibien',    label: 'Amphibiens',         icone: '/icone-grenouille.png' },
+  { id: 'rongeur',      label: 'Rongeurs',           icone: '/icone-rongeurs.png' },
+  { id: 'chinchilla',   label: 'Chinchilla',         icone: '/icone-chinchilla.png' },
+  { id: 'cobaye',       label: 'Cochon d\'Inde',     icone: '/icone-cobaye.png' },
+  { id: 'herisson',     label: 'Hérisson',           icone: '/icone-herisson.png' },
 ].map(esp => (
   <label key={esp.id} className="popup-espece-item">
     <input type="checkbox" checked={form.especes.includes(esp.id)} onChange={() => toggleEspece(esp.id)} />

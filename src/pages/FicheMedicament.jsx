@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import IconesEspeces from '../components/IconesEspeces'
-import { useContext } from 'react'
 import { TitreContext } from '../App'
 import { useProfil } from '../context/ProfilContext'
 
@@ -100,7 +99,8 @@ const { setTitreCustom } = useContext(TitreContext)
   const [horsPlage, setHorsPlage] = useState(false)
   const [showProMsg, setShowProMsg] = useState(false)
   const { estPro } = useProfil()
-  console.log('estPro:', estPro)
+const estProRef = useRef(estPro)
+estProRef.current = estPro
 
 useEffect(() => {
   chargerDonnees()
@@ -166,7 +166,7 @@ useEffect(() => {
   }, [poids, unitePoids, posologie, concentration, medicament])
 
   async function chargerDonnees() {
-    setLoading(true)
+  setLoading(true)
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
@@ -179,7 +179,7 @@ useEffect(() => {
 ])
 
 const medCustom = medCustomParId || medCustomDirect
-const med = (estPro && medCustom) ? medCustom : (medBase || medCustomDirect)
+const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustomDirect)
 
       if (med) {
         setMedicament(med)
@@ -238,7 +238,7 @@ const med = (estPro && medCustom) ? medCustom : (medBase || medCustomDirect)
           mouton: 'Mouton', lama: 'Lama', lapin: 'Lapin', furet: 'Furet',
           oiseau: 'Oiseau', serpent: 'Serpent', lezard: 'Lézard', tortue: 'Tortue',
           poisson: 'Poisson', amphibien: 'Amphibien', rongeur: 'Rongeur',
-          chinchilla: 'Chinchilla', cobaye: 'Cobaye', herisson: 'Hérisson',
+          chinchilla: 'Chinchilla', cobaye: 'Cochon d\'Inde', herisson: 'Hérisson',
         }
         return labels[e] || e
       }).join(', ')

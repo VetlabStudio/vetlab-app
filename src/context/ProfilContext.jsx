@@ -11,17 +11,20 @@ export function ProfilProvider({ children }) {
   const [profil, setProfil] = useState(null)
   const [chargement, setChargement] = useState(true)
 
-  useEffect(() => {
-    // Charger au mount
-    chargerProfil()
+ useEffect(() => {
+  let initialLoad = true
+const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+  if (initialLoad) { initialLoad = false; return }
+  if (session) chargerProfil()
+  else {
+    setProfil(null)
+    setChargement(false)
+  }
+})
+chargerProfil()
 
-    // Recharger si la session change (login/logout)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      chargerProfil()
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
+  return () => subscription.unsubscribe()
+}, [])
 
   async function chargerProfil() {
     setChargement(true)

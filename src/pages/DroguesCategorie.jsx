@@ -45,7 +45,19 @@ export default function DroguesCategorie({ categorie }) {
       const ids = new Set((favs || []).map(f => f.custom_medicament_id || f.medicament_id).filter(Boolean))
       setFavorisIds(ids)
 
-      const tries = [...(meds || []), ...(medsCustom || []).map(m => ({ ...m, estCustom: true }))].sort((a, b) => {
+      const medsCustomBase = await supabase
+  .from('medicaments_custom')
+  .select('*')
+  .eq('user_id', user.id)
+  .eq('categorie', categorie)
+  .not('medicament_id', 'is', null)
+
+const medsAvecCustom = (meds || []).map(m => {
+  const custom = (medsCustomBase.data || []).find(c => c.medicament_id === m.id)
+  return custom ? { ...custom, estCustom: true } : m
+})
+
+const tries = [...medsAvecCustom, ...(medsCustom || []).map(m => ({ ...m, estCustom: true }))].sort((a, b) => {
         const aFav = ids.has(a.id)
         const bFav = ids.has(b.id)
         if (aFav && !bFav) return -1
