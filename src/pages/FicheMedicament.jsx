@@ -228,7 +228,8 @@ const med = (estPro && medCustom) ? medCustom : (medBase || medCustomDirect)
         >
           {estFavori ? '★' : '☆'}
         </button>
-     <IconesEspeces especes={medicament.especes} taille={40} />   
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}> 
+           <IconesEspeces especes={medicament.especes} taille={40} />
      <span className="fiche-espece-label">
   {medicament.especes?.length > 0
     ? medicament.especes.map(e => {
@@ -242,7 +243,7 @@ const med = (estPro && medCustom) ? medCustom : (medBase || medCustomDirect)
         return labels[e] || e
       }).join(', ')
     : ''}
-</span>
+</span></div>
         <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => estPro ? navigate(`/drogues/fiche/${id}/personnaliser`) : setShowProMsg(true)}>
   <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Personnaliser
 </button>
