@@ -18,25 +18,32 @@ export default function MesDrogues() {
       const { data: { user } } = await supabase.auth.getUser()
 
       const { data: favs } = await supabase
-        .from('favoris')
-        .select('medicament_id')
-        .eq('user_id', user.id)
+  .from('favoris')
+  .select('medicament_id, custom_medicament_id')
+  .eq('user_id', user.id)
 
-      if (!favs || favs.length === 0) {
-        setFavoris([])
-        setLoading(false)
-        return
-      }
+if (!favs || favs.length === 0) {
+  setFavoris([])
+  setLoading(false)
+  return
+}
 
-      const ids = favs.map(f => f.medicament_id)
+const idsBase = favs.map(f => f.medicament_id).filter(Boolean)
+const idsCustom = favs.map(f => f.custom_medicament_id).filter(Boolean)
 
-      const { data: meds } = await supabase
-        .from('medicaments')
-        .select('*')
-        .in('id', ids)
-        .order('nom', { ascending: true })
+const [{ data: meds }, { data: medsCustom }] = await Promise.all([
+  idsBase.length > 0
+    ? supabase.from('medicaments').select('*').in('id', idsBase).order('nom', { ascending: true })
+    : { data: [] },
+  idsCustom.length > 0
+    ? supabase.from('medicaments_custom').select('*').in('id', idsCustom).order('nom', { ascending: true })
+    : { data: [] },
+])
 
-      setFavoris(meds || [])
+setFavoris([
+  ...(meds || []),
+  ...(medsCustom || []).map(m => ({ ...m, estCustom: true })),
+].sort((a, b) => a.nom.localeCompare(b.nom)))
     } catch (err) {
       console.error('Erreur chargement favoris:', err)
     } finally {
@@ -47,9 +54,10 @@ export default function MesDrogues() {
   async function retirerFavori(e, medicamentId) {
     e.stopPropagation()
     const { data: { user } } = await supabase.auth.getUser()
-    await supabase.from('favoris').delete()
-      .eq('user_id', user.id)
-      .eq('medicament_id', medicamentId)
+    const m = favoris.find(f => f.id === medicamentId)
+await supabase.from('favoris').delete()
+  .eq('user_id', user.id)
+  .eq(m?.estCustom ? 'custom_medicament_id' : 'medicament_id', medicamentId)
     setFavoris(prev => prev.filter(m => m.id !== medicamentId))
   }
 

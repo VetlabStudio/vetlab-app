@@ -36,13 +36,13 @@ export default function DroguesCategorie({ categorie }) {
     .eq('user_id', user.id)
     .eq('categorie', categorie)
     .is('medicament_id', null),
-  supabase
-    .from('favoris')
-    .select('medicament_id')
-    .eq('user_id', user.id),
+ supabase
+  .from('favoris')
+  .select('medicament_id, custom_medicament_id')
+  .eq('user_id', user.id),
 ])
 
-      const ids = new Set((favs || []).map(f => f.medicament_id))
+      const ids = new Set((favs || []).map(f => f.custom_medicament_id || f.medicament_id).filter(Boolean))
       setFavorisIds(ids)
 
       const tries = [...(meds || []), ...(medsCustom || []).map(m => ({ ...m, estCustom: true }))].sort((a, b) => {
@@ -61,26 +61,28 @@ export default function DroguesCategorie({ categorie }) {
     }
   }
 
-  async function toggleFavori(medicamentId) {
-    const { data: { user } } = await supabase.auth.getUser()
-    const estFavori = favorisIds.has(medicamentId)
+  async function toggleFavori(medicamentId, estCustom = false) {
+  const { data: { user } } = await supabase.auth.getUser()
+  const estFavori = favorisIds.has(medicamentId)
 
-    if (estFavori) {
-      await supabase.from('favoris').delete()
-        .eq('user_id', user.id)
-        .eq('medicament_id', medicamentId)
-      setFavorisIds(prev => {
-        const next = new Set(prev)
-        next.delete(medicamentId)
-        return next
-      })
-    } else {
-      await supabase.from('favoris').insert({
-        user_id: user.id,
-        medicament_id: medicamentId,
-      })
-      setFavorisIds(prev => new Set([...prev, medicamentId]))
-    }
+  if (estFavori) {
+    await supabase.from('favoris').delete()
+      .eq('user_id', user.id)
+      .eq(estCustom ? 'custom_medicament_id' : 'medicament_id', medicamentId)
+    setFavorisIds(prev => {
+      const next = new Set(prev)
+      next.delete(medicamentId)
+      return next
+    })
+  } else {
+    await supabase.from('favoris').insert({
+      user_id: user.id,
+      ...(estCustom
+        ? { custom_medicament_id: medicamentId }
+        : { medicament_id: medicamentId }),
+    })
+    setFavorisIds(prev => new Set([...prev, medicamentId]))
+  }
 
     setMedicaments(prev => [...prev].sort((a, b) => {
       const newIds = new Set(favorisIds)
@@ -191,7 +193,7 @@ export default function DroguesCategorie({ categorie }) {
               >
                 <button
                   className={`favori-btn ${favorisIds.has(m.id) ? 'actif' : ''}`}
-                  onClick={e => { e.stopPropagation(); toggleFavori(m.id) }}
+                  onClick={e => { e.stopPropagation(); toggleFavori(m.id, m.estCustom) }}
                 >
                   {favorisIds.has(m.id) ? '★' : '☆'}
                 </button>

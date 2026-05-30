@@ -183,6 +183,7 @@ const med = (estPro && medCustom) ? medCustom : (medBase || medCustomDirect)
 
       if (med) {
         setMedicament(med)
+        console.log('especes:', med.especes)
         setPosologie(med.dose_min?.toString() || '')
         setConcentration(med.concentration?.toString() || '')
       }
@@ -227,12 +228,21 @@ const med = (estPro && medCustom) ? medCustom : (medBase || medCustomDirect)
         >
           {estFavori ? '★' : '☆'}
         </button>
-        
-     <IconesEspeces especes={medicament.especes} taille={40} />
-<span className="fiche-espece-label">
-  {medicament.especes?.length === 2 ? 'Chiens et Chats'
-    : medicament.especes?.includes('chien') ? 'Chien' : 'Chat'}
-        </span>
+     <IconesEspeces especes={medicament.especes} taille={40} />   
+     <span className="fiche-espece-label">
+  {medicament.especes?.length > 0
+    ? medicament.especes.map(e => {
+        const labels = {
+          chien: 'Chien', chat: 'Chat', cheval: 'Cheval', vache: 'Vache',
+          mouton: 'Mouton', lama: 'Lama', lapin: 'Lapin', furet: 'Furet',
+          oiseau: 'Oiseau', serpent: 'Serpent', lezard: 'Lézard', tortue: 'Tortue',
+          poisson: 'Poisson', amphibien: 'Amphibien', rongeur: 'Rongeur',
+          chinchilla: 'Chinchilla', cobaye: 'Cobaye', herisson: 'Hérisson',
+        }
+        return labels[e] || e
+      }).join(', ')
+    : ''}
+</span>
         <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => estPro ? navigate(`/drogues/fiche/${id}/personnaliser`) : setShowProMsg(true)}>
   <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Personnaliser
 </button>
