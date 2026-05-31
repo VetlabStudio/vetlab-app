@@ -35,7 +35,10 @@ const LABO = [
   { id: 'parasitologie', label: 'Parasitologie',  route: '/labo/2e0222f2-5733-4d01-bc99-8c380bec5abe' },
   { id: 'urologie',      label: 'Urologie',       route: '/labo/aeac9309-185f-4f2c-81b2-dfed3d4e55aa' },
   { id: 'cytologie',     label: 'Cytologie',      route: '/labo/173fb58a-988c-4202-8b14-bfcd15c4a16f' },
-  { id: 'microbiologie', label: 'Microbiologie',  route: '/labo/e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5' },
+  { id: 'microbiologie', label: 'Microbiologie', route: '/labo/e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5' },
+]
+const CHIRURGIE = [
+  { id: 'instruments', label: 'Instruments de chirurgie', route: '/chirurgie/instruments' },
 ]
 
 export default function Accueil() {
@@ -117,9 +120,24 @@ export default function Accueil() {
       </button>
     ))}
   </div>
+      </section>
+      {/* SECTION CHIRURGIE */}
+<section className="accueil-v2-section">
+  <h2 className="accueil-v2-titre-section">Chirurgie</h2>
+  <div className="accueil-v2-drogues-grid">
+    {CHIRURGIE.map(c => (
+      <button
+        key={c.id}
+        className="accueil-v2-drogue-item"
+        onClick={() => navigate(c.route)}
+      >
+        <span>{c.label}</span>
+        <i className="ti ti-chevron-right accueil-v2-chevron"></i>
+      </button>
+    ))}
+  </div>
 </section>
-
-      <div style={{ height: 32 }} />
+  <div style={{ height: 32 }} />
     </div>
   )
 }

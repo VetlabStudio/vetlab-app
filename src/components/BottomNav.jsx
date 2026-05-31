@@ -4,6 +4,7 @@ const ONGLETS = [
   { id: 'accueil',    label: 'Accueil',              icone: 'ti-home',        route: '/accueil' },
   { id: 'calculateurs', label: 'Calcul rapide\nde dosage', icone: 'ti-calculator', route: '/calculateurs' },
   { id: 'drogues', label: 'Médicaments favoris', icone: 'ti-pill', route: '/drogues/mes-drogues' },
+  { id: 'notes', label: 'Notes', icone: 'ti-notes', route: '/notes' },
   { id: 'profil',     label: 'Profil',               icone: 'ti-user',        route: '/profil' },
 ]
 
@@ -16,6 +17,7 @@ function estActif(route) {
   if (route === '/calculateurs') return location.pathname === '/calculateurs'
   if (route === '/drogues/mes-drogues') return location.pathname === '/drogues/mes-drogues'
   if (route === '/profil') return location.pathname === '/profil'
+  if (route === '/notes') return location.pathname === '/notes'
   return false
 }
 

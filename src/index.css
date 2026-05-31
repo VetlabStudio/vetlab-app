@@ -3743,11 +3743,11 @@ input[type="number"] {
 }
 .labo-ref-ligne--5col {
   grid-template-columns: 1.6fr 0.45fr 0.45fr 1.4fr 1.2fr;
-  font-size: 11px;
+  font-size: 12px;
 }
 .labo-ref-ligne--5col span:nth-child(4),
 .labo-ref-ligne--5col span:nth-child(5) {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-secondary);
 }
 /* ─── TUBES ──────────────────────────────────── */
@@ -3979,4 +3979,114 @@ input[type="number"] {
 .labo-ref-ligne--3col-cultures {
   grid-template-columns: 1fr 1.4fr 1.6fr;
   font-size: 12px;
+}
+/* ─── NOTES ──────────────────────────────────── */
+.notes-page {
+  padding: 16px;
+  padding-bottom: 80px;
+}
+
+.notes-grille {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.note-tuile {
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.note-tuile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.note-tuile-titre {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  flex: 1;
+}
+
+.note-tuile-supprimer {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.note-tuile-apercu {
+  font-size: 12px;
+  color: #555;
+  margin: 0;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.note-tuile-date {
+  font-size: 11px;
+  color: #888;
+  margin: 0;
+}
+
+.note-detail-page {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+}
+
+.note-couleurs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.note-couleur-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.note-couleur-btn.active {
+  border-color: var(--primary);
+}
+
+.note-titre-input {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: var(--font);
+}
+
+.note-contenu-input {
+  font-size: 15px;
+  color: #444;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: var(--font);
+  line-height: 1.7;
+  resize: none;
+  min-height: 70vh;
 }

@@ -3,6 +3,7 @@ import { useEffect, useState, createContext } from 'react'
 import { supabase } from './lib/supabase'
 import { ProfilProvider } from './context/ProfilContext'
 
+
 import Connexion from './pages/Connexion'
 import Inscription from './pages/Inscription'
 import Accueil from './pages/Accueil'
@@ -66,6 +67,10 @@ import LaBiochimieImmuno from './pages/LaBiochimieImmuno'
 import LaMicrobiologieColonies from './pages/LaMicrobiologieColonies'
 import LaMicrobiologieLevures from './pages/LaMicrobiologieLevures'
 import Toxicologie from './pages/Toxicologie'
+import Notes from './pages/Notes'
+import NoteDetail from './pages/NoteDetail'
+import Chirurgie from './pages/Chirurgie'
+import ChirurgieInstruments from './pages/ChirurgieInstruments'
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -150,7 +155,9 @@ export default function App() {
         <Route path="/inscription" element={<Inscription />} />
 
         {/* ACCUEIL */}
-        <Route path="/accueil" element={<RouteProtegee session={session}><Accueil /></RouteProtegee>} />
+          <Route path="/accueil" element={<RouteProtegee session={session}><Accueil /></RouteProtegee>} />
+          <Route path="/notes" element={<RouteProtegee session={session}><Notes /></RouteProtegee>} />
+          <Route path="/notes/:id" element={<RouteProtegee session={session}><NoteDetail /></RouteProtegee>} />
 
         {/* CALCULATEURS */}
         <Route path="/calculateurs" element={<RouteProtegee session={session}><Calculateurs /></RouteProtegee>} />
@@ -213,6 +220,9 @@ export default function App() {
         <Route path="/labo/microbiologie/colonies" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieColonies /></ProGate></RouteProtegee>} /> 
         <Route path="/labo/microbiologie/levures" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieLevures /></ProGate></RouteProtegee>} />  
         <Route path="/labo/:categorieId" element={<RouteProtegee session={session}><LaboProtocoles /></RouteProtegee>} />
+          
+        {/* CHIRURGIE */}
+        <Route path="/chirurgie/instruments" element={<RouteProtegee session={session}><ProGate><ChirurgieInstruments /></ProGate></RouteProtegee>} />
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />

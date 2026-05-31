@@ -56,6 +56,8 @@ const titres = {
   '/labo/microbiologie/colonies': 'Colonies bactériennes',
   '/labo/microbiologie/levures': 'Caractéristiques des levures',
   '/drogues/toxicologie': 'Toxicologie',
+  '/notes': 'Notes',
+  '/chirurgie/instruments': 'Catalogue d\'instruments',
   }
 
 export default function Header() {
@@ -77,7 +79,7 @@ export default function Header() {
       <button className="header-back" onClick={() => navigate(-1)}>
         <i className="ti ti-arrow-left"></i>
       </button>
-      <span>{titre}</span>
+      <span style={{ textAlign: 'center', maxWidth: 'calc(100% - 80px)', lineHeight: 1.3 }}>{titre}</span>
     </div>
   )
 }
