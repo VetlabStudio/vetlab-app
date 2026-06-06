@@ -58,6 +58,7 @@ export default function LaboNouveauProtocole() {
       const { error } = await supabase.storage
         .from('labo-photos')
         .upload(path, fichier, { upsert: true })
+      console.log('upload error:', error)
       if (!error) {
         const { data: urlData } = supabase.storage.from('labo-photos').getPublicUrl(path)
         modifierEtape(etapeId, 'photo_url', urlData.publicUrl)
