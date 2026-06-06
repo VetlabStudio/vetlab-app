@@ -1,9 +1,16 @@
-import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { loadStripe } from '@stripe/stripe-js'
+import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+const PRICE_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_MONTHLY
+const PRICE_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_ANNUAL
 
 export default function Profil() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const fileInputRef = useRef(null)
 
   const [profil, setProfil] = useState(null)
@@ -15,6 +22,7 @@ export default function Profil() {
   const [modalEmail, setModalEmail] = useState(false)
   const [modalMdp, setModalMdp] = useState(false)
   const [modalSupprimer, setModalSupprimer] = useState(false)
+  const [modalCheckout, setModalCheckout] = useState(false)
 
   // Champs édition
   const [nouveauNom, setNouveauNom] = useState('')
@@ -25,20 +33,22 @@ export default function Profil() {
   const [succes, setSucces] = useState('')
   const [saving, setSaving] = useState(false)
 
+  // Stripe
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [clientSecret, setClientSecret] = useState(null)
+
   useEffect(() => {
     chargerProfil()
+    if (searchParams.get('paiement') === 'succes') {
+      afficherSucces('Abonnement Pro activé ! Bienvenue dans la famille Pro.')
+      navigate('/profil', { replace: true })
+    }
   }, [])
 
   async function chargerProfil() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single()
-
+    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
     setProfil({ ...data, email: user.email })
     setAvatarUrl(data?.avatar_url || null)
     setLoading(false)
@@ -47,17 +57,14 @@ export default function Profil() {
   function afficherSucces(msg) {
     setSucces(msg)
     setErreur('')
-    setTimeout(() => setSucces(''), 3000)
+    setTimeout(() => setSucces(''), 4000)
   }
 
   // ─── MODIFIER NOM ─────────────────────────────
   async function sauvegarderNom() {
     if (!nouveauNom.trim()) return setErreur('Le nom ne peut pas être vide.')
     setSaving(true)
-    const { error } = await supabase
-      .from('profiles')
-      .update({ nom: nouveauNom.trim() })
-      .eq('id', profil.id)
+    const { error } = await supabase.from('profiles').update({ nom: nouveauNom.trim() }).eq('id', profil.id)
     setSaving(false)
     if (error) return setErreur('Erreur : ' + error.message)
     setProfil(prev => ({ ...prev, nom: nouveauNom.trim() }))
@@ -96,19 +103,12 @@ export default function Profil() {
   async function changerAvatar(e) {
     const file = e.target.files[0]
     if (!file) return
-
     const ext = file.name.split('.').pop()
     const path = `avatars/${profil.id}.${ext}`
-
-    const { error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(path, file, { upsert: true })
-
+    const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
     if (uploadError) return
-
     const { data } = supabase.storage.from('avatars').getPublicUrl(path)
     const url = data.publicUrl + '?t=' + Date.now()
-
     await supabase.from('profiles').update({ avatar_url: url }).eq('id', profil.id)
     setAvatarUrl(url)
   }
@@ -127,6 +127,35 @@ export default function Profil() {
     navigate('/connexion')
   }
 
+  // ─── STRIPE CHECKOUT ──────────────────────────
+  async function ouvrirCheckout(priceId) {
+    setCheckoutLoading(true)
+    setErreur('')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const response = await fetch(
+        `https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/create-checkout`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ priceId }),
+        }
+      )
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Erreur de connexion')
+      setClientSecret(data.clientSecret)
+      setModalCheckout(true)
+    } catch (err) {
+      setErreur('Impossible d\'ouvrir le formulaire de paiement. Réessaie.')
+    }
+    setCheckoutLoading(false)
+  }
+
+  const fetchClientSecret = useCallback(() => Promise.resolve(clientSecret), [clientSecret])
+
   function ouvrirModal(modal) {
     setErreur('')
     setSucces('')
@@ -137,6 +166,8 @@ export default function Profil() {
   }
 
   if (loading) return <div className="admin-loading">Chargement...</div>
+
+  const estPro = profil?.plan === 'pro'
 
   return (
     <div className="profil-page">
@@ -152,19 +183,14 @@ export default function Profil() {
             <i className="ti ti-camera" style={{ fontSize: 16, color: 'white' }}></i>
           </div>
         </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={changerAvatar}
-        />
+        <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={changerAvatar} />
         <p className="profil-nom">{profil?.nom || 'Nom complet'}</p>
         <p className="profil-email">{profil?.email}</p>
       </div>
 
       {/* MESSAGE SUCCÈS */}
       {succes && <div className="profil-succes">{succes}</div>}
+      {erreur && <div className="form-erreur">{erreur}</div>}
 
       {/* INFOS */}
       <div className="profil-section">
@@ -193,57 +219,92 @@ export default function Profil() {
 
       {/* PANNEAU ADMIN */}
       {profil?.role === 'admin' && (
-  <div className="profil-section">
-    <button className="profil-admin-btn" onClick={() => navigate('/admin')}>
-      <i className="ti ti-shield"></i>
-      Panneau admin
-    </button>
-  </div>
-)}
+        <div className="profil-section">
+          <button className="profil-admin-btn" onClick={() => navigate('/admin')}>
+            <i className="ti ti-shield"></i>
+            Panneau admin
+          </button>
+        </div>
+      )}
 
-      {/* FORFAIT */}
+      {/* FORFAIT ACTUEL */}
       <div className="profil-section">
         <div className="profil-item">
           <div>
-            <p className="profil-item-label">Forfait</p>
+            <p className="profil-item-label">Forfait actuel</p>
             <p className="profil-item-valeur" style={{ textTransform: 'capitalize' }}>
-              {{
-  'free': 'Gratuit',
-  'pro': 'Pro',
-  'equipe': 'Équipe',
-}[profil?.plan] || 'Gratuit'}
+              {estPro
+                ? <span style={{ color: 'var(--accent-gold)', fontWeight: 700 }}>Pro</span>
+                : 'Gratuit'
+              }
             </p>
           </div>
+          {estPro && (
+            <span style={{
+              fontSize: 11, fontWeight: 700, color: 'var(--accent-gold)',
+              background: 'rgba(215,163,92,0.15)', padding: '3px 10px', borderRadius: 999
+            }}>Actif</span>
+          )}
         </div>
       </div>
-      {/* FORFAITS DISPONIBLES */}
-<div className="profil-section">
-  <div className="profil-forfaits-titre">Forfaits disponibles</div>
-  
-  <div className="profil-forfait-item">
-    <div className="profil-forfait-header">
-      <span className="profil-forfait-nom">Gratuit</span>
-      <span className="profil-forfait-prix">0 $</span>
-    </div>
-    <p className="profil-forfait-desc">Accès aux fiches médicaments et calculateurs de base.</p>
-  </div>
 
-  <div className="profil-forfait-item">
-    <div className="profil-forfait-header">
-      <span className="profil-forfait-nom">Pro</span>
-      <span className="profil-forfait-badge">À venir</span>
-    </div>
-    <p className="profil-forfait-desc">Personnalise ta base de données : ajoute, modifie et supprime des médicaments, crée tes propres espèces animales et configure tes protocoles de laboratoire.</p>
-  </div>
+      {/* FORFAITS */}
+      <div className="profil-section">
+        <div className="profil-forfaits-titre">Forfaits disponibles</div>
 
-  <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
-    <div className="profil-forfait-header">
-      <span className="profil-forfait-nom">Équipe</span>
-      <span className="profil-forfait-badge">À venir</span>
-    </div>
-    <p className="profil-forfait-desc">Base de données personnalisée partagée entre les membres de votre clinique.</p>
-  </div>
-</div>
+        {/* GRATUIT */}
+        <div className="profil-forfait-item">
+          <div className="profil-forfait-header">
+            <span className="profil-forfait-nom">Gratuit</span>
+            <span className="profil-forfait-prix">0 $</span>
+          </div>
+          <p className="profil-forfait-desc">Accès aux fiches médicaments et calculateurs de base.</p>
+        </div>
+
+        {/* PRO */}
+        {estPro ? (
+          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
+            <div className="profil-forfait-header">
+              <span className="profil-forfait-nom">Pro</span>
+              <span className="profil-forfait-badge" style={{ color: 'var(--primary)', background: 'rgba(37,77,86,0.1)' }}>Actif</span>
+            </div>
+            <p className="profil-forfait-desc">Tu bénéficies de toutes les fonctionnalités Pro. Pour gérer ton abonnement, visite le portail Stripe.</p>
+          </div>
+        ) : (
+          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
+            <div className="profil-forfait-header">
+              <span className="profil-forfait-nom">Pro</span>
+            </div>
+            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
+              Accès complet : médicaments personnalisés, protocoles labo, section chirurgie, toxicologie et plus.
+            </p>
+            <div className="profil-stripe-choix">
+              <button
+                className="profil-stripe-btn"
+                onClick={() => ouvrirCheckout(PRICE_MONTHLY)}
+                disabled={checkoutLoading}
+              >
+                <span className="profil-stripe-prix">7,99 $</span>
+                <span className="profil-stripe-periode">par mois</span>
+              </button>
+              <button
+                className="profil-stripe-btn profil-stripe-btn--annuel"
+                onClick={() => ouvrirCheckout(PRICE_ANNUAL)}
+                disabled={checkoutLoading}
+              >
+                <span className="profil-stripe-economie">Économise 37 %</span>
+                <span className="profil-stripe-prix">59 $</span>
+                <span className="profil-stripe-periode">par année</span>
+              </button>
+            </div>
+            {checkoutLoading && (
+              <p style={{ fontSize: 12, color: 'var(--text-hint)', textAlign: 'center', marginTop: 8 }}>
+                Chargement du formulaire...
+              </p>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* ACTIONS */}
       <div className="profil-actions">
@@ -252,6 +313,21 @@ export default function Profil() {
           Supprimer le compte
         </button>
       </div>
+
+      {/* ─── MODAL CHECKOUT STRIPE ─────────────── */}
+      {modalCheckout && clientSecret && (
+        <div className="popup-overlay" onClick={() => setModalCheckout(false)}>
+          <div className="profil-checkout-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <span>Passer au forfait Pro</span>
+              <button className="popup-close" onClick={() => setModalCheckout(false)}>✕</button>
+            </div>
+            <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret }}>
+              <EmbeddedCheckout />
+            </EmbeddedCheckoutProvider>
+          </div>
+        </div>
+      )}
 
       {/* ─── MODAL NOM ─────────────────────────── */}
       {modalNom && (
@@ -262,13 +338,7 @@ export default function Profil() {
               <button className="popup-close" onClick={() => setModalNom(false)}>✕</button>
             </div>
             <div className="form-groupe">
-              <input
-                className="form-input"
-                placeholder="Nom complet"
-                value={nouveauNom}
-                onChange={e => setNouveauNom(e.target.value)}
-                autoFocus
-              />
+              <input className="form-input" placeholder="Nom complet" value={nouveauNom} onChange={e => setNouveauNom(e.target.value)} autoFocus />
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderNom} disabled={saving}>
@@ -287,14 +357,7 @@ export default function Profil() {
               <button className="popup-close" onClick={() => setModalEmail(false)}>✕</button>
             </div>
             <div className="form-groupe">
-              <input
-                className="form-input"
-                placeholder="Nouveau courriel"
-                type="email"
-                value={nouveauEmail}
-                onChange={e => setNouveauEmail(e.target.value)}
-                autoFocus
-              />
+              <input className="form-input" placeholder="Nouveau courriel" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} autoFocus />
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderEmail} disabled={saving}>
@@ -313,21 +376,8 @@ export default function Profil() {
               <button className="popup-close" onClick={() => setModalMdp(false)}>✕</button>
             </div>
             <div className="form-groupe" style={{ gap: 8, display: 'flex', flexDirection: 'column' }}>
-              <input
-                className="form-input"
-                placeholder="Nouveau mot de passe"
-                type="password"
-                value={nouveauMdp}
-                onChange={e => setNouveauMdp(e.target.value)}
-                autoFocus
-              />
-              <input
-                className="form-input"
-                placeholder="Confirmer le mot de passe"
-                type="password"
-                value={confirmMdp}
-                onChange={e => setConfirmMdp(e.target.value)}
-              />
+              <input className="form-input" placeholder="Nouveau mot de passe" type="password" value={nouveauMdp} onChange={e => setNouveauMdp(e.target.value)} autoFocus />
+              <input className="form-input" placeholder="Confirmer le mot de passe" type="password" value={confirmMdp} onChange={e => setConfirmMdp(e.target.value)} />
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderMdp} disabled={saving}>
