@@ -71,6 +71,8 @@ import Notes from './pages/Notes'
 import NoteDetail from './pages/NoteDetail'
 import Chirurgie from './pages/Chirurgie'
 import ChirurgieInstruments from './pages/ChirurgieInstruments'
+import ChirurgieTubes from './pages/ChirurgieTubes'
+import ChirurgieMonitoring from './pages/ChirurgieMonitoring'
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -223,6 +225,9 @@ export default function App() {
           
         {/* CHIRURGIE */}
         <Route path="/chirurgie/instruments" element={<RouteProtegee session={session}><ProGate><ChirurgieInstruments /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/tubes" element={<RouteProtegee session={session}><ProGate><ChirurgieTubes /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/monitoring" element={<RouteProtegee session={session}><ProGate><ChirurgieMonitoring /></ProGate></RouteProtegee>} />
+          
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />

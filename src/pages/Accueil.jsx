@@ -38,7 +38,9 @@ const LABO = [
   { id: 'microbiologie', label: 'Microbiologie', route: '/labo/e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5' },
 ]
 const CHIRURGIE = [
-  { id: 'instruments', label: 'Instruments de chirurgie', route: '/chirurgie/instruments' },
+  { id: 'instruments', label: 'Instruments de chirurgie', route: '/chirurgie/instruments', pro: true },
+  { id: 'tubes', label: 'Tubes endotrachéaux', route: '/chirurgie/tubes', pro: true },
+  { id: 'monitoring', label: 'Monitoring anesthésique', route: '/chirurgie/monitoring', pro: true },
 ]
 
 export default function Accueil() {
@@ -126,15 +128,17 @@ export default function Accueil() {
   <h2 className="accueil-v2-titre-section">Chirurgie</h2>
   <div className="accueil-v2-drogues-grid">
     {CHIRURGIE.map(c => (
-      <button
-        key={c.id}
-        className="accueil-v2-drogue-item"
-        onClick={() => navigate(c.route)}
-      >
-        <span>{c.label}</span>
-        <i className="ti ti-chevron-right accueil-v2-chevron"></i>
-      </button>
-    ))}
+  <button
+    key={c.id}
+    className="accueil-v2-drogue-item"
+    onClick={() => navigate(c.route)}
+    style={{ position: 'relative' }}
+  >
+    <span>{c.label}</span>
+    <i className="ti ti-chevron-right accueil-v2-chevron"></i>
+    {c.pro && <BadgePro />}
+  </button>
+))}
   </div>
 </section>
   <div style={{ height: 32 }} />

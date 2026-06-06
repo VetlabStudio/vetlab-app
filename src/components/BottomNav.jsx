@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 
 const ONGLETS = [
   { id: 'accueil',    label: 'Accueil',              icone: 'ti-home',        route: '/accueil' },
-  { id: 'calculateurs', label: 'Calcul rapide\nde dosage', icone: 'ti-calculator', route: '/calculateurs' },
+  { id: 'calculateurs', label: 'Calcul rapide', icone: 'ti-calculator', route: '/calculateurs' },
   { id: 'drogues', label: 'Médicaments favoris', icone: 'ti-pill', route: '/drogues/mes-drogues' },
   { id: 'notes', label: 'Notes', icone: 'ti-notes', route: '/notes' },
   { id: 'profil',     label: 'Profil',               icone: 'ti-user',        route: '/profil' },

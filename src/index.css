@@ -3649,11 +3649,13 @@ input[type="number"] {
   grid-template-columns: 1.5fr 1fr 1fr;
   background: var(--primary);
   color: white;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   padding: 8px 12px;
   gap: 8px;
+  text-align: center;
 }
+
 
 .labo-ref-ligne {
   display: grid;
@@ -4089,4 +4091,146 @@ input[type="number"] {
   line-height: 1.7;
   resize: none;
   min-height: 70vh;
+}
+/* ─── TUBES ENDOTRACHÉAUX ────────────────────── */
+.tubes-grid {
+  grid-template-columns: 1fr 1fr;
+  font-size: 14px;
+}
+
+.tubes-grid span {
+  text-align: center;
+}
+.labo-ref-header--chat {
+  background: var(--accent-red);
+}
+
+.tubes-header-espece {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tubes-header-icone {
+  width: 32px;
+  height: 32px;
+  filter: brightness(10);
+}
+
+.tubes-header-val {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tubes-val {
+  font-weight: 600;
+  color: var(--primary);
+  text-align: center;
+}
+
+.tubes-note {
+  margin-top: 8px;
+}
+/* ─── MONITORING CHIRURGIE ───────────────────── */
+.monitoring-param-ligne {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  gap: 12px;
+}
+
+.monitoring-param-nom {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.monitoring-param-valeurs {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.monitoring-valeur {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.monitoring-valeur--alerte {
+  color: var(--accent-red);
+  font-weight: 600;
+}
+
+.monitoring-valeur-label {
+  color: var(--text-hint);
+  font-size: 12px;
+}
+
+.monitoring-stades {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.monitoring-stade {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.monitoring-stade--alerte {
+  border-color: var(--accent-red);
+  background: rgba(112, 47, 58, 0.05);
+}
+
+.monitoring-stade-titre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 8px 0;
+}
+
+.monitoring-stade--alerte .monitoring-stade-titre {
+  color: var(--accent-red);
+}
+
+.monitoring-stade-liste {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.monitoring-stade-liste li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.monitoring-capno {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.monitoring-capno-bloc {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.monitoring-capno-titre {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
 }

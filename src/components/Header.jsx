@@ -58,6 +58,8 @@ const titres = {
   '/drogues/toxicologie': 'Toxicologie',
   '/notes': 'Notes',
   '/chirurgie/instruments': 'Catalogue d\'instruments',
+  '/chirurgie/tubes': 'Tubes endotrachéaux',
+  '/chirurgie/monitoring': 'Monitoring anesthésique',
   }
 
 export default function Header() {
