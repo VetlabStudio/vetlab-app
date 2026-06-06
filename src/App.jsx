@@ -73,6 +73,9 @@ import Chirurgie from './pages/Chirurgie'
 import ChirurgieInstruments from './pages/ChirurgieInstruments'
 import ChirurgieTubes from './pages/ChirurgieTubes'
 import ChirurgieMonitoring from './pages/ChirurgieMonitoring'
+import ChirurgieCapnographie from './pages/ChirurgieCapnographie'
+import ChirurgiePostOp from './pages/ChirurgiePostOp'
+import ChirurgieDouleur from './pages/ChirurgieDouleur'
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -227,6 +230,9 @@ export default function App() {
         <Route path="/chirurgie/instruments" element={<RouteProtegee session={session}><ProGate><ChirurgieInstruments /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/tubes" element={<RouteProtegee session={session}><ProGate><ChirurgieTubes /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/monitoring" element={<RouteProtegee session={session}><ProGate><ChirurgieMonitoring /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/capnographie" element={<RouteProtegee session={session}><ProGate><ChirurgieCapnographie /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/post-op" element={<RouteProtegee session={session}><ProGate><ChirurgiePostOp /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/douleur" element={<RouteProtegee session={session}><ChirurgieDouleur /></RouteProtegee>} />
           
 
         {/* PROFIL */}

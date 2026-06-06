@@ -4234,3 +4234,479 @@ input[type="number"] {
   font-weight: 700;
   margin: 0 0 8px 0;
 }
+/* ─── CAPNOGRAPHIE ───────────────────────────── */
+.capno-bloc {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--bg-card);
+}
+
+.capno-image-wrapper {
+  width: 100%;
+  margin: 12px 0;
+}
+
+.capno-image {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.capno-contenu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.capno-sous-titre {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 4px 0;
+}
+
+.capno-texte {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.capno-anomalies {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.capno-anomalie-bloc {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.capno-anomalie-titre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+}
+/* ─── SOINS POST-OPÉRATOIRES ─────────────────── */
+
+.postop-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(37, 77, 86, 0.06);
+  border: 1px solid rgba(37, 77, 86, 0.15);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.postop-intro-icone {
+  font-size: 22px;
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.postop-intro-texte {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.postop-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.postop-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.postop-section-icone {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.postop-section-titre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.postop-liste {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.postop-liste-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.postop-liste-item:last-child {
+  border-bottom: none;
+}
+
+.postop-num {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.postop-texte {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.postop-alerte-section {
+  background: rgba(112, 47, 58, 0.06);
+  border: 1.5px solid var(--accent-red);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.postop-alerte-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--accent-red);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.postop-alerte-header .ti {
+  font-size: 18px;
+}
+
+.postop-alerte-liste {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.postop-alerte-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid rgba(112, 47, 58, 0.12);
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.postop-alerte-item:last-child {
+  border-bottom: none;
+}
+
+.postop-alerte-puce {
+  font-size: 10px;
+  color: var(--accent-red);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.postop-note-bas {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(83, 128, 115, 0.08);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text-hint);
+  line-height: 1.5;
+}
+
+.postop-note-bas .ti {
+  font-size: 16px;
+  color: var(--text-hint);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+/* ─── ÉVALUATION DE LA DOULEUR ───────────────── */
+
+.douleur-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 16px 100px;
+}
+
+.douleur-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(37, 77, 86, 0.06);
+  border: 1px solid rgba(37, 77, 86, 0.15);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.douleur-intro-icone {
+  font-size: 22px;
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.douleur-intro-texte {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.douleur-categorie {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.douleur-categorie-titre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  background: rgba(37, 77, 86, 0.04);
+}
+
+.douleur-categorie-score {
+  background: var(--primary);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.douleur-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.douleur-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+  width: 100%;
+}
+
+.douleur-option:last-child {
+  border-bottom: none;
+}
+
+.douleur-option:active {
+  background: rgba(37, 77, 86, 0.05);
+}
+
+.douleur-option.selectionne {
+  background: rgba(37, 77, 86, 0.06);
+}
+
+.douleur-option-texte {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  flex: 1;
+  text-align: left;
+}
+
+.douleur-option.selectionne .douleur-option-texte {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.douleur-checkbox {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  background: var(--bg);
+}
+
+.douleur-checkbox.selectionne {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  font-size: 14px;
+}
+
+.douleur-score-hint {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-hint);
+}
+
+.douleur-resultat-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.douleur-score-total {
+  background: var(--primary);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.douleur-score-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.douleur-score-valeur {
+  font-size: 48px;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+.douleur-score-max {
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.douleur-score-detail {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+}
+
+.douleur-interpretation {
+  border: 1.5px solid;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.douleur-interpretation-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.douleur-interpretation-header .ti {
+  font-size: 18px;
+}
+
+.douleur-interpretation-texte {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.douleur-reminder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-hint);
+  margin: 0;
+}
+
+.douleur-reminder .ti {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.douleur-btn-reinit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.douleur-btn-reinit:active {
+  background: var(--bg);
+}

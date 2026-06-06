@@ -60,6 +60,9 @@ const titres = {
   '/chirurgie/instruments': 'Catalogue d\'instruments',
   '/chirurgie/tubes': 'Tubes endotrachéaux',
   '/chirurgie/monitoring': 'Monitoring anesthésique',
+  '/chirurgie/capnographie': 'Interprétation de la capnographie',
+  '/chirurgie/post-op': 'Soins post-opératoires',
+  '/chirurgie/douleur': 'Évaluation de la douleur',
   }
 
 export default function Header() {

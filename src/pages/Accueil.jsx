@@ -41,6 +41,9 @@ const CHIRURGIE = [
   { id: 'instruments', label: 'Instruments de chirurgie', route: '/chirurgie/instruments', pro: true },
   { id: 'tubes', label: 'Tubes endotrachéaux', route: '/chirurgie/tubes', pro: true },
   { id: 'monitoring', label: 'Monitoring anesthésique', route: '/chirurgie/monitoring', pro: true },
+  { id: 'capnographie', label: 'Interprétation de la capnographie', route: '/chirurgie/capnographie', pro: true },
+  { id: 'post-op', label: 'Soins post-opératoires', route: '/chirurgie/post-op', pro: true },
+  { id: 'douleur', label: 'Évaluation de la douleur', route: '/chirurgie/douleur' },
 ]
 
 export default function Accueil() {
