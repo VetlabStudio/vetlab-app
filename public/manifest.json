@@ -4,7 +4,7 @@
   "description": "Référence vétérinaire clinique",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#254d56",
   "theme_color": "#254D56",
   "icons": [
     {
