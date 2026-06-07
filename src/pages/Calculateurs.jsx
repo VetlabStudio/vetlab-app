@@ -253,7 +253,7 @@ export default function Calculateurs() {
       <img src="/icone-pill.svg" alt="médicament" />
     </div>
     <select
-      style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'var(--font)', fontSize: '1rem', color: 'var(--text-primary)', padding: '8px 0', appearance: 'none', WebkitAppearance: 'none' }}
+      style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'var(--font)', fontSize: '0.85rem', color: 'var(--text-primary)', padding: '8px 0', appearance: 'none', WebkitAppearance: 'none' }}
       value={medicamentChoisi?.id || ''}
       onChange={e => {
         const med = medicaments.find(m => m.id === e.target.value)
