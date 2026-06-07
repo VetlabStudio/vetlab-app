@@ -48,15 +48,15 @@ const TOXIQUES = {
 }
 
 const ANTIDOTES = [
-  { generique: 'Acétylcystéine', marque: 'Mucomyst', notes: 'Antidote en cas d\'intoxication à l\'acétaminophène, xylitol ou phénol; mucolytique (voies respiratoires, yeux). Forme injectable ou inhalation, efficace si donnée rapidement (dans les 8 heures après ingestion).' },
-  { generique: 'Atropine', marque: 'Divers', notes: 'Utilisée comme antidote en cas d\'intoxication aux organophosphorés ou aux carbamates.' },
-  { generique: 'Bleu de méthylène', marque: '-', notes: 'Antidote contre la méthémoglobinémie; également utilisé comme colorant diagnostic. Utilisés selon le type de toxine concernée, avec des protocoles spécifiques.' },
-  { generique: 'Dimercaprol (B.A.L.)', marque: 'B.A.L', notes: 'Chélateur pour intoxications graves au plomb, mercure ou arsenic (usage documenté).' },
-  { generique: 'EDTA de calcium (CaEDTA)', marque: 'Percorten-V (CaEDTA inj.)', notes: 'Chélateur pour intoxications au plomb, au mercure ou à l\'arsenic.' },
-  { generique: 'Éthanol', marque: '-', notes: 'Antidote contre l\'intoxication à l\'éthylène glycol (antigel), via compétition enzymatique.' },
-  { generique: 'Fomépizole (4-MP)', marque: 'Antizol-Vet', notes: 'Utilisé comme antidote lors d\'intoxication à l\'éthylène glycol; contre-indiqué chez le chat.' },
-  { generique: 'Pralidoxime (2-PAM)', marque: 'Contrathion', notes: 'Réactivateur de la cholinestérase contre les intoxications aux organophosphorés, efficace si administré tôt. Leur efficacité dépend du moment d\'administration et des agents impliqués.' },
-  { generique: 'Silibinine / Silymarine', marque: 'HepatoSupport, Denamarin', notes: 'Intoxication aux champignons hépatotoxiques (ex. Amanita), toxines hépatotoxiques (Sago palm, xylitol).' },
+  { generique: 'Acétylcystéine', notes: 'Antidote en cas d\'intoxication à l\'acétaminophène, xylitol ou phénol; mucolytique (voies respiratoires, yeux). Forme injectable ou inhalation, efficace si donnée rapidement (dans les 8 heures après ingestion).' },
+  { generique: 'Atropine', notes: 'Utilisée comme antidote en cas d\'intoxication aux organophosphorés ou aux carbamates.' },
+  { generique: 'Bleu de méthylène', notes: 'Antidote contre la méthémoglobinémie; également utilisé comme colorant diagnostic. Utilisés selon le type de toxine concernée, avec des protocoles spécifiques.' },
+  { generique: 'Dimercaprol (B.A.L.)', notes: 'Chélateur pour intoxications graves au plomb, mercure ou arsenic (usage documenté).' },
+  { generique: 'EDTA de calcium (CaEDTA)', notes: 'Chélateur pour intoxications au plomb, au mercure ou à l\'arsenic.' },
+  { generique: 'Éthanol', notes: 'Antidote contre l\'intoxication à l\'éthylène glycol (antigel), via compétition enzymatique.' },
+  { generique: 'Fomépizole (4-MP)', notes: 'Utilisé comme antidote lors d\'intoxication à l\'éthylène glycol; contre-indiqué chez le chat.' },
+  { generique: 'Pralidoxime (2-PAM)', notes: 'Réactivateur de la cholinestérase contre les intoxications aux organophosphorés, efficace si administré tôt. Leur efficacité dépend du moment d\'administration et des agents impliqués.' },
+  { generique: 'Silibinine / Silymarine', notes: 'Intoxication aux champignons hépatotoxiques (ex. Amanita), toxines hépatotoxiques (Sago palm, xylitol).' },
 ]
 
 const TESTS_DIAG = [
@@ -191,15 +191,13 @@ export default function Toxicologie() {
         {/* ─── ANTIDOTES ──────────────────────── */}
         {onglet === 'antidotes' && (
           <div className="labo-ref-tableau">
-            <div className="labo-ref-header" style={{ gridTemplateColumns: '1fr 1fr 2fr' }}>
+            <div className="labo-ref-header" style={{ gridTemplateColumns: '1fr 3fr' }}>
               <span>Générique</span>
-              <span>Marque</span>
               <span>Notes</span>
             </div>
             {ANTIDOTES.map((a, i) => (
-              <div key={i} className="labo-ref-ligne" style={{ gridTemplateColumns: '1fr 1fr 2fr' }}>
+              <div key={i} className="labo-ref-ligne" style={{ gridTemplateColumns: '1fr 3fr' }}>
                 <span style={{ fontWeight: 700 }}>{a.generique}</span>
-                <span style={{ color: 'var(--text-hint)' }}>{a.marque}</span>
                 <span style={{ fontSize: 12 }}>{a.notes}</span>
               </div>
             ))}
