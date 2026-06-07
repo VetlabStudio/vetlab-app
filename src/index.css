@@ -4781,3 +4781,27 @@ input[type="number"] {
   flex-direction: column;
   gap: 16px;
 }
+.profil-portal-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--champ-bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.profil-portal-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.profil-portal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

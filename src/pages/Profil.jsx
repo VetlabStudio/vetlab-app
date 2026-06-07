@@ -127,6 +127,31 @@ export default function Profil() {
     navigate('/connexion')
   }
 
+  // ─── STRIPE PORTAL ────────────────────────────
+async function ouvrirPortail() {
+  setCheckoutLoading(true)
+  setErreur('')
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    const response = await fetch(
+      `https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/create-portal-session`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      }
+    )
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || 'Erreur')
+    window.location.href = data.url
+  } catch (err) {
+    setErreur('Impossible d\'ouvrir le portail. Réessaie.')
+  }
+  setCheckoutLoading(false)
+}
+
   // ─── STRIPE CHECKOUT ──────────────────────────
   async function ouvrirCheckout(priceId) {
     setCheckoutLoading(true)
@@ -268,7 +293,15 @@ export default function Profil() {
               <span className="profil-forfait-nom">Pro</span>
               <span className="profil-forfait-badge" style={{ color: 'var(--primary)', background: 'rgba(37,77,86,0.1)' }}>Actif</span>
             </div>
-            <p className="profil-forfait-desc">Tu bénéficies de toutes les fonctionnalités Pro. Pour gérer ton abonnement, visite le portail Stripe.</p>
+            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>Tu bénéficies de toutes les fonctionnalités Pro.</p>
+<button
+  className="profil-portal-btn"
+  onClick={ouvrirPortail}
+  disabled={checkoutLoading}
+>
+  <i className="ti ti-settings"></i>
+  {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
+</button>
           </div>
         ) : (
           <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
