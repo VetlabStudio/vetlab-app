@@ -102,6 +102,10 @@ export default function LaboParasitologieOeufs() {
           </div>
         ))}
       </div>
+            <div className="postop-note-bas">
+        <i className="ti ti-info-circle"></i>
+        <span>Les images présentées sont des illustrations générées à partir des caractéristiques morphologiques reconnues des parasites et sont fournies à titre indicatif seulement. Elles ne remplacent pas l'identification microscopique ni l'interprétation professionnelle d'un échantillon.</span>
+      </div>
     </div>
   )
 }
