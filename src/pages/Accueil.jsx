@@ -70,7 +70,7 @@ export default function Accueil() {
     <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
     <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
   </div>
-  <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
+  <img src="/logoadjuvet-blanc.png" alt="AdjuVet" className="accueil-v2-logo" />
 </div>
 
       {/* SECTION CALCULATEURS */}
