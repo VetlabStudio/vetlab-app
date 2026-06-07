@@ -75,13 +75,15 @@ setProtocoles([
       <div className="labo-protocoles-grid">
         {REFERENCES.map(r => (
           <button
-  key={r.id}
-  className="labo-protocole-btn"
-  onClick={() => navigate(r.route)}
->
-  <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
-  {r.label}
-</button>
+            key={r.id}
+            className="labo-protocole-btn"
+            onClick={() => navigate(r.route)}
+            style={{ position: 'relative' }}
+          >
+            {r.id === 'cellules' && <BadgePro />}
+            <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
+            {r.label}
+          </button>
         ))}
       </div>
 

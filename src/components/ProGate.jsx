@@ -17,7 +17,7 @@ export default function ProGate({ children }) {
             Cette section est réservée au forfait <strong>Pro</strong>.
           </p>
           <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-            Le forfait Pro sera disponible prochainement. Reste à l'affût !
+            Abonne-toi au forfait pro pour profiter de tous les outils! Tu peux t'abonner à partir de l'onglet Profil juste en bas à droite.
           </p>
         </div>
       </div>

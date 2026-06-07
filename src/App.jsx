@@ -209,7 +209,7 @@ export default function App() {
         <Route path="/labo/biochimie/valeurs" element={<RouteProtegee session={session}><LaBiochimieValeurs /></RouteProtegee>} />
         <Route path="/labo/173fb58a-988c-4202-8b14-bfcd15c4a16f" element={<RouteProtegee session={session}><LaCytologie /></RouteProtegee>} />
         <Route path="/labo/cytologie/prelevement" element={<RouteProtegee session={session}><LaCytologiePrelevement /></RouteProtegee>} />
-        <Route path="/labo/cytologie/cellules" element={<RouteProtegee session={session}><LaCytologieCellules /></RouteProtegee>} />
+        <Route path="/labo/cytologie/cellules" element={<RouteProtegee session={session}><ProGate><LaCytologieCellules /></ProGate></RouteProtegee>} />
         <Route path="/labo/parasitologie/oeufs" element={<RouteProtegee session={session}><LaboParasitologieOeufs /></RouteProtegee>} />
         <Route path="/labo/parasitologie/hotes" element={<RouteProtegee session={session}><LaboParasitologieHotes /></RouteProtegee>} />
         <Route path="/labo/e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5" element={<RouteProtegee session={session}><LaMicrobiologie /></RouteProtegee>} />
