@@ -37,6 +37,9 @@ export default function Profil() {
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [clientSecret, setClientSecret] = useState(null)
 
+  // Forfait clinique
+  const [interetEnvoye, setInteretEnvoye] = useState(false)
+
   useEffect(() => {
     chargerProfil()
     if (searchParams.get('paiement') === 'succes') {
@@ -337,6 +340,50 @@ async function ouvrirPortail() {
             )}
           </div>
         )}
+      </div>
+
+      {/* FORFAIT CLINIQUE */}
+      <div className="profil-section">
+        <div className="profil-forfaits-titre">Pour les cliniques</div>
+        <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
+          <div className="profil-forfait-header">
+            <span className="profil-forfait-nom">Clinique</span>
+            <span style={{
+              fontSize: 10, fontWeight: 700, color: 'var(--text-hint)',
+              background: 'var(--champ-bg)', padding: '2px 8px', borderRadius: 999,
+              border: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: 0.5,
+            }}>Bientôt</span>
+          </div>
+          <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
+            Accès partagé pour toute votre équipe, gestion des membres, rôles admin et technicien. Un seul abonnement pour toute la clinique.
+          </p>
+          {interetEnvoye ? (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '10px 14px', borderRadius: 'var(--radius-md)',
+              background: 'rgba(37,77,86,0.08)', color: 'var(--primary)',
+              fontSize: 13, fontWeight: 600,
+            }}>
+              <i className="ti ti-circle-check"></i>
+              Merci ! On te contactera dès que le forfait Clinique sera disponible.
+            </div>
+          ) : (
+            <button
+              className="profil-portal-btn"
+              onClick={() => {
+                const sujet = encodeURIComponent('Intérêt — Forfait Clinique Adjuvet')
+                const corps = encodeURIComponent(
+                  `Bonjour,\n\nJe suis ${profil?.nom || ''} (${profil?.email || ''}) et je suis intéressé(e) par le forfait Clinique d'Adjuvet.\n\nMerci de me contacter dès qu'il sera disponible.`
+                )
+                window.open(`mailto:vetlabstudio@gmail.com?subject=${sujet}&body=${corps}`)
+                setInteretEnvoye(true)
+              }}
+            >
+              <i className="ti ti-building-hospital"></i>
+              Je suis intéressé(e) par le forfait Clinique
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ACTIONS */}
