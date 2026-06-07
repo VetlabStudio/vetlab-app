@@ -8,9 +8,9 @@ const CATEGORIE_ID = 'e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5'
 
 const REFERENCES = [
   { id: 'prelevement', label: 'Guide de prélèvement', icone: 'ti-test-pipe', route: '/labo/microbiologie/prelevement' },
-  { id: 'cultures', label: 'Interprétation des cultures', icone: 'ti-flask', route: '/labo/microbiologie/cultures' },
-  { id: 'antibiogramme', label: 'Antibiogramme', icone: 'ti-circle-check', route: '/labo/microbiologie/antibiogramme' },
-  { id: 'bacteries', label: 'Bactéries courantes', icone: 'ti-bug', route: '/labo/microbiologie/bacteries' },
+  { id: 'cultures', label: 'Interprétation des cultures', icone: 'ti-flask', route: '/labo/microbiologie/cultures', pro: true },
+  { id: 'antibiogramme', label: 'Antibiogramme', icone: 'ti-circle-check', route: '/labo/microbiologie/antibiogramme', pro: true },
+  { id: 'bacteries', label: 'Bactéries courantes', icone: 'ti-bug', route: '/labo/microbiologie/bacteries', pro: true },
   { id: 'colonies', label: 'Colonies bactériennes', icone: 'ti-circles', route: '/labo/microbiologie/colonies', pro: true },
   { id: 'levures', label: 'Caractéristiques des levures', icone: 'ti-circle-dotted', route: '/labo/microbiologie/levures', pro: true },
 ]
@@ -65,13 +65,15 @@ setProtocoles([
       <div className="labo-protocoles-grid">
         {REFERENCES.map(r => (
           <button
-  key={r.id}
-  className="labo-protocole-btn"
-  onClick={() => navigate(r.route)}
->
-  <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
-  {r.label}
-</button>
+            key={r.id}
+            className="labo-protocole-btn"
+            onClick={() => navigate(r.route)}
+            style={{ position: 'relative' }}
+          >
+            {r.pro && <BadgePro />}
+            <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
+            {r.label}
+          </button>
         ))}
       </div>
 
@@ -88,7 +90,7 @@ setProtocoles([
                 L'ajout de protocoles personnalisés est réservé au forfait <strong>Pro</strong>.
               </p>
               <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-                Le forfait Pro sera disponible prochainement. Reste à l'affût !
+                Passe au forfait Pro dans ton profil pour accéder à cette fonctionnalité.
               </p>
             </div>
             <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>Compris</button>

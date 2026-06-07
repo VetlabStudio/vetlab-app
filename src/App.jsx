@@ -214,10 +214,10 @@ export default function App() {
         <Route path="/labo/parasitologie/hotes" element={<RouteProtegee session={session}><LaboParasitologieHotes /></RouteProtegee>} />
         <Route path="/labo/e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5" element={<RouteProtegee session={session}><LaMicrobiologie /></RouteProtegee>} />
         <Route path="/labo/microbiologie/prelevement" element={<RouteProtegee session={session}><LaMicrobiologiePrelevement /></RouteProtegee>} />
-        <Route path="/labo/microbiologie/cultures" element={<RouteProtegee session={session}><LaMicrobiologieCultures /></RouteProtegee>} />
-        <Route path="/labo/microbiologie/antibiogramme" element={<RouteProtegee session={session}><LaMicrobiologieAntibiogramme /></RouteProtegee>} />
+        <Route path="/labo/microbiologie/cultures" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieCultures /></ProGate></RouteProtegee>} />
+        <Route path="/labo/microbiologie/antibiogramme" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieAntibiogramme /></ProGate></RouteProtegee>} />
         <Route path="/labo/parasitologie/externes" element={<RouteProtegee session={session}><LaParasitologieExternes /></RouteProtegee>} />
-        <Route path="/labo/microbiologie/bacteries" element={<RouteProtegee session={session}><LaMicrobiologieBacteries /></RouteProtegee>} />
+        <Route path="/labo/microbiologie/bacteries" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieBacteries /></ProGate></RouteProtegee>} />
         <Route path="/labo/parasitologie/dipylidium" element={<RouteProtegee session={session}><ProGate><LaboParasitologieDipylidium /></ProGate></RouteProtegee>} />
         <Route path="/labo/parasitologie/puce" element={<RouteProtegee session={session}><ProGate><LaboParasitologiePuce /></ProGate></RouteProtegee>} />
         <Route path="/labo/biochimie/immuno" element={<RouteProtegee session={session}><ProGate><LaBiochimieImmuno /></ProGate></RouteProtegee>} />

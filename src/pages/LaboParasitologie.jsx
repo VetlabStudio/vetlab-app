@@ -103,7 +103,7 @@ setProtocoles([
                 L'ajout de protocoles personnalisés est réservé au forfait <strong>Pro</strong>.
               </p>
               <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-                Le forfait Pro sera disponible prochainement. Reste à l'affût !
+                Passe au forfait Pro dans ton profil pour accéder à cette fonctionnalité.
               </p>
             </div>
             <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>

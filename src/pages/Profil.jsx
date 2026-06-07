@@ -375,7 +375,7 @@ async function ouvrirPortail() {
                 const corps = encodeURIComponent(
                   `Bonjour,\n\nJe suis ${profil?.nom || ''} (${profil?.email || ''}) et je suis intéressé(e) par le forfait Clinique d'Adjuvet.\n\nMerci de me contacter dès qu'il sera disponible.`
                 )
-                window.open(`mailto:vetlabstudio@gmail.com?subject=${sujet}&body=${corps}`)
+                window.open(`mailto:info@vetlabstudio.ca?subject=${sujet}&body=${corps}`)
                 setInteretEnvoye(true)
               }}
             >
