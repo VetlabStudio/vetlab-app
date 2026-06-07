@@ -406,7 +406,7 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
           La personnalisation des fiches médicaments est réservée au forfait <strong>Pro</strong>.
         </p>
         <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-          Abonne-toi au forfait pro pour profiter de tous les outils! Tu peux t'abonner à partir de l'onglet Profil juste en bas à droite.
+          Abonne toi au forfait pro pour profiter de toutes les fonctionnalités! Tu peux t'abonner à partir de l'onglet Profil juste en bas à droite.
         </p>
       </div>
       <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
