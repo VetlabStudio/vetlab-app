@@ -1,86 +1,84 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { useEffect, useState, createContext } from 'react'
+import { useEffect, useState, createContext, lazy, Suspense } from 'react'
 import { supabase } from './lib/supabase'
 import { ProfilProvider } from './context/ProfilContext'
-import { Analytics } from '@vercel/analytics/react'
 
-
-import Connexion from './pages/Connexion'
-import Inscription from './pages/Inscription'
-import Accueil from './pages/Accueil'
-import Calculateurs from './pages/Calculateurs'
-import Profil from './pages/Profil'
-import DroguesAnesthesiques from './pages/DroguesAnesthesiques'
-import DroguesAntagonistes from './pages/DroguesAntagonistes'
-import DroguesAntibiotiques from './pages/DroguesAntibiotiques'
-import DroguesAntidiarrheiques from './pages/DroguesAntidiarrheiques'
-import DroguesAntiemetiques from './pages/DroguesAntiemetiques'
-import DroguesAntihistaminiques from './pages/DroguesAntihistaminiques'
-import DroguesCardiovasculaires from './pages/DroguesCardiovasculaires'
-import DroguesGastroprotecteurs from './pages/DroguesGastroprotecteurs'
-import DroguesNeurologiques from './pages/DroguesNeurologiques'
-import DroguesRespiratoires from './pages/DroguesRespiratoires'
-import DroguesUrgence from './pages/DroguesUrgence'
-import AdminMedicaments from './pages/AdminMedicaments'
-import AdminMedicamentForm from './pages/AdminMedicamentForm'
-import AdminAccueil from './pages/AdminAccueil'
-import AdminLaboProtocoles from './pages/AdminLaboProtocoles'
-import FicheMedicament from './pages/FicheMedicament'
-import Fluidotherapie from './pages/Fluidotherapie'
-import CRI from './pages/CRI'
-import Conversion from './pages/Conversion'
-import BesoinEnergetique from './pages/BesoinEnergetique'
-import Dilution from './pages/Dilution'
-import TransfusionSanguine from './pages/TransfusionSanguine'
-import DateMiseBas from './pages/DateMiseBas'
-import ToxiciteChocolat from './pages/ToxiciteChocolat'
-import RCR from './pages/RCR'
-import MesDrogues from './pages/MesDrogues'
-import LaboAccueil from './pages/LaboAccueil'
-import LaboProtocoles from './pages/LaboProtocoles'
-import LaboProtocoleDetail from './pages/LaboProtocoleDetail'
-import LaboNouveauProtocole from './pages/LaboNouveauProtocole'
-import LaboUrologie from './pages/LaboUrologie'
-import LaboUrologieValeurs from './pages/LaboUrologieValeurs'
-import LaboUrologieSediments from './pages/LaboUrologieSediments'
-import LaboParasitologie from './pages/LaboParasitologie'
-import LaboParasitologieOeufs from './pages/LaboParasitologieOeufs'
-import LaboParasitologieHotes from './pages/LaboParasitologieHotes'
-import LaBiochimie from './pages/LaBiochimie'
-import LaBiochimieTubes from './pages/LaBiochimieTubes'
-import LaBiochimieValeurs from './pages/LaBiochimieValeurs'
-import LaCytologie from './pages/LaCytologie'
-import LaCytologiePrelevement from './pages/LaCytologiePrelevement'
-import LaCytologieCellules from './pages/LaCytologieCellules'
-import LaMicrobiologie from './pages/LaMicrobiologie'
-import LaMicrobiologiePrelevement from './pages/LaMicrobiologiePrelevement'
-import LaMicrobiologieCultures from './pages/LaMicrobiologieCultures'
-import LaMicrobiologieAntibiogramme from './pages/LaMicrobiologieAntibiogramme'
-import LaMicrobiologieBacteries from './pages/LaMicrobiologieBacteries'
-import LaParasitologieExternes from './pages/LaParasitologieExternes'
-import MedicamentCustomForm from './pages/MedicamentCustomForm'
-import AjouterMedicament from './pages/AjouterMedicament'
-import LaboParasitologieDipylidium from './pages/LaboParasitologieDipylidium'
-import LaboParasitologiePuce from './pages/LaboParasitologiePuce'
-import ProGate from './components/ProGate'
-import LaBiochimieOrganes from './pages/LaBiochimieOrganes'
-import LaBiochimieImmuno from './pages/LaBiochimieImmuno'
-import LaMicrobiologieColonies from './pages/LaMicrobiologieColonies'
-import LaMicrobiologieLevures from './pages/LaMicrobiologieLevures'
-import Toxicologie from './pages/Toxicologie'
-import Notes from './pages/Notes'
-import NoteDetail from './pages/NoteDetail'
-import Chirurgie from './pages/Chirurgie'
-import ChirurgieInstruments from './pages/ChirurgieInstruments'
-import ChirurgieTubes from './pages/ChirurgieTubes'
-import ChirurgieMonitoring from './pages/ChirurgieMonitoring'
-import ChirurgieCapnographie from './pages/ChirurgieCapnographie'
-import ChirurgiePostOp from './pages/ChirurgiePostOp'
-import ChirurgieDouleur from './pages/ChirurgieDouleur'
+const Connexion = lazy(() => import('./pages/Connexion'))
+const Inscription = lazy(() => import('./pages/Inscription'))
+const Accueil = lazy(() => import('./pages/Accueil'))
+const Calculateurs = lazy(() => import('./pages/Calculateurs'))
+const Profil = lazy(() => import('./pages/Profil'))
+const DroguesAnesthesiques = lazy(() => import('./pages/DroguesAnesthesiques'))
+const DroguesAntagonistes = lazy(() => import('./pages/DroguesAntagonistes'))
+const DroguesAntibiotiques = lazy(() => import('./pages/DroguesAntibiotiques'))
+const DroguesAntidiarrheiques = lazy(() => import('./pages/DroguesAntidiarrheiques'))
+const DroguesAntiemetiques = lazy(() => import('./pages/DroguesAntiemetiques'))
+const DroguesAntihistaminiques = lazy(() => import('./pages/DroguesAntihistaminiques'))
+const DroguesCardiovasculaires = lazy(() => import('./pages/DroguesCardiovasculaires'))
+const DroguesGastroprotecteurs = lazy(() => import('./pages/DroguesGastroprotecteurs'))
+const DroguesNeurologiques = lazy(() => import('./pages/DroguesNeurologiques'))
+const DroguesRespiratoires = lazy(() => import('./pages/DroguesRespiratoires'))
+const DroguesUrgence = lazy(() => import('./pages/DroguesUrgence'))
+const AdminMedicaments = lazy(() => import('./pages/AdminMedicaments'))
+const AdminMedicamentForm = lazy(() => import('./pages/AdminMedicamentForm'))
+const AdminAccueil = lazy(() => import('./pages/AdminAccueil'))
+const AdminLaboProtocoles = lazy(() => import('./pages/AdminLaboProtocoles'))
+const FicheMedicament = lazy(() => import('./pages/FicheMedicament'))
+const Fluidotherapie = lazy(() => import('./pages/Fluidotherapie'))
+const CRI = lazy(() => import('./pages/CRI'))
+const Conversion = lazy(() => import('./pages/Conversion'))
+const BesoinEnergetique = lazy(() => import('./pages/BesoinEnergetique'))
+const Dilution = lazy(() => import('./pages/Dilution'))
+const TransfusionSanguine = lazy(() => import('./pages/TransfusionSanguine'))
+const DateMiseBas = lazy(() => import('./pages/DateMiseBas'))
+const ToxiciteChocolat = lazy(() => import('./pages/ToxiciteChocolat'))
+const RCR = lazy(() => import('./pages/RCR'))
+const MesDrogues = lazy(() => import('./pages/MesDrogues'))
+const LaboAccueil = lazy(() => import('./pages/LaboAccueil'))
+const LaboProtocoles = lazy(() => import('./pages/LaboProtocoles'))
+const LaboProtocoleDetail = lazy(() => import('./pages/LaboProtocoleDetail'))
+const LaboNouveauProtocole = lazy(() => import('./pages/LaboNouveauProtocole'))
+const LaboUrologie = lazy(() => import('./pages/LaboUrologie'))
+const LaboUrologieValeurs = lazy(() => import('./pages/LaboUrologieValeurs'))
+const LaboUrologieSediments = lazy(() => import('./pages/LaboUrologieSediments'))
+const LaboParasitologie = lazy(() => import('./pages/LaboParasitologie'))
+const LaboParasitologieOeufs = lazy(() => import('./pages/LaboParasitologieOeufs'))
+const LaboParasitologieHotes = lazy(() => import('./pages/LaboParasitologieHotes'))
+const LaBiochimie = lazy(() => import('./pages/LaBiochimie'))
+const LaBiochimieTubes = lazy(() => import('./pages/LaBiochimieTubes'))
+const LaBiochimieValeurs = lazy(() => import('./pages/LaBiochimieValeurs'))
+const LaCytologie = lazy(() => import('./pages/LaCytologie'))
+const LaCytologiePrelevement = lazy(() => import('./pages/LaCytologiePrelevement'))
+const LaCytologieCellules = lazy(() => import('./pages/LaCytologieCellules'))
+const LaMicrobiologie = lazy(() => import('./pages/LaMicrobiologie'))
+const LaMicrobiologiePrelevement = lazy(() => import('./pages/LaMicrobiologiePrelevement'))
+const LaMicrobiologieCultures = lazy(() => import('./pages/LaMicrobiologieCultures'))
+const LaMicrobiologieAntibiogramme = lazy(() => import('./pages/LaMicrobiologieAntibiogramme'))
+const LaMicrobiologieBacteries = lazy(() => import('./pages/LaMicrobiologieBacteries'))
+const LaParasitologieExternes = lazy(() => import('./pages/LaParasitologieExternes'))
+const MedicamentCustomForm = lazy(() => import('./pages/MedicamentCustomForm'))
+const AjouterMedicament = lazy(() => import('./pages/AjouterMedicament'))
+const LaboParasitologieDipylidium = lazy(() => import('./pages/LaboParasitologieDipylidium'))
+const LaboParasitologiePuce = lazy(() => import('./pages/LaboParasitologiePuce'))
+const LaBiochimieOrganes = lazy(() => import('./pages/LaBiochimieOrganes'))
+const LaBiochimieImmuno = lazy(() => import('./pages/LaBiochimieImmuno'))
+const LaMicrobiologieColonies = lazy(() => import('./pages/LaMicrobiologieColonies'))
+const LaMicrobiologieLevures = lazy(() => import('./pages/LaMicrobiologieLevures'))
+const Toxicologie = lazy(() => import('./pages/Toxicologie'))
+const Notes = lazy(() => import('./pages/Notes'))
+const NoteDetail = lazy(() => import('./pages/NoteDetail'))
+const Chirurgie = lazy(() => import('./pages/Chirurgie'))
+const ChirurgieInstruments = lazy(() => import('./pages/ChirurgieInstruments'))
+const ChirurgieTubes = lazy(() => import('./pages/ChirurgieTubes'))
+const ChirurgieMonitoring = lazy(() => import('./pages/ChirurgieMonitoring'))
+const ChirurgieCapnographie = lazy(() => import('./pages/ChirurgieCapnographie'))
+const ChirurgiePostOp = lazy(() => import('./pages/ChirurgiePostOp'))
+const ChirurgieDouleur = lazy(() => import('./pages/ChirurgieDouleur'))
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 import BottomNavAdmin from './components/BottomNavAdmin'
+import ProGate from './components/ProGate'
 
 export const TitreContext = createContext({ titreCustom: '', setTitreCustom: () => {} })
 
@@ -102,7 +100,9 @@ function LayoutPrincipal({ children }) {
       <div className={`app-layout ${estAccueil ? 'app-layout-accueil' : ''}`}>
         <Header />
         <main className="contenu-principal">
-          {children}
+          <Suspense fallback={<div className="admin-loading">Chargement...</div>}>
+            {children}
+          </Suspense>
         </main>
         <BottomNav />
       </div>
@@ -117,7 +117,9 @@ function LayoutAdmin({ children }) {
       <div className="app-layout">
         <Header />
         <main className="contenu-principal">
-          {children}
+          <Suspense fallback={<div className="admin-loading">Chargement...</div>}>
+            {children}
+          </Suspense>
         </main>
         <BottomNavAdmin />
       </div>
@@ -157,13 +159,13 @@ export default function App() {
       <Routes>
 
         {/* AUTH */}
-        <Route path="/connexion" element={<Connexion />} />
-        <Route path="/inscription" element={<Inscription />} />
+        <Route path="/connexion" element={<Suspense fallback={null}><Connexion /></Suspense>} />
+        <Route path="/inscription" element={<Suspense fallback={null}><Inscription /></Suspense>} />
 
         {/* ACCUEIL */}
-          <Route path="/accueil" element={<RouteProtegee session={session}><Accueil /></RouteProtegee>} />
-          <Route path="/notes" element={<RouteProtegee session={session}><Notes /></RouteProtegee>} />
-          <Route path="/notes/:id" element={<RouteProtegee session={session}><NoteDetail /></RouteProtegee>} />
+        <Route path="/accueil" element={<RouteProtegee session={session}><Accueil /></RouteProtegee>} />
+        <Route path="/notes" element={<RouteProtegee session={session}><Notes /></RouteProtegee>} />
+        <Route path="/notes/:id" element={<RouteProtegee session={session}><NoteDetail /></RouteProtegee>} />
 
         {/* CALCULATEURS */}
         <Route path="/calculateurs" element={<RouteProtegee session={session}><Calculateurs /></RouteProtegee>} />
@@ -211,22 +213,20 @@ export default function App() {
         <Route path="/labo/173fb58a-988c-4202-8b14-bfcd15c4a16f" element={<RouteProtegee session={session}><LaCytologie /></RouteProtegee>} />
         <Route path="/labo/cytologie/prelevement" element={<RouteProtegee session={session}><LaCytologiePrelevement /></RouteProtegee>} />
         <Route path="/labo/cytologie/cellules" element={<RouteProtegee session={session}><ProGate><LaCytologieCellules /></ProGate></RouteProtegee>} />
-        <Route path="/labo/parasitologie/oeufs" element={<RouteProtegee session={session}><LaboParasitologieOeufs /></RouteProtegee>} />
-        <Route path="/labo/parasitologie/hotes" element={<RouteProtegee session={session}><LaboParasitologieHotes /></RouteProtegee>} />
         <Route path="/labo/e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5" element={<RouteProtegee session={session}><LaMicrobiologie /></RouteProtegee>} />
         <Route path="/labo/microbiologie/prelevement" element={<RouteProtegee session={session}><LaMicrobiologiePrelevement /></RouteProtegee>} />
         <Route path="/labo/microbiologie/cultures" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieCultures /></ProGate></RouteProtegee>} />
         <Route path="/labo/microbiologie/antibiogramme" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieAntibiogramme /></ProGate></RouteProtegee>} />
-        <Route path="/labo/parasitologie/externes" element={<RouteProtegee session={session}><LaParasitologieExternes /></RouteProtegee>} />
         <Route path="/labo/microbiologie/bacteries" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieBacteries /></ProGate></RouteProtegee>} />
+        <Route path="/labo/parasitologie/externes" element={<RouteProtegee session={session}><LaParasitologieExternes /></RouteProtegee>} />
         <Route path="/labo/parasitologie/dipylidium" element={<RouteProtegee session={session}><ProGate><LaboParasitologieDipylidium /></ProGate></RouteProtegee>} />
         <Route path="/labo/parasitologie/puce" element={<RouteProtegee session={session}><ProGate><LaboParasitologiePuce /></ProGate></RouteProtegee>} />
         <Route path="/labo/biochimie/immuno" element={<RouteProtegee session={session}><ProGate><LaBiochimieImmuno /></ProGate></RouteProtegee>} />
         <Route path="/labo/biochimie/organes" element={<RouteProtegee session={session}><ProGate><LaBiochimieOrganes /></ProGate></RouteProtegee>} />
-        <Route path="/labo/microbiologie/colonies" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieColonies /></ProGate></RouteProtegee>} /> 
-        <Route path="/labo/microbiologie/levures" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieLevures /></ProGate></RouteProtegee>} />  
+        <Route path="/labo/microbiologie/colonies" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieColonies /></ProGate></RouteProtegee>} />
+        <Route path="/labo/microbiologie/levures" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieLevures /></ProGate></RouteProtegee>} />
         <Route path="/labo/:categorieId" element={<RouteProtegee session={session}><LaboProtocoles /></RouteProtegee>} />
-          
+
         {/* CHIRURGIE */}
         <Route path="/chirurgie/instruments" element={<RouteProtegee session={session}><ProGate><ChirurgieInstruments /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/tubes" element={<RouteProtegee session={session}><ProGate><ChirurgieTubes /></ProGate></RouteProtegee>} />
@@ -234,7 +234,6 @@ export default function App() {
         <Route path="/chirurgie/capnographie" element={<RouteProtegee session={session}><ProGate><ChirurgieCapnographie /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/post-op" element={<RouteProtegee session={session}><ProGate><ChirurgiePostOp /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/douleur" element={<RouteProtegee session={session}><ChirurgieDouleur /></RouteProtegee>} />
-          
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />
@@ -250,7 +249,6 @@ export default function App() {
 
       </Routes>
       </BrowserRouter>
-      <Analytics />
-     </ProfilProvider> 
+     </ProfilProvider>
   )
 }
