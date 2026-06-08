@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { useEffect, useState, createContext } from 'react'
 import { supabase } from './lib/supabase'
 import { ProfilProvider } from './context/ProfilContext'
+import { Analytics } from "@vercel/analytics/next"
 
 
 import Connexion from './pages/Connexion'
