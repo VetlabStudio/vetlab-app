@@ -536,7 +536,7 @@ input  { font-family: var(--font); }
 }
 
 .auth-logo {
-  width: 100px;
+  width: 150px;
   object-fit: contain;
 }
 
