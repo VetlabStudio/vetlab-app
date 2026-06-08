@@ -30,7 +30,7 @@ export default function Connexion() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="auth-logo" />
+        <img src="/logo adjuvet.png" alt="Vetlab Studio" className="auth-logo" />
         <h1 className="auth-titre">Connexion</h1>
 
         <form onSubmit={handleConnexion} className="auth-form">
