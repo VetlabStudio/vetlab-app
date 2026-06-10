@@ -44,6 +44,7 @@ const CHIRURGIE = [
   { id: 'capnographie', label: 'Interprétation de la capnographie', route: '/chirurgie/capnographie', pro: true },
   { id: 'post-op', label: 'Soins post-opératoires', route: '/chirurgie/post-op', pro: true },
   { id: 'douleur', label: 'Évaluation de la douleur', route: '/chirurgie/douleur' },
+  { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg' },
 ]
 
 export default function Accueil() {
@@ -70,7 +71,7 @@ export default function Accueil() {
     <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
     <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
   </div>
-  <img src="/logoadjuvet-blanc.png" alt="AdjuVet" className="accueil-v2-logo" />
+  <img src="/logo-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
 </div>
 
       {/* SECTION CALCULATEURS */}

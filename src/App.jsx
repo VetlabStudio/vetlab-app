@@ -74,6 +74,11 @@ const ChirurgieMonitoring = lazy(() => import('./pages/ChirurgieMonitoring'))
 const ChirurgieCapnographie = lazy(() => import('./pages/ChirurgieCapnographie'))
 const ChirurgiePostOp = lazy(() => import('./pages/ChirurgiePostOp'))
 const ChirurgieDouleur = lazy(() => import('./pages/ChirurgieDouleur'))
+const ChirurgieECG = lazy(() => import('./pages/ChirurgieECG'))
+const ChirurgieECGElectrodes = lazy(() => import('./pages/ChirurgieECGElectrodes'))
+const ChirurgieECGInterpretation = lazy(() => import('./pages/ChirurgieECGInterpretation'))
+const ChirurgieECGAnomalies = lazy(() => import('./pages/ChirurgieECGAnomalies'))
+const ChirurgieECGConduction = lazy(() => import('./pages/ChirurgieECGConduction'))
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -234,7 +239,12 @@ export default function App() {
         <Route path="/chirurgie/capnographie" element={<RouteProtegee session={session}><ProGate><ChirurgieCapnographie /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/post-op" element={<RouteProtegee session={session}><ProGate><ChirurgiePostOp /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/douleur" element={<RouteProtegee session={session}><ChirurgieDouleur /></RouteProtegee>} />
-
+        <Route path="/chirurgie/ecg" element={<RouteProtegee session={session}><ChirurgieECG /></RouteProtegee>} />
+        <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/ecg/interpretation" element={<RouteProtegee session={session}><ProGate><ChirurgieECGInterpretation /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/ecg/anomalies" element={<RouteProtegee session={session}><ProGate><ChirurgieECGAnomalies /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/ecg/conduction" element={<RouteProtegee session={session}><ProGate><ChirurgieECGConduction /></ProGate></RouteProtegee>} />
+          
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />
 

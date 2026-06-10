@@ -63,6 +63,11 @@ const titres = {
   '/chirurgie/capnographie': 'Interprétation de la capnographie',
   '/chirurgie/post-op': 'Soins post-opératoires',
   '/chirurgie/douleur': 'Évaluation de la douleur',
+  '/chirurgie/ecg': 'ECG',
+  '/chirurgie/ecg/electrodes': 'Positionnement des électrodes',
+  '/chirurgie/ecg/interpretation': 'Interprétation',
+  '/chirurgie/ecg/anomalies': 'Anomalies courantes',
+  '/chirurgie/ecg/conduction': 'Conduction cardiaque',
   }
 
 export default function Header() {

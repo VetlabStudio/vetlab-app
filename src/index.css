@@ -3657,6 +3657,9 @@ input[type="number"] {
   gap: 8px;
   text-align: center;
 }
+.labo-ref-header--gauche span {
+  text-align: left;
+}
 
 
 .labo-ref-ligne {
