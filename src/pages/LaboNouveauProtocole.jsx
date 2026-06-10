@@ -55,15 +55,16 @@ export default function LaboNouveauProtocole() {
     setUploadingEtape(etapeId)
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      const ext = fichier.name.split('.').pop()
-      const path = `${user.id}/nouveau/${etapeId}.${ext}`
+      const ext = fichier.name.includes('.') ? fichier.name.split('.').pop() : (fichier.type.split('/').pop() || 'jpg')
+      const path = `${user.id}/nouveau/${etapeId}-${Date.now()}.${ext}`
       const { error } = await supabase.storage
         .from('labo-photos')
         .upload(path, fichier, { upsert: true })
-      console.log('upload error:', error)
       if (!error) {
         const { data: urlData } = supabase.storage.from('labo-photos').getPublicUrl(path)
         modifierEtape(etapeId, 'photo_url', urlData.publicUrl)
+      } else {
+        alert('Erreur upload photo : ' + error.message)
       }
     } catch (err) {
       console.error('Erreur upload:', err)

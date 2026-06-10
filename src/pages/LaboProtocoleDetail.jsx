@@ -178,8 +178,8 @@ export default function LaboProtocoleDetail() {
   async function uploaderPhoto(etapeId, fichier) {
     setUploadingEtape(etapeId)
     const { data: { user } } = await supabase.auth.getUser()
-    const ext = fichier.name.split('.').pop()
-    const path = `${user.id}/${protocoleId}/${etapeId}.${ext}`
+    const ext = fichier.name.includes('.') ? fichier.name.split('.').pop() : (fichier.type.split('/').pop() || 'jpg')
+    const path = `${user.id}/${protocoleId}/${etapeId}-${Date.now()}.${ext}`
     const { error } = await supabase.storage
       .from('labo-photos')
       .upload(path, fichier, { upsert: true })
@@ -188,6 +188,8 @@ export default function LaboProtocoleDetail() {
       setEtapes(prev => prev.map(e =>
         e.id === etapeId ? { ...e, photo_url: urlData.publicUrl } : e
       ))
+    } else {
+      alert('Erreur upload photo : ' + error.message)
     }
     setUploadingEtape(null)
   }
