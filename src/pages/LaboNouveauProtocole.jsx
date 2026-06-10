@@ -15,7 +15,9 @@ export default function LaboNouveauProtocole() {
   const [sauvegarde, setSauvegarde] = useState(false)
   const [uploadingEtape, setUploadingEtape] = useState(null)
   const [etapePhotoId, setEtapePhotoId] = useState(null)
+  const [choixPhotoEtapeId, setChoixPhotoEtapeId] = useState(null)
   const fileInputRef = useRef(null)
+  const cameraInputRef = useRef(null)
 
   // ─── MATÉRIEL ─────────────────────────────────
   function ajouterMateriel() {
@@ -182,10 +184,7 @@ export default function LaboNouveauProtocole() {
               ) : (
                 <button
                   className="labo-photo-ajouter"
-                  onClick={() => {
-                    setEtapePhotoId(etape.id)
-                    fileInputRef.current?.click()
-                  }}
+                  onClick={() => setChoixPhotoEtapeId(etape.id)}
                 >
                   {uploadingEtape === etape.id ? 'Upload en cours...' : (
                     <><i className="ti ti-camera"></i> Ajouter une photo (facultatif)</>
@@ -253,6 +252,48 @@ export default function LaboNouveauProtocole() {
           }
         }}
       />
+
+      {/* Input caméra caché */}
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        style={{ display: 'none' }}
+        onChange={e => {
+          if (e.target.files[0] && etapePhotoId) {
+            uploaderPhoto(etapePhotoId, e.target.files[0])
+            e.target.value = ''
+          }
+        }}
+      />
+
+      {choixPhotoEtapeId && (
+        <div className="popup-overlay" onClick={() => setChoixPhotoEtapeId(null)}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <span>Ajouter une photo</span>
+              <button className="popup-close" onClick={() => setChoixPhotoEtapeId(null)}>✕</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '8px 0 4px' }}>
+              <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => {
+                setEtapePhotoId(choixPhotoEtapeId)
+                setChoixPhotoEtapeId(null)
+                cameraInputRef.current?.click()
+              }}>
+                <i className="ti ti-camera"></i> Prendre une photo
+              </button>
+              <button className="labo-btn-secondary" style={{ width: '100%' }} onClick={() => {
+                setEtapePhotoId(choixPhotoEtapeId)
+                setChoixPhotoEtapeId(null)
+                fileInputRef.current?.click()
+              }}>
+                <i className="ti ti-photo"></i> Choisir depuis la galerie
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )
