@@ -155,7 +155,7 @@ export default function ChirurgieECGAnomalies() {
 
       {ANOMALIES.map(a => (
         <div key={a.id} className="postop-section">
-          <img src={a.image} alt={a.titre} style={{ width: '100%', display: 'block', borderRadius: 'var(--radius-md)', marginBottom: 12 }} />
+          <img src={a.image} alt={a.titre} style={{ width: '100%', display: 'block', borderRadius: 'var(--radius-md)', marginBottom: 12, marginTop: 12 }} />
 
           <div className="postop-section-header">
             <div className="postop-section-icone" style={{ background: 'rgba(37,77,86,0.1)', color: 'var(--primary)' }}>
@@ -165,7 +165,7 @@ export default function ChirurgieECGAnomalies() {
           </div>
 
           {a.paragraphes?.map((texte, i) => (
-            <p key={i} style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, padding: '0 16px', marginBottom: 12 }}>
+                        <p key={i} style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, padding: '0 16px', marginTop: i === 0 ? 12 : 0, marginBottom: 12 }}>
               <Texte>{texte}</Texte>
             </p>
           ))}
@@ -181,8 +181,8 @@ export default function ChirurgieECGAnomalies() {
             </ul>
           )}
 
-          {a.paragraphesApres?.map((texte, i) => (
-            <p key={i} style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, padding: '0 16px', marginTop: 12 }}>
+                    {a.paragraphesApres?.map((texte, i, arr) => (
+            <p key={i} style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, padding: '0 16px', marginTop: 12, marginBottom: i === arr.length - 1 ? 12 : 0 }}>
               <Texte>{texte}</Texte>
             </p>
           ))}

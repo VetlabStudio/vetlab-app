@@ -536,7 +536,7 @@ input  { font-family: var(--font); }
 }
 
 .auth-logo {
-  width: 150px;
+  width: 100px;
   object-fit: contain;
 }
 
@@ -957,7 +957,6 @@ input  { font-family: var(--font); }
   cursor: pointer;
   padding: 0;
   font-family: var(--font);
-  text-align: left
 }
 
 .demarche-header h2 {
@@ -3367,11 +3366,13 @@ input[type="number"] {
 
 .labo-etape-photo {
   width: 100%;
-  max-height: 150px;
-  object-fit: contain;
+  height: 200px;
+  object-fit: cover;
+  object-position: center;
   display: block;
   margin-top:20px;
   margin-bottom:20px;
+  border-radius: var(--radius-md);
 }
 
 .labo-photo-supprimer {
@@ -3656,9 +3657,6 @@ input[type="number"] {
   padding: 8px 12px;
   gap: 8px;
   text-align: center;
-}
-.labo-ref-header--gauche span {
-  text-align: left;
 }
 
 
@@ -4605,6 +4603,63 @@ input[type="number"] {
 .douleur-score-hint {
   font-size: 12px;
   font-weight: 700;
+  color: var(--text-hint);
+}
+
+/* ===========================
+   EXAMEN PHYSIQUE
+   =========================== */
+
+.examen-systeme {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.examen-systeme-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.examen-systeme-icone {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.examen-systeme-titre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.examen-checkbox {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.examen-checkbox.selectionne {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  font-size: 16px;
+}
+
+.examen-checkbox-label {
+  font-size: 12px;
+  font-weight: 600;
   color: var(--text-hint);
 }
 

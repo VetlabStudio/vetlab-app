@@ -46,6 +46,9 @@ const CHIRURGIE = [
   { id: 'douleur', label: 'Évaluation de la douleur', route: '/chirurgie/douleur' },
   { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg' },
 ]
+const SOINS_GENERAUX = [
+  { id: 'examen-physique', label: 'Examen pré-consultation', route: '/soins-generaux/examen-physique', pro: true },
+]
 
 export default function Accueil() {
   const navigate = useNavigate()
@@ -141,6 +144,24 @@ export default function Accueil() {
     <span>{c.label}</span>
     <i className="ti ti-chevron-right accueil-v2-chevron"></i>
     {c.pro && <BadgePro />}
+  </button>
+))}
+  </div>
+</section>
+      {/* SECTION SOINS GÉNÉRAUX */}
+<section className="accueil-v2-section">
+  <h2 className="accueil-v2-titre-section">Soins généraux</h2>
+  <div className="accueil-v2-drogues-grid">
+    {SOINS_GENERAUX.map(s => (
+  <button
+    key={s.id}
+    className="accueil-v2-drogue-item"
+    onClick={() => navigate(s.route)}
+    style={{ position: 'relative' }}
+  >
+    <span>{s.label}</span>
+    <i className="ti ti-chevron-right accueil-v2-chevron"></i>
+    {s.pro && <BadgePro />}
   </button>
 ))}
   </div>
