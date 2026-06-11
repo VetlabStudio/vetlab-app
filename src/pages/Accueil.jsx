@@ -47,7 +47,6 @@ const CHIRURGIE = [
   { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg' },
 ]
 const SOINS_GENERAUX = [
-  { id: 'examen-physique', label: 'Examen pré-consultation', route: '/soins-generaux/examen-physique', pro: true },
 ]
 
 export default function Accueil() {
@@ -79,6 +78,13 @@ export default function Accueil() {
 
       {/* SECTION CALCULATEURS */}
       <section className="accueil-v2-section">
+        {/* BOUTON PRÉCONSULTATION */}
+        <button className="accueil-v2-preconsult-btn" onClick={() => navigate('/soins-generaux/examen-physique')}>
+                    <img src="/preconsult.png" alt="" style={{ width: 42, height: 42, objectFit: 'contain' }} />
+          <span>Démarrer un examen</span>
+          <BadgePro />
+        </button>
+
         <h2 className="accueil-v2-titre-section">Calculateurs</h2>
         <div className="accueil-v2-calc-grid">
           {CALCULATEURS.map(c => (
@@ -149,6 +155,7 @@ export default function Accueil() {
   </div>
 </section>
       {/* SECTION SOINS GÉNÉRAUX */}
+{SOINS_GENERAUX.length > 0 && (
 <section className="accueil-v2-section">
   <h2 className="accueil-v2-titre-section">Soins généraux</h2>
   <div className="accueil-v2-drogues-grid">
@@ -166,6 +173,7 @@ export default function Accueil() {
 ))}
   </div>
 </section>
+)}
   <div style={{ height: 32 }} />
     </div>
   )

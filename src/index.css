@@ -246,6 +246,31 @@ input  { font-family: var(--font); }
   margin: 0;
 }
 
+/* ─── BOUTON PRÉCONSULTATION ────────────────── */
+.accueil-v2-preconsult-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  border: none;
+  border-radius: 14px;
+  background: var(--primary);
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.accueil-v2-preconsult-btn i {
+  font-size: 20px;
+}
+
 /* ─── GRILLE CALCULATEURS ────────────────────── */
 .accueil-v2-calc-grid {
   display: grid;
@@ -1355,16 +1380,20 @@ input  { font-family: var(--font); }
 
 .form-textarea {
   width: 100%;
-  padding: 11px 12px;
+  padding: 11px 12px 18px;
   border: 1px solid var(--border);
   border-radius: 8px;
   font-family: 'Montserrat', sans-serif;
   font-size: 13px;
   background: var(--bg-card);
   color: var(--text-primary);
-  box-sizing: border-box;
   resize: vertical;
-  line-height: 1.5;
+}
+.form-textarea::-webkit-resizer {
+  background-image: repeating-linear-gradient(135deg, var(--text-hint) 0 1.5px, transparent 1.5px 4px);
+  background-position: bottom right;
+  background-repeat: no-repeat;
+  background-size: 9px 9px;
 }
 
 .form-textarea:focus {
@@ -3279,6 +3308,7 @@ input[type="number"] {
 }
 .popup-actions-centrees {
   display: flex;
+  gap: 8px;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
@@ -4661,6 +4691,47 @@ input[type="number"] {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-hint);
+}
+
+.examen-historique-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.examen-historique-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.examen-historique-info {
+  flex: 1;
+  min-width: 0;
+}
+.examen-historique-nom {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+.examen-historique-date {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin: 2px 0 0;
+}
+.examen-historique-supprimer {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .douleur-resultat-section {

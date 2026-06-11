@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { supabase } from '../lib/supabase'
+import { TitreContext } from '../App'
 
 const SYSTEMES = [
   { id: 'tegumentaire', icone: '/examen-tegumentaire.png', titre: 'Tégumentaire', placeholder: 'Hydratation, alopécie, masses, parasites, lésions, rougeurs, démangeaisons...' },
@@ -48,6 +49,12 @@ export default function SoinsGenerauxExamenPhysique() {
   const [showReinit, setShowReinit] = useState(false)
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(null)
   const [copie, setCopie] = useState(false)
+  const { setTitreCustom } = useContext(TitreContext)
+
+  useEffect(() => {
+    setTitreCustom(vue === 'formulaire' ? (currentId ? 'Modifier l\'examen' : 'Nouvel examen') : 'Démarrer un examen')
+    return () => setTitreCustom('')
+  }, [vue, currentId])
 
   const date = new Date()
   const dateAffichee = date.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -230,7 +237,7 @@ export default function SoinsGenerauxExamenPhysique() {
         <div className="postop-intro">
           <i className="ti ti-clipboard-check postop-intro-icone"></i>
           <p className="postop-intro-texte">
-            Checklist d'examen physique en préconsultation. Consulte tes anciens examens ou commence-en un nouveau.
+            Checklist d'examen physique. Consulte tes anciens examens ou commence-en un nouveau.
           </p>
         </div>
 
@@ -250,24 +257,24 @@ export default function SoinsGenerauxExamenPhysique() {
               Aucun examen enregistré pour le moment.
             </p>
           ) : (
-            <div className="notes-grille" style={{ padding: '0 16px 16px' }}>
+            <div className="examen-historique-liste" style={{ padding: '0 16px 16px' }}>
               {historique.map(item => (
                 <div
                   key={item.id}
-                  className="note-tuile"
-                  style={{ background: '#FFF9C4' }}
+                  className="examen-historique-item"
                   onClick={() => consulter(item)}
                 >
-                  <div className="note-tuile-header">
-                    <h3 className="note-tuile-titre">{item.animal_nom}</h3>
-                    <button
-                      className="note-tuile-supprimer"
-                      onClick={e => { e.stopPropagation(); setShowConfirmSupprimer(item) }}
-                    >
-                      <i className="ti ti-trash"></i>
-                    </button>
+                  <div className="examen-historique-info">
+                    <h3 className="examen-historique-nom">{item.animal_nom}</h3>
+                    <p className="examen-historique-date">{formaterDate(item.created_at)}</p>
                   </div>
-                  <p className="note-tuile-date">{formaterDate(item.created_at)}</p>
+                  <button
+                    className="examen-historique-supprimer"
+                    onClick={e => { e.stopPropagation(); setShowConfirmSupprimer(item) }}
+                  >
+                    <i className="ti ti-trash"></i>
+                  </button>
+                  <i className="ti ti-chevron-right" style={{ color: 'var(--text-hint)', fontSize: 18 }}></i>
                 </div>
               ))}
             </div>
@@ -288,12 +295,12 @@ export default function SoinsGenerauxExamenPhysique() {
                 value={itemConsulte.resume}
                 readOnly
               />
-              <div className="popup-actions-centrees" style={{ marginTop: 12 }}>
+              <button className="labo-btn-primary" style={{ width: '100%', marginTop: 12 }} onClick={() => modifier(itemConsulte)}>
+                Modifier
+              </button>
+              <div className="popup-actions-centrees" style={{ marginTop: 8 }}>
                 <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => copierResume(itemConsulte.resume)}>
                   {copie ? 'Copié !' : 'Copier'}
-                </button>
-                <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => modifier(itemConsulte)}>
-                  Modifier
                 </button>
                 <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => setShowConfirmSupprimer(itemConsulte)}>
                   Supprimer
@@ -337,7 +344,7 @@ export default function SoinsGenerauxExamenPhysique() {
   return (
     <div className="labo-detail-page">
 
-      <button className="labo-btn-secondary" style={{ marginBottom: 12 }} onClick={() => setVue('liste')}>
+      <button className="labo-btn-secondary" style={{ marginBottom: 12, width: '100%', textAlign: 'center', display: 'block', boxSizing: 'border-box', position: 'static', right: 'auto' }} onClick={() => setVue('liste')}>
         <i className="ti ti-arrow-left"></i> Retour à l'historique
       </button>
 
@@ -405,7 +412,7 @@ export default function SoinsGenerauxExamenPhysique() {
             <label className="form-label">Attitude générale</label>
             <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
               {ATTITUDE_OPTIONS.map(opt => (
-                <button key={opt} type="button" className={`toggle-btn ${form.attitude === opt ? 'actif' : ''}`} onClick={() => modifierChamp('attitude', opt)}>
+                <button key={opt} type="button" className={`toggle-btn ${form.attitude === opt ? 'actif' : ''}`} onClick={() => modifierChamp('attitude', form.attitude === opt ? '' : opt)}>
                   {opt}
                 </button>
               ))}
@@ -415,7 +422,7 @@ export default function SoinsGenerauxExamenPhysique() {
             <label className="form-label">Niveau d'énergie</label>
             <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
               {ENERGIE_OPTIONS.map(opt => (
-                <button key={opt} type="button" className={`toggle-btn ${form.niveauEnergie === opt ? 'actif' : ''}`} onClick={() => modifierChamp('niveauEnergie', opt)}>
+                <button key={opt} type="button" className={`toggle-btn ${form.niveauEnergie === opt ? 'actif' : ''}`} onClick={() => modifierChamp('niveauEnergie', form.niveauEnergie === opt ? '' : opt)}>
                   {opt}
                 </button>
               ))}
@@ -425,7 +432,7 @@ export default function SoinsGenerauxExamenPhysique() {
             <label className="form-label">Condition corporelle</label>
             <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
               {CONDITION_OPTIONS.map(opt => (
-                <button key={opt} type="button" className={`toggle-btn ${form.conditionCorporelle === opt ? 'actif' : ''}`} onClick={() => modifierChamp('conditionCorporelle', opt)}>
+                <button key={opt} type="button" className={`toggle-btn ${form.conditionCorporelle === opt ? 'actif' : ''}`} onClick={() => modifierChamp('conditionCorporelle', form.conditionCorporelle === opt ? '' : opt)}>
                   {opt}
                 </button>
               ))}
@@ -435,7 +442,7 @@ export default function SoinsGenerauxExamenPhysique() {
             <label className="form-label">Comportement</label>
             <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
               {COMPORTEMENT_OPTIONS.map(opt => (
-                <button key={opt} type="button" className={`toggle-btn ${form.comportement === opt ? 'actif' : ''}`} onClick={() => modifierChamp('comportement', opt)}>
+                <button key={opt} type="button" className={`toggle-btn ${form.comportement === opt ? 'actif' : ''}`} onClick={() => modifierChamp('comportement', form.comportement === opt ? '' : opt)}>
                   {opt}
                 </button>
               ))}
