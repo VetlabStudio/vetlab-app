@@ -3259,6 +3259,8 @@ input[type="number"] {
    display: flex;
   gap: 8px;
   justify-content: flex-end !important;
+  position: relative;
+  right: 1rem;
 }
 
 .labo-btn-primary {
@@ -3283,7 +3285,6 @@ input[type="number"] {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  position: relative; right: 1rem;
 }
 
 .labo-btn-reorganiser {
@@ -3400,7 +3401,7 @@ input[type="number"] {
   object-fit: cover;
   object-position: center;
   display: block;
-  margin-top:20px;
+  margin-top:0px;
   margin-bottom:20px;
   border-radius: var(--radius-md);
 }
