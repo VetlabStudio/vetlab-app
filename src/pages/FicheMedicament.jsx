@@ -228,7 +228,8 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
         >
           {estFavori ? '★' : '☆'}
         </button>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}> 
+        <h1 className="fiche-nom">{medicament.nom}</h1>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
            <IconesEspeces especes={medicament.especes} taille={40} />
      <span className="fiche-espece-label">
   {medicament.especes?.length > 0
@@ -406,7 +407,7 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
           La personnalisation des fiches médicaments est réservée au forfait <strong>Pro</strong>.
         </p>
         <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-          Passe au forfait Pro dans ton profil pour accéder à cette fonctionnalité.
+          Le forfait Pro sera disponible prochainement. Reste à l'affût !
         </p>
       </div>
       <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>

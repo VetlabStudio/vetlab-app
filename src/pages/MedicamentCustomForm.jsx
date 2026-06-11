@@ -181,6 +181,8 @@ console.log('customId:', customId)
     <div className="admin-page">
       <div className="form-scroll">
 
+        <h1 className="fiche-nom">Personnaliser — {form.nom}</h1>
+
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 0 }}>
           <button className="btn-enregistrer-header" onClick={sauvegarder} disabled={sauvegarde}>
             {sauvegarde ? '...' : 'Enregistrer'}

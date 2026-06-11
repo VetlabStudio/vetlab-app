@@ -1387,7 +1387,9 @@ input  { font-family: var(--font); }
   font-size: 13px;
   background: var(--bg-card);
   color: var(--text-primary);
+  box-sizing: border-box;
   resize: vertical;
+  line-height: 1.5;
 }
 .form-textarea::-webkit-resizer {
   background-image: repeating-linear-gradient(135deg, var(--text-hint) 0 1.5px, transparent 1.5px 4px);
@@ -1764,6 +1766,14 @@ input  { font-family: var(--font); }
   gap: 0.5rem;
   padding: 1rem 1rem 0.5rem;
   position: relative;
+}
+
+.fiche-nom {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0;
 }
 
 .favori-btn-fiche {
@@ -3401,7 +3411,7 @@ input[type="number"] {
   object-fit: cover;
   object-position: center;
   display: block;
-  margin-top:0px;
+  margin-top:20px;
   margin-bottom:20px;
   border-radius: var(--radius-md);
 }
