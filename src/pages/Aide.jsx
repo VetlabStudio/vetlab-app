@@ -15,6 +15,41 @@ const SECTIONS = [
     ],
   },
   {
+    titre: 'Foire aux questions',
+    icone: 'ti-help-square-rounded',
+    paragraphes: [],
+    faq: [
+      {
+        q: 'Comment m\'abonner au forfait Pro ?',
+        a: 'Va dans Profil, puis choisis le forfait mensuel ou annuel et complète le paiement directement dans l\'application (paiement sécurisé via Stripe).',
+      },
+      {
+        q: 'Comment annuler mon abonnement Pro ?',
+        a: 'Dans Profil, appuie sur "Gérer mon abonnement" — tu seras redirigé vers le portail Stripe où tu peux annuler ou modifier ton abonnement. L\'accès Pro reste actif jusqu\'à la fin de la période déjà payée.',
+      },
+      {
+        q: 'Qu\'est-ce qui est inclus dans le forfait Pro ?',
+        a: 'Le Pro donne accès aux contenus avancés : toxicologie, médicaments personnalisés, protocoles de laboratoire et chirurgie complets (sédiments, cytologie, microbiologie, biochimie, instruments, monitoring, ECG, etc.) et le module Démarrer un examen.',
+      },
+      {
+        q: 'Si je me désabonne, est-ce que je perds mes données Pro ?',
+        a: 'Non. Tes médicaments personnalisés, protocoles et examens restent enregistrés. Ils redeviennent simplement accessibles si tu te réabonnes avec le même compte.',
+      },
+      {
+        q: 'Comment ajouter un médicament à mes favoris ?',
+        a: 'Sur la fiche d\'un médicament, appuie sur l\'icône en forme d\'étoile/cœur. Tes favoris sont accessibles rapidement dans l\'onglet "Médicaments favoris" de la barre de navigation.',
+      },
+      {
+        q: 'Comment supprimer mon compte ?',
+        a: 'Dans Profil, utilise l\'option de suppression de compte. Cette action est définitive et supprime toutes tes données.',
+      },
+      {
+        q: 'Mes informations sont-elles privées ?',
+        a: 'Oui. Tes données sont liées uniquement à ton compte et ne sont jamais vendues. Consulte la Politique de confidentialité pour plus de détails.',
+      },
+    ],
+  },
+  {
     titre: 'Problème ou suggestion',
     icone: 'ti-message-2',
     paragraphes: [

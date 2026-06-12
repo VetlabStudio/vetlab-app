@@ -1,3 +1,19 @@
+import { useState } from 'react'
+
+function FaqItem({ q, a }) {
+  const [ouvert, setOuvert] = useState(false)
+
+  return (
+    <div className="page-info-faq-item" onClick={() => setOuvert(o => !o)}>
+      <div className="page-info-faq-question">
+        <p>{q}</p>
+        <i className={`ti ti-chevron-${ouvert ? 'up' : 'down'}`}></i>
+      </div>
+      {ouvert && <p className="page-info-faq-reponse">{a}</p>}
+    </div>
+  )
+}
+
 export default function PageInfo({ sections }) {
   return (
     <div className="labo-detail-page">
@@ -14,6 +30,9 @@ export default function PageInfo({ sections }) {
           <div className="page-info-contenu">
             {section.paragraphes.map((p, j) => (
               <p key={j}>{p}</p>
+            ))}
+            {section.faq && section.faq.map((item, j) => (
+              <FaqItem key={j} q={item.q} a={item.a} />
             ))}
             {section.liste && (
               <ul>

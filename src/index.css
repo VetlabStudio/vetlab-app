@@ -4390,6 +4390,39 @@ input[type="number"] {
   color: var(--text-secondary);
   line-height: 1.6;
 }
+.page-info-faq-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.page-info-faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.page-info-faq-question p {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+.page-info-faq-question i {
+  font-size: 16px;
+  color: var(--text-hint);
+  flex-shrink: 0;
+}
+.page-info-faq-reponse {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
 .page-info-lien {
   font-size: 13px;
   color: var(--primary);

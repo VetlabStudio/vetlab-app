@@ -90,9 +90,12 @@ export default function Header() {
       .find(([key]) => location.pathname.startsWith(key))?.[1] ||
     null
 
+  const pagesMenu = ['/sources-references', '/disclaimer', '/politique-confidentialite', '/termes-services', '/aide']
+  const retour = () => pagesMenu.includes(location.pathname) ? navigate('/accueil') : navigate(-1)
+
   return (
     <div className="header">
-      <button className="header-back" onClick={() => navigate(-1)}>
+      <button className="header-back" onClick={retour}>
         <i className="ti ti-arrow-left"></i>
       </button>
       <span style={{ textAlign: 'center', maxWidth: 'calc(100% - 80px)', lineHeight: 1.3 }}>{titre}</span>

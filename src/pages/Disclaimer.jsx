@@ -22,10 +22,19 @@ const SECTIONS = [
     ],
   },
   {
+    titre: 'Exactitude de l\'information',
+    icone: 'ti-alert-circle',
+    paragraphes: [
+      'Bien que le contenu d\'ADJUVET soit basé sur la littérature et la recherche vétérinaire, nous ne pouvons garantir son exactitude, son exhaustivité ou son actualité complètes.',
+      'L\'utilisateur assume l\'entière responsabilité des décisions ou actions prises à partir des informations contenues dans ADJUVET.',
+    ],
+  },
+  {
     titre: 'Limitation de responsabilité',
     icone: 'ti-ban',
     paragraphes: [
-      'ADJUVET et Vetlab Studio déclinent toute responsabilité quant aux conséquences directes ou indirectes résultant de l\'utilisation des informations contenues dans l\'application.',
+      'ADJUVET, Vetlab Studio et toute personne ayant contribué à la préparation, à la publication ou à la distribution de l\'application déclinent toute responsabilité quant aux dommages directs, indirects, accessoires ou consécutifs résultant de l\'utilisation ou de l\'impossibilité d\'utiliser l\'information contenue dans l\'application, y compris ceux liés à une défectuosité du système.',
+      'ADJUVET est fourni "tel quel", sans garantie d\'aucune sorte, expresse ou implicite, quant à sa qualité, son exactitude ou son adéquation à un usage particulier.',
       'En utilisant cette application, tu reconnais comprendre et accepter ces limites.',
     ],
   },
