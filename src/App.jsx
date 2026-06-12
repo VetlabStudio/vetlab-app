@@ -8,6 +8,11 @@ const Inscription = lazy(() => import('./pages/Inscription'))
 const Accueil = lazy(() => import('./pages/Accueil'))
 const Calculateurs = lazy(() => import('./pages/Calculateurs'))
 const Profil = lazy(() => import('./pages/Profil'))
+const SourcesReferences = lazy(() => import('./pages/SourcesReferences'))
+const Disclaimer = lazy(() => import('./pages/Disclaimer'))
+const PolitiqueConfidentialite = lazy(() => import('./pages/PolitiqueConfidentialite'))
+const TermesServices = lazy(() => import('./pages/TermesServices'))
+const Aide = lazy(() => import('./pages/Aide'))
 const DroguesAnesthesiques = lazy(() => import('./pages/DroguesAnesthesiques'))
 const DroguesAntagonistes = lazy(() => import('./pages/DroguesAntagonistes'))
 const DroguesAntibiotiques = lazy(() => import('./pages/DroguesAntibiotiques'))
@@ -247,6 +252,11 @@ export default function App() {
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />
+        <Route path="/sources-references" element={<RouteProtegee session={session}><SourcesReferences /></RouteProtegee>} />
+        <Route path="/disclaimer" element={<RouteProtegee session={session}><Disclaimer /></RouteProtegee>} />
+        <Route path="/politique-confidentialite" element={<RouteProtegee session={session}><PolitiqueConfidentialite /></RouteProtegee>} />
+        <Route path="/termes-services" element={<RouteProtegee session={session}><TermesServices /></RouteProtegee>} />
+        <Route path="/aide" element={<RouteProtegee session={session}><Aide /></RouteProtegee>} />
 
         {/* ADMIN */}
         <Route path="/admin" element={<RouteProtegeeAdmin session={session}><AdminAccueil /></RouteProtegeeAdmin>} />

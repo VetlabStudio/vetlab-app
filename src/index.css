@@ -4365,6 +4365,70 @@ input[type="number"] {
   margin: 0;
 }
 
+/* ─── PAGES INFO (disclaimer, confidentialité, etc.) ────── */
+.page-info-contenu {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.page-info-contenu p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+.page-info-contenu ul {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.page-info-contenu li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.page-info-lien {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ─── MENU OVERLAY (bottom nav) ──────────────────────────── */
+.menu-overlay-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+}
+.menu-overlay-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.menu-overlay-item i:first-child {
+  font-size: 18px;
+  color: var(--primary);
+  width: 22px;
+  text-align: center;
+}
+.menu-overlay-item .ti-chevron-right {
+  margin-left: auto;
+  color: var(--text-hint);
+  font-size: 18px;
+}
+
 .postop-section {
   background: var(--bg-card);
   border: 1px solid var(--border);

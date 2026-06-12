@@ -26,6 +26,11 @@ const titres = {
   '/drogues/urgence': 'Urgence',
   '/admin/medicaments': 'Admin — Médicaments',
   '/profil': 'Profil',
+  '/sources-references': 'Sources et références',
+  '/disclaimer': 'Avertissement',
+  '/politique-confidentialite': 'Politique de confidentialité',
+  '/termes-services': 'Termes et services',
+  '/aide': 'Aide',
   '/drogues/mes-drogues': 'Médicaments favoris',
   '/labo': 'Laboratoire',
   '/labo/nouveau': 'Nouveau protocole',
@@ -68,6 +73,7 @@ const titres = {
   '/chirurgie/ecg/interpretation': 'Interprétation',
   '/chirurgie/ecg/anomalies': 'Anomalies courantes',
   '/chirurgie/ecg/conduction': 'Conduction cardiaque',
+  '/soins-generaux/examen-physique': 'Démarrer un examen',
   }
 
 export default function Header() {
