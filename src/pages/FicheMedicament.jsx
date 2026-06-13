@@ -266,7 +266,7 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
       type="text"
       inputMode="decimal"
       value={poids}
-      onChange={e => setPoids(e.target.value)}
+      onChange={e => setPoids(e.target.value.replace(',', '.'))}
       placeholder="Ex: 5.2"
     />
     <div className="radio-groupe">
@@ -287,7 +287,7 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
       type="text"
       inputMode="decimal"
       value={posologie}
-      onChange={e => { setPosologie(e.target.value); setHorsPlage(false) }}
+      onChange={e => { setPosologie(e.target.value.replace(',', '.')); setHorsPlage(false) }}
       placeholder="Ex: 0.05"
     />
     <span className="unite-fixe">{medicament.unite_dose || 'mg/kg'}</span>
@@ -312,7 +312,7 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
       type="text"
       inputMode="decimal"
       value={concentration}
-      onChange={e => setConcentration(e.target.value)}
+      onChange={e => setConcentration(e.target.value.replace(',', '.'))}
       placeholder="Ex: 10"
     />
     <span className="unite-fixe">{medicament.unite_concentration || 'mg/mL'}</span>

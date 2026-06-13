@@ -66,7 +66,7 @@ export default function CRI() {
     type="text"
     inputMode="decimal"
     value={poids}
-    onChange={e => setPoids(e.target.value)}
+    onChange={e => setPoids(e.target.value.replace(',', '.'))}
     placeholder="Ex: 10"
   />
   <div className="radio-groupe">
@@ -87,7 +87,7 @@ export default function CRI() {
     type="text"
     inputMode="decimal"
     value={debit}
-    onChange={e => setDebit(e.target.value)}
+    onChange={e => setDebit(e.target.value.replace(',', '.'))}
     placeholder="Ex: 5"
   />
   <select className="cri-select" value={uniteDebit} onChange={e => setUniteDebit(e.target.value)}>
@@ -133,7 +133,7 @@ export default function CRI() {
     type="text"
     inputMode="decimal"
     value={doseCharge}
-    onChange={e => setDoseCharge(e.target.value)}
+    onChange={e => setDoseCharge(e.target.value.replace(',', '.'))}
     placeholder="0"
   />
   <span className="unite-fixe">mg/kg IV</span>
@@ -151,7 +151,7 @@ export default function CRI() {
     type="text"
     inputMode="decimal"
     value={dosageCRI}
-    onChange={e => setDosageCRI(e.target.value)}
+    onChange={e => setDosageCRI(e.target.value.replace(',', '.'))}
     placeholder="0"
   />
   <select className="cri-select" value={uniteDosage} onChange={e => setUniteDosage(e.target.value)}>
@@ -172,7 +172,7 @@ export default function CRI() {
     type="text"
     inputMode="decimal"
     value={concentration}
-    onChange={e => setConcentration(e.target.value)}
+    onChange={e => setConcentration(e.target.value.replace(',', '.'))}
     placeholder="0"
   />
   <span className="unite-fixe">mg/ml</span>

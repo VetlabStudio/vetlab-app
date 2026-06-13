@@ -63,7 +63,7 @@ export default function BesoinEnergetique() {
               type="text"
               inputMode="decimal"
               value={poids}
-              onChange={e => setPoids(e.target.value)}
+              onChange={e => setPoids(e.target.value.replace(',', '.'))}
               placeholder="Ex: 10"
             />
             <div className="radio-groupe">
@@ -91,7 +91,7 @@ export default function BesoinEnergetique() {
               type="text"
               inputMode="decimal"
               value={facteurCustom}
-              onChange={e => setFacteurCustom(e.target.value)}
+              onChange={e => setFacteurCustom(e.target.value.replace(',', '.'))}
               placeholder="Ex: 1.3"
             />
             <span className="unite-fixe">× BEE</span>

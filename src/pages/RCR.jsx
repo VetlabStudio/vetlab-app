@@ -289,7 +289,7 @@ export default function RCR() {
             type="text"
             inputMode="decimal"
             value={poidsDefib}
-            onChange={e => setPoidsDefib(e.target.value)}
+            onChange={e => setPoidsDefib(e.target.value.replace(',', '.'))}
             placeholder="Ex: 10"
           />
           <div className="radio-groupe">

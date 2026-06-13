@@ -131,7 +131,7 @@ export default function Conversion() {
               type="text"
               inputMode="decimal"
               value={poids}
-              onChange={e => setPoids(e.target.value)}
+              onChange={e => setPoids(e.target.value.replace(',', '.'))}
               placeholder="Ex: 10"
             />
             <div className="radio-groupe">
@@ -182,7 +182,7 @@ export default function Conversion() {
               type="text"
               inputMode="decimal"
               value={temp}
-              onChange={e => setTemp(e.target.value)}
+              onChange={e => setTemp(e.target.value.replace(',', '.'))}
               placeholder={uniteTemp === 'C' ? 'Ex: 38.5' : 'Ex: 101.3'}
             />
             <div className="radio-groupe">
@@ -214,7 +214,7 @@ export default function Conversion() {
     type="text"
     inputMode="decimal"
     value={volume1}
-    onChange={e => setVolume1(e.target.value)}
+    onChange={e => setVolume1(e.target.value.replace(',', '.'))}
     placeholder="Ex: 100"
   />
 </div>
@@ -249,7 +249,7 @@ export default function Conversion() {
         type="text"
         inputMode="decimal"
         value={masse1}
-        onChange={e => setMasse1(e.target.value)}
+        onChange={e => setMasse1(e.target.value.replace(',', '.'))}
         placeholder="Ex: 500"
       />
     </div>
@@ -284,7 +284,7 @@ export default function Conversion() {
         type="text"
         inputMode="decimal"
         value={mesure1}
-        onChange={e => setMesure1(e.target.value)}
+        onChange={e => setMesure1(e.target.value.replace(',', '.'))}
         placeholder="Ex: 30"
       />
     </div>

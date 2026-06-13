@@ -71,7 +71,7 @@ export default function TransfusionSanguine() {
               type="text"
               inputMode="decimal"
               value={poids}
-              onChange={e => setPoids(e.target.value)}
+              onChange={e => setPoids(e.target.value.replace(',', '.'))}
               placeholder="Ex: 10"
             />
             <div className="radio-groupe">
@@ -93,7 +93,7 @@ export default function TransfusionSanguine() {
                 type="text"
                 inputMode="decimal"
                 value={pcvActuel}
-                onChange={e => setPcvActuel(e.target.value)}
+                onChange={e => setPcvActuel(e.target.value.replace(',', '.'))}
                 placeholder="Ex: 15"
               />
               <span className="unite-fixe">%</span>
@@ -109,7 +109,7 @@ export default function TransfusionSanguine() {
                 type="text"
                 inputMode="decimal"
                 value={pcvSouhaite}
-                onChange={e => setPcvSouhaite(e.target.value)}
+                onChange={e => setPcvSouhaite(e.target.value.replace(',', '.'))}
                 placeholder="Ex: 25"
               />
               <span className="unite-fixe">%</span>
@@ -128,7 +128,7 @@ export default function TransfusionSanguine() {
               type="text"
               inputMode="decimal"
               value={pcvDonneur}
-              onChange={e => setPcvDonneur(e.target.value)}
+              onChange={e => setPcvDonneur(e.target.value.replace(',', '.'))}
               placeholder="Ex: 45"
             />
             <span className="unite-fixe">%</span>

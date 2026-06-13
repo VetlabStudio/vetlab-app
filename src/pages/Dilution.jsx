@@ -109,7 +109,7 @@ export default function Dilution() {
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
                 </div>
-                <input type="text" inputMode="decimal" value={c1} onChange={e => setC1(e.target.value)} placeholder="Ex: 10" />
+                <input type="text" inputMode="decimal" value={c1} onChange={e => setC1(e.target.value.replace(',', '.'))} placeholder="Ex: 10" />
                 <div className="radio-groupe">
                   <button className={`radio-btn ${uniteC1 === 'mg/mL' ? 'active' : ''}`} onClick={() => setUniteC1('mg/mL')}>mg/mL</button>
                   <button className={`radio-btn ${uniteC1 === '%' ? 'active' : ''}`} onClick={() => setUniteC1('%')}>%</button>
@@ -123,7 +123,7 @@ export default function Dilution() {
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-flask" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
                 </div>
-                <input type="text" inputMode="decimal" value={v1} onChange={e => setV1(e.target.value)} placeholder="Ex: 5" />
+                <input type="text" inputMode="decimal" value={v1} onChange={e => setV1(e.target.value.replace(',', '.'))} placeholder="Ex: 5" />
                 <span className="unite-fixe">mL</span>
               </div>
             </div>
@@ -134,7 +134,7 @@ export default function Dilution() {
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-flask" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
                 </div>
-                <input type="text" inputMode="decimal" value={v2} onChange={e => setV2(e.target.value)} placeholder="Ex: 50" />
+                <input type="text" inputMode="decimal" value={v2} onChange={e => setV2(e.target.value.replace(',', '.'))} placeholder="Ex: 50" />
                 <span className="unite-fixe">mL</span>
               </div>
             </div>
@@ -165,7 +165,7 @@ export default function Dilution() {
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
                 </div>
-                <input type="text" inputMode="decimal" value={c1} onChange={e => setC1(e.target.value)} placeholder="Ex: 10" />
+                <input type="text" inputMode="decimal" value={c1} onChange={e => setC1(e.target.value.replace(',', '.'))} placeholder="Ex: 10" />
                 <div className="radio-groupe">
                   <button className={`radio-btn ${uniteC1 === 'mg/mL' ? 'active' : ''}`} onClick={() => setUniteC1('mg/mL')}>mg/mL</button>
                   <button className={`radio-btn ${uniteC1 === '%' ? 'active' : ''}`} onClick={() => setUniteC1('%')}>%</button>
@@ -179,7 +179,7 @@ export default function Dilution() {
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-flask" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
                 </div>
-                <input type="text" inputMode="decimal" value={v1} onChange={e => setV1(e.target.value)} placeholder="Ex: 5" />
+                <input type="text" inputMode="decimal" value={v1} onChange={e => setV1(e.target.value.replace(',', '.'))} placeholder="Ex: 5" />
                 <span className="unite-fixe">mL</span>
               </div>
             </div>
@@ -190,7 +190,7 @@ export default function Dilution() {
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
                 </div>
-                <input type="text" inputMode="decimal" value={c2} onChange={e => setC2(e.target.value)} placeholder="Ex: 1" />
+                <input type="text" inputMode="decimal" value={c2} onChange={e => setC2(e.target.value.replace(',', '.'))} placeholder="Ex: 1" />
                 <div className="radio-groupe">
                   <button className={`radio-btn ${uniteC2 === 'mg/mL' ? 'active' : ''}`} onClick={() => setUniteC2('mg/mL')}>mg/mL</button>
                   <button className={`radio-btn ${uniteC2 === '%' ? 'active' : ''}`} onClick={() => setUniteC2('%')}>%</button>
@@ -220,7 +220,7 @@ export default function Dilution() {
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
                 </div>
-                <input type="text" inputMode="decimal" value={c1} onChange={e => setC1(e.target.value)} placeholder="Ex: 10" />
+                <input type="text" inputMode="decimal" value={c1} onChange={e => setC1(e.target.value.replace(',', '.'))} placeholder="Ex: 10" />
                 <div className="radio-groupe">
                   <button className={`radio-btn ${uniteC1 === 'mg/mL' ? 'active' : ''}`} onClick={() => setUniteC1('mg/mL')}>mg/mL</button>
                   <button className={`radio-btn ${uniteC1 === '%' ? 'active' : ''}`} onClick={() => setUniteC1('%')}>%</button>
@@ -234,7 +234,7 @@ export default function Dilution() {
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
                 </div>
-                <input type="text" inputMode="decimal" value={c2} onChange={e => setC2(e.target.value)} placeholder="Ex: 1" />
+                <input type="text" inputMode="decimal" value={c2} onChange={e => setC2(e.target.value.replace(',', '.'))} placeholder="Ex: 1" />
                 <div className="radio-groupe">
                   <button className={`radio-btn ${uniteC2 === 'mg/mL' ? 'active' : ''}`} onClick={() => setUniteC2('mg/mL')}>mg/mL</button>
                   <button className={`radio-btn ${uniteC2 === '%' ? 'active' : ''}`} onClick={() => setUniteC2('%')}>%</button>
@@ -248,7 +248,7 @@ export default function Dilution() {
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-flask" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
                 </div>
-                <input type="text" inputMode="decimal" value={v2} onChange={e => setV2(e.target.value)} placeholder="Ex: 50" />
+                <input type="text" inputMode="decimal" value={v2} onChange={e => setV2(e.target.value.replace(',', '.'))} placeholder="Ex: 50" />
                 <span className="unite-fixe">mL</span>
               </div>
             </div>

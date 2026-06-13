@@ -73,11 +73,11 @@ export default function Calculateurs() {
     }
 
     const poidsKg = unitePoids === 'lb'
-      ? Math.round((parseFloat(poids) / 2.205) * 100) / 100
-      : parseFloat(poids)
+      ? Math.round((parseFloat(poids.replace(',', '.')) / 2.205) * 100) / 100
+      : parseFloat(poids.replace(',', '.'))
 
-    const poso = parseFloat(posologie)
-    const conc = parseFloat(concentration)
+    const poso = parseFloat(posologie.replace(',', '.'))
+    const conc = parseFloat(concentration.replace(',', '.'))
 
     let doseTotale
     let etapeConversion = null

@@ -81,7 +81,7 @@ const resultat = useMemo(() => {
               type="text"
               inputMode="decimal"
               value={poids}
-              onChange={e => setPoids(e.target.value)}
+              onChange={e => setPoids(e.target.value.replace(',', '.'))}
               placeholder="Ex: 10"
             />
             <div className="radio-groupe">
@@ -119,7 +119,7 @@ const resultat = useMemo(() => {
               type="text"
               inputMode="decimal"
               value={quantite}
-              onChange={e => setQuantite(e.target.value)}
+              onChange={e => setQuantite(e.target.value.replace(',', '.'))}
               placeholder="Ex: 50"
             />
             <span className="unite-fixe">g</span>

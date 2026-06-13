@@ -141,7 +141,7 @@ const debitHoraire = useMemo(() => {
       type="text"
       inputMode="decimal"
       value={poids}
-      onChange={e => setPoids(e.target.value)}
+      onChange={e => setPoids(e.target.value.replace(',', '.'))}
       placeholder="Ex: 10"
     />
     <div className="radio-groupe">
@@ -255,7 +255,7 @@ const debitHoraire = useMemo(() => {
     type="text"
     inputMode="decimal"
     value={debitGttsManuel !== '' ? debitGttsManuel : debitHoraire || ''}
-    onChange={e => setDebitGttsManuel(e.target.value)}
+    onChange={e => setDebitGttsManuel(e.target.value.replace(',', '.'))}
     placeholder="ml/h"
   />
   <span className="unite-fixe">ml/h</span>
@@ -328,7 +328,7 @@ const debitHoraire = useMemo(() => {
     type="text"
     inputMode="decimal"
     value={debitCRIManuel !== '' ? debitCRIManuel : debitHoraire || ''}
-    onChange={e => setDebitCRIManuel(e.target.value)}
+    onChange={e => setDebitCRIManuel(e.target.value.replace(',', '.'))}
     placeholder="ml/h"
   />
   <span className="unite-fixe">ml/h</span>
@@ -366,7 +366,7 @@ const debitHoraire = useMemo(() => {
     type="text"
     inputMode="decimal"
     value={doseCharge}
-    onChange={e => setDoseCharge(e.target.value)}
+    onChange={e => setDoseCharge(e.target.value.replace(',', '.'))}
     placeholder="0"
   />
   <span className="unite-fixe">mg/kg IV</span>
@@ -383,7 +383,7 @@ const debitHoraire = useMemo(() => {
     type="text"
     inputMode="decimal"
     value={dosageCRI}
-    onChange={e => setDosageCRI(e.target.value)}
+    onChange={e => setDosageCRI(e.target.value.replace(',', '.'))}
     placeholder="0"
   />
   <span className="unite-fixe">mg/kg/h</span>
@@ -400,7 +400,7 @@ const debitHoraire = useMemo(() => {
     type="text"
     inputMode="decimal"
     value={concentrationCRI}
-    onChange={e => setConcentrationCRI(e.target.value)}
+    onChange={e => setConcentrationCRI(e.target.value.replace(',', '.'))}
     placeholder="0"
   />
   <span className="unite-fixe">mg/ml</span>
