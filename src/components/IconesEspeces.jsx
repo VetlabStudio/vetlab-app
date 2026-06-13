@@ -5,6 +5,8 @@ const ESPECES_CONFIG = {
   vache:      { icone: '/icone-vache.png', label: 'Vache' },
   mouton:     { icone: '/icone-mouton.png', label: 'Mouton' },
   lama:       { icone: '/icone-lama.png', label: 'Lama' },
+  chevre:     { icone: '/icone-chevre.png', label: 'Chèvre' },
+  cochon:      { icone: '/icone-cochon.png', label: 'Cochon' },
   lapin:      { icone: '/icone-lapin.png', label: 'Lapin' },
   furet:      { icone: '/icone-furet.png', label: 'Furet' },
   oiseau:     { icone: '/icone-oiseau.png', label: 'Oiseau' },

@@ -21,9 +21,34 @@ const ENERGIE_OPTIONS = ['Normal', 'Diminué', 'Augmenté', 'Épuisement']
 const CONDITION_OPTIONS = ['Maigre', 'Idéale', 'Surpoids', 'Obèse']
 const COMPORTEMENT_OPTIONS = ['Calme', 'Craintif / anxieux', 'Agressif', 'Agité / excité']
 
+const ESPECES = [
+  { id: 'chien',        label: 'Chien',              icone: '/icone-chien.svg' },
+  { id: 'chat',         label: 'Chat',               icone: '/icone-chat.svg' },
+  { id: 'cheval',       label: 'Cheval',             icone: '/icone-cheval.png' },
+  { id: 'vache',        label: 'Vache',              icone: '/icone-vache.png' },
+  { id: 'mouton',       label: 'Mouton',             icone: '/icone-mouton.png' },
+  { id: 'lama',         label: 'Lama',               icone: '/icone-lama.png' },
+  { id: 'lapin',        label: 'Lapin',              icone: '/icone-lapin.png' },
+  { id: 'furet',        label: 'Furet',              icone: '/icone-furet.png' },
+  { id: 'oiseau',       label: 'Oiseau',            icone: '/icone-oiseau.png' },
+  { id: 'serpent',      label: 'Serpent',            icone: '/icone-serpent.png' },
+  { id: 'lezard',       label: 'Lézard',             icone: '/icone-lezard.png' },
+  { id: 'tortue',       label: 'Tortue',             icone: '/icone-tortue.png' },
+  { id: 'poisson',      label: 'Poisson',           icone: '/icone-poisson.png' },
+  { id: 'amphibien',    label: 'Amphibien',         icone: '/icone-grenouille.png' },
+  { id: 'rongeur',      label: 'Rongeur',           icone: '/icone-rongeurs.png' },
+  { id: 'chinchilla',   label: 'Chinchilla',         icone: '/icone-chinchilla.png' },
+  { id: 'cobaye',       label: 'Cochon d\'Inde',     icone: '/icone-cobaye.png' },
+  { id: 'herisson',     label: 'Hérisson',           icone: '/icone-herisson.png' },
+]
+
 function etatInitial() {
   return {
     animalNom: '',
+    espece: '',
+    sexe: '',
+    sterilise: false,
+    poids: '',
     temperature: '',
     freqCardiaque: '',
     freqRespiratoire: '',
@@ -49,6 +74,7 @@ export default function SoinsGenerauxExamenPhysique() {
   const [showReinit, setShowReinit] = useState(false)
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(null)
   const [copie, setCopie] = useState(false)
+  const [popupEspece, setPopupEspece] = useState(false)
   const { setTitreCustom } = useContext(TitreContext)
 
   useEffect(() => {
@@ -115,6 +141,10 @@ export default function SoinsGenerauxExamenPhysique() {
     const lignes = []
     lignes.push('EXAMEN PHYSIQUE - PRÉCONSULTATION')
     lignes.push(`Animal : ${form.animalNom || '—'}`)
+    const especeLabel = ESPECES.find(e => e.id === form.espece)?.label
+    if (especeLabel) lignes.push(`Espèce : ${especeLabel}`)
+    if (form.sexe) lignes.push(`Sexe : ${form.sexe === 'femelle' ? 'Femelle' : 'Mâle'}${form.sterilise ? ' (stérilisé(e))' : ''}`)
+    if (form.poids) lignes.push(`Poids : ${form.poids} kg`)
     lignes.push(`Date : ${dateAffichee}`)
     lignes.push('')
     lignes.push('Paramètres vitaux :')
@@ -187,7 +217,7 @@ export default function SoinsGenerauxExamenPhysique() {
         .single()
       if (data) setCurrentId(data.id)
     }
-    chargerHistorique()
+    await chargerHistorique()
   }
 
   function fermerResume() {
@@ -369,11 +399,69 @@ export default function SoinsGenerauxExamenPhysique() {
             />
           </div>
           <div className="form-groupe">
+            <label className="form-label">Espèce</label>
+            <div className="espece-choisir">
+              <span className="espece-choisie-texte" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {form.espece && (
+                  <img src={ESPECES.find(e => e.id === form.espece)?.icone} alt="" className="espece-icone-popup" style={{ width: 24, height: 24 }} />
+                )}
+                {ESPECES.find(e => e.id === form.espece)?.label || 'Aucune espèce choisie'}
+              </span>
+              <button type="button" className="btn-choisir-espece" onClick={() => setPopupEspece(true)}>
+                Choisir
+              </button>
+            </div>
+          </div>
+          <div className="form-groupe">
+            <label className="form-label">Sexe</label>
+            <div className="toggle-groupe">
+              <button type="button" className={`toggle-btn ${form.sexe === 'femelle' ? 'actif' : ''}`} onClick={() => modifierChamp('sexe', form.sexe === 'femelle' ? '' : 'femelle')}>Femelle</button>
+              <button type="button" className={`toggle-btn ${form.sexe === 'male' ? 'actif' : ''}`} onClick={() => modifierChamp('sexe', form.sexe === 'male' ? '' : 'male')}>Mâle</button>
+            </div>
+            <label className="voie-item" style={{ marginTop: 8 }}>
+              <span>Stérilisé(e)</span>
+              <input type="checkbox" checked={form.sterilise} onChange={e => modifierChamp('sterilise', e.target.checked)} />
+            </label>
+          </div>
+          <div className="form-groupe">
+            <label className="form-label">Poids (kg)</label>
+            <input
+              type="text"
+              inputMode="decimal"
+              className="form-input"
+              value={form.poids}
+              onChange={e => modifierChamp('poids', e.target.value.replace(',', '.'))}
+              placeholder="Ex. : 12.5"
+            />
+          </div>
+          <div className="form-groupe">
             <label className="form-label">Date</label>
             <div className="form-input" style={{ background: 'var(--bg)', color: 'var(--text-secondary)' }}>{dateAffichee}</div>
           </div>
         </div>
       </div>
+
+      {/* Popup espèce */}
+      {popupEspece && (
+        <div className="popup-overlay" onClick={() => setPopupEspece(false)}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <span>Choisir une espèce</span>
+              <button className="popup-close" onClick={() => setPopupEspece(false)}>✕</button>
+            </div>
+            <div className="popup-especes">
+              {ESPECES.map(esp => (
+                <label key={esp.id} className="popup-espece-item">
+                  <input type="radio" checked={form.espece === esp.id} onChange={() => { modifierChamp('espece', esp.id); setPopupEspece(false) }} />
+                  <img src={esp.icone} alt={esp.label} className="espece-icone-popup" />
+                  <span>{esp.label}</span>
+                </label>
+              ))}
+            </div>
+            <button className="btn-sauvegarder" onClick={() => setPopupEspece(false)}>Confirmer</button>
+          </div>
+        </div>
+      )}
 
       {/* Paramètres vitaux */}
       <div className="postop-section">
@@ -386,7 +474,7 @@ export default function SoinsGenerauxExamenPhysique() {
         <div className="form-scroll" style={{ padding: 16, gap: 12 }}>
           <div className="form-groupe">
             <label className="form-label">Température corporelle (°C)</label>
-            <input type="number" inputMode="decimal" className="form-input" value={form.temperature} onChange={e => modifierChamp('temperature', e.target.value)} placeholder="Ex. : 38.5" />
+            <input type="number" inputMode="decimal" className="form-input" value={form.temperature} onChange={e => modifierChamp('temperature', e.target.value)} placeholder="Ex. : 36.7" />
           </div>
           <div className="form-groupe">
             <label className="form-label">Fréquence cardiaque (bpm)</label>

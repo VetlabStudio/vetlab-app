@@ -2127,6 +2127,57 @@ input[type="number"] {
   margin-top: 1px;
   color: var(--accent-gold);
 }
+
+/* ─── TAP TEMPO ──────────────────────────────────────── */
+.tempo-resultat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 24px 0 8px;
+}
+.tempo-bpm {
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+.tempo-bpm-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.tempo-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 160px;
+  height: 160px;
+  margin: 8px auto;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.tempo-btn:active {
+  transform: scale(0.96);
+}
+.tempo-btn .ti {
+  font-size: 36px;
+}
+.tempo-compteur {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-hint);
+  margin: 4px 0 16px;
+}
+
 .profil-forfaits-titre {
   font-size: 13px;
   font-weight: 700;
@@ -4742,6 +4793,82 @@ input[type="number"] {
   font-size: 12px;
   font-weight: 700;
   color: var(--text-hint);
+}
+
+/* ===========================
+   ÉVALUATION DOULEUR AIGUË (CSU/Colorado)
+   =========================== */
+
+.eda-score-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.eda-score-header {
+  position: relative;
+  background: rgba(37, 77, 86, 0.04);
+  border-bottom: 1px solid var(--border);
+}
+
+.eda-score-image {
+  width: 100%;
+  display: block;
+  object-fit: contain;
+  max-height: 180px;
+  background: white;
+}
+
+.eda-score-numero {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--primary);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eda-colonne {
+  border-bottom: 1px solid var(--border);
+}
+
+.eda-colonne:last-child {
+  border-bottom: none;
+}
+
+.eda-colonne-titre {
+  margin: 0;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background: rgba(37, 77, 86, 0.03);
+}
+
+.eda-tension-texte {
+  margin: 0;
+  padding: 4px 16px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.eda-tension-note {
+  margin: 0;
+  padding: 0 16px 12px;
+  font-size: 12px;
+  color: var(--text-hint);
+  line-height: 1.5;
 }
 
 /* ===========================

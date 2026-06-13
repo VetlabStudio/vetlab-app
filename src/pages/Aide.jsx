@@ -37,7 +37,7 @@ const SECTIONS = [
       },
       {
         q: 'Comment ajouter un médicament à mes favoris ?',
-        a: 'Sur la fiche d\'un médicament, appuie sur l\'icône en forme d\'étoile/cœur. Tes favoris sont accessibles rapidement dans l\'onglet "Médicaments favoris" de la barre de navigation.',
+        a: 'Sur la fiche d\'un médicament, appuie sur l\'icône en forme d\'étoile. Tes favoris sont accessibles rapidement dans l\'onglet "Médicaments favoris" de la barre de navigation.',
       },
       {
         q: 'Comment supprimer mon compte ?',

@@ -246,7 +246,7 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
     : ''}
 </span></div>
         <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => estPro ? navigate(`/drogues/fiche/${id}/personnaliser`) : setShowProMsg(true)}>
-  <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Personnaliser
+  <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Modifier
 </button>
       </div>
 

@@ -13,6 +13,8 @@ const CALCULATEURS = [
   { id: 'besoin',      label: 'Besoin\nénergétique', icone: '/icone-energie.svg',     route: '/calculateurs/besoin' },
   { id: 'transfusion', label: 'Transfusion\nsanguine', icone: '/icone-sang.svg',      route: '/calculateurs/transfusion' },
   { id: 'toxicite',    label: 'Toxicité\nchocolat',  icone: '/icone-chocolat.svg',    route: '/calculateurs/toxicite' },
+  { id: 'tempo',       label: 'Tap\ntempo',          icone: '/icone-duree.svg',       route: '/calculateurs/tempo' },
+  { id: 'douleur-aigue', label: 'Évaluation de la douleur\naiguë',    icone: '/icone-chien.svg',       route: '/calculateurs/douleur-aigue' },
 ]
 
 const DROGUES = [
@@ -73,19 +75,19 @@ export default function Accueil() {
     <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
     <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
   </div>
-  <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
+  <img src="/logo-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
 </div>
 
       {/* SECTION CALCULATEURS */}
       <section className="accueil-v2-section">
         {/* BOUTON PRÉCONSULTATION */}
         <button className="accueil-v2-preconsult-btn" onClick={() => navigate('/soins-generaux/examen-physique')}>
-                    <img src="/preconsult.png" alt="" style={{ width: 42, height: 42, objectFit: 'contain' }} />
+          <i className="ti ti-clipboard-heart"></i>
           <span>Démarrer un examen</span>
           <BadgePro />
         </button>
 
-        <h2 className="accueil-v2-titre-section">Calculateurs</h2>
+        <h2 className="accueil-v2-titre-section">Boîte à outils</h2>
         <div className="accueil-v2-calc-grid">
           {CALCULATEURS.map(c => (
             <button
