@@ -3795,7 +3795,7 @@ input[type="number"] {
   font-weight: 700;
   padding: 8px 12px;
   gap: 8px;
-  text-align: center;
+  text-align: left;
 }
 
 
@@ -3966,47 +3966,47 @@ input[type="number"] {
 /* ─── BIOCHIMIE ORGANES ──────────────────────── */
 .bio-organe-section {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 50px;
-  padding-left:20px;
-  background: white;
-  border-radius: 20px;
-  padding: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-.bio-organe-droite {
-  display: flex;
   flex-direction: column;
-  gap: 8px;
-  flex: 1;
+  gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
 }
 
-.bio-organe-titre {
-  text-align: left;
-  margin-bottom: 4px;
+.bio-organe-section:last-child {
+  border-bottom: none;
 }
 
-.bio-organe-image {
-  width: 80px;
-  height: 80px;
+.bio-organe-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bio-organe-icone {
+  width: 28px;
+  height: 28px;
   object-fit: contain;
-  display: block;
-  margin: 0 auto;
-  padding:15px;
-}
-.bio-organe-image-wrapper {
-  width: 90px;
-  height: 90px;
-  overflow: hidden;
   flex-shrink: 0;
-  background: rgba(134, 202, 183, 0.1);
-  border-radius: 99px;
+}
+
+.bio-organe-icone-fallback {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--primary);
+  flex-shrink: 0;
 }
 
 .bio-organe-titre {
-  text-align: left;
-  margin-bottom: 12px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .bio-tests-grid {
@@ -4014,16 +4014,33 @@ input[type="number"] {
   flex-wrap: wrap;
   gap: 10px;
   justify-content: flex-start;
+  margin-bottom: 15px;
 }
 
 .bio-test-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background: rgba(134, 202, 183, 0.1);
-  border: 2px solid white;
+  border: 1px solid rgba(134, 202, 183, 0.2);
   border-radius: 14px;
-  padding: 15px 30px;
+  padding: 12px 14px 12px 18px;
   font-size: 13px;
   font-weight: 700;
+  font-family: var(--font);
+  color: var(--text-primary);
   cursor: pointer;
+  transition: all 0.15s;
+}
+
+.bio-test-btn:active {
+  background: rgba(37, 77, 86, 0.12);
+  transform: scale(0.97);
+}
+
+.bio-test-btn .ti {
+  font-size: 14px;
+  color: var(--primary);
 }
 
 .bio-popup-section {

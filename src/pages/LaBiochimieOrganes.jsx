@@ -1,12 +1,10 @@
 import { useState } from 'react'
 
-const BASE_URL = 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/Illustrations/Organes'
-
 const ORGANES = [
   {
     id: 'foie',
     nom: 'Foie',
-    image: `${BASE_URL}/foie.png`,
+    image: '/foie.png',
     tests: [
       { abrev: 'ALT', nom: 'Alanine aminotransférase', mesure: 'Enzyme hépatique spécifique, indicateur de lésion des hépatocytes.', ref: { chien: '10–100 U/L', chat: '10–100 U/L' }, eleve: 'Hépatite, nécrose hépatique, lipidose (chat), toxicité médicamenteuse.', bas: 'Peu significatif cliniquement.' },
       { abrev: 'ALP', nom: 'Phosphatase alcaline', mesure: 'Enzyme produite par le foie, les os et les corticosurrénales.', ref: { chien: '20–150 U/L', chat: '10–90 U/L' }, eleve: 'Cholestase, hyperadrénocorticisme (chien), induction médicamenteuse (cortico, phénobarbital).', bas: 'Peu significatif.' },
@@ -19,7 +17,7 @@ const ORGANES = [
   {
     id: 'rein',
     nom: 'Rein',
-    image: `${BASE_URL}/rein.png`,
+    image: '/rein.png',
     tests: [
       { abrev: 'BUN', nom: 'Azote uréique sanguin', mesure: 'Produit de dégradation des protéines, filtré par le rein.', ref: { chien: '7–27 mg/dL', chat: '14–36 mg/dL' }, eleve: 'Insuffisance rénale, déshydratation, alimentation riche en protéines, saignement GI.', bas: 'Insuffisance hépatique sévère, polyurie.' },
       { abrev: 'CREA', nom: 'Créatinine', mesure: 'Produit du métabolisme musculaire, filtré par le rein. Plus spécifique que BUN.', ref: { chien: '0,5–1,5 mg/dL', chat: '0,8–1,8 mg/dL' }, eleve: 'Insuffisance rénale (perte de plus de 75% des néphrons), déshydratation, masse musculaire élevée.', bas: 'Cachexie, faible masse musculaire.' },
@@ -31,7 +29,7 @@ const ORGANES = [
   {
     id: 'pancreas',
     nom: 'Pancréas',
-    image: `${BASE_URL}/pancreas.png`,
+    image: '/pancreas.png',
     tests: [
       { abrev: 'LIPA', nom: 'Lipase pancréatique (cPLI / fPLI)', mesure: 'Test spécifique à la lipase pancréatique, marqueur de choix pour la pancréatite.', ref: { chien: '< 200 µg/L (cPLI)', chat: '< 3,5 µg/L (fPLI)' }, eleve: 'Pancréatite aiguë ou chronique.', bas: 'Non significatif.' },
       { abrev: 'AMYL', nom: 'Amylase', mesure: 'Enzyme digestive, peu spécifique au pancréas.', ref: { chien: '500–2500 U/L', chat: '500–1500 U/L' }, eleve: 'Pancréatite, insuffisance rénale (élimination réduite), entéropathie.', bas: 'Non significatif.' },
@@ -42,7 +40,7 @@ const ORGANES = [
   {
     id: 'muscle',
     nom: 'Muscle',
-    image: `${BASE_URL}/muscle.png`,
+    image: '/muscle.png',
     tests: [
       { abrev: 'CK', nom: 'Créatine kinase', mesure: 'Enzyme musculaire, très spécifique aux lésions musculaires.', ref: { chien: '10–200 U/L', chat: '50–300 U/L' }, eleve: 'Traumatisme musculaire, myosite, convulsions, injection IM, rhabdomyolyse.', bas: 'Non significatif.' },
       { abrev: 'AST', nom: 'Aspartate aminotransférase', mesure: 'Présente dans le muscle et le foie; interpréter avec CK pour différencier l\'origine.', ref: { chien: '15–55 U/L', chat: '15–55 U/L' }, eleve: 'Lésion musculaire (si CK élevée) ou hépatique (si CK normale).', bas: 'Non significatif.' },
@@ -51,7 +49,7 @@ const ORGANES = [
   {
     id: 'intestin',
     nom: 'Intestin',
-    image: `${BASE_URL}/intestin.png`,
+    image: '/intestin.png',
     tests: [
       { abrev: 'ALB', nom: 'Albumine', mesure: 'Protéine absorbée par l\'intestin, marqueur d\'entéropathie avec perte de protéines.', ref: { chien: '2,5–4,0 g/dL', chat: '2,3–3,9 g/dL' }, eleve: 'Déshydratation.', bas: 'Entéropathie exsudative (PLE), malabsorption, inflammation intestinale sévère.' },
       { abrev: 'GLOB', nom: 'Globulines', mesure: 'Protéines de l\'inflammation et de l\'immunité.', ref: { chien: '2,0–4,0 g/dL', chat: '2,6–5,1 g/dL' }, eleve: 'Inflammation chronique, infection, néoplasie (myélome).', bas: 'Immunodéficience, perte intestinale.' },
@@ -62,7 +60,7 @@ const ORGANES = [
   {
     id: 'thyroid',
     nom: 'Thyroïde',
-    image: `${BASE_URL}/thyroid.png`,
+    image: '/thyroid.png',
     tests: [
       { abrev: 'T4 tot.', nom: 'Thyroxine totale (T4)', mesure: 'Hormone thyroïdienne principale, test de dépistage de première intention.', ref: { chien: '1,0–4,0 µg/dL', chat: '0,8–4,7 µg/dL' }, eleve: 'Hyperthyroïdie (chat surtout); artefact possible en maladie non thyroïdienne.', bas: 'Hypothyroïdie (chien surtout); maladie non thyroïdienne (faux bas possible).' },
       { abrev: 'T4 lib.', nom: 'T4 libre (par dialyse)', mesure: 'Fraction active de T4, plus spécifique et moins affectée par les maladies concomitantes.', ref: { chien: '0,6–3,7 ng/dL', chat: '0,6–2,5 ng/dL' }, eleve: 'Hyperthyroïdie.', bas: 'Hypothyroïdie.' },
@@ -72,7 +70,7 @@ const ORGANES = [
   {
     id: 'surrenales',
     nom: 'Surrénales',
-    image: null,
+    image: '/surrenal.png',
     tests: [
       { abrev: 'Cortisol', nom: 'Cortisol', mesure: 'Hormone glucocorticoïde évaluée par test de stimulation ACTH ou suppression à la dexaméthasone.', ref: { chien: 'Basal : 1–6 µg/dL', chat: 'Basal : 0,5–5 µg/dL' }, eleve: 'Hyperadrénocorticisme (Cushing); confirmer par test dynamique.', bas: 'Hypoadrénocorticisme (Addison); confirmer par stimulation ACTH.' },
       { abrev: 'Na⁺', nom: 'Sodium', mesure: 'Électrolyte extracellulaire régulé par l\'aldostérone (surrénales).', ref: { chien: '140–155 mEq/L', chat: '147–162 mEq/L' }, eleve: 'Déshydratation hypertonique, diabète insipide.', bas: 'Hypoadrénocorticisme, vomissements, diarrhée, SIADH.' },
@@ -82,7 +80,7 @@ const ORGANES = [
   {
     id: 'electrolytes',
     nom: 'Électrolytes',
-    image: null,
+    image: '/electrolytes.png',
     tests: [
       { abrev: 'Na⁺', nom: 'Sodium', mesure: 'Électrolyte extracellulaire principal, régule l\'osmolarité.', ref: { chien: '140–155 mEq/L', chat: '147–162 mEq/L' }, eleve: 'Déshydratation, diabète insipide.', bas: 'Hypoadrénocorticisme, vomissements, diarrhée, SIADH.' },
       { abrev: 'K⁺', nom: 'Potassium', mesure: 'Électrolyte intracellulaire majeur, régulé par le rein et les surrénales.', ref: { chien: '3,5–5,5 mEq/L', chat: '3,5–5,5 mEq/L' }, eleve: 'Insuffisance rénale, hypoadrénocorticisme, acidose.', bas: 'Vomissements, diarrhée, alcalose, polyurie.' },
@@ -99,21 +97,24 @@ export default function LaBiochimieOrganes() {
   return (
     <div className="labo-detail-page">
 
+      <div className="douleur-intro">
+        <i className="ti ti-hand-click douleur-intro-icone"></i>
+        <p className="douleur-intro-texte">
+          Touche un test pour voir sa description, ses valeurs de référence et son interprétation.
+        </p>
+      </div>
+
       {ORGANES.map(organe => (
-        <div key={organe.id} className="labo-ref-section bio-organe-section">
+        <div key={organe.id} className="bio-organe-section">
 
-          {organe.image ? (
-  <div className="bio-organe-image-wrapper">
-    <img src={organe.image} alt={organe.nom} className="bio-organe-image" />
-  </div>
-) : (
-  <div className="bio-organe-placeholder">
-    <i className="ti ti-flask"></i>
-  </div>
-)}
-
-          <div className="bio-organe-droite">
-          <h2 className="labo-ref-titre bio-organe-titre">{organe.nom}</h2>
+          <div className="bio-organe-header">
+            {organe.image ? (
+              <img src={organe.image} alt={organe.nom} className="bio-organe-icone" />
+            ) : (
+              <i className="ti ti-flask bio-organe-icone-fallback"></i>
+            )}
+            <h2 className="bio-organe-titre">{organe.nom}</h2>
+          </div>
 
           <div className="bio-tests-grid">
             {organe.tests.map(test => (
@@ -122,12 +123,13 @@ export default function LaBiochimieOrganes() {
                 className="bio-test-btn"
                 onClick={() => setTestSelectionne(test)}
               >
-                {test.abrev}
+               
+                <span>{test.abrev}</span>
+                <i className="ti ti-chevron-right"></i>
               </button>
             ))}
           </div>
 
-       </div>
         </div>
       ))}
 
