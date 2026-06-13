@@ -6,45 +6,45 @@ const ETAPES = [
     id: 'oreilles',
     titre: 'Position des oreilles',
     options: [
-      { label: 'Aucun', score: 0, image: '/grimace-chat-oreilles-0.png' },
-      { label: 'Modéré', score: 1, image: '/grimace-chat-oreilles-1.png' },
-      { label: 'Évident', score: 2, image: '/grimace-chat-oreilles-2.png' },
+      { label: 'Aucun', score: 0, image: '/grimace-chat-oreilles-0.png', description: 'Oreilles orientées vers l\'avant' },
+      { label: 'Modéré', score: 1, image: '/grimace-chat-oreilles-1.png', description: 'Oreilles légèrement écartées vers les côtés' },
+      { label: 'Évident', score: 2, image: '/grimace-chat-oreilles-2.png', description: 'Oreilles aplaties et tournées vers l\'extérieur' },
     ],
   },
   {
     id: 'yeux',
     titre: 'Ouverture des yeux',
     options: [
-      { label: 'Aucun', score: 0, image: '/grimace-chat-yeux-0.png' },
-      { label: 'Modéré', score: 1, image: '/grimace-chat-yeux-1.png' },
-      { label: 'Évident', score: 2, image: '/grimace-chat-yeux-2.png' },
+      { label: 'Aucun', score: 0, image: '/grimace-chat-yeux-0.png', description: 'Yeux ouverts' },
+      { label: 'Modéré', score: 1, image: '/grimace-chat-yeux-1.png', description: 'Yeux légèrement fermés ou plissés' },
+      { label: 'Évident', score: 2, image: '/grimace-chat-yeux-2.png', description: 'Yeux fermés ou fortement plissés' },
     ],
   },
   {
     id: 'museau',
     titre: 'Tension du museau',
     options: [
-      { label: 'Aucun', score: 0, image: '/grimace-chat-museau-0.png' },
-      { label: 'Modéré', score: 1, image: '/grimace-chat-museau-1.png' },
-      { label: 'Évident', score: 2, image: '/grimace-chat-museau-2.png' },
+      { label: 'Aucun', score: 0, image: '/grimace-chat-museau-0.png', description: 'Museau rond et détendu' },
+      { label: 'Modéré', score: 1, image: '/grimace-chat-museau-1.png', description: 'Museau légèrement tendu' },
+      { label: 'Évident', score: 2, image: '/grimace-chat-museau-2.png', description: 'Museau tendu, de forme ovale (bouche entrouverte)' },
     ],
   },
   {
     id: 'moustaches',
     titre: 'Position des moustaches',
     options: [
-      { label: 'Aucun', score: 0, image: '/grimace-chat-moustaches-0.png' },
-      { label: 'Modéré', score: 1, image: '/grimace-chat-moustaches-1.png' },
-      { label: 'Évident', score: 2, image: '/grimace-chat-moustaches-2.png' },
+      { label: 'Aucun', score: 0, image: '/grimace-chat-moustaches-0.png', description: 'Moustaches souples et incurvées vers le bas' },
+      { label: 'Modéré', score: 1, image: '/grimace-chat-moustaches-1.png', description: 'Moustaches légèrement écartées ou redressées' },
+      { label: 'Évident', score: 2, image: '/grimace-chat-moustaches-2.png', description: 'Moustaches droites, hérissées vers l\'avant' },
     ],
   },
   {
     id: 'tete',
     titre: 'Position de la tête',
     options: [
-      { label: 'Aucun', score: 0, image: '/grimace-chat-tete-0.png' },
-      { label: 'Modéré', score: 1, image: '/grimace-chat-tete-1.png' },
-      { label: 'Évident', score: 2, image: '/grimace-chat-tete-2.png' },
+      { label: 'Aucun', score: 0, image: '/grimace-chat-tete-0.png', description: 'Tête au-dessus de la ligne des épaules' },
+      { label: 'Modéré', score: 1, image: '/grimace-chat-tete-1.png', description: 'Tête alignée avec les épaules' },
+      { label: 'Évident', score: 2, image: '/grimace-chat-tete-2.png', description: 'Tête sous la ligne des épaules ou rentrée' },
     ],
   },
 ]
@@ -130,6 +130,7 @@ export default function EvaluationDouleurAigueChat() {
               >
                 <img src={opt.image} alt={opt.label} className="eda-etape-option-image" />
                 <span className="eda-etape-option-label">{opt.label}</span>
+                <span className="eda-etape-option-description">{opt.description}</span>
               </button>
             ))}
           </div>

@@ -4981,6 +4981,12 @@ input[type="number"] {
   color: var(--primary);
 }
 
+.eda-etape-option-description {
+  font-size: 11px;
+  color: var(--text-hint);
+  line-height: 1.35;
+}
+
 .eda-etape-nav {
   display: flex;
   gap: 10px;
