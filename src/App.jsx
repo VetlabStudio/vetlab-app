@@ -41,6 +41,7 @@ const RCR = lazy(() => import('./pages/RCR'))
 const TapTempo = lazy(() => import('./pages/TapTempo'))
 const EvaluationDouleurAigue = lazy(() => import('./pages/EvaluationDouleurAigue'))
 const EvaluationDouleurAigueChien = lazy(() => import('./pages/EvaluationDouleurAigueChien'))
+const EvaluationDouleurAigueChat = lazy(() => import('./pages/EvaluationDouleurAigueChat'))
 const MesDrogues = lazy(() => import('./pages/MesDrogues'))
 const LaboAccueil = lazy(() => import('./pages/LaboAccueil'))
 const LaboProtocoles = lazy(() => import('./pages/LaboProtocoles'))
@@ -193,6 +194,7 @@ export default function App() {
         <Route path="/calculateurs/tempo" element={<RouteProtegee session={session}><TapTempo /></RouteProtegee>} />
         <Route path="/calculateurs/douleur-aigue" element={<RouteProtegee session={session}><EvaluationDouleurAigue /></RouteProtegee>} />
         <Route path="/calculateurs/douleur-aigue/chien" element={<RouteProtegee session={session}><EvaluationDouleurAigueChien /></RouteProtegee>} />
+        <Route path="/calculateurs/douleur-aigue/chat" element={<RouteProtegee session={session}><EvaluationDouleurAigueChat /></RouteProtegee>} />
         <Route path="/calculateurs/rcr" element={<RouteProtegee session={session}><RCR /></RouteProtegee>} />
 
         {/* DROGUES */}

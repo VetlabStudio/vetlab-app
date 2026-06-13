@@ -16,6 +16,7 @@ const titres = {
   '/calculateurs/tempo': 'Tap tempo',
   '/calculateurs/douleur-aigue': 'Évaluation de la douleur aiguë',
   '/calculateurs/douleur-aigue/chien': 'Douleur aiguë — Chien',
+  '/calculateurs/douleur-aigue/chat': 'Douleur aiguë — Chat',
   '/drogues/anesthesiques': 'Anesthésiques / Analgésiques',
   '/drogues/antagonistes': 'Antagonistes',
   '/drogues/antibiotiques': 'Antibiotiques',

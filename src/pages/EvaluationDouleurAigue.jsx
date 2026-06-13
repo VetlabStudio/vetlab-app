@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 
 const ESPECES = [
   { id: 'chien', label: 'Chien', icone: '/icone-chien.svg', route: '/calculateurs/douleur-aigue/chien', disponible: true },
-  { id: 'chat', label: 'Chat', icone: '/icone-chat.svg', route: '/calculateurs/douleur-aigue/chat', disponible: false },
+  { id: 'chat', label: 'Chat', icone: '/icone-chat.svg', route: '/calculateurs/douleur-aigue/chat', disponible: true },
 ]
 
 export default function EvaluationDouleurAigue() {

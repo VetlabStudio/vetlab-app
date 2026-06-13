@@ -13,8 +13,8 @@ const CALCULATEURS = [
   { id: 'besoin',      label: 'Besoin\nénergétique', icone: '/icone-energie.svg',     route: '/calculateurs/besoin' },
   { id: 'transfusion', label: 'Transfusion\nsanguine', icone: '/icone-sang.svg',      route: '/calculateurs/transfusion' },
   { id: 'toxicite',    label: 'Toxicité\nchocolat',  icone: '/icone-chocolat.svg',    route: '/calculateurs/toxicite' },
-  { id: 'tempo',       label: 'Tap\ntempo',          icone: '/icone-duree.svg',       route: '/calculateurs/tempo' },
-  { id: 'douleur-aigue', label: 'Évaluation de la douleur\naiguë',    icone: '/icone-chien.svg',       route: '/calculateurs/douleur-aigue' },
+  { id: 'tempo',       label: 'Tap\nBpm',          icone: 'icone-taptouch.png',       route: '/calculateurs/tempo' },
+  { id: 'douleur-aigue', label: 'Évaluation de la douleur\naiguë',    icone: '/icone-douleur.png',       route: '/calculateurs/douleur-aigue' },
 ]
 
 const DROGUES = [

@@ -2649,6 +2649,53 @@ input[type="number"] {
   color: rgba(255,255,255,0.9);
 }
 
+/* ─── SÉLECTEUR DE TYPE CONVERSION ───────────── */
+.conversion-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.conversion-mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font);
+  text-align: center;
+}
+
+.conversion-mode-btn.actif {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.conversion-mode-btn .ti {
+  font-size: 20px;
+  color: var(--text-hint);
+}
+
+.conversion-mode-btn.actif .ti {
+  color: white;
+}
+
+.conversion-mode-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.conversion-mode-btn.actif .conversion-mode-label {
+  color: white;
+}
+
 /* ─── RÉSULTAT DILUTION ──────────────────────── */
 .dilution-resultat {
   background: var(--primary);
@@ -4869,6 +4916,103 @@ input[type="number"] {
   font-size: 12px;
   color: var(--text-hint);
   line-height: 1.5;
+}
+
+.eda-etape-header {
+  text-align: center;
+}
+
+.eda-etape-progress {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-hint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.eda-etape-titre {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.eda-etape-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.eda-etape-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font);
+  text-align: center;
+}
+
+.eda-etape-option.selectionne {
+  background: rgba(37, 77, 86, 0.06);
+  border-color: var(--primary);
+}
+
+.eda-etape-option-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 8px;
+  background: white;
+}
+
+.eda-etape-option-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.eda-etape-option.selectionne .eda-etape-option-label {
+  color: var(--primary);
+}
+
+.eda-etape-nav {
+  display: flex;
+  gap: 10px;
+}
+
+.eda-etape-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.eda-etape-btn.primaire {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.eda-etape-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 /* ===========================
