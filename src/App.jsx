@@ -87,6 +87,7 @@ const ChirurgieECG = lazy(() => import('./pages/ChirurgieECG'))
 const ChirurgieECGElectrodes = lazy(() => import('./pages/ChirurgieECGElectrodes'))
 const ChirurgieECGInterpretation = lazy(() => import('./pages/ChirurgieECGInterpretation'))
 const ChirurgieECGAnomalies = lazy(() => import('./pages/ChirurgieECGAnomalies'))
+const ChirurgieECGConduction = lazy(() => import('./pages/ChirurgieECGConduction'))
 const SoinsGenerauxExamenPhysique = lazy(() => import('./pages/SoinsGenerauxExamenPhysique'))
 
 import Header from './components/Header'
@@ -256,6 +257,7 @@ export default function App() {
         <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/interpretation" element={<RouteProtegee session={session}><ProGate><ChirurgieECGInterpretation /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/anomalies" element={<RouteProtegee session={session}><ProGate><ChirurgieECGAnomalies /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/ecg/conduction" element={<RouteProtegee session={session}><ProGate><ChirurgieECGConduction /></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/examen-physique" element={<RouteProtegee session={session}><ProGate><SoinsGenerauxExamenPhysique /></ProGate></RouteProtegee>} />
 
         {/* PROFIL */}

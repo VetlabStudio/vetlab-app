@@ -45,7 +45,7 @@ const CHIRURGIE = [
   { id: 'monitoring', label: 'Monitoring anesthésique', route: '/chirurgie/monitoring', pro: true },
   { id: 'capnographie', label: 'Interprétation de la capnographie', route: '/chirurgie/capnographie', pro: true },
   { id: 'post-op', label: 'Soins post-opératoires', route: '/chirurgie/post-op', pro: true },
-  { id: 'douleur', label: 'Évaluation de la douleur', route: '/chirurgie/douleur' },
+  { id: 'douleur', label: 'Évaluation de la douleur post-op', route: '/chirurgie/douleur' },
   { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg' },
 ]
 const SOINS_GENERAUX = [
