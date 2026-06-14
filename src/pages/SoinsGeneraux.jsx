@@ -9,15 +9,15 @@ export default function SoinsGeneraux() {
 
   return (
     <div className="page-calculateurs">
-      <div className="accueil-v2-drogues-grid">
+      <div className="labo-categories-grid">
         {SOINS_GENERAUX.map(s => (
           <button
             key={s.id}
-            className="accueil-v2-drogue-item"
+            className="labo-categorie-btn"
             onClick={() => navigate(s.route)}
           >
             <span>{s.label}</span>
-            <i className="ti ti-chevron-right accueil-v2-chevron"></i>
+            
           </button>
         ))}
       </div>

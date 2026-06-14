@@ -15,16 +15,16 @@ export default function ChirurgieListe() {
 
   return (
     <div className="page-calculateurs">
-      <div className="accueil-v2-drogues-grid">
+      <div className="labo-categories-grid">
         {CHIRURGIE.map(c => (
           <button
             key={c.id}
-            className="accueil-v2-drogue-item"
+            className="labo-categorie-btn"
             onClick={() => navigate(c.route)}
             style={{ position: 'relative' }}
           >
             <span>{c.label}</span>
-            <i className="ti ti-chevron-right accueil-v2-chevron"></i>
+            
             {c.pro && <BadgePro />}
           </button>
         ))}
