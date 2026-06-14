@@ -13,7 +13,7 @@ const titres = {
   '/calculateurs/mise-bas': 'Date de mise bas',
   '/calculateurs/toxicite': 'Toxicité chocolat',
   '/calculateurs/rcr': 'RCR Urgence',
-  '/calculateurs/tempo': 'Tap tempo',
+  '/calculateurs/tempo': 'Tap BPM',
   '/calculateurs/douleur-aigue': 'Évaluation de la douleur aiguë',
   '/calculateurs/douleur-aigue/chien': 'Douleur aiguë — Chien',
   '/calculateurs/douleur-aigue/chat': 'Douleur aiguë — Chat',
