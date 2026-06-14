@@ -7,8 +7,8 @@ import BadgePro from '../components/BadgePro'
 const CATEGORIE_ID = '2e0222f2-5733-4d01-bc99-8c380bec5abe'
 
 const REFERENCES = [
-  { id: 'oeufs', label: 'Œufs de parasites', icone: 'ti-egg', route: '/labo/parasitologie/oeufs' },
-  { id: 'hotes', label: 'Hôtes & espèces affectées', icone: 'ti-paw', route: '/labo/parasitologie/hotes' },
+  { id: 'oeufs', label: 'Œufs de parasites', icone: 'ti-egg', route: '/labo/parasitologie/oeufs', pro: true },
+  { id: 'hotes', label: 'Hôtes & espèces affectées', icone: 'ti-paw', route: '/labo/parasitologie/hotes', pro: true },
 ]
 
 export default function LaboParasitologie() {

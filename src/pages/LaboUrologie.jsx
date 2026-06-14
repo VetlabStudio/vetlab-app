@@ -7,7 +7,7 @@ import { useProfil } from '../context/ProfilContext'
 const CATEGORIE_ID = 'aeac9309-185f-4f2c-81b2-dfed3d4e55aa'
 
 const REFERENCES = [
-  { id: 'valeurs', label: 'Valeurs de référence', icone: 'ti-clipboard-list', route: '/labo/urologie/valeurs' },
+  { id: 'valeurs', label: 'Valeurs de référence', icone: 'ti-clipboard-list', route: '/labo/urologie/valeurs', pro: true },
   { id: 'sediments', label: 'Sédiments urinaires', icone: 'ti-microscope', route: '/labo/urologie/sediments', pro: true },
 ]
 

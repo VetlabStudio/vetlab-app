@@ -7,7 +7,7 @@ import { useProfil } from '../context/ProfilContext'
 const CATEGORIE_ID = '173fb58a-988c-4202-8b14-bfcd15c4a16f'
 
 const REFERENCES = [
-  { id: 'prelevement', label: 'Guide de prélèvement', icone: 'ti-needle', route: '/labo/cytologie/prelevement' },
+  { id: 'prelevement', label: 'Guide de prélèvement', icone: 'ti-needle', route: '/labo/cytologie/prelevement', pro: true },
   { id: 'cellules', label: 'Types cellulaires', icone: 'ti-microscope', route: '/labo/cytologie/cellules' },
 ]
 
@@ -80,7 +80,7 @@ setProtocoles([
             onClick={() => navigate(r.route)}
             style={{ position: 'relative' }}
           >
-            {r.id === 'cellules' && <BadgePro />}
+            {(r.id === 'cellules' || r.pro) && <BadgePro />}
             <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
             {r.label}
           </button>

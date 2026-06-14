@@ -29,7 +29,7 @@ const SECTIONS = [
       },
       {
         q: 'Qu\'est-ce qui est inclus dans le forfait Pro ?',
-        a: 'Le Pro donne accès aux contenus avancés : toxicologie, médicaments personnalisés, protocoles de laboratoire et chirurgie complets (sédiments, cytologie, microbiologie, biochimie, instruments, monitoring, ECG, etc.) et le module Démarrer un examen.',
+        a: 'Le Pro donne accès à l\'ensemble du contenu avancé de l\'application : personnalisation de médicaments et des protocoles de laboratoire, références en pharmacologie, laboratoire et chirurgie, ainsi que les outils cliniques comme Démarrer un examen et le Monitoring anesthésique en temps réel (avec génération de rapports PDF).',
       },
       {
         q: 'Si je me désabonne, est-ce que je perds mes données Pro ?',

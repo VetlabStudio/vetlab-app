@@ -7,7 +7,7 @@ import { useProfil } from '../context/ProfilContext'
 const CATEGORIE_ID = 'e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5'
 
 const REFERENCES = [
-  { id: 'prelevement', label: 'Guide de prélèvement', icone: 'ti-test-pipe', route: '/labo/microbiologie/prelevement' },
+  { id: 'prelevement', label: 'Guide de prélèvement', icone: 'ti-test-pipe', route: '/labo/microbiologie/prelevement', pro: true },
   { id: 'cultures', label: 'Interprétation des cultures', icone: 'ti-flask', route: '/labo/microbiologie/cultures', pro: true },
   { id: 'antibiogramme', label: 'Antibiogramme', icone: 'ti-circle-check', route: '/labo/microbiologie/antibiogramme', pro: true },
   { id: 'bacteries', label: 'Bactéries courantes', icone: 'ti-bug', route: '/labo/microbiologie/bacteries', pro: true },

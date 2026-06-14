@@ -7,8 +7,8 @@ import { useProfil } from '../context/ProfilContext'
 const CATEGORIE_ID = '4efe71ce-bfa9-4ea9-a8af-ecbd6dc97320'
 
 const REFERENCES = [
-  { id: 'tubes', label: 'Choix du tube', icone: 'ti-test-pipe', route: '/labo/biochimie/tubes' },
-  { id: 'valeurs', label: 'Valeurs normales', icone: 'ti-clipboard-list', route: '/labo/biochimie/valeurs' },
+  { id: 'tubes', label: 'Choix du tube', icone: 'ti-test-pipe', route: '/labo/biochimie/tubes', pro: true },
+  { id: 'valeurs', label: 'Valeurs normales', icone: 'ti-clipboard-list', route: '/labo/biochimie/valeurs', pro: true },
 ]
 
 export default function LaBiochimie() {

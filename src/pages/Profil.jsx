@@ -312,7 +312,7 @@ async function ouvrirPortail() {
               <span className="profil-forfait-nom">Pro</span>
             </div>
             <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
-              Accès complet : médicaments personnalisés, protocoles labo, section chirurgie, toxicologie et plus.
+              Accès complet : personnalisation des médicaments et protocoles de labo, outil d'examen, monitoring anesthésique, toxicologie et plus.
             </p>
             <div className="profil-stripe-choix">
               <button
