@@ -1,6 +1,19 @@
 import { useState, useEffect, useContext } from 'react'
 import { supabase } from '../lib/supabase'
 import { TitreContext } from '../App'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+
+function chargerImageBase64(url) {
+  return fetch(url)
+    .then(res => res.blob())
+    .then(blob => new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result)
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    }))
+}
 
 const SYSTEMES = [
   { id: 'tegumentaire', icone: '/examen-tegumentaire.png', titre: 'Tégumentaire', placeholder: 'Hydratation, alopécie, masses, parasites, lésions, rougeurs, démangeaisons...' },
@@ -177,6 +190,74 @@ export default function SoinsGenerauxExamenPhysique() {
     return lignes.join('\n')
   }
 
+  // ─── PDF ──────────────────────
+  async function genererPDF(donnees) {
+    const donneesPdf = donnees || form
+    const especeLabel = ESPECES.find(e => e.id === donneesPdf.espece)?.label
+    const doc = new jsPDF()
+    let y = 15
+    doc.setFontSize(16)
+    doc.text('Examen physique - Préconsultation', 14, y)
+    y += 8
+    doc.setFontSize(10)
+    const infos = [
+      `Animal : ${donneesPdf.animalNom || '—'}`,
+      `Espèce : ${especeLabel || '—'}   Sexe : ${donneesPdf.sexe === 'femelle' ? 'Femelle' : donneesPdf.sexe === 'male' ? 'Mâle' : '—'}${donneesPdf.sterilise ? ' (stérilisé(e))' : ''}`,
+      `Poids : ${donneesPdf.poids ? donneesPdf.poids + ' kg' : '—'}`,
+      `Date : ${dateAffichee}`,
+      `Température : ${donneesPdf.temperature || '—'}   FC : ${donneesPdf.freqCardiaque || '—'}   FR : ${donneesPdf.freqRespiratoire || '—'}`,
+      `Attitude : ${donneesPdf.attitude || '—'}   Énergie : ${donneesPdf.niveauEnergie || '—'}`,
+      `Condition corporelle : ${donneesPdf.conditionCorporelle || '—'}   Comportement : ${donneesPdf.comportement || '—'}`,
+    ]
+    infos.forEach(ligne => {
+      const lignesSplit = doc.splitTextToSize(ligne, 180)
+      doc.text(lignesSplit, 14, y)
+      y += 6 * lignesSplit.length
+    })
+
+    y += 2
+    autoTable(doc, {
+      startY: y,
+      head: [['Système', 'Observation']],
+      body: SYSTEMES.map(s => {
+        const { normal, note } = donneesPdf.systemes[s.id]
+        return [s.titre, normal && !note.trim() ? 'Normal' : (note.trim() || 'Anormal - voir note')]
+      }),
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [37, 77, 86] },
+      margin: { left: 14, right: 14 },
+    })
+    y = doc.lastAutoTable.finalY + 6
+
+    if (donneesPdf.commentairesProprietaire?.trim()) {
+      if (y > 250) { doc.addPage(); y = 15 }
+      doc.setFontSize(10)
+      const lignesSplit = doc.splitTextToSize(`Commentaires du propriétaire : ${donneesPdf.commentairesProprietaire.trim()}`, 180)
+      doc.text(lignesSplit, 14, y)
+      y += 6 * lignesSplit.length
+    }
+
+    // ─── Pied de page ──────────────────────
+    const pageHeight = doc.internal.pageSize.getHeight()
+    if (y > pageHeight - 25) { doc.addPage(); y = 15 }
+    const yFooter = pageHeight - 14
+    try {
+      const logoData = await chargerImageBase64('/logo-adjuvet.png')
+      doc.addImage(logoData, 'PNG', 14, yFooter - 12, 18, 16)
+      doc.setFontSize(8)
+      doc.setTextColor(150)
+      doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet", 36, yFooter - 2)
+      doc.text('par VetlabStudio — adjuvet.app', 36, yFooter + 3)
+    } catch {
+      doc.setFontSize(8)
+      doc.setTextColor(150)
+      doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet par VetlabStudio — adjuvet.app", 14, yFooter)
+    }
+
+    const url = doc.output('bloburl')
+    window.open(url, '_blank')
+  }
+
   function handleTermine() {
     if (formulaireIncomplet()) {
       setShowIncomplet(true)
@@ -331,6 +412,9 @@ export default function SoinsGenerauxExamenPhysique() {
               <div className="popup-actions-centrees" style={{ marginTop: 8 }}>
                 <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => copierResume(itemConsulte.resume)}>
                   {copie ? 'Copié !' : 'Copier'}
+                </button>
+                <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => genererPDF(itemConsulte.donnees)}>
+                  <i className="ti ti-file-download"></i> PDF
                 </button>
                 <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => setShowConfirmSupprimer(itemConsulte)}>
                   Supprimer
@@ -622,6 +706,9 @@ export default function SoinsGenerauxExamenPhysique() {
             <div className="popup-actions-centrees" style={{ marginTop: 12 }}>
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => copierResume(showResume)}>
                 {copie ? 'Copié !' : 'Copier'}
+              </button>
+              <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => genererPDF(form)}>
+                <i className="ti ti-file-download"></i> PDF
               </button>
               <button className="labo-btn-primary" style={{ flex: 1 }} onClick={fermerResume}>
                 Terminer

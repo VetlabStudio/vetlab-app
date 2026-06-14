@@ -30,12 +30,12 @@ const MUQUEUSES_OPTIONS = ['Roses', 'Pâles', 'Congestives', 'Cyanotiques']
 const ASA_OPTIONS = ['I', 'II', 'III', 'IV', 'V']
 const CATEGORIES_MED = ['Drogues d\'urgence', 'Pré-anesthésique', 'Inducteurs', 'Intra-opératoire', 'Post-opératoire']
 const MAX_HISTORIQUE = 30
-const COLONNES_PAR_TABLEAU = 5
+const COLONNES_PAR_TABLEAU = 4
 
 const MESURE_PARAMS = [
   { key: 'fc', label: 'FC (bpm)' },
   { key: 'fr', label: 'FR (rpm)' },
-  { key: 'temp', label: 'Température (°C)' },
+  { key: 'temp', label: 'Temp. (°C)' },
   { key: 'spo2', label: 'SpO₂ (%)' },
   { key: 'co2', label: 'ETCO₂ (mmHg)' },
   { key: 'syst', label: 'PA systolique' },
@@ -737,7 +737,7 @@ export default function ChirurgieMonitoring() {
           <div className="form-scroll" style={{ padding: 16, gap: 12 }}>
             <div className="form-groupe">
               <label className="form-label">Température (°C)</label>
-              <input type="number" inputMode="decimal" className="form-input" value={form.temperature} onChange={e => modifierChamp('temperature', e.target.value)} placeholder="Ex. : 38.5" />
+              <input type="number" inputMode="decimal" className="form-input" value={form.temperature} onChange={e => modifierChamp('temperature', e.target.value)} placeholder="Ex. : 36.5" />
             </div>
             <div className="form-groupe">
               <label className="form-label">Fréquence cardiaque (bpm)</label>
