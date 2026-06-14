@@ -3837,6 +3837,37 @@ input[type="number"] {
   font-size: 11px;
 }
 
+/* ─── MALADIES COURANTES ─────────────────────── */
+
+.maladie-carte {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.maladie-nom {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 4px 0;
+}
+
+.maladie-champ {
+  font-size: 12px;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.maladie-champ-label {
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
 /* ─── SÉDIMENTS ──────────────────────────────── */
 
 .labo-sediments-liste {
@@ -3855,6 +3886,13 @@ input[type="number"] {
 .labo-sediment-photo {
   width: 100%;
   max-height: 200px;
+  object-fit: contain;
+  display: block;
+}
+
+.labo-sediment-photo-termes {
+  width: 100%;
+  max-height: 400px;
   object-fit: contain;
   display: block;
 }
@@ -4396,6 +4434,59 @@ input[type="number"] {
   font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.5;
+}
+
+.monitoring-questionnaire {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.monitoring-critere-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.monitoring-critere-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.monitoring-critere-option {
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.monitoring-critere-option.selectionne {
+  background: rgba(37, 77, 86, 0.06);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.monitoring-resultat {
+  background: var(--bg-card);
+  border: 1.5px solid var(--primary);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.monitoring-resultat-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 8px 0;
 }
 
 .monitoring-capno {

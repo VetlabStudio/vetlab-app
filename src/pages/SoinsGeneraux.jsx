@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 const SOINS_GENERAUX = [
   { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg' },
   { id: 'abreviations', label: 'Abréviations courantes', route: '/soins-generaux/abreviations' },
+  { id: 'termes-directionnels', label: 'Termes directionnels', route: '/soins-generaux/termes-directionnels' },
 ]
 
 export default function SoinsGeneraux() {

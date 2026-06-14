@@ -2,9 +2,7 @@ import { useNavigate } from 'react-router-dom'
 
 const REFERENCES = [
   { id: 'electrodes', label: 'Positionnement des électrodes', icone: 'ti-plug', route: '/chirurgie/ecg/electrodes' },
-  { id: 'interpretation', label: 'Interprétation', icone: 'ti-wave-sine', route: '/chirurgie/ecg/interpretation' },
   { id: 'anomalies', label: 'Anomalies courantes', icone: 'ti-alert-triangle', route: '/chirurgie/ecg/anomalies' },
-  { id: 'conduction', label: 'Conduction cardiaque', icone: 'ti-heart', route: '/chirurgie/ecg/conduction' },
 ]
 
 export default function ChirurgieECG() {

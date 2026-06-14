@@ -74,7 +74,7 @@ const titres = {
   '/chirurgie/monitoring': 'Monitoring anesthésique',
   '/chirurgie/capnographie': 'Interprétation de la capnographie',
   '/chirurgie/post-op': 'Soins post-opératoires',
-  '/chirurgie/douleur': 'Évaluation de la douleur',
+  '/chirurgie/douleur': 'Évaluation de la douleur post-opératoire',
   '/chirurgie/ecg': 'ECG',
   '/chirurgie/ecg/electrodes': 'Positionnement des électrodes',
   '/chirurgie/ecg/interpretation': 'Interprétation',
@@ -82,6 +82,7 @@ const titres = {
   '/chirurgie/ecg/conduction': 'Conduction cardiaque',
   '/soins-generaux/examen-physique': 'Démarrer un examen',
   '/soins-generaux/abreviations': 'Abréviations courantes',
+  '/soins-generaux/termes-directionnels': 'Termes directionnels',
   }
 
 export default function Header() {

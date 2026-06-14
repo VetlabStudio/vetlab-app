@@ -11,7 +11,6 @@ const REFERENCES = [
   { id: 'cultures', label: 'Interprétation des cultures', icone: 'ti-flask', route: '/labo/microbiologie/cultures', pro: true },
   { id: 'antibiogramme', label: 'Antibiogramme', icone: 'ti-circle-check', route: '/labo/microbiologie/antibiogramme', pro: true },
   { id: 'bacteries', label: 'Bactéries courantes', icone: 'ti-bug', route: '/labo/microbiologie/bacteries', pro: true },
-  { id: 'colonies', label: 'Colonies bactériennes', icone: 'ti-circles', route: '/labo/microbiologie/colonies', pro: true },
   { id: 'levures', label: 'Caractéristiques des levures', icone: 'ti-circle-dotted', route: '/labo/microbiologie/levures', pro: true },
 ]
 

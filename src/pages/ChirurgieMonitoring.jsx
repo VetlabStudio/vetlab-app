@@ -1,3 +1,5 @@
+import { useState, useMemo } from 'react'
+
 const PARAMS_VITAUX = [
   {
     parametre: 'Fréquence cardiaque',
@@ -52,10 +54,20 @@ const PARAMS_VITAUX = [
   },
 ]
 
-const STADES = [
-  {
-    numero: 1,
+const STADE_4 = {
+  titre: 'Stade 4 — Anesthésie trop profonde',
+  signes: [
+    { texte: 'Diminuer immédiatement le gaz anesthésique' },
+    { texte: 'Rehausser la perfusion IV ou administrer bolus de solutés' },
+    { texte: 'Oxygène supplémentaire ou antidote selon le cas' },
+    { texte: 'Administration d\'un', emphase: 'agent réversif', suite: ' si besoin' },
+  ],
+}
+
+const RESULTATS_STADES = {
+  1: {
     titre: 'Stade 1',
+    description: 'Anesthésie légère. Les réflexes de protection sont encore présents : surveiller l\'animal de près, l\'induction n\'est pas encore complète.',
     signes: [
       { texte: 'Réflexes oculaires (palpébral et cornéen)', emphase: 'présents' },
       { texte: 'Oeil en position', emphase: 'centrale' },
@@ -63,35 +75,78 @@ const STADES = [
       { texte: 'FC et FR', emphase: 'élevées', suite: ', vocalisations possibles' },
     ],
   },
-  {
-    numero: 2,
+  2: {
     titre: 'Stade 2',
+    description: 'Plan chirurgical superficiel. À surveiller : certains gestes chirurgicaux peuvent encore déclencher une réaction.',
     signes: [
       { texte: 'Rotation ventrale de l\'oeil' },
-      { texte: 'Tonus mandibulaire', emphase: 'diminué' },
-      { texte: 'Réflexe cornéen', emphase: 'diminué', suite: ' mais encore présent' },
+      { texte: 'Tonus mandibulaire', emphase: ' diminué mais encore présent' },
+     
     ],
   },
-  {
-    numero: 3,
+  3: {
     titre: 'Stade 3',
+    description: 'Plan chirurgical adéquat pour la majorité des interventions. Maintenir ce niveau et continuer la surveillance des paramètres vitaux.',
     signes: [
       { texte: 'Musculature relâchée, mâchoire flasque' },
       { texte: 'Oeil en position centrale' },
-      { texte: 'Réflexe cornéen', emphase: 'absent' },
+      { texte: 'Réflexe cornéen ', emphase: 'absent' },
       { texte: 'Absence de réaction à la stimulation' },
       { texte: 'Rythmes cardio-respiratoires réguliers' },
     ],
   },
+}
+
+const CRITERES = [
   {
-    numero: 4,
-    titre: 'Stade 4 — Anesthésie trop profonde',
-    alerte: true,
-    signes: [
-      { texte: 'Diminuer immédiatement le gaz anesthésique' },
-      { texte: 'Rehausser la perfusion IV ou administrer bolus de solutés' },
-      { texte: 'Oxygène supplémentaire ou antidote selon le cas' },
-      { texte: 'Administration d\'un', emphase: 'agent réversif', suite: ' si besoin' },
+    id: 'reflexe_palpebral',
+    label: 'Réflexes oculaires (palpébral et cornéen)',
+    options: [
+      { stade: 1, texte: 'Présents' },
+      { stade: 2, texte: 'Diminués, mais encore présents' },
+      { stade: 3, texte: 'Absents' },
+    ],
+  },
+  {
+    id: 'position_oeil',
+    label: 'Position de l\'œil',
+    options: [
+      { stade: 1, texte: 'Centrale' },
+      { stade: 2, texte: 'Rotation ventrale' },
+      { stade: 3, texte: 'Centrale, fixe' },
+    ],
+  },
+  {
+    id: 'tonus_mandibulaire',
+    label: 'Tonus mandibulaire',
+    options: [
+      { stade: 1, texte: 'Normal' },
+      { stade: 2, texte: 'Diminué' },
+      { stade: 3, texte: 'Flasque, mâchoire relâchée' },
+    ],
+  },
+  {
+    id: 'deglutition',
+    label: 'Déglutition et mouvements volontaires',
+    options: [
+      { stade: 1, texte: 'Présents, possibles' },
+      { stade: 3, texte: 'Absents' },
+    ],
+  },
+  {
+    id: 'reaction_stimulation',
+    label: 'Réaction à la stimulation chirurgicale',
+    options: [
+      { stade: 1, texte: 'Présente' },
+      { stade: 3, texte: 'Absente' },
+    ],
+  },
+  {
+    id: 'fc_fr',
+    label: 'FC, FR et rythme cardio-respiratoire',
+    options: [
+      { stade: 1, texte: 'Élevées, vocalisations possibles' },
+      { stade: 3, texte: 'Régulières et stables' },
     ],
   },
 ]
@@ -122,7 +177,29 @@ const CAPNOGRAPHIE = [
   },
 ]
 
+function renderSigne(s, j) {
+  return (
+    <li key={j}>
+      {s.emphase && !s.suite
+        ? <><span>{s.texte.replace(s.emphase, '')}</span><strong>{s.emphase}</strong></>
+        : s.emphase && s.suite
+        ? <><strong>{s.emphase}</strong>{s.suite}</>
+        : s.texte
+      }
+    </li>
+  )
+}
+
 export default function ChirurgieMonitoring() {
+  const [reponses, setReponses] = useState({})
+
+  const resultatStade = useMemo(() => {
+    const stades = Object.values(reponses)
+    if (stades.length === 0) return null
+    const somme = stades.reduce((a, b) => a + b, 0)
+    return Math.min(3, Math.max(1, Math.round(somme / stades.length)))
+  }, [reponses])
+
   return (
     <div className="labo-detail-page">
 
@@ -149,24 +226,49 @@ export default function ChirurgieMonitoring() {
       {/* ─── PROFONDEUR ANESTHÉSIQUE ────────── */}
       <div className="labo-ref-section">
         <h2 className="labo-ref-titre">Profondeur anesthésique</h2>
-        <div className="monitoring-stades">
-          {STADES.map((stade, i) => (
-            <div key={i} className={`monitoring-stade ${stade.alerte ? 'monitoring-stade--alerte' : ''}`}>
-              <p className="monitoring-stade-titre">{stade.titre}</p>
-              <ul className="monitoring-stade-liste">
-                {stade.signes.map((s, j) => (
-                  <li key={j}>
-                    {s.emphase && !s.suite
-                      ? <><span>{s.texte.replace(s.emphase, '')}</span><strong>{s.emphase}</strong></>
-                      : s.emphase && s.suite
-                      ? <><strong>{s.emphase}</strong>{s.suite}</>
-                      : s.texte
-                    }
-                  </li>
+        <p className="labo-ref-note">Sélectionne le critère observé pour chaque élément afin d'estimer le stade anesthésique.</p>
+
+        <div className="monitoring-questionnaire">
+          {CRITERES.map(critere => (
+            <div key={critere.id} className="monitoring-critere">
+              <p className="monitoring-critere-label">{critere.label}</p>
+              <div className="monitoring-critere-options">
+                {critere.options.map(opt => (
+                  <button
+                    key={opt.stade + '-' + opt.texte}
+                    className={`monitoring-critere-option ${reponses[critere.id] === opt.stade ? 'selectionne' : ''}`}
+                    onClick={() => setReponses(prev => ({ ...prev, [critere.id]: opt.stade }))}
+                  >
+                    {opt.texte}
+                  </button>
                 ))}
-              </ul>
+              </div>
             </div>
           ))}
+        </div>
+
+        {resultatStade && (
+          <div className="monitoring-resultat">
+            <p className="monitoring-stade-titre">{RESULTATS_STADES[resultatStade].titre}</p>
+            <p className="monitoring-resultat-description">{RESULTATS_STADES[resultatStade].description}</p>
+            <ul className="monitoring-stade-liste">
+              {RESULTATS_STADES[resultatStade].signes.map((s, j) => renderSigne(s, j))}
+            </ul>
+          </div>
+        )}
+
+        {resultatStade && (
+          <button className="douleur-btn-reinit" onClick={() => setReponses({})}>
+            <i className="ti ti-refresh"></i>
+            Réinitialiser
+          </button>
+        )}
+
+        <div className="monitoring-stade monitoring-stade--alerte">
+          <p className="monitoring-stade-titre">{STADE_4.titre}</p>
+          <ul className="monitoring-stade-liste">
+            {STADE_4.signes.map((s, j) => renderSigne(s, j))}
+          </ul>
         </div>
       </div>
 
