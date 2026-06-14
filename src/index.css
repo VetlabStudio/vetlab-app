@@ -211,8 +211,8 @@ input  { font-family: var(--font); }
   margin: 2px 0 0 0;
 }
 .accueil-v2-logo {
-  width: 110px;
-  height: 110px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   margin-right:20px;
 }
@@ -306,10 +306,10 @@ input  { font-family: var(--font); }
   height: 32px;
   object-fit: contain;
 }
-.accueil-calc-icone {
-    width: 42px;
-  height: 42px;
-  object-fit: contain;
+
+.accueil-v2-calc-icone--ref {
+  width: 34px;
+  height: 34px;
 }
 
 .accueil-v2-calc-label {
@@ -327,6 +327,10 @@ input  { font-family: var(--font); }
   grid-template-columns: repeat(2, 1fr);
   overflow:visible;
   gap: 4px;
+}
+
+.accueil-v2-drogues-grid--1col {
+  grid-template-columns: repeat(1, 1fr);
 }
 
 .accueil-v2-drogue-item {
@@ -3890,6 +3894,17 @@ input[type="number"] {
   line-height: 1.5;
   margin: 0;
 }
+/* ─── ABRÉVIATIONS COURANTES ────────────────── */
+.labo-ref-header--4col-abrev,
+.labo-ref-ligne--4col-abrev {
+  grid-template-columns: 0.7fr 1.3fr 0.7fr 1.3fr;
+}
+
+.labo-ref-header--2col-abrev,
+.labo-ref-ligne--2col {
+  grid-template-columns: 1fr 1.8fr;
+}
+
 /* ─── PARASITOLOGIE — tableau 5 colonnes ────── */
 .labo-ref-header--5col {
   grid-template-columns: 1.6fr 0.45fr 0.45fr 1.4fr 1.2fr;

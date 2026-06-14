@@ -45,6 +45,7 @@ const EvaluationDouleurAigueChat = lazy(() => import('./pages/EvaluationDouleurA
 const Pharmacologie = lazy(() => import('./pages/Pharmacologie'))
 const ChirurgieListe = lazy(() => import('./pages/ChirurgieListe'))
 const SoinsGeneraux = lazy(() => import('./pages/SoinsGeneraux'))
+const AbreviationsCourantes = lazy(() => import('./pages/AbreviationsCourantes'))
 const MesDrogues = lazy(() => import('./pages/MesDrogues'))
 const LaboAccueil = lazy(() => import('./pages/LaboAccueil'))
 const LaboProtocoles = lazy(() => import('./pages/LaboProtocoles'))
@@ -202,6 +203,7 @@ export default function App() {
         <Route path="/drogues" element={<RouteProtegee session={session}><Pharmacologie /></RouteProtegee>} />
         <Route path="/chirurgie" element={<RouteProtegee session={session}><ChirurgieListe /></RouteProtegee>} />
         <Route path="/soins-generaux" element={<RouteProtegee session={session}><SoinsGeneraux /></RouteProtegee>} />
+        <Route path="/soins-generaux/abreviations" element={<RouteProtegee session={session}><AbreviationsCourantes /></RouteProtegee>} />
         <Route path="/calculateurs/rcr" element={<RouteProtegee session={session}><RCR /></RouteProtegee>} />
 
         {/* DROGUES */}

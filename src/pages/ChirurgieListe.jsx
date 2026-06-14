@@ -15,7 +15,7 @@ export default function ChirurgieListe() {
 
   return (
     <div className="page-calculateurs">
-      <div className="labo-categories-grid">
+      <div className="accueil-v2-drogues-grid accueil-v2-drogues-grid--1col">
         {CHIRURGIE.map(c => (
           <button
             key={c.id}

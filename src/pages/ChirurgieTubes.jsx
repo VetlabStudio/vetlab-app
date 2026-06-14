@@ -32,7 +32,7 @@ export default function ChirurgieTubes() {
           <div className="labo-ref-header tubes-grid">
             <span className="tubes-header-espece">
               <img src="/icone-chien.svg" alt="chien" className="tubes-header-icone" />
-              Poids (kg)
+              Chien - Poids (kg)
             </span>
             <span className="tubes-header-val">Grosseur de tube (mm)</span>
           </div>
@@ -51,7 +51,7 @@ export default function ChirurgieTubes() {
           <div className="labo-ref-header labo-ref-header--chat tubes-grid">
             <span className="tubes-header-espece">
               <img src="/icone-chat.svg" alt="chat" className="tubes-header-icone" />
-              Poids (kg)
+              Chat - Poids (kg)
             </span>
             <span className="tubes-header-val">Grosseur de tube (mm)</span>
           </div>

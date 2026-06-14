@@ -48,7 +48,7 @@ export default function Accueil() {
     <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
     <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
   </div>
-  <img src="/logoadjuvet-blanc.png" alt="Adjuvet par Vetlab Studio" className="accueil-v2-logo" />
+  <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
 </div>
 
       {/* SECTION CALCULATEURS */}
@@ -85,7 +85,7 @@ export default function Accueil() {
               className="accueil-v2-calc-tuile"
               onClick={() => navigate(r.route)}
             >
-              <img src={r.icone} alt={r.label} className="accueil-calc-icone" />
+              <img src={r.icone} alt={r.label} className="accueil-v2-calc-icone accueil-v2-calc-icone--ref" />
               <span className="accueil-v2-calc-label">{r.label}</span>
             </button>
           ))}

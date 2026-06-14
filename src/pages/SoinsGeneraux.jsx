@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 
 const SOINS_GENERAUX = [
   { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg' },
+  { id: 'abreviations', label: 'Abréviations courantes', route: '/soins-generaux/abreviations' },
 ]
 
 export default function SoinsGeneraux() {
@@ -9,7 +10,7 @@ export default function SoinsGeneraux() {
 
   return (
     <div className="page-calculateurs">
-      <div className="labo-categories-grid">
+      <div className="accueil-v2-drogues-grid accueil-v2-drogues-grid--1col">
         {SOINS_GENERAUX.map(s => (
           <button
             key={s.id}

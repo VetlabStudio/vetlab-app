@@ -81,6 +81,7 @@ const titres = {
   '/chirurgie/ecg/anomalies': 'Anomalies courantes',
   '/chirurgie/ecg/conduction': 'Conduction cardiaque',
   '/soins-generaux/examen-physique': 'Démarrer un examen',
+  '/soins-generaux/abreviations': 'Abréviations courantes',
   }
 
 export default function Header() {
