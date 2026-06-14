@@ -14,7 +14,7 @@ const CALCULATEURS = [
   { id: 'transfusion', label: 'Transfusion\nsanguine', icone: '/icone-sang.svg',      route: '/calculateurs/transfusion' },
   { id: 'toxicite',    label: 'Toxicité\nchocolat',  icone: '/icone-chocolat.svg',    route: '/calculateurs/toxicite' },
   { id: 'tempo',       label: 'Tap\ntempo',          icone: '/icone-duree.svg',       route: '/calculateurs/tempo' },
-  { id: 'douleur-aigue', label: 'Douleur\naiguë',    icone: '/icone-chien.svg',       route: '/calculateurs/douleur-aigue' },
+  { id: 'douleur-aigue', label: 'Évaluation de la\ndouleur aiguë',    icone: '/icone-chien.svg',       route: '/calculateurs/douleur-aigue' },
 ]
 
 const REFERENCES = [
