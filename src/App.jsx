@@ -42,6 +42,9 @@ const TapTempo = lazy(() => import('./pages/TapTempo'))
 const EvaluationDouleurAigue = lazy(() => import('./pages/EvaluationDouleurAigue'))
 const EvaluationDouleurAigueChien = lazy(() => import('./pages/EvaluationDouleurAigueChien'))
 const EvaluationDouleurAigueChat = lazy(() => import('./pages/EvaluationDouleurAigueChat'))
+const Pharmacologie = lazy(() => import('./pages/Pharmacologie'))
+const ChirurgieListe = lazy(() => import('./pages/ChirurgieListe'))
+const SoinsGeneraux = lazy(() => import('./pages/SoinsGeneraux'))
 const MesDrogues = lazy(() => import('./pages/MesDrogues'))
 const LaboAccueil = lazy(() => import('./pages/LaboAccueil'))
 const LaboProtocoles = lazy(() => import('./pages/LaboProtocoles'))
@@ -196,6 +199,9 @@ export default function App() {
         <Route path="/calculateurs/douleur-aigue" element={<RouteProtegee session={session}><EvaluationDouleurAigue /></RouteProtegee>} />
         <Route path="/calculateurs/douleur-aigue/chien" element={<RouteProtegee session={session}><EvaluationDouleurAigueChien /></RouteProtegee>} />
         <Route path="/calculateurs/douleur-aigue/chat" element={<RouteProtegee session={session}><EvaluationDouleurAigueChat /></RouteProtegee>} />
+        <Route path="/drogues" element={<RouteProtegee session={session}><Pharmacologie /></RouteProtegee>} />
+        <Route path="/chirurgie" element={<RouteProtegee session={session}><ChirurgieListe /></RouteProtegee>} />
+        <Route path="/soins-generaux" element={<RouteProtegee session={session}><SoinsGeneraux /></RouteProtegee>} />
         <Route path="/calculateurs/rcr" element={<RouteProtegee session={session}><RCR /></RouteProtegee>} />
 
         {/* DROGUES */}

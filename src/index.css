@@ -278,6 +278,10 @@ input  { font-family: var(--font); }
   gap: 10px;
 }
 
+.accueil-v2-calc-grid--2col {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .accueil-v2-calc-tuile {
   background: rgba(255, 255, 255, 0.5);
   border: 2px solid white;
@@ -300,6 +304,11 @@ input  { font-family: var(--font); }
 .accueil-v2-calc-icone {
   width: 32px;
   height: 32px;
+  object-fit: contain;
+}
+.accueil-calc-icone {
+    width: 42px;
+  height: 42px;
   object-fit: contain;
 }
 
@@ -4014,7 +4023,6 @@ input[type="number"] {
   flex-wrap: wrap;
   gap: 10px;
   justify-content: flex-start;
-  margin-bottom: 15px;
 }
 
 .bio-test-btn {
@@ -4022,7 +4030,7 @@ input[type="number"] {
   align-items: center;
   gap: 6px;
   background: rgba(134, 202, 183, 0.1);
-  border: 1px solid rgba(134, 202, 183, 0.2);
+  border: 2px solid white;
   border-radius: 14px;
   padding: 12px 14px 12px 18px;
   font-size: 13px;

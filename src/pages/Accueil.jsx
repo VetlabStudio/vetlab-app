@@ -13,42 +13,15 @@ const CALCULATEURS = [
   { id: 'besoin',      label: 'Besoin\nénergétique', icone: '/icone-energie.svg',     route: '/calculateurs/besoin' },
   { id: 'transfusion', label: 'Transfusion\nsanguine', icone: '/icone-sang.svg',      route: '/calculateurs/transfusion' },
   { id: 'toxicite',    label: 'Toxicité\nchocolat',  icone: '/icone-chocolat.svg',    route: '/calculateurs/toxicite' },
-  { id: 'tempo',       label: 'Tap\nBpm',          icone: 'icone-taptouch.png',       route: '/calculateurs/tempo' },
-  { id: 'douleur-aigue', label: 'Évaluation de la douleur\naiguë',    icone: '/icone-douleur.png',       route: '/calculateurs/douleur-aigue' },
+  { id: 'tempo',       label: 'Tap\ntempo',          icone: '/icone-duree.svg',       route: '/calculateurs/tempo' },
+  { id: 'douleur-aigue', label: 'Douleur\naiguë',    icone: '/icone-chien.svg',       route: '/calculateurs/douleur-aigue' },
 ]
 
-const DROGUES = [
-  { id: 'anesthesiques',     label: 'Anesthésiques /\nAnalgésiques', route: '/drogues/anesthesiques', accent: false },
-  { id: 'antibiotiques',     label: 'Antibiotiques',                  route: '/drogues/antibiotiques',  accent: false },
-  { id: 'antidiarrheiques',  label: 'Antidiarrhéiques',               route: '/drogues/antidiarrheiques', accent: false },
-  { id: 'antiemetiques',     label: 'Antiémétiques',                  route: '/drogues/antiemetiques',  accent: false },
-  { id: 'antihistaminiques', label: 'Antihistaminiques',              route: '/drogues/antihistaminiques', accent: false },
-  { id: 'urgence',           label: 'Urgence',                        route: '/drogues/urgence',        accent: true },
-  { id: 'cardiovasculaires', label: 'Cardiovasculaires',              route: '/drogues/cardiovasculaires', accent: false },
-  { id: 'gastroprotecteurs', label: 'Gastroprotecteurs',              route: '/drogues/gastroprotecteurs', accent: false },
-  { id: 'neurologiques',     label: 'Neurologiques',                  route: '/drogues/neurologiques',  accent: false },
-  { id: 'respiratoires',     label: 'Respiratoires',                  route: '/drogues/respiratoires',  accent: false },
-  { id: 'antagonistes',      label: 'Antagonistes',                   route: '/drogues/antagonistes',   accent: false },
-  { id: 'mes-drogues', label: 'Médicaments favoris', route: '/drogues/mes-drogues', accent: false, favori: true },
-  { id: 'toxicologie', label: 'Toxicologie', route: '/drogues/toxicologie', accent: false, pro: true },
-]
-const LABO = [
-  { id: 'biochimie',     label: 'Biochimie',     route: '/labo/4efe71ce-bfa9-4ea9-a8af-ecbd6dc97320' },
-  { id: 'parasitologie', label: 'Parasitologie',  route: '/labo/2e0222f2-5733-4d01-bc99-8c380bec5abe' },
-  { id: 'urologie',      label: 'Urologie',       route: '/labo/aeac9309-185f-4f2c-81b2-dfed3d4e55aa' },
-  { id: 'cytologie',     label: 'Cytologie',      route: '/labo/173fb58a-988c-4202-8b14-bfcd15c4a16f' },
-  { id: 'microbiologie', label: 'Microbiologie', route: '/labo/e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5' },
-]
-const CHIRURGIE = [
-  { id: 'instruments', label: 'Instruments de chirurgie', route: '/chirurgie/instruments', pro: true },
-  { id: 'tubes', label: 'Tubes endotrachéaux', route: '/chirurgie/tubes', pro: true },
-  { id: 'monitoring', label: 'Monitoring anesthésique', route: '/chirurgie/monitoring', pro: true },
-  { id: 'capnographie', label: 'Interprétation de la capnographie', route: '/chirurgie/capnographie', pro: true },
-  { id: 'post-op', label: 'Soins post-opératoires', route: '/chirurgie/post-op', pro: true },
-  { id: 'douleur', label: 'Évaluation de la douleur post-op', route: '/chirurgie/douleur' },
-  { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg' },
-]
-const SOINS_GENERAUX = [
+const REFERENCES = [
+  { id: 'pharmacologie', label: 'Pharmacologie', icone: '/icone-pharmaco.svg', route: '/drogues' },
+  { id: 'laboratoire', label: 'Laboratoire', icone: '/icone-laboratoire.svg', route: '/labo' },
+  { id: 'chirurgie', label: 'Chirurgie', icone: '/icone-chirurgie-ref.svg', route: '/chirurgie' },
+  { id: 'soins-generaux', label: 'Soins\ngénéraux', icone: '/icone-soins-generaux.svg', route: '/soins-generaux' },
 ]
 
 export default function Accueil() {
@@ -102,81 +75,24 @@ export default function Accueil() {
         </div>
       </section>
 
-      {/* SECTION DROGUES */}
+      {/* SECTION RÉFÉRENCES */}
       <section className="accueil-v2-section">
-        <h2 className="accueil-v2-titre-section">Pharmacologie</h2>
-        <div className="accueil-v2-drogues-grid">
-          {DROGUES.map(d => (
+        <h2 className="accueil-v2-titre-section">Références</h2>
+        <div className="accueil-v2-calc-grid accueil-v2-calc-grid--2col">
+          {REFERENCES.map(r => (
             <button
-  key={d.id}
-  className={`accueil-v2-drogue-item ${d.accent ? 'accent' : ''} ${d.favori ? 'favori' : ''}`}
-  onClick={() => navigate(d.route)}
-  style={{ position: 'relative' }}
->
-  {d.favori && <i className="ti ti-star" style={{ fontSize: 13, marginRight: 4 }}></i>}
-  {d.accent && <i className="ti ti-alert-triangle" style={{ fontSize: 13, marginRight: 4 }}></i>}
-  <span>{d.label}</span>
-  <i className="ti ti-chevron-right accueil-v2-chevron"></i>
-  {d.pro && <BadgePro />}
-</button>
+              key={r.id}
+              className="accueil-v2-calc-tuile"
+              onClick={() => navigate(r.route)}
+            >
+              <img src={r.icone} alt={r.label} className="accueil-calc-icone" />
+              <span className="accueil-v2-calc-label">{r.label}</span>
+            </button>
           ))}
         </div>
       </section>
-      {/* SECTION LABORATOIRE */}
-<section className="accueil-v2-section">
-  <h2 className="accueil-v2-titre-section">Laboratoire</h2>
-  <div className="accueil-v2-drogues-grid">
-    {LABO.map(l => (
-      <button
-        key={l.id}
-        className="accueil-v2-drogue-item"
-        onClick={() => navigate(l.route)}
-      >
-        <span>{l.label}</span>
-        <i className="ti ti-chevron-right accueil-v2-chevron"></i>
-      </button>
-    ))}
-  </div>
-      </section>
-      {/* SECTION CHIRURGIE */}
-<section className="accueil-v2-section">
-  <h2 className="accueil-v2-titre-section">Chirurgie</h2>
-  <div className="accueil-v2-drogues-grid">
-    {CHIRURGIE.map(c => (
-  <button
-    key={c.id}
-    className="accueil-v2-drogue-item"
-    onClick={() => navigate(c.route)}
-    style={{ position: 'relative' }}
-  >
-    <span>{c.label}</span>
-    <i className="ti ti-chevron-right accueil-v2-chevron"></i>
-    {c.pro && <BadgePro />}
-  </button>
-))}
-  </div>
-</section>
-      {/* SECTION SOINS GÉNÉRAUX */}
-{SOINS_GENERAUX.length > 0 && (
-<section className="accueil-v2-section">
-  <h2 className="accueil-v2-titre-section">Soins généraux</h2>
-  <div className="accueil-v2-drogues-grid">
-    {SOINS_GENERAUX.map(s => (
-  <button
-    key={s.id}
-    className="accueil-v2-drogue-item"
-    onClick={() => navigate(s.route)}
-    style={{ position: 'relative' }}
-  >
-    <span>{s.label}</span>
-    <i className="ti ti-chevron-right accueil-v2-chevron"></i>
-    {s.pro && <BadgePro />}
-  </button>
-))}
-  </div>
-</section>
-)}
-  <div style={{ height: 32 }} />
+
+      <div style={{ height: 32 }} />
     </div>
   )
 }

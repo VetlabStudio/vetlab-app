@@ -17,7 +17,7 @@ export default function EvaluationDouleurAigue() {
         </p>
       </div>
 
-      <div className="accueil-v2-calc-grid">
+      <div className="accueil-v2-calc-grid accueil-v2-calc-grid--2col">
         {ESPECES.map(esp => (
           <button
             key={esp.id}

@@ -179,7 +179,7 @@ export default function EvaluationDouleurAigueChat() {
 
       <div className="postop-note-bas">
         <i className="ti ti-info-circle"></i>
-        <span>Basé sur l'échelle de grimace féline (Feline Grimace Scale). Réévaluer régulièrement la douleur et ajuster le plan analgésique au besoin.</span>
+        <span>Basé sur l'échelle de grimace féline (<a href="https://www.felinegrimacescale.com/fr" target="_blank" rel="noreferrer" className="page-info-lien">Feline Grimace Scale</a>). Réévaluer régulièrement la douleur et ajuster le plan analgésique au besoin.</span>
       </div>
     </div>
   )
