@@ -14,8 +14,10 @@ const CALCULATEURS = [
   { id: 'transfusion', label: 'Transfusion\nsanguine', icone: '/icone-sang.svg',      route: '/calculateurs/transfusion' },
   { id: 'toxicite',    label: 'Toxicité\nchocolat',  icone: '/icone-chocolat.svg',    route: '/calculateurs/toxicite' },
   { id: 'tempo',       label: 'Tap\ntempo',          icone: '/icone-duree.svg',       route: '/calculateurs/tempo' },
-  { id: 'douleur-aigue', label: 'Évaluation de la\ndouleur aiguë',    icone: '/icone-chien.svg',       route: '/calculateurs/douleur-aigue' },
+  { id: 'douleur-aigue', label: 'Évaluation de la\ndouleur aiguë', icone: '/icone-chien.svg', route: '/calculateurs/douleur-aigue' },
+  { id: 'monitoring',    label: 'Monitoring\nanesthésique',  icone: '/icone-monitoring.png',          route: '/chirurgie/monitoring', pro: true },
 ]
+
 
 const REFERENCES = [
   { id: 'pharmacologie', label: 'Pharmacologie', icone: '/icone-pharmaco.svg', route: '/drogues' },
@@ -62,14 +64,16 @@ export default function Accueil() {
 
         <h2 className="accueil-v2-titre-section">Boîte à outils</h2>
         <div className="accueil-v2-calc-grid">
-          {CALCULATEURS.map(c => (
+        {CALCULATEURS.map(c => (
             <button
               key={c.id}
               className="accueil-v2-calc-tuile"
               onClick={() => navigate(c.route)}
+              style={{ position: 'relative' }}
             >
               <img src={c.icone} alt={c.label} className="accueil-v2-calc-icone" />
               <span className="accueil-v2-calc-label">{c.label}</span>
+              {c.pro && <BadgePro />}
             </button>
           ))}
         </div>

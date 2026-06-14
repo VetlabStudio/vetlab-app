@@ -1,4 +1,4 @@
-const ESPECES_CONFIG = {
+export const ESPECES_CONFIG = {
   chien:      { icone: '/icone-chien.svg', label: 'Chien' },
   chat:       { icone: '/icone-chat.svg',  label: 'Chat'  },
   cheval:     { icone: '/icone-cheval.png', label: 'Cheval' },

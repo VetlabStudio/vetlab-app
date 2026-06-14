@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useContext } from 'react'
-import { TitreContext } from '../App'
+import { TitreContext, NavGuardContext } from '../App'
 
 const titres = {
   '/calculateurs': 'Calculateur de dosage',
@@ -89,6 +89,7 @@ export default function Header() {
   const navigate = useNavigate()
   const location = useLocation()
   const { titreCustom } = useContext(TitreContext)
+  const { demanderConfirmation } = useContext(NavGuardContext)
 
   if (location.pathname === '/accueil') return null
 
@@ -100,7 +101,11 @@ export default function Header() {
     null
 
   const pagesMenu = ['/sources-references', '/disclaimer', '/politique-confidentialite', '/termes-services', '/aide']
-  const retour = () => pagesMenu.includes(location.pathname) ? navigate('/accueil') : navigate(-1)
+  const retour = () => {
+    demanderConfirmation(() => {
+      pagesMenu.includes(location.pathname) ? navigate('/accueil') : navigate(-1)
+    })
+  }
 
   return (
     <div className="header">

@@ -72,11 +72,6 @@ const LaMicrobiologieBacteries = lazy(() => import('./pages/LaMicrobiologieBacte
 const LaParasitologieExternes = lazy(() => import('./pages/LaParasitologieExternes'))
 const MedicamentCustomForm = lazy(() => import('./pages/MedicamentCustomForm'))
 const AjouterMedicament = lazy(() => import('./pages/AjouterMedicament'))
-const LaboParasitologieDipylidium = lazy(() => import('./pages/LaboParasitologieDipylidium'))
-const LaboParasitologiePuce = lazy(() => import('./pages/LaboParasitologiePuce'))
-const LaBiochimieOrganes = lazy(() => import('./pages/LaBiochimieOrganes'))
-const LaBiochimieImmuno = lazy(() => import('./pages/LaBiochimieImmuno'))
-const LaMicrobiologieColonies = lazy(() => import('./pages/LaMicrobiologieColonies'))
 const LaMicrobiologieLevures = lazy(() => import('./pages/LaMicrobiologieLevures'))
 const Toxicologie = lazy(() => import('./pages/Toxicologie'))
 const Notes = lazy(() => import('./pages/Notes'))
@@ -101,6 +96,7 @@ import BottomNavAdmin from './components/BottomNavAdmin'
 import ProGate from './components/ProGate'
 
 export const TitreContext = createContext({ titreCustom: '', setTitreCustom: () => {} })
+export const NavGuardContext = createContext({ navGuardActif: false, setNavGuardActif: () => {}, navGuardMessage: '', demanderConfirmation: (action) => action() })
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -114,18 +110,54 @@ function LayoutPrincipal({ children }) {
   const location = useLocation()
   const estAccueil = location.pathname === '/accueil'
   const [titreCustom, setTitreCustom] = useState('')
+  const [navGuardActif, setNavGuardActif] = useState(false)
+  const [actionEnAttente, setActionEnAttente] = useState(null)
+  const navGuardMessage = 'Voulez-vous vraiment quitter le monitoring en cours ? Toutes les informations non enregistrées seront perdues.'
+
+  function demanderConfirmation(action) {
+    if (navGuardActif) {
+      setActionEnAttente(() => action)
+    } else {
+      action()
+    }
+  }
 
   return (
     <TitreContext.Provider value={{ titreCustom, setTitreCustom }}>
-      <div className={`app-layout ${estAccueil ? 'app-layout-accueil' : ''}`}>
-        <Header />
-        <main className="contenu-principal">
-          <Suspense fallback={<div className="admin-loading">Chargement...</div>}>
-            {children}
-          </Suspense>
-        </main>
-        <BottomNav />
-      </div>
+      <NavGuardContext.Provider value={{ navGuardActif, setNavGuardActif, navGuardMessage, demanderConfirmation }}>
+        <div className={`app-layout ${estAccueil ? 'app-layout-accueil' : ''}`}>
+          <Header />
+          <main className="contenu-principal">
+            <Suspense fallback={<div className="admin-loading">Chargement...</div>}>
+              {children}
+            </Suspense>
+          </main>
+          <BottomNav />
+        </div>
+        {actionEnAttente && (
+          <div className="popup-overlay" onClick={() => setActionEnAttente(null)}>
+            <div className="popup-card" onClick={e => e.stopPropagation()}>
+              <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
+                <i className="ti ti-alert-triangle" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>
+                  Quitter le monitoring en cours ?
+                </h2>
+                <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                  {navGuardMessage}
+                </p>
+              </div>
+              <div className="popup-actions-centrees">
+                <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setActionEnAttente(null)}>
+                  Annuler
+                </button>
+                <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => { const action = actionEnAttente; setActionEnAttente(null); action() }}>
+                  Quitter
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </NavGuardContext.Provider>
     </TitreContext.Provider>
   )
 }
@@ -248,11 +280,6 @@ export default function App() {
         <Route path="/labo/microbiologie/antibiogramme" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieAntibiogramme /></ProGate></RouteProtegee>} />
         <Route path="/labo/microbiologie/bacteries" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieBacteries /></ProGate></RouteProtegee>} />
         <Route path="/labo/parasitologie/externes" element={<RouteProtegee session={session}><LaParasitologieExternes /></RouteProtegee>} />
-        <Route path="/labo/parasitologie/dipylidium" element={<RouteProtegee session={session}><ProGate><LaboParasitologieDipylidium /></ProGate></RouteProtegee>} />
-        <Route path="/labo/parasitologie/puce" element={<RouteProtegee session={session}><ProGate><LaboParasitologiePuce /></ProGate></RouteProtegee>} />
-        <Route path="/labo/biochimie/immuno" element={<RouteProtegee session={session}><ProGate><LaBiochimieImmuno /></ProGate></RouteProtegee>} />
-        <Route path="/labo/biochimie/organes" element={<RouteProtegee session={session}><ProGate><LaBiochimieOrganes /></ProGate></RouteProtegee>} />
-        <Route path="/labo/microbiologie/colonies" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieColonies /></ProGate></RouteProtegee>} />
         <Route path="/labo/microbiologie/levures" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieLevures /></ProGate></RouteProtegee>} />
         <Route path="/labo/:categorieId" element={<RouteProtegee session={session}><LaboProtocoles /></RouteProtegee>} />
 

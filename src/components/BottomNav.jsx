@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import MenuOverlay from './MenuOverlay'
+import { NavGuardContext } from '../App'
 
 const ONGLETS = [
   { id: 'accueil',    label: 'Accueil',              icone: 'ti-home',        route: '/accueil' },
@@ -13,6 +14,11 @@ export default function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
   const [menuOuvert, setMenuOuvert] = useState(false)
+  const { demanderConfirmation } = useContext(NavGuardContext)
+
+  function allerVers(action) {
+    demanderConfirmation(action)
+  }
 
 function estActif(route) {
   if (route === '/accueil') return location.pathname === '/accueil'
@@ -29,7 +35,7 @@ function estActif(route) {
           <button
             key={o.id}
             className={`bottom-nav-v2-btn ${estActif(o.route) ? 'active' : ''}`}
-            onClick={() => { navigate('/accueil', { replace: true }); navigate(o.route) }}
+            onClick={() => allerVers(() => { navigate('/accueil', { replace: true }); navigate(o.route) })}
           >
             <i className={`ti ${o.icone}`}></i>
             <span>{o.label}</span>
@@ -37,7 +43,7 @@ function estActif(route) {
         ))}
         <button
           className={`bottom-nav-v2-btn ${menuOuvert ? 'active' : ''}`}
-          onClick={() => setMenuOuvert(true)}
+          onClick={() => allerVers(() => setMenuOuvert(true))}
         >
           <i className="ti ti-menu-2"></i>
           <span>Menu</span>
