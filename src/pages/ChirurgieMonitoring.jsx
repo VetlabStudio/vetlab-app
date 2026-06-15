@@ -414,11 +414,35 @@ export default function ChirurgieMonitoring() {
       `Ballonnet : ${donneesPdf.ballonnet || '—'} | Ballon réservoir : ${donneesPdf.ballonReservoir || '—'} | O2 : ${donneesPdf.o2Lmin || '—'} L/min`,
       `Heure de début : ${donneesPdf.heureDebut || '—'}   Heure de fin : ${donneesPdf.heureFin || '—'}`,
     ]
+    const recup = [
+      `Notes de fin : ${donneesPdf.notesFin || '—'}`,
+      `Extubation : ${donneesPdf.extubationHeure || '—'} (${donneesPdf.extubationEtat || '—'})`,
+      `Récupération - Temp : ${donneesPdf.postTemp || '—'}, FC : ${donneesPdf.postFc || '—'}, FR : ${donneesPdf.postFr || '—'}, TRC : ${donneesPdf.postTrc || '—'}`,
+      `Douleur : ${donneesPdf.postDouleur || '—'}`,
+      `Commentaires : ${donneesPdf.postCommentaires || '—'}`,
+    ]
+    const colGap = 6
+    const colWidth = (180 - colGap) / 2
+    const xLeft = 14
+    const xRight = xLeft + colWidth + colGap
+    const yStart = y
+    let yLeft = yStart
     infos.forEach(ligne => {
-      const lignesSplit = doc.splitTextToSize(ligne, 180)
-      doc.text(lignesSplit, 14, y)
-      y += 4 * lignesSplit.length
+      const lignesSplit = doc.splitTextToSize(ligne, colWidth)
+      doc.text(lignesSplit, xLeft, yLeft)
+      yLeft += 4 * lignesSplit.length
     })
+    let yRight = yStart
+    doc.setFont(undefined, 'bold')
+    doc.text('Récupération :', xRight, yRight)
+    doc.setFont(undefined, 'normal')
+    yRight += 4
+    recup.forEach(ligne => {
+      const lignesSplit = doc.splitTextToSize(ligne, colWidth)
+      doc.text(lignesSplit, xRight, yRight)
+      yRight += 4 * lignesSplit.length
+    })
+    y = Math.max(yLeft, yRight) + 2
 
     if (donneesPdf.medications.length) {
       y += 1
@@ -433,7 +457,7 @@ export default function ChirurgieMonitoring() {
         headStyles: { fillColor: [37, 77, 86] },
         margin: { left: 14, right: 14 },
       })
-      y = doc.lastAutoTable.finalY + 6
+      y = doc.lastAutoTable.finalY + 3
     }
 
     if (donneesPdf.mesures.length) {
@@ -451,24 +475,11 @@ export default function ChirurgieMonitoring() {
           columnStyles: { 0: { cellWidth: 35 }, ...Object.fromEntries(chunk.map((_, ci) => [ci + 1, { cellWidth: 24 }])) },
           margin: { left: 14, right: 14 },
         })
-        y = doc.lastAutoTable.finalY + 6
+        y = doc.lastAutoTable.finalY + 3
       }
     }
 
     if (y > 250) { doc.addPage(); y = 15 }
-    doc.setFontSize(8.5)
-    const recup = [
-      `Notes de fin : ${donneesPdf.notesFin || '—'}`,
-      `Extubation : ${donneesPdf.extubationHeure || '—'} (${donneesPdf.extubationEtat || '—'})`,
-      `Récupération - Temp : ${donneesPdf.postTemp || '—'}, FC : ${donneesPdf.postFc || '—'}, FR : ${donneesPdf.postFr || '—'}, TRC : ${donneesPdf.postTrc || '—'}`,
-      `Douleur : ${donneesPdf.postDouleur || '—'}`,
-      `Commentaires : ${donneesPdf.postCommentaires || '—'}`,
-    ]
-    recup.forEach(ligne => {
-      const lignesSplit = doc.splitTextToSize(ligne, 180)
-      doc.text(lignesSplit, 14, y)
-      y += 4 * lignesSplit.length
-    })
 
     // ─── Pied de page (sur chaque page) ──────────────────────
     const pageHeight = doc.internal.pageSize.getHeight()
