@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
@@ -10,14 +10,9 @@ export default function LaboNouveauProtocole() {
   const [titre, setTitre] = useState('')
   const [materiel, setMateriel] = useState([''])
   const [etapes, setEtapes] = useState([
-    { id: Date.now(), titre: 'Étape 1', description: '', photo_url: null },
+    { id: Date.now(), titre: 'Étape 1', description: '' },
   ])
   const [sauvegarde, setSauvegarde] = useState(false)
-  const [uploadingEtape, setUploadingEtape] = useState(null)
-  const [etapePhotoId, setEtapePhotoId] = useState(null)
-  const [choixPhotoEtapeId, setChoixPhotoEtapeId] = useState(null)
-  const fileInputRef = useRef(null)
-  const cameraInputRef = useRef(null)
 
   // ─── MATÉRIEL ─────────────────────────────────
   function ajouterMateriel() {
@@ -38,7 +33,6 @@ export default function LaboNouveauProtocole() {
       id: Date.now(),
       titre: `Étape ${prev.length + 1}`,
       description: '',
-      photo_url: null,
     }])
   }
 
@@ -48,29 +42,6 @@ export default function LaboNouveauProtocole() {
 
   function modifierEtape(id, champ, valeur) {
     setEtapes(prev => prev.map(e => e.id === id ? { ...e, [champ]: valeur } : e))
-  }
-
-  // ─── UPLOAD PHOTO ─────────────────────────────
-  async function uploaderPhoto(etapeId, fichier) {
-    setUploadingEtape(etapeId)
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      const ext = fichier.name.includes('.') ? fichier.name.split('.').pop() : (fichier.type.split('/').pop() || 'jpg')
-      const path = `${user.id}/nouveau/${etapeId}-${Date.now()}.${ext}`
-      const { error } = await supabase.storage
-        .from('labo-photos')
-        .upload(path, fichier, { upsert: true })
-      if (!error) {
-        const { data: urlData } = supabase.storage.from('labo-photos').getPublicUrl(path)
-        modifierEtape(etapeId, 'photo_url', urlData.publicUrl)
-      } else {
-        alert('Erreur upload photo : ' + error.message)
-      }
-    } catch (err) {
-      console.error('Erreur upload:', err)
-    } finally {
-      setUploadingEtape(null)
-    }
   }
 
   // ─── SAUVEGARDER ──────────────────────────────
@@ -98,7 +69,6 @@ export default function LaboNouveauProtocole() {
             ordre: i,
             titre: etapes[i].titre,
             description: etapes[i].description,
-            photo_url: etapes[i].photo_url,
             visible: true,
           })
         }
@@ -173,26 +143,6 @@ export default function LaboNouveauProtocole() {
                 )}
               </div>
 
-              {/* Photo */}
-              {etape.photo_url ? (
-                <div className="labo-etape-photo-wrapper">
-                  <img src={etape.photo_url} alt="" className="labo-etape-photo" />
-                  <button
-                    className="labo-photo-supprimer"
-                    onClick={() => modifierEtape(etape.id, 'photo_url', null)}
-                  >✕</button>
-                </div>
-              ) : (
-                <button
-                  className="labo-photo-ajouter"
-                  onClick={() => setChoixPhotoEtapeId(etape.id)}
-                >
-                  {uploadingEtape === etape.id ? 'Upload en cours...' : (
-                    <><i className="ti ti-camera"></i> Ajouter une photo (facultatif)</>
-                  )}
-                </button>
-              )}
-
               {/* Titre étape */}
               <div className="champ" style={{ padding: '0 14px' }}>
                 <label>Titre</label>
@@ -239,63 +189,6 @@ export default function LaboNouveauProtocole() {
         </button>
 
       </div>
-
-      {/* Input fichier caché */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: 'none' }}
-        onChange={e => {
-          if (e.target.files[0] && etapePhotoId) {
-            uploaderPhoto(etapePhotoId, e.target.files[0])
-            e.target.value = ''
-          }
-        }}
-      />
-
-      {/* Input caméra caché */}
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        style={{ display: 'none' }}
-        onChange={e => {
-          if (e.target.files[0] && etapePhotoId) {
-            uploaderPhoto(etapePhotoId, e.target.files[0])
-            e.target.value = ''
-          }
-        }}
-      />
-
-      {choixPhotoEtapeId && (
-        <div className="popup-overlay" onClick={() => setChoixPhotoEtapeId(null)}>
-          <div className="popup-card" onClick={e => e.stopPropagation()}>
-            <div className="popup-header">
-              <span>Ajouter une photo</span>
-              <button className="popup-close" onClick={() => setChoixPhotoEtapeId(null)}>✕</button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '8px 0 4px' }}>
-              <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => {
-                setEtapePhotoId(choixPhotoEtapeId)
-                setChoixPhotoEtapeId(null)
-                cameraInputRef.current?.click()
-              }}>
-                <i className="ti ti-camera"></i> Prendre une photo
-              </button>
-              <button className="labo-btn-secondary" style={{ width: '100%' }} onClick={() => {
-                setEtapePhotoId(choixPhotoEtapeId)
-                setChoixPhotoEtapeId(null)
-                fileInputRef.current?.click()
-              }}>
-                <i className="ti ti-photo"></i> Choisir depuis la galerie
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
     </div>
   )
 }

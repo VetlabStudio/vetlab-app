@@ -29,8 +29,8 @@ const SYSTEMES = [
   { id: 'lymphatique', icone: '/examen-lymphatique.png', titre: 'Système lymphatique', placeholder: 'Taille, consistance, localisation des ganglions...' },
 ]
 
-const ATTITUDE_OPTIONS = ['Alerte et réactif', 'Calme et réactif', 'Abattu (léthargique)', 'Obnubilé (stuporeux)']
-const ENERGIE_OPTIONS = ['Normal', 'Diminué', 'Augmenté', 'Épuisement']
+const ATTITUDE_OPTIONS = ['Alerte et réactif', 'Calme et réactif', 'Abattu (léthargique)']
+const ENERGIE_OPTIONS = ['Normal', 'Diminué', 'Augmenté']
 const CONDITION_OPTIONS = ['Maigre', 'Idéale', 'Surpoids', 'Obèse']
 const COMPORTEMENT_OPTIONS = ['Calme', 'Craintif / anxieux', 'Agressif', 'Agité / excité']
 
@@ -62,6 +62,8 @@ function etatInitial() {
     sexe: '',
     sterilise: false,
     poids: '',
+    poidsUnite: 'kg',
+    raisonVisite: '',
     temperature: '',
     freqCardiaque: '',
     freqRespiratoire: '',
@@ -94,6 +96,19 @@ export default function SoinsGenerauxExamenPhysique() {
     setTitreCustom(vue === 'formulaire' ? (currentId ? 'Modifier l\'examen' : 'Nouvel examen') : 'Démarrer un examen')
     return () => setTitreCustom('')
   }, [vue, currentId])
+
+  // ─── Sauvegarde automatique du brouillon dans l'historique ──
+  useEffect(() => {
+    if (!currentId || vue !== 'formulaire') return
+    const t = setTimeout(() => {
+      supabase
+        .from('examens_physiques')
+        .update({ animal_nom: form.animalNom || 'Sans nom', donnees: form, updated_at: new Date().toISOString() })
+        .eq('id', currentId)
+        .then(() => chargerHistorique())
+    }, 800)
+    return () => clearTimeout(t)
+  }, [form, currentId, vue])
 
   const date = new Date()
   const dateAffichee = date.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -137,10 +152,31 @@ export default function SoinsGenerauxExamenPhysique() {
     }))
   }
 
-  function commencerNouvelExamen() {
-    setForm(etatInitial())
+  async function commencerNouvelExamen() {
+    const nouveauForm = etatInitial()
+    setForm(nouveauForm)
     setCurrentId(null)
     setVue('formulaire')
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    if (historique.length >= MAX_HISTORIQUE) {
+      const aSupprimer = [...historique]
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        .slice(0, historique.length - MAX_HISTORIQUE + 1)
+      for (const item of aSupprimer) {
+        await supabase.from('examens_physiques').delete().eq('id', item.id)
+      }
+    }
+    const { data } = await supabase
+      .from('examens_physiques')
+      .insert({ user_id: user.id, animal_nom: 'Sans nom', resume: '', donnees: nouveauForm })
+      .select()
+      .single()
+    if (data) {
+      setCurrentId(data.id)
+      chargerHistorique()
+    }
   }
 
   function formulaireIncomplet() {
@@ -157,8 +193,9 @@ export default function SoinsGenerauxExamenPhysique() {
     const especeLabel = ESPECES.find(e => e.id === form.espece)?.label
     if (especeLabel) lignes.push(`Espèce : ${especeLabel}`)
     if (form.sexe) lignes.push(`Sexe : ${form.sexe === 'femelle' ? 'Femelle' : 'Mâle'}${form.sterilise ? ' (stérilisé(e))' : ''}`)
-    if (form.poids) lignes.push(`Poids : ${form.poids} kg`)
+    if (form.poids) lignes.push(`Poids : ${form.poids} ${form.poidsUnite || 'kg'}`)
     lignes.push(`Date : ${dateAffichee}`)
+    if (form.raisonVisite?.trim()) lignes.push(`Raison de la visite : ${form.raisonVisite.trim()}`)
     lignes.push('')
     lignes.push('Paramètres vitaux :')
     lignes.push(`- Température : ${form.temperature ? form.temperature + ' °C' : '—'}`)
@@ -196,6 +233,16 @@ export default function SoinsGenerauxExamenPhysique() {
     const especeLabel = ESPECES.find(e => e.id === donneesPdf.espece)?.label
     const doc = new jsPDF()
     let y = 15
+    try {
+            const iconeData = await chargerImageBase64('/pdf-examen.png')
+      const props = doc.getImageProperties(iconeData)
+      const largeur = 12
+      const hauteur = (props.height / props.width) * largeur
+      doc.addImage(iconeData, 'PNG', 14, 8, largeur, hauteur)
+      y = 8 + hauteur + 8
+    } catch {
+      y = 15
+    }
     doc.setFontSize(16)
     doc.text('Examen physique - Préconsultation', 14, y)
     y += 8
@@ -203,8 +250,8 @@ export default function SoinsGenerauxExamenPhysique() {
     const infos = [
       `Animal : ${donneesPdf.animalNom || '—'}`,
       `Espèce : ${especeLabel || '—'}   Sexe : ${donneesPdf.sexe === 'femelle' ? 'Femelle' : donneesPdf.sexe === 'male' ? 'Mâle' : '—'}${donneesPdf.sterilise ? ' (stérilisé(e))' : ''}`,
-      `Poids : ${donneesPdf.poids ? donneesPdf.poids + ' kg' : '—'}`,
-      `Date : ${dateAffichee}`,
+      `Poids : ${donneesPdf.poids ? donneesPdf.poids + ' ' + (donneesPdf.poidsUnite || 'kg') : '—'}`,
+      `Date : ${dateAffichee}${donneesPdf.raisonVisite?.trim() ? '   Raison de la visite : ' + donneesPdf.raisonVisite.trim() : ''}`,
       `Température : ${donneesPdf.temperature || '—'}   FC : ${donneesPdf.freqCardiaque || '—'}   FR : ${donneesPdf.freqRespiratoire || '—'}`,
       `Attitude : ${donneesPdf.attitude || '—'}   Énergie : ${donneesPdf.niveauEnergie || '—'}`,
       `Condition corporelle : ${donneesPdf.conditionCorporelle || '—'}   Comportement : ${donneesPdf.comportement || '—'}`,
@@ -220,7 +267,7 @@ export default function SoinsGenerauxExamenPhysique() {
       startY: y,
       head: [['Système', 'Observation']],
       body: SYSTEMES.map(s => {
-        const { normal, note } = donneesPdf.systemes[s.id]
+        const { normal, note } = donneesPdf.systemes?.[s.id] || { normal: false, note: '' }
         return [s.titre, normal && !note.trim() ? 'Normal' : (note.trim() || 'Anormal - voir note')]
       }),
       styles: { fontSize: 8 },
@@ -237,21 +284,30 @@ export default function SoinsGenerauxExamenPhysique() {
       y += 6 * lignesSplit.length
     }
 
-    // ─── Pied de page ──────────────────────
+    // ─── Pied de page (sur chaque page) ──────────────────────
     const pageHeight = doc.internal.pageSize.getHeight()
     if (y > pageHeight - 25) { doc.addPage(); y = 15 }
     const yFooter = pageHeight - 14
+    const nbPages = doc.internal.getNumberOfPages()
+    let logoData = null
     try {
-      const logoData = await chargerImageBase64('/logo-adjuvet.png')
-      doc.addImage(logoData, 'PNG', 14, yFooter - 12, 18, 16)
-      doc.setFontSize(8)
-      doc.setTextColor(150)
-      doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet", 36, yFooter - 2)
-      doc.text('par VetlabStudio — adjuvet.app', 36, yFooter + 3)
+      logoData = await chargerImageBase64('/logo-adjuvet.png')
     } catch {
-      doc.setFontSize(8)
-      doc.setTextColor(150)
-      doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet par VetlabStudio — adjuvet.app", 14, yFooter)
+      logoData = null
+    }
+    for (let p = 1; p <= nbPages; p++) {
+      doc.setPage(p)
+      if (logoData) {
+        doc.addImage(logoData, 'PNG', 14, yFooter - 12, 18, 16)
+        doc.setFontSize(8)
+        doc.setTextColor(150)
+        doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet", 36, yFooter - 2)
+        doc.text('par VetlabStudio — adjuvet.app', 36, yFooter + 3)
+      } else {
+        doc.setFontSize(8)
+        doc.setTextColor(150)
+        doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet par VetlabStudio — adjuvet.app", 14, yFooter)
+      }
     }
 
     const url = doc.output('bloburl')
@@ -508,19 +564,36 @@ export default function SoinsGenerauxExamenPhysique() {
             </label>
           </div>
           <div className="form-groupe">
-            <label className="form-label">Poids (kg)</label>
-            <input
-              type="text"
-              inputMode="decimal"
-              className="form-input"
-              value={form.poids}
-              onChange={e => modifierChamp('poids', e.target.value.replace(',', '.'))}
-              placeholder="Ex. : 12.5"
-            />
+            <label className="form-label">Poids</label>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="text"
+                inputMode="decimal"
+                className="form-input"
+                style={{ flex: 1 }}
+                value={form.poids}
+                onChange={e => modifierChamp('poids', e.target.value.replace(',', '.'))}
+                placeholder="Ex. : 12.5"
+              />
+              <div className="toggle-groupe" style={{ flexShrink: 0 }}>
+                <button type="button" className={`toggle-btn ${form.poidsUnite === 'kg' ? 'actif' : ''}`} onClick={() => modifierChamp('poidsUnite', 'kg')}>kg</button>
+                <button type="button" className={`toggle-btn ${form.poidsUnite === 'lb' ? 'actif' : ''}`} onClick={() => modifierChamp('poidsUnite', 'lb')}>lb</button>
+              </div>
+            </div>
           </div>
           <div className="form-groupe">
             <label className="form-label">Date</label>
             <div className="form-input" style={{ background: 'var(--bg)', color: 'var(--text-secondary)' }}>{dateAffichee}</div>
+          </div>
+          <div className="form-groupe">
+            <label className="form-label">Raison de la visite</label>
+            <input
+              type="text"
+              className="form-input"
+              value={form.raisonVisite || ''}
+              onChange={e => modifierChamp('raisonVisite', e.target.value)}
+              placeholder="Ex. : vaccination, suivi post-opératoire, bilan annuel..."
+            />
           </div>
         </div>
       </div>

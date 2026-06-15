@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useContext } from 'react'
@@ -17,11 +17,6 @@ export default function LaboProtocoleDetail() {
   const [loading, setLoading] = useState(true)
   const [modeEdit, setModeEdit] = useState(false)
   const [showReorganiser, setShowReorganiser] = useState(false)
-  const [uploadingEtape, setUploadingEtape] = useState(null)
-  const fileInputRef = useRef(null)
-  const cameraInputRef = useRef(null)
-  const [etapePhotoId, setEtapePhotoId] = useState(null)
-  const [choixPhotoEtapeId, setChoixPhotoEtapeId] = useState(null)
   const { setTitreCustom } = useContext(TitreContext)
   const [showProMsg, setShowProMsg] = useState(false)
   const { estPro } = useProfil()
@@ -69,7 +64,6 @@ export default function LaboProtocoleDetail() {
           ...e,
           visible: mod ? mod.visible : e.visible,
           ordre: mod ? mod.ordre : e.ordre,
-          photo_url: mod?.photo_url || e.photo_url,
           description: mod?.description || e.description,
           mod_id: mod?.id,
         }
@@ -135,7 +129,6 @@ export default function LaboProtocoleDetail() {
       ordre: etape.ordre,
       titre: etape.titre,
       description: etape.description,
-      photo_url: etape.photo_url,
       visible: etape.visible ?? true,
     })
   }
@@ -156,7 +149,6 @@ export default function LaboProtocoleDetail() {
           ordre: etape.ordre,
           titre: etape.titre,
           description: etape.description,
-          photo_url: etape.photo_url,
           visible: etape.visible ?? true,
         })
       } else {
@@ -164,7 +156,6 @@ export default function LaboProtocoleDetail() {
           ordre: etape.ordre,
           titre: etape.titre,
           description: etape.description,
-          photo_url: etape.photo_url,
           visible: etape.visible ?? true,
         }).eq('id', etape.id)
       }
@@ -174,25 +165,6 @@ export default function LaboProtocoleDetail() {
   setModeEdit(false)
   chargerDonnees()
 }
-
-  async function uploaderPhoto(etapeId, fichier) {
-    setUploadingEtape(etapeId)
-    const { data: { user } } = await supabase.auth.getUser()
-    const ext = fichier.name.includes('.') ? fichier.name.split('.').pop() : (fichier.type.split('/').pop() || 'jpg')
-    const path = `${user.id}/${protocoleId}/${etapeId}-${Date.now()}.${ext}`
-    const { error } = await supabase.storage
-      .from('labo-photos')
-      .upload(path, fichier, { upsert: true })
-    if (!error) {
-      const { data: urlData } = supabase.storage.from('labo-photos').getPublicUrl(path)
-      setEtapes(prev => prev.map(e =>
-        e.id === etapeId ? { ...e, photo_url: urlData.publicUrl } : e
-      ))
-    } else {
-      alert('Erreur upload photo : ' + error.message)
-    }
-    setUploadingEtape(null)
-  }
 
   function deplacerEtape(index, direction) {
     const nouvelles = [...etapes]
@@ -207,7 +179,6 @@ export default function LaboProtocoleDetail() {
       id: `new-${Date.now()}`,
       titre: `Étape ${prev.length + 1}`,
       description: '',
-      photo_url: null,
       visible: true,
       ordre: prev.length,
       isNew: true,
@@ -322,87 +293,79 @@ async function supprimerProtocole() {
       )}
 
       {/* ─── ÉTAPES ─────────────────────────── */}
+      {modeEdit ? (
       <div className="labo-etapes">
         {etapesVisibles.map((etape, index) => (
           <div key={etape.id} className={`labo-etape-card ${!etape.visible ? 'masquee' : ''}`}>
 
-            {/* Photo */}
-            {etape.photo_url ? (
-              <div className="labo-etape-photo-wrapper">
-                <img src={etape.photo_url} alt={etape.titre} className="labo-etape-photo" />
-                {modeEdit && (
-                  <button className="labo-photo-supprimer" onClick={() =>
-                    setEtapes(prev => prev.map(e => e.id === etape.id ? { ...e, photo_url: null } : e))
-                  }>✕</button>
-                )}
-              </div>
-            ) : modeEdit ? (
-              <button
-                className="labo-photo-ajouter"
-                onClick={() => setChoixPhotoEtapeId(etape.id)}
-              >
-                {uploadingEtape === etape.id ? 'Upload...' : (
-                  <><i className="ti ti-camera"></i> Ajouter une photo (facultatif)</>
-                )}
-              </button>
-            ) : null}
-
             {/* Titre */}
-            {modeEdit ? (
-              <input
-                className="labo-etape-titre-input"
-                value={etape.titre}
-                onChange={e => setEtapes(prev => prev.map(et =>
-                  et.id === etape.id ? { ...et, titre: e.target.value } : et
-                ))}
-              />
-            ) : (
-              <h3 className="labo-etape-titre">{etape.titre}</h3>
-            )}
+            <input
+              className="labo-etape-titre-input"
+              value={etape.titre}
+              onChange={e => setEtapes(prev => prev.map(et =>
+                et.id === etape.id ? { ...et, titre: e.target.value } : et
+              ))}
+            />
 
             {/* Description */}
-            {modeEdit ? (
-              <textarea
-                className="labo-etape-desc-input"
-                value={etape.description || ''}
-                onChange={e => setEtapes(prev => prev.map(et =>
-                  et.id === etape.id ? { ...et, description: e.target.value } : et
-                ))}
-                placeholder="Description de l'étape..."
-                rows={3}
-              />
-            ) : (
-              etape.description && <p className="labo-etape-desc">{etape.description}</p>
-            )}
+            <textarea
+              className="labo-etape-desc-input"
+              value={etape.description || ''}
+              onChange={e => setEtapes(prev => prev.map(et =>
+                et.id === etape.id ? { ...et, description: e.target.value } : et
+              ))}
+              placeholder="Description de l'étape..."
+              rows={3}
+            />
 
             {/* Actions edit */}
-            {modeEdit && (
-              <div className="labo-etape-edit-actions">
-                <label className="labo-etape-visible">
-                  <input
-                    type="checkbox"
-                    checked={etape.visible !== false}
-                    onChange={e => setEtapes(prev => prev.map(et =>
-                      et.id === etape.id ? { ...et, visible: e.target.checked } : et
-                    ))}
-                  />
-                  Visible
-                </label>
-                <button className="labo-btn-supprimer" onClick={() => supprimerEtape(etape.id)}>
+            <div className="labo-etape-edit-actions">
+              <label className="labo-etape-visible">
+                <input
+                  type="checkbox"
+                  checked={etape.visible !== false}
+                  onChange={e => setEtapes(prev => prev.map(et =>
+                    et.id === etape.id ? { ...et, visible: e.target.checked } : et
+                  ))}
+                />
+                Visible
+              </label>
+              <button className="labo-btn-supprimer" onClick={() => supprimerEtape(etape.id)}>
   <i className="ti ti-trash"></i>
 </button>
-              </div>
-            )}
+            </div>
           </div>
         ))}
-
-        {/* Bouton ajouter étape en mode edit */}
-        {modeEdit && (
-  <button className="labo-btn-ajouter-etape" onClick={ajouterEtape}>
-    <i className="ti ti-plus"></i> Ajouter une étape
-  </button>
-)}
       </div>
+      ) : (
+        <div className="postop-section">
+          <div className="postop-section-header">
+            <div className="postop-section-icone" style={{ background: '#254D5618', color: '#254D56' }}>
+              <i className="ti ti-list-check"></i>
+            </div>
+            <h2 className="postop-section-titre">{protocole.titre}</h2>
+          </div>
+          <ol className="postop-liste">
+            {etapesVisibles.map((etape, index) => (
+              <li key={etape.id} className="postop-liste-item">
+                <span className="postop-num" style={{ background: '#254D56' }}>{index + 1}</span>
+                <span className="postop-texte">
+                  <strong>{etape.titre}</strong>
+                  {etape.description && <><br />{etape.description}</>}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {modeEdit && (
+      <div className="labo-etapes">
+        <button className="labo-btn-ajouter-etape" onClick={ajouterEtape}>
+          <i className="ti ti-plus"></i> Ajouter une étape
+        </button>
+      </div>
+      )}
       {/* ─── BOUTON ENREGISTRER BAS ─────────── */}
 {modeEdit && type === 'user' && (
   <div className="labo-actions-bas" style={{ flexDirection: 'column', gap: 8 }}>
@@ -429,62 +392,6 @@ async function supprimerProtocole() {
     </button>
   </div>
 )}
-
-      {/* Input fichier caché */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: 'none' }}
-        onChange={e => {
-          if (e.target.files[0] && etapePhotoId) {
-            uploaderPhoto(etapePhotoId, e.target.files[0])
-            e.target.value = ''
-          }
-        }}
-      />
-
-      {/* Input caméra caché */}
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        style={{ display: 'none' }}
-        onChange={e => {
-          if (e.target.files[0] && etapePhotoId) {
-            uploaderPhoto(etapePhotoId, e.target.files[0])
-            e.target.value = ''
-          }
-        }}
-      />
-
-      {choixPhotoEtapeId && (
-        <div className="popup-overlay" onClick={() => setChoixPhotoEtapeId(null)}>
-          <div className="popup-card" onClick={e => e.stopPropagation()}>
-            <div className="popup-header">
-              <span>Ajouter une photo</span>
-              <button className="popup-close" onClick={() => setChoixPhotoEtapeId(null)}>✕</button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '8px 0 4px' }}>
-              <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => {
-                setEtapePhotoId(choixPhotoEtapeId)
-                setChoixPhotoEtapeId(null)
-                cameraInputRef.current?.click()
-              }}>
-                <i className="ti ti-camera"></i> Prendre une photo
-              </button>
-              <button className="labo-btn-secondary" style={{ width: '100%' }} onClick={() => {
-                setEtapePhotoId(choixPhotoEtapeId)
-                setChoixPhotoEtapeId(null)
-                fileInputRef.current?.click()
-              }}>
-                <i className="ti ti-photo"></i> Choisir depuis la galerie
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ─── MODAL RÉORGANISER ──────────────── */}
       {showReorganiser && (
@@ -523,7 +430,7 @@ async function supprimerProtocole() {
                 et.id === etape.id ? { ...et, visible: e.target.checked } : et
               ))}
             />
-            <span className="labo-reorganiser-titre">{etape.titre}</span>
+            <span className="labo-reorganiser-titre">{index + 1}. {etape.titre}</span>
             <i className="ti ti-grip-vertical" style={{ color: 'var(--text-hint)', fontSize: 18, cursor: 'grab' }}></i>
           </div>
         ))}

@@ -96,7 +96,7 @@ import BottomNavAdmin from './components/BottomNavAdmin'
 import ProGate from './components/ProGate'
 
 export const TitreContext = createContext({ titreCustom: '', setTitreCustom: () => {} })
-export const NavGuardContext = createContext({ navGuardActif: false, setNavGuardActif: () => {}, navGuardMessage: '', demanderConfirmation: (action) => action() })
+export const NavGuardContext = createContext({ navGuardActif: false, setNavGuardActif: () => {}, navGuardMessage: '', setNavGuardMessage: () => {}, demanderConfirmation: (action) => action() })
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -112,7 +112,7 @@ function LayoutPrincipal({ children }) {
   const [titreCustom, setTitreCustom] = useState('')
   const [navGuardActif, setNavGuardActif] = useState(false)
   const [actionEnAttente, setActionEnAttente] = useState(null)
-  const navGuardMessage = 'Voulez-vous vraiment quitter le monitoring en cours ? Toutes les informations non enregistrées seront perdues.'
+  const [navGuardMessage, setNavGuardMessage] = useState('Voulez-vous vraiment quitter ? Toutes les informations non enregistrées seront perdues.')
 
   function demanderConfirmation(action) {
     if (navGuardActif) {
@@ -124,7 +124,7 @@ function LayoutPrincipal({ children }) {
 
   return (
     <TitreContext.Provider value={{ titreCustom, setTitreCustom }}>
-      <NavGuardContext.Provider value={{ navGuardActif, setNavGuardActif, navGuardMessage, demanderConfirmation }}>
+      <NavGuardContext.Provider value={{ navGuardActif, setNavGuardActif, navGuardMessage, setNavGuardMessage, demanderConfirmation }}>
         <div className={`app-layout ${estAccueil ? 'app-layout-accueil' : ''}`}>
           <Header />
           <main className="contenu-principal">
@@ -140,7 +140,7 @@ function LayoutPrincipal({ children }) {
               <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
                 <i className="ti ti-alert-triangle" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>
-                  Quitter le monitoring en cours ?
+                  Quitter sans enregistrer ?
                 </h2>
                 <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                   {navGuardMessage}

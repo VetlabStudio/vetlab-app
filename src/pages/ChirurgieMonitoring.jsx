@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import { supabase } from '../lib/supabase'
-import { TitreContext, NavGuardContext } from '../App'
+import { TitreContext } from '../App'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import IconesEspeces, { ESPECES_CONFIG } from '../components/IconesEspeces'
@@ -30,12 +30,13 @@ const MUQUEUSES_OPTIONS = ['Roses', 'Pâles', 'Congestives', 'Cyanotiques']
 const ASA_OPTIONS = ['I', 'II', 'III', 'IV', 'V']
 const CATEGORIES_MED = ['Drogues d\'urgence', 'Pré-anesthésique', 'Inducteurs', 'Intra-opératoire', 'Post-opératoire']
 const MAX_HISTORIQUE = 30
-const COLONNES_PAR_TABLEAU = 4
+const COLONNES_PAR_TABLEAU = 5
+const COLONNES_PAR_TABLEAU_PDF = 6
 
 const MESURE_PARAMS = [
   { key: 'fc', label: 'FC (bpm)' },
   { key: 'fr', label: 'FR (rpm)' },
-  { key: 'temp', label: 'Temp. (°C)' },
+  { key: 'temp', label: 'Température (°C)' },
   { key: 'spo2', label: 'SpO₂ (%)' },
   { key: 'co2', label: 'ETCO₂ (mmHg)' },
   { key: 'syst', label: 'PA systolique' },
@@ -149,7 +150,6 @@ export default function ChirurgieMonitoring() {
   const [tousMedicaments, setTousMedicaments] = useState([])
 
   const { setTitreCustom } = useContext(TitreContext)
-  const { setNavGuardActif, demanderConfirmation } = useContext(NavGuardContext)
 
   useEffect(() => {
     if (vue === 'setup') setTitreCustom(currentId ? 'Modifier le monitoring' : 'Démarrer l\'anesthésie')
@@ -158,10 +158,18 @@ export default function ChirurgieMonitoring() {
     return () => setTitreCustom('')
   }, [vue, currentId])
 
+  // ─── Sauvegarde automatique du brouillon dans l'historique ──
   useEffect(() => {
-    setNavGuardActif(vue === 'setup' || vue === 'monitoring')
-    return () => setNavGuardActif(false)
-  }, [vue])
+    if (!currentId || !(vue === 'setup' || vue === 'monitoring')) return
+    const t = setTimeout(() => {
+      supabase
+        .from('monitorings_anesthesiques')
+        .update({ animal_nom: form.animalNom || 'Sans nom', donnees: form, updated_at: new Date().toISOString() })
+        .eq('id', currentId)
+        .then(() => chargerHistorique())
+    }, 800)
+    return () => clearTimeout(t)
+  }, [form, currentId, vue])
 
   useEffect(() => {
     supabase.from('medicaments').select('*').order('nom').then(({ data }) => setTousMedicaments(data || []))
@@ -193,10 +201,31 @@ export default function ChirurgieMonitoring() {
     }))
   }
 
-  function commencerNouveau() {
-    setForm(etatInitial())
+  async function commencerNouveau() {
+    const nouveauForm = etatInitial()
+    setForm(nouveauForm)
     setCurrentId(null)
     setVue('setup')
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    if (historique.length >= MAX_HISTORIQUE) {
+      const aSupprimer = [...historique]
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        .slice(0, historique.length - MAX_HISTORIQUE + 1)
+      for (const item of aSupprimer) {
+        await supabase.from('monitorings_anesthesiques').delete().eq('id', item.id)
+      }
+    }
+    const { data } = await supabase
+      .from('monitorings_anesthesiques')
+      .insert({ user_id: user.id, animal_nom: 'Sans nom', resume: '', donnees: nouveauForm })
+      .select()
+      .single()
+    if (data) {
+      setCurrentId(data.id)
+      chargerHistorique()
+    }
   }
 
   // ─── RECHERCHE MÉDICAMENTS ──────────────────────
@@ -361,10 +390,18 @@ export default function ChirurgieMonitoring() {
     const especeLabel = ESPECES.find(e => e.id === donneesPdf.espece)?.label
     const doc = new jsPDF()
     let y = 15
-    doc.setFontSize(16)
-    doc.text('Monitoring anesthésique', 14, y)
-    y += 8
-    doc.setFontSize(10)
+    try {
+      const iconeData = await chargerImageBase64('/icone-monitoring.png')
+      doc.addImage(iconeData, 'PNG', 14, 8, 10, 10)
+      doc.setFontSize(14)
+      doc.text('Monitoring anesthésique', 28, 16)
+      y = 23
+    } catch {
+      doc.setFontSize(14)
+      doc.text('Monitoring anesthésique', 14, y)
+      y += 7
+    }
+    doc.setFontSize(8.5)
     const infos = [
       `Animal : ${donneesPdf.animalNom || '—'}`,
       `Espèce : ${especeLabel || '—'}   Sexe : ${donneesPdf.sexe === 'femelle' ? 'Femelle' : donneesPdf.sexe === 'male' ? 'Mâle' : '—'}${donneesPdf.sterilise ? ' (stérilisé(e))' : ''}`,
@@ -380,11 +417,11 @@ export default function ChirurgieMonitoring() {
     infos.forEach(ligne => {
       const lignesSplit = doc.splitTextToSize(ligne, 180)
       doc.text(lignesSplit, 14, y)
-      y += 6 * lignesSplit.length
+      y += 4 * lignesSplit.length
     })
 
     if (donneesPdf.medications.length) {
-      y += 2
+      y += 1
       autoTable(doc, {
         startY: y,
         head: [['Catégorie', 'Médicament', 'Conc. (mg/mL)', 'Dose (mg/kg)', 'Dose totale (mg)', 'Volume (mL)', 'Voie']],
@@ -393,33 +430,33 @@ export default function ChirurgieMonitoring() {
           return [m.categorie, m.nom, m.concentration || '—', m.doseMgKg || '—', doseMg != null ? doseMg.toFixed(2) : '—', volume != null ? volume.toFixed(2) : '—', m.voie]
         }),
         styles: { fontSize: 8 },
-        margin: { left: 14, right: 14 },
         headStyles: { fillColor: [37, 77, 86] },
+        margin: { left: 14, right: 14 },
       })
       y = doc.lastAutoTable.finalY + 6
     }
 
     if (donneesPdf.mesures.length) {
-      for (let i = 0; i < donneesPdf.mesures.length; i += COLONNES_PAR_TABLEAU) {
-        const chunk = donneesPdf.mesures.slice(i, i + COLONNES_PAR_TABLEAU)
+      for (let i = 0; i < donneesPdf.mesures.length; i += COLONNES_PAR_TABLEAU_PDF) {
+        const chunk = donneesPdf.mesures.slice(i, i + COLONNES_PAR_TABLEAU_PDF)
         const largeurPage = doc.internal.pageSize.getWidth()
-        const largeurTableau = 40 + chunk.length * 25
+        const largeurTableau = 35 + chunk.length * 24
         autoTable(doc, {
           startY: y,
           head: [['Paramètre', ...chunk.map(m => m.heure)]],
           body: MESURE_PARAMS.map(p => [p.label, ...chunk.map(m => m[p.key] || '—')]),
           styles: { fontSize: 8 },
-          tableWidth: largeurTableau < largeurPage - 28 ? largeurTableau : 'auto',
-          columnStyles: { 0: { cellWidth: 40 }, ...Object.fromEntries(chunk.map((_, ci) => [ci + 1, { cellWidth: 25 }])) },
-          margin: { left: 14, right: 14 },
           headStyles: { fillColor: [37, 77, 86] },
+          tableWidth: largeurTableau < largeurPage - 28 ? largeurTableau : 'auto',
+          columnStyles: { 0: { cellWidth: 35 }, ...Object.fromEntries(chunk.map((_, ci) => [ci + 1, { cellWidth: 24 }])) },
+          margin: { left: 14, right: 14 },
         })
         y = doc.lastAutoTable.finalY + 6
       }
     }
 
     if (y > 250) { doc.addPage(); y = 15 }
-    doc.setFontSize(10)
+    doc.setFontSize(8.5)
     const recup = [
       `Notes de fin : ${donneesPdf.notesFin || '—'}`,
       `Extubation : ${donneesPdf.extubationHeure || '—'} (${donneesPdf.extubationEtat || '—'})`,
@@ -430,24 +467,33 @@ export default function ChirurgieMonitoring() {
     recup.forEach(ligne => {
       const lignesSplit = doc.splitTextToSize(ligne, 180)
       doc.text(lignesSplit, 14, y)
-      y += 6 * lignesSplit.length
+      y += 4 * lignesSplit.length
     })
 
-    // ─── Pied de page ──────────────────────
+    // ─── Pied de page (sur chaque page) ──────────────────────
     const pageHeight = doc.internal.pageSize.getHeight()
     if (y > pageHeight - 25) { doc.addPage(); y = 15 }
     const yFooter = pageHeight - 14
+    const nbPages = doc.internal.getNumberOfPages()
+    let logoData = null
     try {
-      const logoData = await chargerImageBase64('/logo-adjuvet.png')
-      doc.addImage(logoData, 'PNG', 14, yFooter - 12, 18, 16)
-      doc.setFontSize(8)
-      doc.setTextColor(150)
-      doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet", 36, yFooter - 2)
-      doc.text('par VetlabStudio — adjuvet.app', 36, yFooter + 3)
+      logoData = await chargerImageBase64('/logo-adjuvet.png')
     } catch {
-      doc.setFontSize(8)
-      doc.setTextColor(150)
-      doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet par VetlabStudio — adjuvet.app", 14, yFooter)
+      logoData = null
+    }
+    for (let p = 1; p <= nbPages; p++) {
+      doc.setPage(p)
+      if (logoData) {
+        doc.addImage(logoData, 'PNG', 14, yFooter - 12, 18, 16)
+        doc.setFontSize(8)
+        doc.setTextColor(150)
+        doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet", 36, yFooter - 2)
+        doc.text('par VetlabStudio — adjuvet.app', 36, yFooter + 3)
+      } else {
+        doc.setFontSize(8)
+        doc.setTextColor(150)
+        doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet par VetlabStudio — adjuvet.app", 14, yFooter)
+      }
     }
 
     const url = doc.output('bloburl')
@@ -628,7 +674,7 @@ export default function ChirurgieMonitoring() {
   if (vue === 'setup') {
     return (
       <div className="labo-detail-page">
-        <button className="labo-btn-secondary" style={{ marginBottom: 12, width: '100%', textAlign: 'center', display: 'block', boxSizing: 'border-box', position: 'static', right: 'auto' }} onClick={() => demanderConfirmation(() => setVue('liste'))}>
+        <button className="labo-btn-secondary" style={{ marginBottom: 12, width: '100%', textAlign: 'center', display: 'block', boxSizing: 'border-box', position: 'static', right: 'auto' }} onClick={() => setVue('liste')}>
           <i className="ti ti-arrow-left"></i> Retour à l'historique
         </button>
 
@@ -737,7 +783,7 @@ export default function ChirurgieMonitoring() {
           <div className="form-scroll" style={{ padding: 16, gap: 12 }}>
             <div className="form-groupe">
               <label className="form-label">Température (°C)</label>
-              <input type="number" inputMode="decimal" className="form-input" value={form.temperature} onChange={e => modifierChamp('temperature', e.target.value)} placeholder="Ex. : 36.5" />
+              <input type="number" inputMode="decimal" className="form-input" value={form.temperature} onChange={e => modifierChamp('temperature', e.target.value)} placeholder="Ex. : 38.5" />
             </div>
             <div className="form-groupe">
               <label className="form-label">Fréquence cardiaque (bpm)</label>
@@ -861,7 +907,7 @@ export default function ChirurgieMonitoring() {
                       <div className="monitoring-med-dropdown-nom">{med.nom}</div>
                       <div className="monitoring-med-dropdown-details">
                         <span>{med.categorie}</span>
-                        <IconesEspeces especes={med.especes} taille={22} />
+                        <IconesEspeces especes={med.especes} taille={18} />
                       </div>
                     </div>
                   ))}
