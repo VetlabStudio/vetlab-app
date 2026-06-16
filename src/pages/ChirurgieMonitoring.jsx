@@ -30,7 +30,7 @@ const MUQUEUSES_OPTIONS = ['Roses', 'Pâles', 'Congestives', 'Cyanotiques']
 const ASA_OPTIONS = ['I', 'II', 'III', 'IV', 'V']
 const CATEGORIES_MED = ['Drogues d\'urgence', 'Pré-anesthésique', 'Inducteurs', 'Intra-opératoire', 'Post-opératoire']
 const MAX_HISTORIQUE = 30
-const COLONNES_PAR_TABLEAU = 5
+const COLONNES_PAR_TABLEAU = 4
 const COLONNES_PAR_TABLEAU_PDF = 6
 
 const MESURE_PARAMS = [
@@ -112,6 +112,13 @@ function normaliserMedicament(med) {
   }
   if (med.unite_concentration === 'mcg/mL' && !isNaN(conc)) conc /= 1000
   return { doseMin, doseMax, concentration: conc }
+}
+
+function categorieMedDefaut(med) {
+  const c = med.categorie || ''
+  if (c === 'Urgence' || c === 'Antagonistes') return 'Drogues d\'urgence'
+  if (c === 'Anesthésiques / Analgésiques') return 'Inducteurs'
+  return 'Intra-opératoire'
 }
 
 function chargerImageBase64(url) {
@@ -255,10 +262,12 @@ export default function ChirurgieMonitoring() {
       medications: [...prev.medications, {
         id: med.id + '-' + Date.now(),
         nom: med.nom,
-        categorie: CATEGORIES_MED[0],
+        categorie: categorieMedDefaut(med),
         concentration: isNaN(concentration) ? '' : String(concentration),
         doseMgKg: isNaN(doseMin) ? '' : String(doseMin),
         voie: (med.voies_admin && med.voies_admin[0]) || '',
+        administre: false,
+        heureAdministration: '',
       }],
     }))
     setRechercheMed('')
@@ -274,6 +283,15 @@ export default function ChirurgieMonitoring() {
 
   function supprimerMedication(id) {
     setForm(prev => ({ ...prev, medications: prev.medications.filter(m => m.id !== id) }))
+  }
+
+  function toggleAdministreMedication(id, administre) {
+    setForm(prev => ({
+      ...prev,
+      medications: prev.medications.map(m => m.id === id
+        ? { ...m, administre, heureAdministration: administre ? (m.heureAdministration || heureActuelle()) : m.heureAdministration }
+        : m),
+    }))
   }
 
   // ─── DÉMARRAGE ──────────────────────
@@ -346,17 +364,13 @@ export default function ChirurgieMonitoring() {
     lignes.push(`- Ballonnet : ${form.ballonnet || '—'}`)
     lignes.push(`- Ballon réservoir : ${form.ballonReservoir || '—'}`)
     lignes.push(`- O₂ : ${form.o2Lmin ? form.o2Lmin + ' L/min' : '—'}`)
-    if (form.medications.length) {
+    const medsAdministres = form.medications.filter(m => m.administre)
+    if (medsAdministres.length) {
       lignes.push('')
-      lignes.push('Médications préparées :')
-      CATEGORIES_MED.forEach(cat => {
-        const meds = form.medications.filter(m => m.categorie === cat)
-        if (!meds.length) return
-        lignes.push(`${cat} :`)
-        meds.forEach(m => {
-          const { doseMg, volume } = doseEtVolume(poidsKg, m.doseMgKg, m.concentration)
-          lignes.push(`  - ${m.nom} | Concentration : ${m.concentration || '—'} mg/mL | Dose : ${m.doseMgKg || '—'} mg/kg${doseMg != null ? ` (${doseMg.toFixed(2)} mg)` : ''} | Volume : ${volume != null ? volume.toFixed(2) + ' mL' : '—'} | Voie : ${m.voie || '—'}`)
-        })
+      lignes.push('Médicaments administrés :')
+      medsAdministres.forEach(m => {
+        const { doseMg, volume } = doseEtVolume(poidsKg, m.doseMgKg, m.concentration)
+        lignes.push(`  - ${m.nom} | Concentration : ${m.concentration || '—'} mg/mL | Dose : ${m.doseMgKg || '—'} mg/kg${doseMg != null ? ` (${doseMg.toFixed(2)} mg)` : ''} | Volume : ${volume != null ? volume.toFixed(2) + ' mL' : '—'} | Voie : ${m.voie || '—'} | Heure : ${m.heureAdministration || '—'}`)
       })
     }
     lignes.push('')
@@ -448,14 +462,20 @@ export default function ChirurgieMonitoring() {
     })
     y = Math.max(yLeft, yRight) + 2
 
-    if (donneesPdf.medications.length) {
+    const medsAdministresPdf = donneesPdf.medications.filter(m => m.administre)
+    if (medsAdministresPdf.length) {
       y += 1
+      doc.setFontSize(10)
+      doc.setFont(undefined, 'bold')
+      doc.text('Médicaments administrés', 14, y)
+      doc.setFont(undefined, 'normal')
+      y += 2
       autoTable(doc, {
         startY: y,
-        head: [['Catégorie', 'Médicament', 'Conc. (mg/mL)', 'Dose (mg/kg)', 'Dose totale (mg)', 'Volume (mL)', 'Voie']],
-        body: donneesPdf.medications.map(m => {
+        head: [['Médicament', 'Conc. (mg/mL)', 'Dose (mg/kg)', 'Dose totale (mg)', 'Volume (mL)', 'Voie', 'Heure']],
+        body: medsAdministresPdf.map(m => {
           const { doseMg, volume } = doseEtVolume(poidsKg, m.doseMgKg, m.concentration)
-          return [m.categorie, m.nom, m.concentration || '—', m.doseMgKg || '—', doseMg != null ? doseMg.toFixed(2) : '—', volume != null ? volume.toFixed(2) : '—', m.voie]
+          return [m.nom, m.concentration || '—', m.doseMgKg || '—', doseMg != null ? doseMg.toFixed(2) : '—', volume != null ? volume.toFixed(2) : '—', m.voie, m.heureAdministration || '—']
         }),
         styles: { fontSize: 8 },
         headStyles: { fillColor: [37, 77, 86] },
@@ -465,7 +485,7 @@ export default function ChirurgieMonitoring() {
     }
 
     if (donneesPdf.mesures.length) {
-      const nbMed = donneesPdf.medications.length
+      const nbMed = medsAdministresPdf.length
       const maxTableauxPage1 = nbMed > 15 ? 0 : nbMed >= 5 ? 1 : 2
       let tableauIndex = 0
       for (let i = 0; i < donneesPdf.mesures.length; i += COLONNES_PAR_TABLEAU_PDF) {
@@ -490,8 +510,6 @@ export default function ChirurgieMonitoring() {
         tableauIndex++
       }
     }
-
-    if (y > 250) { doc.addPage(); y = 15 }
 
     // ─── Pied de page (sur chaque page) ──────────────────────
     const pageHeight = doc.internal.pageSize.getHeight()
@@ -1095,6 +1113,27 @@ export default function ChirurgieMonitoring() {
                     <label className="form-label">Voie</label>
                     <input type="text" className="form-input" value={m.voie} onChange={e => modifierMedication(m.id, 'voie', e.target.value)} placeholder="IV, IM, SC..." />
                   </div>
+                  <div className="monitoring-med-card-row">
+                    <label className="form-label">Administré</label>
+                    <div className="toggle-groupe">
+                      <button
+                        type="button"
+                        className={`toggle-btn ${m.administre ? 'actif' : ''}`}
+                        onClick={() => toggleAdministreMedication(m.id, true)}
+                      >Oui</button>
+                      <button
+                        type="button"
+                        className={`toggle-btn ${!m.administre ? 'actif' : ''}`}
+                        onClick={() => toggleAdministreMedication(m.id, false)}
+                      >Non</button>
+                    </div>
+                  </div>
+                  {m.administre && (
+                    <div className="monitoring-med-card-row">
+                      <label className="form-label">Heure d'administration</label>
+                      <input type="time" className="form-input" value={m.heureAdministration || heureActuelle()} onChange={e => modifierMedication(m.id, 'heureAdministration', e.target.value)} />
+                    </div>
+                  )}
                 </div>
               )
             })}
@@ -1168,8 +1207,20 @@ export default function ChirurgieMonitoring() {
                     const { doseMg, volume } = doseEtVolume(poidsKg, m.doseMgKg, m.concentration)
                     return (
                       <div key={m.id} className="monitoring-med-resume">
-                        <span className="monitoring-med-resume-nom">{m.nom}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                          <span className="monitoring-med-resume-nom">{m.nom}</span>
+                          <div className="toggle-groupe" style={{ flexShrink: 0 }}>
+                            <button type="button" className={`toggle-btn ${m.administre ? 'actif' : ''}`} onClick={() => toggleAdministreMedication(m.id, true)}>Oui</button>
+                            <button type="button" className={`toggle-btn ${!m.administre ? 'actif' : ''}`} onClick={() => toggleAdministreMedication(m.id, false)}>Non</button>
+                          </div>
+                        </div>
                         <span className="monitoring-med-resume-detail">{m.concentration || '—'} mg/mL · {m.doseMgKg || '—'} mg/kg{doseMg != null ? ` (${doseMg.toFixed(2)} mg)` : ''} · {volume != null ? volume.toFixed(2) + ' mL' : '—'}{m.voie ? ' · ' + m.voie : ''}</span>
+                        {m.administre && (
+                          <div className="form-groupe" style={{ marginTop: 6 }}>
+                            <label className="form-label">Administré à</label>
+                            <input type="time" className="form-input" value={m.heureAdministration || heureActuelle()} onChange={e => modifierMedication(m.id, 'heureAdministration', e.target.value)} />
+                          </div>
+                        )}
                       </div>
                     )
                   })}

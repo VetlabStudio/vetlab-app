@@ -9,9 +9,11 @@ export default function Inscription() {
   const [erreur, setErreur] = useState(null)
   const [succes, setSucces] = useState(false)
   const [chargement, setChargement] = useState(false)
+  const [showAvertissement, setShowAvertissement] = useState(false)
+  const [avertissementLu, setAvertissementLu] = useState(false)
   const navigate = useNavigate()
 
-  const handleInscription = async (e) => {
+  const handleInscription = (e) => {
     e.preventDefault()
     setErreur(null)
 
@@ -20,6 +22,16 @@ export default function Inscription() {
       return
     }
 
+    setShowAvertissement(true)
+  }
+
+  const handleScrollAvertissement = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target
+    if (scrollHeight - scrollTop - clientHeight < 8) setAvertissementLu(true)
+  }
+
+  const confirmerInscription = async () => {
+    setShowAvertissement(false)
     setChargement(true)
 
     const { error } = await supabase.auth.signUp({
@@ -107,6 +119,24 @@ export default function Inscription() {
           <Link to="/connexion">Se connecter</Link>
         </p>
       </div>
+
+      {showAvertissement && (
+        <div className="popup-overlay">
+          <div className="avertissement-card">
+            <h2 className="avertissement-titre">Avertissement et conditions d'utilisation</h2>
+            <div className="avertissement-texte" onScroll={handleScrollAvertissement}>
+              <p>Avant de continuer, merci de lire et d'accepter ce qui suit :</p>
+              <p>Le contenu d'ADJUVET (calculateurs, fiches médicaments, protocoles, checklists, guides de référence, etc.) est fourni <strong>à titre informatif et éducatif seulement</strong>. Il ne constitue pas un avis médical, un diagnostic ou une recommandation de traitement, et ne remplace jamais le jugement professionnel d'un médecin vétérinaire.</p>
+              <p>Toute décision clinique doit être validée par un professionnel qualifié, selon l'état particulier de chaque patient. Les calculateurs sont des outils d'aide au calcul — vérifie toujours les valeurs obtenues avant administration.</p>
+              <p>Nous ne pouvons garantir l'exactitude, l'exhaustivité ou l'actualité complète du contenu. <strong>L'utilisateur assume l'entière responsabilité des décisions ou actions prises à partir des informations contenues dans ADJUVET.</strong> ADJUVET, Vetlab Studio et ses contributeurs déclinent toute responsabilité quant aux dommages résultant de l'utilisation de l'application, fournie « telle quelle », sans garantie d'aucune sorte.</p>
+              <p>En cliquant sur « J'ai compris et j'accepte », tu confirmes avoir lu cet avertissement et tu consens à utiliser ADJUVET en toute connaissance de ces limites.</p>
+            </div>
+            <button className="btn-primary" disabled={!avertissementLu} onClick={confirmerInscription}>
+              J'ai compris et j'accepte
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -1582,6 +1582,45 @@ input  { font-family: var(--font); }
   cursor: pointer;
 }
 
+.avertissement-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.avertissement-titre {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.avertissement-texte {
+  overflow-y: auto;
+  max-height: 45vh;
+  padding-right: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.avertissement-texte p {
+  margin: 0 0 10px;
+}
+
+.avertissement-texte p:last-child {
+  margin-bottom: 0;
+}
+
 .popup-especes {
   display: grid;
   grid-template-columns: 1fr 1fr;
