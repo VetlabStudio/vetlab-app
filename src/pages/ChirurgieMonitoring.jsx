@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 import { TitreContext } from '../App'
 import jsPDF from 'jspdf'
@@ -52,6 +52,7 @@ function etatInitial() {
     animalNom: '',
     procedure: '',
     espece: '',
+    race: '',
     sexe: '',
     sterilise: false,
     poids: '',
@@ -142,6 +143,8 @@ export default function ChirurgieMonitoring() {
   const [showResume, setShowResume] = useState(null)
   const [copie, setCopie] = useState(false)
   const [popupEspece, setPopupEspece] = useState(false)
+  const [rechercheHistorique, setRechercheHistorique] = useState('')
+  const [joursOuverts, setJoursOuverts] = useState(() => new Set())
 
   const [popupMesure, setPopupMesure] = useState(null) // {heure, ...valeurs}
   const [popupFin, setPopupFin] = useState(false)
@@ -316,6 +319,7 @@ export default function ChirurgieMonitoring() {
     lignes.push('MONITORING ANESTHÉSIQUE')
     lignes.push(`Animal : ${form.animalNom || '—'}`)
     if (especeLabel) lignes.push(`Espèce : ${especeLabel}`)
+    if (form.race?.trim()) lignes.push(`Race : ${form.race.trim()}`)
     if (form.sexe) lignes.push(`Sexe : ${form.sexe === 'femelle' ? 'Femelle' : 'Mâle'}${form.sterilise ? ' (stérilisé(e))' : ''}`)
     if (form.poids) lignes.push(`Poids : ${form.poids} ${form.poidsUnite}`)
     if (form.procedure) lignes.push(`Procédure : ${form.procedure}`)
@@ -404,7 +408,7 @@ export default function ChirurgieMonitoring() {
     doc.setFontSize(8.5)
     const infos = [
       `Animal : ${donneesPdf.animalNom || '—'}`,
-      `Espèce : ${especeLabel || '—'}   Sexe : ${donneesPdf.sexe === 'femelle' ? 'Femelle' : donneesPdf.sexe === 'male' ? 'Mâle' : '—'}${donneesPdf.sterilise ? ' (stérilisé(e))' : ''}`,
+      `Espèce : ${especeLabel || '—'}${donneesPdf.race?.trim() ? '   Race : ' + donneesPdf.race.trim() : ''}   Sexe : ${donneesPdf.sexe === 'femelle' ? 'Femelle' : donneesPdf.sexe === 'male' ? 'Mâle' : '—'}${donneesPdf.sterilise ? ' (stérilisé(e))' : ''}`,
       `Poids : ${donneesPdf.poids ? donneesPdf.poids + ' ' + donneesPdf.poidsUnite : '—'}   Procédure : ${donneesPdf.procedure || '—'}`,
       `ASA : ${donneesPdf.asa || '—'}`,
       `Température : ${donneesPdf.temperature || '—'}   FC : ${donneesPdf.fc || '—'}   FR : ${donneesPdf.fr || '—'}   TRC : ${donneesPdf.trc || '—'}`,
@@ -461,7 +465,14 @@ export default function ChirurgieMonitoring() {
     }
 
     if (donneesPdf.mesures.length) {
+      const nbMed = donneesPdf.medications.length
+      const maxTableauxPage1 = nbMed > 15 ? 0 : nbMed >= 5 ? 1 : 2
+      let tableauIndex = 0
       for (let i = 0; i < donneesPdf.mesures.length; i += COLONNES_PAR_TABLEAU_PDF) {
+        if (tableauIndex === maxTableauxPage1) {
+          doc.addPage()
+          y = 15
+        }
         const chunk = donneesPdf.mesures.slice(i, i + COLONNES_PAR_TABLEAU_PDF)
         const largeurPage = doc.internal.pageSize.getWidth()
         const largeurTableau = 35 + chunk.length * 24
@@ -476,6 +487,7 @@ export default function ChirurgieMonitoring() {
           margin: { left: 14, right: 14 },
         })
         y = doc.lastAutoTable.finalY + 3
+        tableauIndex++
       }
     }
 
@@ -574,6 +586,54 @@ export default function ChirurgieMonitoring() {
     return new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
 
+  function cleJour(d) {
+    const date = new Date(d)
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+  }
+
+  function formaterJour(cle) {
+    const [a, m, j] = cle.split('-').map(Number)
+    return new Date(a, m - 1, j).toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  }
+
+  const historiqueFiltre = useMemo(() => {
+    const q = rechercheHistorique.trim().toLowerCase()
+    if (!q) return historique
+    return historique.filter(item => {
+      const especeLabel = ESPECES.find(e => e.id === item.donnees?.espece)?.label || ''
+      const champs = [item.animal_nom, especeLabel, item.donnees?.race, formaterDate(item.created_at)]
+      return champs.some(c => (c || '').toLowerCase().includes(q))
+    })
+  }, [historique, rechercheHistorique])
+
+  const groupesHistorique = useMemo(() => {
+    const groupes = new Map()
+    historique.forEach(item => {
+      const cle = cleJour(item.created_at)
+      if (!groupes.has(cle)) groupes.set(cle, [])
+      groupes.get(cle).push(item)
+    })
+    return Array.from(groupes.entries())
+      .sort((a, b) => b[0].localeCompare(a[0]))
+  }, [historique])
+
+  useEffect(() => {
+    if (groupesHistorique.length === 0) return
+    setJoursOuverts(prev => {
+      if (prev.size > 0) return prev
+      return new Set([groupesHistorique[0][0]])
+    })
+  }, [groupesHistorique])
+
+  function toggleJour(cle) {
+    setJoursOuverts(prev => {
+      const next = new Set(prev)
+      if (next.has(cle)) next.delete(cle)
+      else next.add(cle)
+      return next
+    })
+  }
+
   const poidsKg = getPoidsKg(form)
 
   // ─── VUE LISTE ──────────────────────
@@ -603,20 +663,73 @@ export default function ChirurgieMonitoring() {
               Aucun monitoring enregistré pour le moment.
             </p>
           ) : (
-            <div className="examen-historique-liste" style={{ padding: '0 16px 16px' }}>
-              {historique.map(item => (
-                <div key={item.id} className="examen-historique-item" onClick={() => consulter(item)}>
-                  <div className="examen-historique-info">
-                    <h3 className="examen-historique-nom">{item.animal_nom}</h3>
-                    <p className="examen-historique-date">{formaterDate(item.created_at)}</p>
-                  </div>
-                  <button className="examen-historique-supprimer" onClick={e => { e.stopPropagation(); setShowConfirmSupprimer(item) }}>
-                    <i className="ti ti-trash"></i>
-                  </button>
-                  <i className="ti ti-chevron-right" style={{ color: 'var(--text-hint)', fontSize: 18 }}></i>
+            <>
+              <div style={{ padding: '0 16px 12px' }}>
+                <div className="recherche-wrapper">
+                  <span className="recherche-icone"><i className="ti ti-search"></i></span>
+                  <input
+                    type="text"
+                    className="recherche-input"
+                    value={rechercheHistorique}
+                    onChange={e => setRechercheHistorique(e.target.value)}
+                    placeholder="Rechercher par nom, espèce ou date..."
+                  />
+                  {rechercheHistorique && (
+                    <button className="recherche-clear" onClick={() => setRechercheHistorique('')}>✕</button>
+                  )}
                 </div>
-              ))}
-            </div>
+              </div>
+
+              {rechercheHistorique.trim() ? (
+                <div className="examen-historique-liste" style={{ padding: '0 16px 16px' }}>
+                  {historiqueFiltre.length === 0 ? (
+                    <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucun résultat.</p>
+                  ) : historiqueFiltre.map(item => (
+                    <div key={item.id} className="examen-historique-item" onClick={() => consulter(item)}>
+                      <div className="examen-historique-info">
+                        <h3 className="examen-historique-nom">{item.animal_nom}</h3>
+                        <p className="examen-historique-date">{formaterDate(item.created_at)}</p>
+                      </div>
+                      <button className="examen-historique-supprimer" onClick={e => { e.stopPropagation(); setShowConfirmSupprimer(item) }}>
+                        <i className="ti ti-trash"></i>
+                      </button>
+                      <i className="ti ti-chevron-right" style={{ color: 'var(--text-hint)', fontSize: 18 }}></i>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ padding: '0 16px 16px' }}>
+                  {groupesHistorique.map(([cle, items]) => {
+                    const ouvert = joursOuverts.has(cle)
+                    return (
+                      <div key={cle} className="examen-historique-groupe">
+                        <button className="examen-historique-groupe-header" onClick={() => toggleJour(cle)}>
+                          <i className={`ti ti-chevron-right examen-historique-groupe-chevron ${ouvert ? 'ouvert' : ''}`}></i>
+                          <span className="examen-historique-groupe-titre">{formaterJour(cle)}</span>
+                          <span className="examen-historique-groupe-compte">{items.length}</span>
+                        </button>
+                        {ouvert && (
+                          <div className="examen-historique-liste">
+                            {items.map(item => (
+                              <div key={item.id} className="examen-historique-item" onClick={() => consulter(item)}>
+                                <div className="examen-historique-info">
+                                  <h3 className="examen-historique-nom">{item.animal_nom}</h3>
+                                  <p className="examen-historique-date">{formaterDate(item.created_at)}</p>
+                                </div>
+                                <button className="examen-historique-supprimer" onClick={e => { e.stopPropagation(); setShowConfirmSupprimer(item) }}>
+                                  <i className="ti ti-trash"></i>
+                                </button>
+                                <i className="ti ti-chevron-right" style={{ color: 'var(--text-hint)', fontSize: 18 }}></i>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -719,6 +832,10 @@ export default function ChirurgieMonitoring() {
                   Choisir
                 </button>
               </div>
+            </div>
+            <div className="form-groupe">
+              <label className="form-label">Race</label>
+              <input type="text" className="form-input" value={form.race || ''} onChange={e => modifierChamp('race', e.target.value)} placeholder="Ex. : Labrador, Persan..." />
             </div>
             <div className="form-groupe">
               <label className="form-label">Sexe</label>

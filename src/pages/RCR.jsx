@@ -119,6 +119,7 @@ export default function RCR() {
         }
 
         if (newTempsCycle >= DUREE_CYCLE) {
+          tempsAccumuléRef.current = newTempsTotal
           tempsCycleAccumuléRef.current = 0
           debutRef.current = Date.now()
           setCycles(prev => prev + 1)

@@ -43,6 +43,7 @@ export default function Fluidotherapie() {
   const [debitCRIManuel, setDebitCRIManuel] = useState('')
   const [doseCharge, setDoseCharge] = useState('')
   const [dosageCRI, setDosageCRI] = useState('')
+  const [uniteDosageCRI, setUniteDosageCRI] = useState('mg/kg/h')
   const [concentrationCRI, setConcentrationCRI] = useState('')
 
   // ─── CALCULS ─────────────────────────────────────────
@@ -101,8 +102,9 @@ const debitHoraire = useMemo(() => {
     ? arrondir((doseChargeVal * poidsKg) / concentrationCRIVal)
     : 0
 
-  const mlDansSac = dosageCRIVal && poidsKg && volumeSac && concentrationCRIVal && debitPourCRI
-    ? arrondir((dosageCRIVal * poidsKg * volumeSac) / (concentrationCRIVal * debitPourCRI))
+  const dosageCRIHoraire = uniteDosageCRI === 'mg/kg/jour' ? dosageCRIVal / 24 : dosageCRIVal
+  const mlDansSac = dosageCRIHoraire && poidsKg && volumeSac && concentrationCRIVal && debitPourCRI
+    ? arrondir((dosageCRIHoraire * poidsKg * volumeSac) / (concentrationCRIVal * debitPourCRI))
     : 0
 
   return (
@@ -386,7 +388,10 @@ const debitHoraire = useMemo(() => {
     onChange={e => setDosageCRI(e.target.value.replace(',', '.'))}
     placeholder="0"
   />
-  <span className="unite-fixe">mg/kg/h</span>
+  <select className="cri-select" value={uniteDosageCRI} onChange={e => setUniteDosageCRI(e.target.value)}>
+    <option value="mg/kg/h">mg/kg/h</option>
+    <option value="mg/kg/jour">mg/kg/jour</option>
+  </select>
 </div>
         </div>
 

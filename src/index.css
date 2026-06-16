@@ -308,8 +308,8 @@ input  { font-family: var(--font); }
 }
 
 .accueil-v2-calc-icone--ref {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
 }
 
 .accueil-v2-calc-label {
@@ -1788,9 +1788,7 @@ input  { font-family: var(--font); }
   font-weight: 700;
   color: var(--text-primary);
   text-align: center;
-  margin: 0 0 4px;
-  word-break: break-word;
-  max-width: calc(100% - 180px);
+  margin: 0;
 }
 
 .favori-btn-fiche {
@@ -4272,7 +4270,6 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   padding: 16px;
-  padding-bottom: 96px;
   gap: 12px;
 }
 
@@ -4512,6 +4509,138 @@ input[type="number"] {
   font-weight: 700;
   margin: 0 0 8px 0;
 }
+
+/* ─── MONITORING ANESTHÉSIQUE — TABLEAU DE SUIVI ── */
+.monitoring-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.monitoring-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.monitoring-table th,
+.monitoring-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.monitoring-table th {
+  background: var(--bg);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.monitoring-table tr:last-child td {
+  border-bottom: none;
+}
+
+.monitoring-table-input {
+  min-width: 70px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.monitoring-resultat-med {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.monitoring-resultat-med:last-child {
+  border-bottom: none;
+}
+
+.monitoring-resultat-med-nom {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.monitoring-resultat-med-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.monitoring-med-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 20;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.monitoring-med-dropdown-item {
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+
+.monitoring-med-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.monitoring-med-dropdown-item:hover {
+  background: var(--bg);
+}
+
+.monitoring-med-dropdown-nom {
+  font-weight: 600;
+}
+
+.monitoring-med-dropdown-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.monitoring-med-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  background: var(--bg-card);
+}
+
+.monitoring-med-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.monitoring-med-card-nom {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.monitoring-med-card-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .monitoring-med-resume {
   display: flex;
   flex-direction: column;
@@ -4752,7 +4881,6 @@ input[type="number"] {
   gap: 12px;
   padding: 14px 16px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 15px;
 }
 
 .postop-section-icone {
@@ -5298,6 +5426,44 @@ input[type="number"] {
   padding: 0;
   flex-shrink: 0;
 }
+.examen-historique-groupe {
+  margin-top: 12px;
+}
+.examen-historique-groupe-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: rgba(37, 77, 86, 0.06);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+}
+.examen-historique-groupe-chevron {
+  color: var(--text-hint);
+  font-size: 16px;
+  transition: transform 0.15s ease;
+}
+.examen-historique-groupe-chevron.ouvert {
+  transform: rotate(90deg);
+}
+.examen-historique-groupe-titre {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: capitalize;
+}
+.examen-historique-groupe-compte {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(37, 77, 86, 0.12);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
 
 .douleur-resultat-section {
   display: flex;
@@ -5499,132 +5665,4 @@ input[type="number"] {
 .profil-portal-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-/* ─── MONITORING ANESTHÉSIQUE — TABLEAU DE SUIVI ── */
-.monitoring-table-wrap {
-  overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-
-.monitoring-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-  white-space: nowrap;
-}
-
-.monitoring-table th,
-.monitoring-table td {
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--border);
-  text-align: left;
-}
-
-.monitoring-table th {
-  background: var(--bg);
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.monitoring-table tr:last-child td {
-  border-bottom: none;
-}
-
-.monitoring-table-input {
-  min-width: 70px;
-  padding: 6px 8px;
-  font-size: 13px;
-}
-
-.monitoring-resultat-med {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.monitoring-resultat-med:last-child {
-  border-bottom: none;
-}
-
-.monitoring-resultat-med-nom {
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.monitoring-resultat-med-categories {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.monitoring-med-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  max-height: 240px;
-  overflow-y: auto;
-  z-index: 20;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-}
-
-.monitoring-med-dropdown-item {
-  padding: 10px 14px;
-  font-size: 14px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-}
-
-.monitoring-med-dropdown-item:last-child {
-  border-bottom: none;
-}
-
-.monitoring-med-dropdown-item:hover {
-  background: var(--bg);
-}
-.monitoring-med-dropdown-nom {
-  font-weight: 600;
-}
-
-.monitoring-med-dropdown-details {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.monitoring-med-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  margin-bottom: 10px;
-  background: var(--bg-card);
-}
-
-.monitoring-med-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.monitoring-med-card-nom {
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.monitoring-med-card-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
 }
