@@ -45,6 +45,7 @@ Deno.serve(async (req) => {
     mode: 'subscription',
     line_items: [{ price: priceId, quantity: 1 }],
     allow_promotion_codes: true,
+    locale: 'fr',
     ui_mode: 'embedded',
     return_url: `${req.headers.get('origin')}/profil?paiement=succes`,
   })
