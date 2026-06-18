@@ -1,39 +1,73 @@
 import { useState, useMemo } from 'react'
 
+const ESPECES = [
+  { id: 'chien',   label: 'Chien',   icone: '/icone-chien.svg' },
+  { id: 'chat',    label: 'Chat',    icone: '/icone-chat.svg' },
+  { id: 'lapin',   label: 'Lapin',   icone: '/icone-lapin.png' },
+  { id: 'cheval',  label: 'Cheval',  icone: '/icone-cheval.png' },
+  { id: 'vache',   label: 'Vache',   icone: '/icone-vache.png' },
+  { id: 'mouton',  label: 'Mouton',  icone: '/icone-mouton.png' },
+  { id: 'chevre',  label: 'Chèvre',  icone: '/icone-chevre.png' },
+  { id: 'lama',    label: 'Lama',    icone: '/icone-lama.png' },
+  { id: 'cochon',  label: 'Cochon',  icone: '/icone-cochon.png' },
+  { id: 'furet',   label: 'Furet',   icone: '/icone-furet.png' },
+  { id: 'rat',     label: 'Rat',     icone: '/icone-rongeurs.png' },
+  { id: 'souris',  label: 'Souris',  icone: '/icone-rongeurs.png' },
+  { id: 'hamster', label: 'Hamster', icone: '/icone-rongeurs.png' },
+]
+
 const INFO_GESTATION = {
   chien: {
-    dureeMin: 57,
-    dureeMax: 65,
-    dureeMoyenne: 63,
-    etapes: [
-      { jours: '~15-18', texte: "Implantation des zygotes dans l'utérus" },
-      { jours: '~21', texte: 'Palpation abdominale possible (ampoules fœtales)' },
-      { jours: '~21-25', texte: 'Échographie recommandée pour confirmer la gestation (battements cardiaques visibles)' },
-      { jours: '~21-25', texte: 'Dosage de la relaxine possible (attention aux faux négatifs avant 25 jours)' },
-      { jours: '~28-35', texte: 'Meilleure fenêtre pour le dénombrement des fœtus par échographie' },
-      { jours: '~36', texte: 'Palpation plus difficile — risque de confusion avec les viscères' },
-      { jours: '~45', texte: 'Minéralisation du squelette visible à la radiographie' },
-      { jours: '~50', texte: 'La palpation redevient possible' },
-      { jours: '~50+', texte: 'Radiographie recommandée pour dénombrer les chiots avec précision (deux vues orthogonales)' },
-      { jours: '~48-50+', texte: "Auscultation des bruits cardiaques fœtaux au stéthoscope possible" },
-    ],
-    note: "Le Doppler échographique permet de détecter le cœur des fœtus et de distinguer une gestation d'une distension abdominale d'autre cause.",
+    dureeMin: 58, dureeMax: 68, dureeMoyenne: 63,
+    cycle: "Pas de véritable cycle œstral continu : la chienne cycle environ deux fois par an (polyoestrus saisonnier non strict). L'ovulation survient peu après le pic de LH, généralement 1 à 2 jours après le début des chaleurs comportementales.",
   },
   chat: {
-    dureeMin: 60,
-    dureeMax: 67,
-    dureeMoyenne: 64,
-    etapes: [
-      { jours: '~14', texte: "Implantation des zygotes dans l'utérus" },
-      { jours: '~21', texte: 'Palpation abdominale possible' },
-      { jours: '~18-21', texte: 'Échographie recommandée pour confirmer la gestation' },
-      { jours: '~28-35', texte: 'Meilleure fenêtre pour le dénombrement des fœtus par échographie' },
-      { jours: 'Avant 21', texte: 'Risque de faux négatif à l\'échographie' },
-      { jours: '~40', texte: 'Minéralisation du squelette visible à la radiographie' },
-      { jours: '~40+', texte: 'Radiographie recommandée pour dénombrer les chatons avec précision' },
-      { jours: '~48-50+', texte: "Auscultation des bruits cardiaques fœtaux au stéthoscope possible" },
-    ],
-    note: "Le Doppler échographique permet de détecter le cœur des fœtus et de distinguer une gestation d'une distension abdominale d'autre cause.",
+    dureeMin: 60, dureeMax: 69, dureeMoyenne: 63,
+    cycle: "Polyoestrus saisonnier avec ovulation induite par l'accouplement. En l'absence de saillie, la chatte revient en chaleurs tous les 14 à 21 jours durant la saison de reproduction.",
+  },
+  lapin: {
+    dureeMin: 30, dureeMax: 32, dureeMoyenne: 31,
+    cycle: "Polyoestrus avec ovulation induite par l'accouplement (pas de cycle œstral fixe). La lapine peut être réceptive presque en continu et ovule environ 10 heures après la saillie.",
+  },
+  cheval: {
+    dureeMin: 320, dureeMax: 346, dureeMoyenne: 335,
+    cycle: "Polyoestrus saisonnier (saison de reproduction au printemps/été selon la photopériode). Cycle œstral d'environ 21 jours, avec des chaleurs durant 5 à 7 jours.",
+  },
+  vache: {
+    dureeMin: 271, dureeMax: 291, dureeMoyenne: 280,
+    cycle: "Polyoestrus non saisonnier. Cycle œstral d'environ 21 jours (18 à 24 jours), avec des chaleurs durant 12 à 18 heures.",
+  },
+  mouton: {
+    dureeMin: 143, dureeMax: 151, dureeMoyenne: 147,
+    cycle: "Polyoestrus saisonnier (jours courts à l'automne). Cycle œstral d'environ 17 jours, avec des chaleurs durant 24 à 36 heures.",
+  },
+  chevre: {
+    dureeMin: 145, dureeMax: 155, dureeMoyenne: 149,
+    cycle: "Polyoestrus saisonnier (jours courts à l'automne). Cycle œstral d'environ 21 jours, avec des chaleurs durant 24 à 48 heures.",
+  },
+  lama: {
+    dureeMin: 335, dureeMax: 365, dureeMoyenne: 350,
+    cycle: "Polyoestrus avec ovulation induite par l'accouplement. Pas de cycle œstral fixe : la femelle peut être réceptive presque en permanence, avec un nouveau follicule dominant environ tous les 8 à 12 jours.",
+  },
+  cochon: {
+    dureeMin: 112, dureeMax: 115, dureeMoyenne: 114,
+    cycle: "Polyoestrus non saisonnier (« 3 mois, 3 semaines et 3 jours »). Cycle œstral d'environ 21 jours, avec des chaleurs durant 2 à 3 jours.",
+  },
+  furet: {
+    dureeMin: 41, dureeMax: 43, dureeMoyenne: 42,
+    cycle: "Polyoestrus saisonnier avec ovulation induite par l'accouplement. En l'absence de saillie, la femelle peut rester en chaleurs prolongées, ce qui comporte un risque d'aplasie médullaire liée à l'œstrogène.",
+  },
+  rat: {
+    dureeMin: 21, dureeMax: 23, dureeMoyenne: 22,
+    cycle: "Polyoestrus non saisonnier. Cycle œstral très court, d'environ 4 à 5 jours.",
+  },
+  souris: {
+    dureeMin: 19, dureeMax: 21, dureeMoyenne: 20,
+    cycle: "Polyoestrus non saisonnier. Cycle œstral très court, d'environ 4 à 5 jours.",
+  },
+  hamster: {
+    dureeMin: 16, dureeMax: 18, dureeMoyenne: 17,
+    cycle: "Polyoestrus non saisonnier. Cycle œstral très court et régulier, d'environ 4 jours.",
   },
 }
 
@@ -44,14 +78,6 @@ function ajouterJours(date, jours) {
   const d = new Date(annee, mois - 1, jour)
   d.setDate(d.getDate() + jours)
   return d
-}
-
-function extraireJours(joursStr) {
-  const str = joursStr.replace('~', '').replace('Avant ', '')
-  const matches = str.match(/\d+/g)
-  if (!matches) return null
-  if (matches.length >= 2) return { min: parseInt(matches[0]), max: parseInt(matches[1]) }
-  return { min: parseInt(matches[0]), max: null }
 }
 
 function formaterDate(date) {
@@ -66,13 +92,15 @@ function formaterDate(date) {
 export default function DateMiseBas() {
   const [espece, setEspece] = useState('chien')
   const [dateAccouplement, setDateAccouplement] = useState('')
+  const [popupEspece, setPopupEspece] = useState(false)
 
   const info = INFO_GESTATION[espece]
+  const especeChoisie = ESPECES.find(e => e.id === espece)
 
   const dates = useMemo(() => {
     if (!dateAccouplement) return null
     const [a, m, j] = dateAccouplement.split('-').map(Number)
-const base = new Date(a, m - 1, j)
+    const base = new Date(a, m - 1, j)
     return {
       tot:     ajouterJours(base, info.dureeMin),
       moyenne: ajouterJours(base, info.dureeMoyenne),
@@ -85,23 +113,16 @@ const base = new Date(a, m - 1, j)
       <div className="calc-form">
 
         {/* ─── ESPÈCE ─────────────────────────── */}
-        <div className="champ">
-          <label>Espèce</label>
-          <div className="espece-toggle">
-            <span className={`espece-label ${espece === 'chien' ? 'active' : ''}`}>
-              <img src="/icone-chien.svg" alt="Chien" className="espece-icone" />
-              Chien
+        <div className="form-groupe">
+          <label className="form-label">Espèce</label>
+          <div className="espece-choisir">
+            <span className="espece-choisie-texte" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <img src={especeChoisie.icone} alt="" className="espece-icone-popup" style={{ width: 24, height: 24 }} />
+              {especeChoisie.label}
             </span>
-            <div
-              className={`toggle-slider ${espece === 'chat' ? 'droite' : ''}`}
-              onClick={() => setEspece(espece === 'chien' ? 'chat' : 'chien')}
-            >
-              <div className="toggle-thumb"></div>
-            </div>
-            <span className={`espece-label ${espece === 'chat' ? 'active' : ''}`}>
-              <img src="/icone-chat.svg" alt="Chat" className="espece-icone" />
-              Chat
-            </span>
+            <button type="button" className="btn-choisir-espece" onClick={() => setPopupEspece(true)}>
+              Choisir
+            </button>
           </div>
           <p className="range-hint">
             Durée de gestation : <strong>{info.dureeMin}–{info.dureeMax} jours</strong>, en moyenne <strong>{info.dureeMoyenne} jours</strong>
@@ -135,53 +156,29 @@ const base = new Date(a, m - 1, j)
             </h2>
 
             <div className="resultat-ligne">
-  <span>🟢 Date précoce ({info.dureeMin} jours)</span>
-  <strong style={{ fontSize: 13 }}>{formaterDate(dates.tot)}</strong>
-</div>
-<div className="resultat-ligne" style={{ background: 'rgba(37,77,86,0.06)', borderRadius: 8, padding: '10px 12px', margin: '4px 0' }}>
-  <span style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
-  <img src="/icone-duree.svg" alt="durée" style={{ width: 18, height: 18 }} />
-  Date moyenne ({info.dureeMoyenne} jours)
-</span>
-  <strong style={{ color: 'var(--primary)' }}>{formaterDate(dates.moyenne)}</strong>
-</div>
-<div className="resultat-ligne" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-  <span>🔴 Date tardive ({info.dureeMax} jours)</span>
-  <strong style={{ fontSize: 13 }}>{formaterDate(dates.tard)}</strong>
-</div>
+              <span>🟢 Date précoce ({info.dureeMin} jours)</span>
+              <strong style={{ fontSize: 13 }}>{formaterDate(dates.tot)}</strong>
+            </div>
+            <div className="resultat-ligne" style={{ background: 'rgba(37,77,86,0.06)', borderRadius: 8, padding: '10px 12px', margin: '4px 0' }}>
+              <span style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <img src="/icone-duree.svg" alt="durée" style={{ width: 18, height: 18 }} />
+                Date moyenne ({info.dureeMoyenne} jours)
+              </span>
+              <strong style={{ color: 'var(--primary)' }}>{formaterDate(dates.moyenne)}</strong>
+            </div>
+            <div className="resultat-ligne" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+              <span>🔴 Date tardive ({info.dureeMax} jours)</span>
+              <strong style={{ fontSize: 13 }}>{formaterDate(dates.tard)}</strong>
+            </div>
           </div>
         )}
 
-        {/* ─── ÉTAPES DE LA GESTATION ─────────── */}
+        {/* ─── CYCLE / ŒSTRUS ───────────────────── */}
         <div className="mise-bas-section">
-          <h3 className="mise-bas-titre">Suivi de la gestation — {espece === 'chien' ? 'Chien' : 'Chat'}</h3>
-          <div className="mise-bas-etapes">
-            {info.etapes.map((e, i) => {
-  const joursRange = extraireJours(e.jours)
-const [a2, m2, j2] = dateAccouplement.split('-').map(Number)
-const dateEtape = dates && joursRange
-  ? joursRange.max
-    ? `${ajouterJours(new Date(a2, m2 - 1, j2), joursRange.min).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })} au ${ajouterJours(new Date(a2, m2 - 1, j2), joursRange.max).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })}`
-    : ajouterJours(new Date(a2, m2 - 1, j2), joursRange.min).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
-  : null
-  return (
-    <div key={i} className="mise-bas-etape">
-      <span className="mise-bas-jours">{e.jours} j</span>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <span className="mise-bas-texte">{e.texte}</span>
-        {dateEtape && (
-  <span style={{ fontSize: 12, color: 'var(--primary)', fontWeight: 600 }}>
-    {dateEtape}
-  </span>
-)}
-      </div>
-    </div>
-  )
-})}
-          </div>
+          <h3 className="mise-bas-titre">Cycle et œstrus — {especeChoisie.label}</h3>
           <p className="mise-bas-note">
             <i className="ti ti-info-circle"></i>
-            {info.note}
+            {info.cycle}
           </p>
         </div>
 
@@ -192,6 +189,27 @@ const dateEtape = dates && joursRange
         </div>
 
       </div>
+
+      {popupEspece && (
+        <div className="popup-overlay" onClick={() => setPopupEspece(false)}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <span>Choisir une espèce</span>
+              <button className="popup-close" onClick={() => setPopupEspece(false)}>✕</button>
+            </div>
+            <div className="popup-especes">
+              {ESPECES.map(esp => (
+                <label key={esp.id} className="popup-espece-item">
+                  <input type="radio" checked={espece === esp.id} onChange={() => { setEspece(esp.id); setPopupEspece(false) }} />
+                  <img src={esp.icone} alt={esp.label} className="espece-icone-popup" />
+                  <span>{esp.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
