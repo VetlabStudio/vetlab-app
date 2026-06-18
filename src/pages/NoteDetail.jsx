@@ -11,6 +11,7 @@ export default function NoteDetail() {
   const { setTitreCustom } = useContext(TitreContext)
   const [note, setNote] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [categoriesExistantes, setCategoriesExistantes] = useState([])
   const sauvegardeRef = useRef(null)
 
   useEffect(() => {
@@ -28,6 +29,13 @@ export default function NoteDetail() {
       setNote(data)
       setTitreCustom(data.titre)
     }
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: autres } = await supabase
+      .from('notes')
+      .select('categorie')
+      .eq('user_id', user.id)
+      .not('categorie', 'is', null)
+    setCategoriesExistantes([...new Set((autres || []).map(n => n.categorie).filter(Boolean))].sort())
     setLoading(false)
   }
 
@@ -42,7 +50,7 @@ export default function NoteDetail() {
   async function sauvegarder(data) {
     await supabase
       .from('notes')
-      .update({ titre: data.titre, contenu: data.contenu, couleur: data.couleur, updated_at: new Date().toISOString() })
+      .update({ titre: data.titre, contenu: data.contenu, couleur: data.couleur, categorie: data.categorie, updated_at: new Date().toISOString() })
       .eq('id', id)
   }
 
@@ -71,6 +79,18 @@ export default function NoteDetail() {
         onChange={e => modifierChamp('titre', e.target.value)}
         placeholder="Titre (ex: nom du patient)"
       />
+
+      {/* ─── CATÉGORIE ──────────────────────── */}
+      <input
+        className="note-categorie-input"
+        value={note.categorie || ''}
+        onChange={e => modifierChamp('categorie', e.target.value)}
+        placeholder="Catégorie (ex: Chirurgie, Urgence...)"
+        list="categories-existantes"
+      />
+      <datalist id="categories-existantes">
+        {categoriesExistantes.map(c => <option key={c} value={c} />)}
+      </datalist>
 
       {/* ─── CONTENU ────────────────────────── */}
       <textarea

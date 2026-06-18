@@ -9,6 +9,7 @@ export default function Notes() {
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(null)
+  const [filtreCategorie, setFiltreCategorie] = useState('Toutes')
 
   useEffect(() => {
     chargerNotes()
@@ -54,8 +55,31 @@ export default function Notes() {
 
   if (loading) return <div className="admin-loading">Chargement...</div>
 
+  const categories = [...new Set(notes.map(n => n.categorie).filter(Boolean))].sort()
+  const notesFiltrees = filtreCategorie === 'Toutes' ? notes : notes.filter(n => n.categorie === filtreCategorie)
+
   return (
     <div className="notes-page">
+
+      {categories.length > 0 && (
+        <div className="notes-filtres">
+          <button
+            className={`notes-filtre-chip ${filtreCategorie === 'Toutes' ? 'active' : ''}`}
+            onClick={() => setFiltreCategorie('Toutes')}
+          >
+            Toutes
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat}
+              className={`notes-filtre-chip ${filtreCategorie === cat ? 'active' : ''}`}
+              onClick={() => setFiltreCategorie(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
 
       {notes.length === 0 ? (
         <div className="mes-drogues-vide">
@@ -63,9 +87,11 @@ export default function Notes() {
           <p>Aucune note</p>
           <p className="mes-drogues-vide-hint">Appuie sur + pour créer ta première note.</p>
         </div>
+      ) : notesFiltrees.length === 0 ? (
+        <p className="admin-vide">Aucune note dans cette catégorie.</p>
       ) : (
         <div className="notes-grille">
-          {notes.map(note => (
+          {notesFiltrees.map(note => (
             <div
               key={note.id}
               className="note-tuile"
@@ -81,6 +107,7 @@ export default function Notes() {
                   <i className="ti ti-trash"></i>
                 </button>
               </div>
+              {note.categorie && <span className="note-tuile-categorie">{note.categorie}</span>}
               <p className="note-tuile-apercu">{apercu(note.contenu)}</p>
               <p className="note-tuile-date">{formaterDate(note.updated_at)}</p>
             </div>
