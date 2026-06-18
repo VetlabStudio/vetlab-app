@@ -3926,9 +3926,10 @@ input[type="number"] {
 
 .labo-sediment-photo {
   width: 100%;
-  max-height: 200px;
+  height: 200px;          /* était: max-height: 200px; */
   object-fit: contain;
   display: block;
+  background: var(--bg);  /* nouvelle ligne */
 }
 
 .labo-sediment-photo-termes {

@@ -85,9 +85,7 @@ const ChirurgiePostOp = lazy(() => import('./pages/ChirurgiePostOp'))
 const ChirurgieDouleur = lazy(() => import('./pages/ChirurgieDouleur'))
 const ChirurgieECG = lazy(() => import('./pages/ChirurgieECG'))
 const ChirurgieECGElectrodes = lazy(() => import('./pages/ChirurgieECGElectrodes'))
-const ChirurgieECGInterpretation = lazy(() => import('./pages/ChirurgieECGInterpretation'))
 const ChirurgieECGAnomalies = lazy(() => import('./pages/ChirurgieECGAnomalies'))
-const ChirurgieECGConduction = lazy(() => import('./pages/ChirurgieECGConduction'))
 const SoinsGenerauxExamenPhysique = lazy(() => import('./pages/SoinsGenerauxExamenPhysique'))
 
 import Header from './components/Header'
@@ -236,8 +234,8 @@ export default function App() {
         <Route path="/drogues" element={<RouteProtegee session={session}><Pharmacologie /></RouteProtegee>} />
         <Route path="/chirurgie" element={<RouteProtegee session={session}><ChirurgieListe /></RouteProtegee>} />
         <Route path="/soins-generaux" element={<RouteProtegee session={session}><SoinsGeneraux /></RouteProtegee>} />
-        <Route path="/soins-generaux/abreviations" element={<RouteProtegee session={session}><AbreviationsCourantes /></RouteProtegee>} />
-        <Route path="/soins-generaux/termes-directionnels" element={<RouteProtegee session={session}><TermesDirectionnels /></RouteProtegee>} />
+        <Route path="/soins-generaux/abreviations" element={<RouteProtegee session={session}><ProGate><AbreviationsCourantes /></ProGate></RouteProtegee>} />
+        <Route path="/soins-generaux/termes-directionnels" element={<RouteProtegee session={session}><ProGate><TermesDirectionnels /></ProGate></RouteProtegee>} />
         <Route path="/calculateurs/rcr" element={<RouteProtegee session={session}><RCR /></RouteProtegee>} />
 
         {/* DROGUES */}
@@ -292,9 +290,7 @@ export default function App() {
         <Route path="/chirurgie/douleur" element={<RouteProtegee session={session}><ChirurgieDouleur /></RouteProtegee>} />
         <Route path="/chirurgie/ecg" element={<RouteProtegee session={session}><ChirurgieECG /></RouteProtegee>} />
         <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />
-        <Route path="/chirurgie/ecg/interpretation" element={<RouteProtegee session={session}><ProGate><ChirurgieECGInterpretation /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/anomalies" element={<RouteProtegee session={session}><ProGate><ChirurgieECGAnomalies /></ProGate></RouteProtegee>} />
-        <Route path="/chirurgie/ecg/conduction" element={<RouteProtegee session={session}><ProGate><ChirurgieECGConduction /></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/examen-physique" element={<RouteProtegee session={session}><ProGate><SoinsGenerauxExamenPhysique /></ProGate></RouteProtegee>} />
 
         {/* PROFIL */}

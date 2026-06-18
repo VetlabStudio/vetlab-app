@@ -14,8 +14,9 @@ const DROGUES = [
   { id: 'respiratoires',     label: 'Respiratoires',                  route: '/drogues/respiratoires',  accent: false },
   { id: 'antagonistes',      label: 'Antagonistes',                   route: '/drogues/antagonistes',   accent: false },
   { id: 'mes-drogues', label: 'Médicaments favoris', route: '/drogues/mes-drogues', accent: false, favori: true },
-  { id: 'toxicologie', label: 'Toxicologie', route: '/drogues/toxicologie', accent: false, pro: true },
 ]
+
+const TOXICOLOGIE = { id: 'toxicologie', label: 'Toxicologie', route: '/drogues/toxicologie', pro: true }
 
 export default function Pharmacologie() {
   const navigate = useNavigate()
@@ -32,11 +33,27 @@ export default function Pharmacologie() {
           >
             {d.favori && <i className="ti ti-star" style={{ fontSize: 13, marginRight: 4 }}></i>}
             {d.accent && <i className="ti ti-alert-triangle" style={{ fontSize: 13, marginRight: 4 }}></i>}
+            {!d.favori && !d.accent && <i className="ti ti-pill" style={{ fontSize: 13, marginRight: 4 }}></i>}
             <span>{d.label}</span>
             <i className="ti ti-chevron-right accueil-v2-chevron"></i>
             {d.pro && <BadgePro />}
           </button>
         ))}
+      </div>
+
+      <div className="accueil-v2-drogues-grid accueil-v2-drogues-grid--1col" style={{ marginTop: 10 }}>
+        <button
+          key={TOXICOLOGIE.id}
+          className="labo-categorie-btn"
+          onClick={() => navigate(TOXICOLOGIE.route)}
+          style={{ position: 'relative' }}
+        >
+          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src="/icone-poison.svg" alt="" style={{ width: 28, height: 28, marginRight: 15 }} />
+            <span>{TOXICOLOGIE.label}</span>
+          </span>
+          {TOXICOLOGIE.pro && <BadgePro />}
+        </button>
       </div>
     </div>
   )
