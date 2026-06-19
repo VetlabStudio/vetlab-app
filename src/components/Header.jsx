@@ -83,6 +83,8 @@ const titres = {
   '/soins-generaux/examen-physique': 'Démarrer un examen',
   '/soins-generaux/abreviations': 'Abréviations courantes',
   '/soins-generaux/termes-directionnels': 'Termes directionnels',
+  '/labo/radiologie/notions-base': 'Notions de base : mA, kVp et distance',
+  '/labo/radiologie/depannage': 'Dépannage',
   }
 
 export default function Header() {

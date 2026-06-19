@@ -58,9 +58,13 @@ const SECTIONS = [
       'MACNEILL, A.L., BARGER, A.M. Clinical Pathology and Laboratory Techniques for Veterinary Technicians (2e éd.). Wiley Blackwell, 2024, 365 p.',
       'HENDRIX, C.M., ROBINSON, E. Diagnostic Parasitology for Veterinary Technicians (6e éd.). Elsevier, 2023, 433 p.',
       'BURTON, A.B. Clinical Atlas of Small Animal Cytology and Hematology (2e éd.). Wiley Blackwell, 2024, 573 p.',
+      'LAVIN, L.M. Lavin\'s Radiography for Veterinary Technicians (6e éd.). Elsevier.',
       'RASKIN, R.E., MEYER, D.J., BOES, K.M. Canine and Feline Cytopathology: A Color Atlas and Interpretation Guide (4e éd.). Elsevier, 2022, 746 p.',
       { texte: 'University of Minnesota. En ligne :', href: 'https://vetmed.umn.edu/urolith-center' },
       { texte: 'University of Saskatchewan. En ligne :', href: 'https://wcvm.usask.ca/learnaboutparasites/index.php' },
+      { texte: 'Vet X-ray, Continuing Education — Choosing the Appropriate Exposure Factors. En ligne :', href: 'https://vetxray.com/resource-center/continuing-education/choosing-the-appropriate-exposure-factors/' },
+      { texte: 'Minnesota Department of Health — Darkroom Fog Test. En ligne :', href: 'https://www.health.state.mn.us/communities/environment/radiation/xray/darkfogmed.html' },
+      { texte: 'WVS Academy — Fundamentals of Radiography, Exposure settings. En ligne :', href: 'https://wvs.academy/learn/companion-animals/diagnostic-imaging/radiography/fundamentals-of-radiography/exposure-settings' },
     ],
   },
 ]

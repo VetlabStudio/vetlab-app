@@ -3731,6 +3731,10 @@ input[type="number"] {
   gap: 10px;
 }
 
+.labo-nouveau-etape.masquee {
+  opacity: 0.5;
+}
+
 .labo-nouveau-etape-header {
   display: flex;
   align-items: center;
@@ -3876,6 +3880,130 @@ input[type="number"] {
 .labo-ref-alerte-val {
   color: var(--accent-red);
   font-size: 11px;
+}
+
+/* ─── DÉPANNAGE RADIOGRAPHIQUE ───────────────── */
+
+.depannage-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.depannage-categorie {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.depannage-categorie-titre {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.depannage-conflit {
+  background: rgba(185, 28, 28, 0.08);
+  border: 1px solid var(--accent-red);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.depannage-conflit-titre {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-red);
+}
+
+.depannage-conflit p {
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.depannage-avertissement {
+  background: rgba(217, 119, 6, 0.08);
+  border: 1px solid #d97706;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.depannage-avertissement-titre {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d97706;
+}
+
+.depannage-avertissement p {
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.depannage-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 32px 16px;
+  color: var(--text-hint);
+}
+
+.depannage-vide i {
+  font-size: 32px;
+}
+
+.depannage-vide p {
+  font-size: 13px;
+  margin: 0;
+}
+
+.depannage-recommandations {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.depannage-carte {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.depannage-carte-titre {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.depannage-carte-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
 }
 
 /* ─── MALADIES COURANTES ─────────────────────── */
@@ -4883,6 +5011,7 @@ input[type="number"] {
   font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 .page-info-faq-item {
   display: flex;
@@ -4922,6 +5051,7 @@ input[type="number"] {
   color: var(--primary);
   font-weight: 600;
   text-decoration: none;
+  overflow-wrap: anywhere;
 }
 
 /* ─── MENU OVERLAY (bottom nav) ──────────────────────────── */
