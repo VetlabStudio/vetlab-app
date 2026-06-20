@@ -81,11 +81,15 @@ const titres = {
   '/chirurgie/ecg/anomalies': 'Anomalies courantes',
   '/chirurgie/ecg/conduction': 'Conduction cardiaque',
   '/soins-generaux/examen-physique': 'Démarrer un examen',
+  '/soins-generaux/dentisterie': 'Dentisterie',
+  '/soins-generaux/dentisterie/charte-chien': 'Charte dentaire - Chien',
+  '/soins-generaux/dentisterie/charte-chat': 'Charte dentaire - Chat',
+  '/soins-generaux/dentisterie/termes-directionnels': 'Termes directionnels',
   '/soins-generaux/abreviations': 'Abréviations courantes',
   '/soins-generaux/termes-directionnels': 'Termes directionnels',
   '/labo/radiologie/notions-base': 'Notions de base : mA, kVp et distance',
   '/labo/radiologie/depannage': 'Dépannage',
-  '/labo/radiologie/charte': 'Charte radiographique personnalisée',
+  '/labo/radiologie/charte': 'Charte radiographique personnelle',
   }
 
 export default function Header() {

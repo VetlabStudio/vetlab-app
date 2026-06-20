@@ -1875,6 +1875,7 @@ input  { font-family: var(--font); }
   position: absolute; right: 1rem;
 }
 
+
 /* ─── BOUTON MODIFIER (admin) ────────────────── */
 .btn-modifier-medicament {
   width: 100%;
@@ -4060,9 +4061,16 @@ input[type="number"] {
   background: var(--bg);
 }
 
+
 .labo-sediment-photo-termes {
   width: 100%;
   max-height: 400px;
+  object-fit: contain;
+  display: block;
+}
+.labo-charte-dentaire {
+  width: 100%;
+  max-height: 700px;
   object-fit: contain;
   display: block;
 }

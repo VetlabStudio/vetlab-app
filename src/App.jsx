@@ -45,6 +45,10 @@ const EvaluationDouleurAigueChat = lazy(() => import('./pages/EvaluationDouleurA
 const Pharmacologie = lazy(() => import('./pages/Pharmacologie'))
 const ChirurgieListe = lazy(() => import('./pages/ChirurgieListe'))
 const SoinsGeneraux = lazy(() => import('./pages/SoinsGeneraux'))
+const SoinsGenerauxDentisterie = lazy(() => import('./pages/SoinsGenerauxDentisterie'))
+const SoinsGenerauxDentisterieCharteChien = lazy(() => import('./pages/SoinsGenerauxDentisterieCharteChien'))
+const SoinsGenerauxDentisterieCharteChat = lazy(() => import('./pages/SoinsGenerauxDentisterieCharteChat'))
+const SoinsGenerauxDentisterieTermesDirectionnels = lazy(() => import('./pages/SoinsGenerauxDentisterieTermesDirectionnels'))
 const AbreviationsCourantes = lazy(() => import('./pages/AbreviationsCourantes'))
 const TermesDirectionnels = lazy(() => import('./pages/TermesDirectionnels'))
 const MesDrogues = lazy(() => import('./pages/MesDrogues'))
@@ -239,6 +243,10 @@ export default function App() {
         <Route path="/drogues" element={<RouteProtegee session={session}><Pharmacologie /></RouteProtegee>} />
         <Route path="/chirurgie" element={<RouteProtegee session={session}><ChirurgieListe /></RouteProtegee>} />
         <Route path="/soins-generaux" element={<RouteProtegee session={session}><SoinsGeneraux /></RouteProtegee>} />
+        <Route path="/soins-generaux/dentisterie" element={<RouteProtegee session={session}><SoinsGenerauxDentisterie /></RouteProtegee>} />
+        <Route path="/soins-generaux/dentisterie/charte-chien" element={<RouteProtegee session={session}><SoinsGenerauxDentisterieCharteChien /></RouteProtegee>} />
+        <Route path="/soins-generaux/dentisterie/charte-chat" element={<RouteProtegee session={session}><SoinsGenerauxDentisterieCharteChat /></RouteProtegee>} />
+        <Route path="/soins-generaux/dentisterie/termes-directionnels" element={<RouteProtegee session={session}><SoinsGenerauxDentisterieTermesDirectionnels /></RouteProtegee>} />
         <Route path="/soins-generaux/abreviations" element={<RouteProtegee session={session}><ProGate><AbreviationsCourantes /></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/termes-directionnels" element={<RouteProtegee session={session}><ProGate><TermesDirectionnels /></ProGate></RouteProtegee>} />
         <Route path="/calculateurs/rcr" element={<RouteProtegee session={session}><RCR /></RouteProtegee>} />
