@@ -5884,3 +5884,83 @@ input[type="number"] {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ─── CHARTE RADIOGRAPHIQUE ─────────────────────────────────── */
+.charte-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.charte-item-haut {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.charte-item-titre {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.charte-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.charte-badge-bon {
+  background: rgba(82, 184, 154, 0.12);
+  color: var(--primary);
+}
+
+.charte-badge-acceptable {
+  background: rgba(215, 163, 92, 0.12);
+  color: var(--accent-gold);
+}
+
+.charte-badge-a_ajuster {
+  background: rgba(112, 47, 58, 0.1);
+  color: var(--accent-red);
+}
+
+.charte-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.charte-item-notes {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.charte-checkbox-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.form-aide {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin: -4px 0 0;
+  line-height: 1.4;
+}

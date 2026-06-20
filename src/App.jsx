@@ -76,6 +76,8 @@ const LaMicrobiologieLevures = lazy(() => import('./pages/LaMicrobiologieLevures
 const LaRadiologie = lazy(() => import('./pages/LaRadiologie'))
 const LaRadiologieBases = lazy(() => import('./pages/LaRadiologieBases'))
 const LaRadiologieDepannage = lazy(() => import('./pages/LaRadiologieDepannage'))
+const LaRadiologieCharte = lazy(() => import('./pages/LaRadiologieCharte'))
+const LaRadiologieCharteForm = lazy(() => import('./pages/LaRadiologieCharteForm'))
 const Toxicologie = lazy(() => import('./pages/Toxicologie'))
 const Notes = lazy(() => import('./pages/Notes'))
 const NoteDetail = lazy(() => import('./pages/NoteDetail'))
@@ -285,6 +287,9 @@ export default function App() {
         <Route path="/labo/af3ffd7b-ac2f-4e43-adf0-7108bf79099c" element={<RouteProtegee session={session}><LaRadiologie /></RouteProtegee>} />
         <Route path="/labo/radiologie/notions-base" element={<RouteProtegee session={session}><ProGate><LaRadiologieBases /></ProGate></RouteProtegee>} />
         <Route path="/labo/radiologie/depannage" element={<RouteProtegee session={session}><LaRadiologieDepannage /></RouteProtegee>} />
+        <Route path="/labo/radiologie/charte" element={<RouteProtegee session={session}><ProGate><LaRadiologieCharte /></ProGate></RouteProtegee>} />
+        <Route path="/labo/radiologie/charte/nouvelle" element={<RouteProtegee session={session}><ProGate><LaRadiologieCharteForm /></ProGate></RouteProtegee>} />
+        <Route path="/labo/radiologie/charte/:id/modifier" element={<RouteProtegee session={session}><ProGate><LaRadiologieCharteForm /></ProGate></RouteProtegee>} />
         <Route path="/labo/:categorieId" element={<RouteProtegee session={session}><LaboProtocoles /></RouteProtegee>} />
 
         {/* CHIRURGIE */}

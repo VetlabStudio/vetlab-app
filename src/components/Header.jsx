@@ -85,6 +85,7 @@ const titres = {
   '/soins-generaux/termes-directionnels': 'Termes directionnels',
   '/labo/radiologie/notions-base': 'Notions de base : mA, kVp et distance',
   '/labo/radiologie/depannage': 'Dépannage',
+  '/labo/radiologie/charte': 'Charte radiographique personnalisée',
   }
 
 export default function Header() {
