@@ -243,7 +243,7 @@ export default function App() {
         <Route path="/drogues" element={<RouteProtegee session={session}><Pharmacologie /></RouteProtegee>} />
         <Route path="/chirurgie" element={<RouteProtegee session={session}><ChirurgieListe /></RouteProtegee>} />
         <Route path="/soins-generaux" element={<RouteProtegee session={session}><SoinsGeneraux /></RouteProtegee>} />
-        <Route path="/soins-generaux/dentisterie" element={<RouteProtegee session={session}><SoinsGenerauxDentisterie /></RouteProtegee>} />
+        <Route path="/soins-generaux/dentisterie" element={<RouteProtegee session={session}><ProGate><SoinsGenerauxDentisterie /></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/dentisterie/charte-chien" element={<RouteProtegee session={session}><SoinsGenerauxDentisterieCharteChien /></RouteProtegee>} />
         <Route path="/soins-generaux/dentisterie/charte-chat" element={<RouteProtegee session={session}><SoinsGenerauxDentisterieCharteChat /></RouteProtegee>} />
         <Route path="/soins-generaux/dentisterie/termes-directionnels" element={<RouteProtegee session={session}><SoinsGenerauxDentisterieTermesDirectionnels /></RouteProtegee>} />
@@ -307,7 +307,7 @@ export default function App() {
         <Route path="/chirurgie/capnographie" element={<RouteProtegee session={session}><ProGate><ChirurgieCapnographie /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/post-op" element={<RouteProtegee session={session}><ProGate><ChirurgiePostOp /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/douleur" element={<RouteProtegee session={session}><ChirurgieDouleur /></RouteProtegee>} />
-        <Route path="/chirurgie/ecg" element={<RouteProtegee session={session}><ChirurgieECG /></RouteProtegee>} />
+        <Route path="/chirurgie/ecg" element={<RouteProtegee session={session}><ProGate><ChirurgieECG /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/anomalies" element={<RouteProtegee session={session}><ProGate><ChirurgieECGAnomalies /></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/examen-physique" element={<RouteProtegee session={session}><ProGate><SoinsGenerauxExamenPhysique /></ProGate></RouteProtegee>} />

@@ -4,77 +4,77 @@ const OEUFS = [
     nom: 'Toxocara canis',
     especes: 'Chien',
     description: 'Œuf sphérique à coque épaisse et bosselée, brun foncé. Contient une seule cellule (non embryonné à la ponte). Taille : 75–90 µm.',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_Toxocara%20canis.png',
+    photo: null,
   },
   {
     id: 2,
     nom: 'Toxocara cati',
     especes: 'Chat',
     description: 'Similaire à T. canis mais légèrement plus petit. Coque épaisse ponctuée. Taille : 65–75 µm.',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_Toxocara%20cati.png',
+    photo: null,
   },
   {
     id: 3,
     nom: 'Toxascaris leonina',
     especes: 'Chien, Chat',
     description: 'Œuf ovale à coque lisse et transparente. Plus petit que Toxocara. Taille : 75–85 µm.',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_Toxascaris%20leonina.png',
+    photo: null,
   },
   {
     id: 4,
     nom: 'Ancylostoma caninum',
     especes: 'Chien',
     description: 'Œuf ovale à paroi mince et lisse, contenant 4–8 cellules à la ponte. Taille : 56–75 µm.',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_ancylostoma%20caninum.png',
+    photo: null,
   },
   {
     id: 5,
     nom: 'Uncinaria stenocephala',
     especes: 'Chien',
     description: 'Semblable à Ancylostoma, légèrement plus grand. Œuf à paroi mince, morula visible. Taille : 63–76 µm.',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_uncinaria%20stenocephala.png',
+    photo: null,
   },
   {
     id: 6,
     nom: 'Trichuris vulpis',
     especes: 'Chien',
     description: 'Œuf en forme de barillet avec deux bouchons polaires translucides. Brun doré. Taille : 70–90 µm.',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_Trichuris%20vulpis.png',
+    photo: null,
   },
   {
     id: 7,
     nom: 'Dipylidium caninum',
     especes: 'Chien, Chat',
     description: 'Paquets d\'œufs (capsules ovigères) contenant 8–15 œufs sphériques. Rarement vus isolément à la flottation. Taille du paquet : 120–200 µm.',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_dipylidium%20caninum.png',
+    photo: null,
   },
   {
     id: 8,
     nom: 'Taenia spp.',
     especes: 'Chien, Chat',
     description: 'Œuf sphérique à coque striée rayonnante (embryophore), contenant un oncosphère à 6 crochets. Taille : 25–40 µm.',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_Taenia.png',
+    photo: null,
   },
   {
     id: 9,
     nom: 'Giardia duodenalis',
     especes: 'Chien, Chat',
     description: 'Kyste ovoïde à paroi lisse, contenant 2–4 noyaux visibles. Détecté par flottation au sulfate de zinc. Taille : 8–12 µm.',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_giardia%20duodenalis.png',
+    photo: null,
   },
   {
     id: 10,
     nom: 'Cryptosporidium spp.',
     especes: 'Chien, Chat',
     description: 'Oocyste sphérique très petit, paroi lisse. Détecté par coloration acido-alcoolo-résistante (Ziehl-Neelsen modifié). Taille : 4–6 µm.',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_cryptosporidium%20spp.png',
+    photo: null,
   },
   {
     id: 11,
     nom: 'Isospora canis / I. felis',
     especes: 'Chien / Chat',
     description: 'Oocyste non sporulé à la ponte, paroi lisse, sporocystes visibles après sporulation. Taille : 30–45 µm (I. canis), 38–51 µm (I. felis).',
-    photo: 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/labo-photos/Parasites/oeufs_Isospora.png',
+    photo: null,
   },
 ]
 
@@ -104,7 +104,7 @@ export default function LaboParasitologieOeufs() {
       </div>
             <div className="postop-note-bas">
         <i className="ti ti-info-circle"></i>
-        <span>Les images présentées sont des illustrations générées à partir des caractéristiques morphologiques reconnues des parasites et sont fournies à titre indicatif seulement. Elles ne remplacent pas l'identification microscopique ni l'interprétation professionnelle d'un échantillon.</span>
+        <span>Les images présentées ne remplacent pas l'interprétation professionnelle d'un échantillon.</span>
       </div>
     </div>
   )

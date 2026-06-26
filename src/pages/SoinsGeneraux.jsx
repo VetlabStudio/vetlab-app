@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import BadgePro from '../components/BadgePro'
 
 const SOINS_GENERAUX = [
-  { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg' },
-  { id: 'dentisterie', label: 'Dentisterie', route: '/soins-generaux/dentisterie' },
+  { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg', pro: true },
+  { id: 'dentisterie', label: 'Dentisterie', route: '/soins-generaux/dentisterie', pro: true },
   { id: 'abreviations', label: 'Abréviations courantes', route: '/soins-generaux/abreviations', pro: true },
   { id: 'termes-directionnels', label: 'Termes directionnels', route: '/soins-generaux/termes-directionnels', pro: true },
 ]
