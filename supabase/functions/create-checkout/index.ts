@@ -41,14 +41,15 @@ Deno.serve(async (req) => {
   }
 
   const session = await stripe.checkout.sessions.create({
-    customer: customerId,
-    mode: 'subscription',
-    line_items: [{ price: priceId, quantity: 1 }],
-    allow_promotion_codes: true,
-    locale: 'fr',
-    ui_mode: 'embedded',
-    return_url: `${req.headers.get('origin')}/profil?paiement=succes`,
-  })
+  customer: customerId,
+  mode: 'subscription',
+  line_items: [{ price: priceId, quantity: 1 }],
+  allow_promotion_codes: true,
+  payment_method_collection: 'if_required', // <-- la ligne a ajouter
+  locale: 'fr',
+  ui_mode: 'embedded',
+  return_url: `${req.headers.get('origin')}/profil?paiement=succes`,
+})
 
   return new Response(
     JSON.stringify({ clientSecret: session.client_secret }),
