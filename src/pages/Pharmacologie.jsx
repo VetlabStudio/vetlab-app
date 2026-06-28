@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BadgePro from '../components/BadgePro'
+import { useProfil } from '../context/ProfilContext'
 
 const DROGUES = [
   { id: 'anesthesiques',     label: 'Anesthésiques /\nAnalgésiques', route: '/drogues/anesthesiques', accent: false },
@@ -20,6 +22,8 @@ const TOXICOLOGIE = { id: 'toxicologie', label: 'Toxicologie', route: '/drogues/
 
 export default function Pharmacologie() {
   const navigate = useNavigate()
+  const { estPro } = useProfil()
+  const [showProMsg, setShowProMsg] = useState(false)
 
   return (
     <div className="page-calculateurs">
@@ -55,6 +59,31 @@ export default function Pharmacologie() {
           {TOXICOLOGIE.pro && <BadgePro />}
         </button>
       </div>
+
+      <button className="btn-fab" onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}>+</button>
+
+      {showProMsg && (
+        <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <span>Fonctionnalité Pro</span>
+              <button className="popup-close" onClick={() => setShowProMsg(false)}>✕</button>
+            </div>
+            <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
+              <i className="ti ti-lock" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 8 }}>
+                L'ajout de médicaments personnalisés est réservé au forfait <strong>Pro</strong>.
+              </p>
+              <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
+                Passe au forfait Pro pour accéder à cette fonctionnalité.
+              </p>
+            </div>
+            <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
+              Compris
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

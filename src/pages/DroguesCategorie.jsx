@@ -223,7 +223,7 @@ const tries = [...medsAvecCustom, ...(medsCustom || []).map(m => ({ ...m, estCus
           )}
         </div>
       )}
-      <button className="btn-fab" onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}>+</button>
+      <button className="btn-fab" onClick={() => estPro ? navigate(`/drogues/ajouter?categorie=${encodeURIComponent(categorie)}`) : setShowProMsg(true)}>+</button>
 
       {showProMsg && (
         <div className="popup-overlay" onClick={() => setShowProMsg(false)}>

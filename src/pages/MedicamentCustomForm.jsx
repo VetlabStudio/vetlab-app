@@ -335,7 +335,7 @@ console.log('customId:', customId)
   { id: 'chevre',       label: 'Chèvre',             icone: '/icone-chevre.png' },
   { id: 'cochon',       label: 'Cochon',             icone: '/icone-cochon.png' },
   { id: 'lapin',        label: 'Lapin',              icone: '/icone-lapin.png' },
-  { id: 'furet',        label: 'Furet',              icone: '/icone-furet.png' },
+  { id: 'furet',        label: 'Furet',              icone: '/icone-furet.png', ratio: 38 / 30 },
   { id: 'oiseau',       label: 'Oiseau',            icone: '/icone-oiseau.png' },
   { id: 'serpent',      label: 'Serpent',            icone: '/icone-serpent.png' },
   { id: 'lezard',       label: 'Lézard',             icone: '/icone-lezard.png' },
@@ -350,7 +350,7 @@ console.log('customId:', customId)
   <label key={esp.id} className="popup-espece-item">
     <input type="checkbox" checked={form.especes.includes(esp.id)} onChange={() => toggleEspece(esp.id)} />
     {esp.icone
-      ? <img src={esp.icone} alt={esp.label} className="espece-icone-popup" />
+      ? <img src={esp.icone} alt={esp.label} className="espece-icone-popup" style={esp.ratio ? { width: 28 * esp.ratio } : undefined} />
       : <div className="espece-icone-popup espece-icone-placeholder"></div>
     }
     <span>{esp.label}</span>
