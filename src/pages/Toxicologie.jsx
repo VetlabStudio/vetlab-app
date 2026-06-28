@@ -1,12 +1,14 @@
 import { useState } from 'react'
+import IconesEspeces from '../components/IconesEspeces'
 
 // ─── DONNÉES ─────────────────────────────────────────────
 
 const TOXIQUES = {
   plantes: [
     { nom: 'Aloe vera', img: 'aloe-vera.jpg', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Saponines, anthraquinones (latex/sève) : vomissements, léthargie, diarrhée; urine rougeâtre possible. Le gel intérieur est comestible.' },
-    { nom: 'Amanita spp. (champignons)', img: 'amanita.jpg', especes: ['chien', 'chat'], toxicite: 'Élevée à très élevée', effets: 'Vomissements, diarrhée hémorragique, douleurs abdominales, puis phase de rémission trompeuse (quelques heures à 2-3 jours) suivie d\'une insuffisance hépatique aiguë (ictère, hypoglycémie, coagulopathie, coma); pronostic très sombre.' },
-    { nom: 'Canne des muets (Dieffenbachia)', img: 'dieffenbachia.jpg', especes: ['chien', 'chat'], toxicite: 'Modérée', effets: 'Oxalates de calcium insolubles (sève) : irritation buccale immédiate, hypersalivation, oedème de la langue/lèvres, vomissements, difficulté à avaler; chez le chat, atteinte rénale possible si systémique.' },
+    { nom: 'Amanite à amatoxines (Amanita phalloides, virosa, ocreata, verna)', img: 'amanita-phalloides.jpg', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)', effets: 'Amatoxines (alpha-amanitine), inhibition de l\'ARN polymérase II. Évolution en trois temps : phase digestive (6-24h : vomissements, diarrhée hémorragique, douleurs abdominales), puis rémission trompeuse (12-48h), puis insuffisance hépatique aiguë (ictère, hypoglycémie, coagulopathie, encéphalopathie, coma); atteinte rénale possible. Pronostic très sombre, peu d\'antidote spécifique.' },
+    { nom: 'Amanite à acide iboténique (Amanita muscaria / tue-mouches, A. pantherina / panthère)', img: 'amanita-muscaria.jpg', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Acide iboténique et muscimol, action sur le SNC (GABAergique et glutamatergique); peu de muscarine malgré le nom. Début rapide (30 min à 3h) : alternance de dépression et d\'excitation du SNC, ataxie, désorientation, hypersalivation, mydriase, tremblements, parfois convulsions et coma fluctuant. Rarement mortel; récupération habituelle en 24-48h avec soins de support.' },
+    { nom: 'Canne des muets (Dieffenbachia)', img: 'dieffenbachia.jpg', especes: ['chien', 'chat'], toxicite: 'Modérée', effets: 'Oxalates de calcium insolubles (sève) : irritation buccale immédiate, hypersalivation, oedème de la langue/lèvres, vomissements, difficulté à avaler.' },
     { nom: 'Gui (Viscum album / Phoradendron spp.)', img: 'gui.jpg', especes: ['chien', 'chat'], toxicite: 'Modérée', effets: 'Lectines, phoratoxines : vomissements, diarrhée, hypotension, bradycardie, dyspnée (forte ingestion); les feuilles sont plus toxiques que les baies.' },
     { nom: 'Houx (Ilex spp.)', img: 'houx.jpg', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Saponines : vomissements, diarrhée, abattement, claquement des lèvres, hypersalivation; toxicité généralement légère.' },
     { nom: 'Houblon (Humulus lupulus)', img: 'houblon.jpg', especes: ['chien'], toxicite: 'Très élevée (mortelle)', effets: 'Hyperthermie maligne (>40,6 °C), tachypnée, tachycardie, tremblements, convulsions; décès possible en moins de 6h sans traitement.' },
@@ -23,28 +25,41 @@ const TOXIQUES = {
     { nom: 'Jonquille / Narcisse (Narcissus spp.)', img: 'jonquille.jpg', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Lycorine et alcaloïdes (bulbe surtout) : hypersalivation, vomissements, diarrhée; fortes ingestions : hypotension, tremblements, arythmies, convulsions.' },
   ],
   aliments: [
-    { nom: 'Chocolat (théobromine et caféine)', especes: ['chien', 'chat'], toxicite: 'Élevée (dose-dépendante)', effets: 'Méthylxanthines : vomissements, diarrhée, polydipsie, hyperactivité, tachycardie, tremblements, convulsions; signes en 6-12h. Chocolat noir/pâtissier plus dangereux que le chocolat au lait.' },
-    { nom: 'Café et caféine', especes: ['chien', 'chat'], toxicite: 'Élevée (dose-dépendante)', effets: 'Méthylxanthines : agitation, vomissements, diarrhée, hypersalivation, tachycardie, hypertension, tremblements, convulsions; signes dans les 1-2h suivant l\'ingestion.' },
-    { nom: 'Alcool (boissons, pâtes fermentées)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Éthanol : vomissements, diarrhée, ataxie, désorientation, hypothermie, tremblements; cas graves : coma, bradycardie, dépression respiratoire. Chats particulièrement sensibles.' },
-    { nom: 'Avocat (persine)', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Persine (feuilles, fruit, noyau, écorce) : vomissements, diarrhée; toxicité systémique surtout documentée chez oiseaux, lapins et ruminants. Risque d\'occlusion digestive si le noyau est avalé entier.' },
-    { nom: 'Noix de macadamia', especes: ['chien'], toxicite: 'Modérée', effets: 'Faiblesse (surtout postérieurs), dépression, vomissements, ataxie, tremblements, hyperthermie; signes en moins de 12h, résolution généralement en 24-72h. Risque de pancréatite (aliment très gras).' },
-    { nom: 'Oignon, ail, ciboulette, poireau (allium)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Composés sulfurés : dommages aux globules rouges (anémie hémolytique, corps de Heinz), hémoglobinurie, ictère, faiblesse, tachycardie, tachypnée; formes concentrées (poudre, déshydratée) plus dangereuses. Chat plus sensible; ail environ 3-5x plus toxique que l\'oignon.' },
-    { nom: 'Raisins et raisins secs', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Acide tartrique (composant présumé) : vomissements, diarrhée, léthargie, anorexie, puis insuffisance rénale aiguë avec anurie possible (12-24h); toxicité imprévisible, environ 50% des chiens exposés ne développent aucun signe.' },
-    { nom: 'Xylitol (édulcorant sans sucre)', especes: ['chien'], toxicite: 'Très élevée', effets: 'Hypoglycémie sévère (dès 30 min, parfois retardée 12-18h) : faiblesse, ataxie, convulsions, coma; à plus forte dose, insuffisance hépatique aiguë (ictère, coagulopathie) possible dès 24h.' },
-    { nom: 'Pâte à pain crue (levure)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Fermentation de la levure dans l\'estomac : production d\'éthanol (intoxication alcoolique) et de CO2 (distension gastrique pouvant évoluer en dilatation-torsion de l\'estomac, urgence vitale).' },
-    { nom: 'Viande et œufs crus', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Risque de contamination bactérienne (Salmonella, E. coli) : vomissements, diarrhée, fièvre; les œufs crus contiennent aussi une enzyme limitant l\'absorption de la biotine (problèmes de peau/pelage à long terme).' },
-    { nom: 'Lait et produits laitiers', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Intolérance au lactose fréquente (surtout chez le chat adulte) : ballonnements, douleurs abdominales, diarrhée, vomissements; non toxique en soi mais mal toléré en grande quantité.' },
+    { nom: 'Alcool', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Vomissements, diarrhée, incoordination, dépression, difficulté respiratoire, tremblements, changements du pH sanguin, coma et même la mort.' },
+    { nom: 'Avocat', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Les feuilles, le fruit, les noyaux et l\'écorce contiennent de la persine, pouvant causer vomissements et diarrhée chez le chien. La persine est surtout dangereuse pour les oiseaux et les grands herbivores; chez le chien et le chat, les vrais risques pratiques sont plutôt le noyau (obstruction) et la teneur en gras (pancréatite).' },
+    { nom: 'Chocolat', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Contient des méthylxanthines (fèves de cacao) : vomissements, diarrhée, halètement, soif et miction excessives, hyperactivité, rythme cardiaque anormal, tremblements, convulsions et même la mort.' },
+    { nom: 'Agrumes', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Les tiges, feuilles, écorces, fruits et graines contiennent de l\'acide citrique et des huiles essentielles pouvant irriter. De petites doses (ex. manger le fruit) ne causent généralement qu\'un léger trouble digestif.' },
+    { nom: 'Noix de coco et huile de coco', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'En petite quantité, peu susceptible de causer un tort sérieux. La chair et le lait de coco frais contiennent des huiles pouvant causer trouble digestif, selles molles et diarrhée.' },
+    { nom: 'Raisins et raisins secs', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: ' L\'acide tartrique est aujourd\'hui identifié comme le principe toxique probable. La sensibilité varie beaucoup d\'un chien à l\'autre, mais ces fruits peuvent causer une insuffisance rénale chez certains animaux.' },
+    { nom: 'Noix de macadamia', especes: ['chien'], toxicite: 'Modérée', effets: 'Faiblesse, dépression, vomissements, tremblements et hyperthermie chez le chien. Signes généralement dans les 12h suivant l\'ingestion, durant environ 12 à 48h.' },
+    { nom: 'Lait et produits laitiers', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Les animaux ne possèdent pas suffisamment de lactase (enzyme qui dégrade le lactose) : diarrhée ou autres troubles digestifs.' },
+    { nom: 'Noix (amandes, pacanes, noix de Grenoble, etc.)', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Riches en huiles et matières grasses : vomissements, diarrhée et potentiellement une pancréatite.' },
+    { nom: 'Oignon, ail et ciboulette', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Irritation gastro-intestinale et dommages aux globules rouges pouvant mener à une anémie. Le chat est plus sensible, mais le chien est aussi à risque selon la quantité ingérée.' },
+    { nom: 'Viande, œufs et os crus ou insuffisamment cuits', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'La viande et les œufs crus peuvent contenir des bactéries (Salmonella, E. coli) dangereuses pour l\'animal comme pour l\'humain. Les œufs crus contiennent aussi une protéine nuisant à l\'absorption de certaines vitamines (problèmes de peau/pelage). Les os crus présentent un risque de blessure ou d\'obstruction du tube digestif.' },
+    { nom: 'Sel', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'De grandes quantités peuvent causer une soif et miction excessives, voire une intoxication aux ions sodium : vomissements, diarrhée, dépression, tremblements, hyperthermie, convulsions et même la mort.' },
+    { nom: 'Xylitol', especes: ['chien'], toxicite: 'Très élevée', effets: 'Édulcorant présent dans la gomme, les bonbons, les produits de boulangerie et le dentifrice. Libération massive d\'insuline provoquant une hypoglycémie sévère (faiblesse, ataxie, convulsions); à plus forte dose, atteinte hépatique aiguë possible.' },
+    { nom: 'Pâte à pain crue (levure)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'La levure peut fermenter et produire des gaz dans le système digestif, causant un ballonnement douloureux de l\'estomac pouvant évoluer en torsion — une urgence vitale. La fermentation de la levure produit aussi de l\'éthanol, donc une intoxication alcoolique en parallèle est possible (hypoglycémie, dépression du SNC, acidose métabolique).' },
   ],
   medicaments: [
     { nom: 'Ibuprofène, naproxène, aspirine', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Ulcères gastriques, hémorragie, insuffisance rénale.' },
     { nom: 'Acétaminophène (paracétamol)', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle chez le chat)', effets: 'Anémie, méthémoglobinémie, hépatotoxicité sévère.' },
     { nom: 'Benzodiazépines, antidépresseurs, bêta-bloquants', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Dépression du SNC, hypotension, troubles neurologiques.' },
   ],
-  produits_menagers: [
-    { nom: 'Antigel (éthylène glycol)', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)', effets: 'Troubles neurologiques, vomissements, insuffisance rénale irréversible en 24 à 72 h.' },
-    { nom: 'Batteries, piles', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Brûlures orales, perforations GI, intoxication aux métaux.' },
-    { nom: 'Nettoyants ménagers', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Irritation gastro-intestinale, vomissements, douleur ou brûlure oesophagienne.' },
-    { nom: 'Huiles essentielles', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Toxicité hépatique, troubles neurologiques, vomissements, ataxie.' },
+ produits_menagers: [
+    { nom: 'Antigel (éthylène glycol)', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Très élevée (mortelle)', effets: 'Goût sucré attirant, très faible dose suffisante (le chat est extrêmement sensible). Évolution en trois temps : phase d\'ébriété neurologique (30 min à 12h : ataxie, dépression, vomissements, polyuro-polydipsie, convulsions), phase cardiopulmonaire (12-24h), puis insuffisance rénale aiguë par cristaux d\'oxalate de calcium (chat 12-24h, chien 36-72h), souvent irréversible. Urgence absolue : antidote (fomépizole ou éthanol) efficace seulement si administré tôt.' },
+    { nom: 'Piles et batteries', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Modérée à élevée', effets: 'Piles alcalines percées : brûlures caustiques de la bouche et du tube digestif. Piles boutons (surtout lithium) : nécrose des tissus par courant électrique en quelques heures si logées dans l\'oesophage, brûlures, perforation possible. Métaux lourds (zinc, plomb) en cas de rétention : intoxication métallique; risque aussi d\'obstruction. Les oiseaux sont particulièrement sensibles aux métaux.' },
+    { nom: 'Huiles essentielles', especes: ['chien', 'chat', 'oiseau', 'furet'], toxicite: 'Élevée', effets: 'Phénols et terpènes (arbre à thé, gaulthérie, pin, agrumes, eucalyptus, cannelle, menthe, etc.). Le chat métabolise mal ces composés (déficit de glucuronidation hépatique). Exposition par ingestion, voie cutanée ou inhalation (diffuseurs). Signes : hypersalivation, vomissements, ataxie, tremblements, dépression du SNC, atteinte hépatique, irritation cutanée. Les oiseaux sont extrêmement sensibles par inhalation (détresse respiratoire).' },
+    { nom: 'Eau de Javel (bleach)', especes: ['chien', 'chat', 'oiseau'], toxicite: 'Faible à modérée', effets: 'Javel non diluée : lésions de la bouche et de l\'oesophage, surtout si concentration ou pH élevé. Diluée, rincée et une fois l\'odeur dissipée, elle peut servir à nettoyer jouets et cages sans danger. Les oiseaux sont extrêmement sensibles aux vapeurs.' },
+    { nom: 'Vinaigre et eau', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Solution acide pouvant causer une irritation et un léger trouble digestif. Sans risque si diluée, rincée et séchée avant le retour de l\'animal.' },
+    { nom: 'Nettoyants enzymatiques', especes: ['chien', 'chat', 'oiseau'], toxicite: 'Faible', effets: 'Léger trouble digestif. Laisser sécher complètement avant de laisser l\'animal accéder à la zone traitée. Prudence avec les oiseaux, sensibles aux vapeurs de nettoyants.' },
+    { nom: 'Cosmétiques (rouge à lèvres, brillant, fond de teint, mascara, fard)', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible', effets: 'Trouble digestif léger. Les produits hydratants (ex. beurre de karité) ont un effet laxatif et peuvent causer de la diarrhée. Le principal risque vient de l\'emballage ingéré : corps étranger et obstruction digestive possibles (urgence).' },
+    { nom: 'Lotions hydratantes', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Petite quantité léchée : trouble digestif léger. Plus grande quantité : trouble plus marqué. En cas de vomissement, risque d\'aspiration et de pneumonie par aspiration.' },
+    { nom: 'Vaseline (gelée de pétrole)', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Effet laxatif : trouble digestif, plus marqué si grande quantité. Risque de pneumonie par aspiration en cas de vomissement.' },
+    { nom: 'Savon en barre', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Trouble digestif léger. Les chiens en raffolent, donc à garder hors de portée. Des bulles peuvent sortir du nez au vomissement, sans gravité.' },
+    { nom: 'Dentifrice', especes: ['chien', 'chat', 'furet'], toxicite: 'Variable selon la composition', effets: 'Peut contenir du fluorure ou du xylitol. Fluorure : insuffisant pour des signes dans la plupart des cas, mais une grande quantité cause trouble digestif sévère, arythmies, hypotension et déséquilibres électrolytiques graves. Xylitol : hypoglycémie et atteinte hépatique possibles. La teneur varie beaucoup d\'une marque à l\'autre.' },
+    { nom: 'Capsules et détergent à lessive liquide', especes: ['chien', 'chat', 'furet'], toxicite: 'Modérée à élevée', effets: 'Trouble digestif et irritation de la bouche et de la gorge. Dans certains cas, signes graves voire mortels.' },
+    { nom: 'Feuilles d\'assouplissant (dryer sheets)', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'Détergents cationiques (surtout dans les feuilles neuves) : brûlures chimiques et ulcères sévères de la bouche, de l\'oesophage et de l\'estomac. Risque aussi de corps étranger et d\'obstruction digestive.' },
+    { nom: 'Assouplissant liquide', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'Détergents cationiques : brûlures chimiques et ulcères sévères de la bouche, de l\'oesophage et de l\'estomac.' },
   ],
   metaux: [
     { nom: 'Objets métalliques contenant du plomb (plombs de pêche, balles, batteries)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Troubles gastro-intestinaux, neurologiques, signes d\'anémie chronique.' },
@@ -155,16 +170,6 @@ function PhotoPlante({ img, nom }) {
   )
 }
 
-// ─── COMPOSANT ICONES ESPÈCES ────────────────────────────
-function EspecesIcones({ especes }) {
-  return (
-    <span style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-      {especes.includes('chien') && <img src="/icone-chien.svg" alt="chien" style={{ width: 28, height: 28 }} />}
-      {especes.includes('chat') && <img src="/icone-chat.svg" alt="chat" style={{ width: 28, height: 28 }} />}
-    </span>
-  )
-}
-
 // ─── ONGLETS ─────────────────────────────────────────────
 const ONGLETS = [
   { id: 'plantes', label: 'Plantes', icone: 'ti-plant' },
@@ -210,7 +215,7 @@ export default function Toxicologie() {
                 <div className="toxico-plante-contenu">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                     <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', flex: 1 }}>{t.nom}</span>
-                    <EspecesIcones especes={t.especes} />
+                    <IconesEspeces especes={t.especes} />
                   </div>
                   <span style={{ fontSize: 12, color: couleurToxicite(t.toxicite), fontWeight: 600, marginTop: 4, display: 'block' }}>{t.toxicite}</span>
                 </div>
@@ -231,7 +236,7 @@ export default function Toxicologie() {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                   <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', flex: 1 }}>{t.nom}</span>
-                  <EspecesIcones especes={t.especes} />
+                  <IconesEspeces especes={t.especes} />
                 </div>
                 <span style={{ fontSize: 12, color: couleurToxicite(t.toxicite), fontWeight: 600, marginTop: 4, display: 'block' }}>{t.toxicite}</span>
               </button>
@@ -308,7 +313,7 @@ export default function Toxicologie() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '8px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <EspecesIcones especes={selectionne.especes} />
+                <IconesEspeces especes={selectionne.especes} />
                 <span style={{ fontSize: 13, fontWeight: 700, color: couleurToxicite(selectionne.toxicite) }}>
                   {selectionne.toxicite}
                 </span>

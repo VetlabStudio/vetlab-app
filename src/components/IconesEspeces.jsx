@@ -6,9 +6,9 @@ export const ESPECES_CONFIG = {
   mouton:     { icone: '/icone-mouton.png', label: 'Mouton' },
   lama:       { icone: '/icone-lama.png', label: 'Lama' },
   chevre:     { icone: '/icone-chevre.png', label: 'Chèvre' },
-  cochon:      { icone: '/icone-cochon.png', label: 'Cochon' },
+  cochon:     { icone: '/icone-cochon.png', label: 'Cochon' },
   lapin:      { icone: '/icone-lapin.png', label: 'Lapin' },
-  furet:      { icone: '/icone-furet.png', label: 'Furet' },
+  furet:      { icone: '/icone-furet.png', label: 'Furet', ratio: 38 / 30 },
   oiseau:     { icone: '/icone-oiseau.png', label: 'Oiseau' },
   serpent:    { icone: '/icone-serpent.png', label: 'Serpent' },
   lezard:     { icone: '/icone-lezard.png', label: 'Lézard' },
@@ -28,12 +28,14 @@ export default function IconesEspeces({ especes = [], taille = 28 }) {
         const config = ESPECES_CONFIG[esp]
         if (!config) return null
 if (config.icone) {
+  const largeur = taille * (config.ratio || 1)
+  const hauteur = taille
   return (
     <img
       key={esp}
       src={config.icone}
       alt={config.label}
-      style={{ width: taille, height: taille, objectFit: 'contain' }}
+      style={{ width: largeur, height: hauteur, objectFit: 'contain' }}
     />
   )
 }
