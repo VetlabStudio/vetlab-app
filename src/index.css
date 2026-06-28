@@ -4725,8 +4725,11 @@ input[type="number"] {
 /* ─── MONITORING ANESTHÉSIQUE — TABLEAU DE SUIVI ── */
 .monitoring-table-wrap {
   overflow-x: auto;
+  overflow-y: hidden;
   border: 1px solid var(--border);
   border-radius: 12px;
+  margin-top: 20px;
+
 }
 
 .monitoring-table {
@@ -4876,7 +4879,7 @@ input[type="number"] {
 }
 
 .monitoring-table-wrap--suivi {
-  overflow-x: visible;
+  overflow: hidden;
 }
 
 .monitoring-table--suivi {
@@ -4889,7 +4892,7 @@ input[type="number"] {
 .monitoring-table--suivi td {
   word-break: break-word;
   font-size: 12px;
-  padding: 6px 4px;
+  padding: 6px 6px;
 }
 
 .monitoring-table--suivi th:first-child,
