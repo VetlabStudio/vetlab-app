@@ -5961,3 +5961,41 @@ input[type="number"] {
   margin: -4px 0 0;
   line-height: 1.4;
 }
+/* ─── TOXICOLOGIE — CARTE PLANTE AVEC PHOTO ──── */
+.toxico-plante-card {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.toxico-plante-photo {
+  width: 76px;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+}
+
+.toxico-plante-photo--vide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  color: var(--text-hint);
+  font-size: 26px;
+}
+
+.toxico-plante-contenu {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

@@ -4,25 +4,36 @@ import { useState } from 'react'
 
 const TOXIQUES = {
   plantes: [
-    { nom: 'Aloe vera', especes: ['chien', 'chat'], toxicite: 'Modérée', effets: 'Diarrhée, vomissements, douleurs abdominales.' },
-    { nom: 'Amanita spp. (champignons)', especes: ['chien', 'chat'], toxicite: 'Élevée à très élevée', effets: 'Vomissements, diarrhée, phase de rémission trompeuse puis signes d\'insuffisance hépatique aiguë (ictère, hypoglycémie, coagulopathie, coma hépatique); potentiellement mortelle.' },
-    { nom: 'Canne des muets (Dieffenbachia)', especes: ['chien', 'chat'], toxicite: 'Modérée', effets: 'Irritation buccale, hypersalivation, oedème de la langue.' },
-    { nom: 'Gui et houx', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Vomissements, bradycardie, hypotension, convulsions (forte ingestion).' },
-    { nom: 'Houblon (Humulus lupulus)', especes: ['chien'], toxicite: 'Très élevée', effets: 'Hyperthermie maligne, tachypnée, convulsions; peut être rapidement fatal.' },
-    { nom: 'Laurier-rose, if, digitale, colchique', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)', effets: 'Arythmies, convulsions, insuffisance cardiaque.' },
-    { nom: 'Lys (toutes espèces de Lilium)', especes: ['chat'], toxicite: 'Très élevée (mortelle)', effets: 'Insuffisance rénale aiguë, anurie, vomissements, abattement; ingestion minime suffisante.' },
-    { nom: 'Plante maïs (Dracaena)', especes: ['chien', 'chat'], toxicite: 'Modérée', effets: 'Vomissements, dilatation pupillaire, perte d\'appétit.' },
-    { nom: 'Palmier de Sago (Cycas revoluta)', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)', effets: 'Vomissements, convulsions, hépatite aiguë, coma.' },
-    { nom: 'Plante de jade (Crassula)', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Vomissements, troubles neuromoteurs, léthargie.' },
-    { nom: 'Poinsettia (étoile de Noël)', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Vomissements, irritation buccale, diarrhée.' },
-    { nom: 'Tulipes, jonquilles (narcisses)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Troubles gastro-intestinaux, arythmie, dépression du SNC.' },
+    { nom: 'Aloe vera', img: 'aloe-vera.jpg', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Saponines, anthraquinones (latex/sève) : vomissements, léthargie, diarrhée; urine rougeâtre possible. Le gel intérieur est comestible.' },
+    { nom: 'Amanita spp. (champignons)', img: 'amanita.jpg', especes: ['chien', 'chat'], toxicite: 'Élevée à très élevée', effets: 'Vomissements, diarrhée hémorragique, douleurs abdominales, puis phase de rémission trompeuse (quelques heures à 2-3 jours) suivie d\'une insuffisance hépatique aiguë (ictère, hypoglycémie, coagulopathie, coma); pronostic très sombre.' },
+    { nom: 'Canne des muets (Dieffenbachia)', img: 'dieffenbachia.jpg', especes: ['chien', 'chat'], toxicite: 'Modérée', effets: 'Oxalates de calcium insolubles (sève) : irritation buccale immédiate, hypersalivation, oedème de la langue/lèvres, vomissements, difficulté à avaler; chez le chat, atteinte rénale possible si systémique.' },
+    { nom: 'Gui (Viscum album / Phoradendron spp.)', img: 'gui.jpg', especes: ['chien', 'chat'], toxicite: 'Modérée', effets: 'Lectines, phoratoxines : vomissements, diarrhée, hypotension, bradycardie, dyspnée (forte ingestion); les feuilles sont plus toxiques que les baies.' },
+    { nom: 'Houx (Ilex spp.)', img: 'houx.jpg', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Saponines : vomissements, diarrhée, abattement, claquement des lèvres, hypersalivation; toxicité généralement légère.' },
+    { nom: 'Houblon (Humulus lupulus)', img: 'houblon.jpg', especes: ['chien'], toxicite: 'Très élevée (mortelle)', effets: 'Hyperthermie maligne (>40,6 °C), tachypnée, tachycardie, tremblements, convulsions; décès possible en moins de 6h sans traitement.' },
+    { nom: 'Laurier-rose (Nerium oleander)', img: 'laurier-rose.jpg', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)', effets: 'Glycosides cardiotoniques : hypersalivation, vomissements, diarrhée, ulcérations buccales, arythmies, hypotension, insuffisance cardiaque.' },
+    { nom: 'If (Taxus)', img: 'if.jpg', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)', effets: 'Taxines : vomissements, tremblements, dyspnée, convulsions, arythmies; mort subite par insuffisance cardiaque aiguë possible sans signes prodromiques.' },
+    { nom: 'Digitale (Digitalis purpurea)', img: 'digitale.jpg', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)', effets: 'Glycosides cardiotoniques : hypersalivation, vomissements, diarrhée, faiblesse, arythmies, insuffisance cardiaque; toxique même via l\'eau du vase.' },
+    { nom: 'Colchique (Colchicum autumnale)', img: 'colchique.jpg', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)', effets: 'Colchicine : vomissements et diarrhée hémorragiques, choc, atteinte hépatique/rénale, dépression médullaire, convulsions; signes parfois retardés de plusieurs jours.' },
+    { nom: 'Lys (toutes espèces de Lilium)', img: 'lys.jpg', especes: ['chat'], toxicite: 'Très élevée (mortelle)', effets: 'Abattement, hypersalivation, vomissements, perte d\'appétit (0-12h), puis polyurie/déshydratation (12-24h) et insuffisance rénale aiguë avec anurie possible (24-72h); ingestion minime suffisante.' },
+    { nom: 'Plante maïs (Dracaena)', img: 'dracaena.jpg', especes: ['chien', 'chat'], toxicite: 'Modérée', effets: 'Saponines : vomissements, dépression, perte d\'appétit, hypersalivation, incoordination; chez le chat, dilatation pupillaire et tachycardie possibles.' },
+    { nom: 'Palmier de Sago (Cycas revoluta)', img: 'palmier-sago.jpg', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)', effets: 'Cycasine : vomissements (parfois hémorragiques), selles noires, ictère, polydipsie, troubles de la coagulation, insuffisance hépatique aiguë; jusqu\'à 50% de mortalité, 1-2 graines peuvent être fatales.' },
+    { nom: 'Plante de jade (Crassula)', img: 'plante-jade.jpg', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Vomissements, diarrhée, dépression, incoordination (ataxie); rarement tremblements. Le chat semble plus sensible que le chien.' },
+    { nom: 'Poinsettia (étoile de Noël)', img: 'poinsettia.jpg', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Irritation buccale et gastrique, vomissements, hypersalivation, rarement diarrhée; irritation cutanée possible au contact de la sève. Signes généralement légers et spontanément résolutifs.' },
+    { nom: 'Tulipe (Tulipa spp.)', img: 'tulipe.jpg', especes: ['chien', 'chat'], toxicite: 'Modérée', effets: 'Tulipaline (bulbe surtout) : hypersalivation, vomissements, diarrhée, dépression; fortes ingestions : tachycardie, dyspnée, tremblements, convulsions.' },
+    { nom: 'Jonquille / Narcisse (Narcissus spp.)', img: 'jonquille.jpg', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Lycorine et alcaloïdes (bulbe surtout) : hypersalivation, vomissements, diarrhée; fortes ingestions : hypotension, tremblements, arythmies, convulsions.' },
   ],
   aliments: [
-    { nom: 'Chocolat (théobromine)', especes: ['chien', 'chat'], toxicite: 'Élevée (dose-dépendante)', effets: 'Agitation, arythmie, hyperthermie, convulsions.' },
-    { nom: 'Noix de macadamia', especes: ['chien'], toxicite: 'Modérée à élevée', effets: 'Faiblesse, tremblements, hyperthermie, troubles locomoteurs.' },
-    { nom: 'Oignons, ail, ciboulette (allium)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Anémie hémolytique, vomissements, tachypnée.' },
-    { nom: 'Raisins et raisins secs', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Vomissements, insuffisance rénale aiguë, léthargie.' },
-    { nom: 'Xylitol (édulcorant sans sucre)', especes: ['chien'], toxicite: 'Élevée', effets: 'Hypoglycémie grave, convulsions, insuffisance hépatique aiguë.' },
+    { nom: 'Chocolat (théobromine et caféine)', especes: ['chien', 'chat'], toxicite: 'Élevée (dose-dépendante)', effets: 'Méthylxanthines : vomissements, diarrhée, polydipsie, hyperactivité, tachycardie, tremblements, convulsions; signes en 6-12h. Chocolat noir/pâtissier plus dangereux que le chocolat au lait.' },
+    { nom: 'Café et caféine', especes: ['chien', 'chat'], toxicite: 'Élevée (dose-dépendante)', effets: 'Méthylxanthines : agitation, vomissements, diarrhée, hypersalivation, tachycardie, hypertension, tremblements, convulsions; signes dans les 1-2h suivant l\'ingestion.' },
+    { nom: 'Alcool (boissons, pâtes fermentées)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Éthanol : vomissements, diarrhée, ataxie, désorientation, hypothermie, tremblements; cas graves : coma, bradycardie, dépression respiratoire. Chats particulièrement sensibles.' },
+    { nom: 'Avocat (persine)', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Persine (feuilles, fruit, noyau, écorce) : vomissements, diarrhée; toxicité systémique surtout documentée chez oiseaux, lapins et ruminants. Risque d\'occlusion digestive si le noyau est avalé entier.' },
+    { nom: 'Noix de macadamia', especes: ['chien'], toxicite: 'Modérée', effets: 'Faiblesse (surtout postérieurs), dépression, vomissements, ataxie, tremblements, hyperthermie; signes en moins de 12h, résolution généralement en 24-72h. Risque de pancréatite (aliment très gras).' },
+    { nom: 'Oignon, ail, ciboulette, poireau (allium)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Composés sulfurés : dommages aux globules rouges (anémie hémolytique, corps de Heinz), hémoglobinurie, ictère, faiblesse, tachycardie, tachypnée; formes concentrées (poudre, déshydratée) plus dangereuses. Chat plus sensible; ail environ 3-5x plus toxique que l\'oignon.' },
+    { nom: 'Raisins et raisins secs', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Acide tartrique (composant présumé) : vomissements, diarrhée, léthargie, anorexie, puis insuffisance rénale aiguë avec anurie possible (12-24h); toxicité imprévisible, environ 50% des chiens exposés ne développent aucun signe.' },
+    { nom: 'Xylitol (édulcorant sans sucre)', especes: ['chien'], toxicite: 'Très élevée', effets: 'Hypoglycémie sévère (dès 30 min, parfois retardée 12-18h) : faiblesse, ataxie, convulsions, coma; à plus forte dose, insuffisance hépatique aiguë (ictère, coagulopathie) possible dès 24h.' },
+    { nom: 'Pâte à pain crue (levure)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Fermentation de la levure dans l\'estomac : production d\'éthanol (intoxication alcoolique) et de CO2 (distension gastrique pouvant évoluer en dilatation-torsion de l\'estomac, urgence vitale).' },
+    { nom: 'Viande et œufs crus', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Risque de contamination bactérienne (Salmonella, E. coli) : vomissements, diarrhée, fièvre; les œufs crus contiennent aussi une enzyme limitant l\'absorption de la biotine (problèmes de peau/pelage à long terme).' },
+    { nom: 'Lait et produits laitiers', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Intolérance au lactose fréquente (surtout chez le chat adulte) : ballonnements, douleurs abdominales, diarrhée, vomissements; non toxique en soi mais mal toléré en grande quantité.' },
   ],
   medicaments: [
     { nom: 'Ibuprofène, naproxène, aspirine', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Ulcères gastriques, hémorragie, insuffisance rénale.' },
@@ -122,6 +133,28 @@ function couleurToxicite(toxicite) {
   return 'var(--primary)'
 }
 
+// ─── PHOTO DE LA PLANTE (avec repli si absente) ─────────
+function PhotoPlante({ img, nom }) {
+  const [erreur, setErreur] = useState(false)
+
+  if (!img || erreur) {
+    return (
+      <div className="toxico-plante-photo toxico-plante-photo--vide">
+        <i className="ti ti-plant"></i>
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src={`/plantes/${img}`}
+      alt={nom}
+      className="toxico-plante-photo"
+      onError={() => setErreur(true)}
+    />
+  )
+}
+
 // ─── COMPOSANT ICONES ESPÈCES ────────────────────────────
 function EspecesIcones({ especes }) {
   return (
@@ -168,8 +201,26 @@ export default function Toxicologie() {
           ))}
         </div>
 
-        {/* ─── LISTE TOXIQUES ─────────────────── */}
-        {['plantes', 'aliments', 'medicaments', 'produits_menagers', 'metaux'].includes(onglet) && (
+        {/* ─── LISTE PLANTES (avec photo) ─────── */}
+        {onglet === 'plantes' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+            {toxiquesActifs.map((t, i) => (
+              <button key={i} className="toxico-plante-card" onClick={() => setSelectionne(t)}>
+                <PhotoPlante img={t.img} nom={t.nom} />
+                <div className="toxico-plante-contenu">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', flex: 1 }}>{t.nom}</span>
+                    <EspecesIcones especes={t.especes} />
+                  </div>
+                  <span style={{ fontSize: 12, color: couleurToxicite(t.toxicite), fontWeight: 600, marginTop: 4, display: 'block' }}>{t.toxicite}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ─── LISTE TOXIQUES (autres catégories) ─ */}
+        {['aliments', 'medicaments', 'produits_menagers', 'metaux'].includes(onglet) && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
             {toxiquesActifs.map((t, i) => (
               <button
