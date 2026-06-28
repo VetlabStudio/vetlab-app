@@ -4046,7 +4046,7 @@ input[type="number"] {
   height: 200px;
   object-fit: contain;
   display: block;
-  background: var(--bg);
+  background: white;
 }
 
 .labo-sediment-photo-termes {
@@ -5635,7 +5635,7 @@ input[type="number"] {
   background: none;
   border: none;
   color: #999;
-  font-size: 22px;
+  font-size: 15px;
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;

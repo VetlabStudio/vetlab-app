@@ -635,13 +635,7 @@ export default function ChirurgieMonitoring() {
       .sort((a, b) => b[0].localeCompare(a[0]))
   }, [historique])
 
-  useEffect(() => {
-    if (groupesHistorique.length === 0) return
-    setJoursOuverts(prev => {
-      if (prev.size > 0) return prev
-      return new Set([groupesHistorique[0][0]])
-    })
-  }, [groupesHistorique])
+  
 
   function toggleJour(cle) {
     setJoursOuverts(prev => {

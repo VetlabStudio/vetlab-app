@@ -24,6 +24,7 @@ const SECTIONS = [
       { texte: 'Université de Montréal, CHUV. En ligne :', href: 'https://chuv.umontreal.ca/' },
       { texte: 'Université de Guelph. En ligne :', href: 'https://www.vetsurgeryonline.com/' },
       { texte: 'Association canadienne des médecins vétérinaires. En ligne :', href: 'https://www.canadianveterinarians.net' },
+      { texte: 'The American Animal Hospital Association (AAHA). En ligne :', href: 'https://www.aaha.org/resources/2021-aaha-nutrition-and-weight-management-guidelines/' },
     ],
   },
   {
