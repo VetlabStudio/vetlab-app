@@ -54,23 +54,23 @@ plantes: [
     { nom: 'Oignon, ail et ciboulette', especes: ['chien', 'chat', 'furet', 'oiseau', 'rongeur'], toxicite: 'Modérée à élevée', effets: 'Irritation gastro-intestinale et dommages oxydatifs aux globules rouges (corps de Heinz) pouvant mener à une anémie. Le chat est plus sensible, mais le chien est aussi à risque selon la quantité. Le furet y est très sensible (faible réserve de globules rouges); des cas d\'anémie hémolytique sont documentés chez les oiseaux, et le mécanisme s\'applique aux rongeurs.' },
     { nom: 'Viande, œufs et os crus ou insuffisamment cuits', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'La viande et les œufs crus peuvent contenir des bactéries (Salmonella, E. coli) dangereuses pour l\'animal comme pour l\'humain. Les œufs crus contiennent aussi une protéine (avidine) nuisant à l\'absorption de la biotine (problèmes de peau/pelage). Les os crus présentent un risque de blessure ou d\'obstruction du tube digestif.' },
     { nom: 'Sel', especes: ['chien', 'chat', 'oiseau', 'furet'], toxicite: 'Modérée à élevée', effets: 'De grandes quantités peuvent causer une soif et miction excessives, voire une intoxication aux ions sodium : vomissements, diarrhée, dépression, tremblements, hyperthermie, convulsions et même la mort. Les oiseaux sont particulièrement sensibles au sel vu leur petite taille.' },
-    { nom: 'Xylitol', especes: ['chien'], toxicite: 'Très élevée', effets: 'Édulcorant présent dans la gomme, les bonbons, les produits de boulangerie et le dentifrice. Libération massive d\'insuline provoquant une hypoglycémie sévère (faiblesse, ataxie, convulsions); à plus forte dose, atteinte hépatique aiguë possible. Le furet y est sensible (hypoglycémie, parfois atteinte rénale). Sensibilité moindre chez le lapin; données limitées chez le chat.' },
+    { nom: 'Xylitol', especes: ['chien'], toxicite: 'Très élevée', effets: 'Édulcorant présent dans la gomme, les bonbons, les produits de boulangerie et le dentifrice. Libération massive d\'insuline provoquant une hypoglycémie sévère (faiblesse, ataxie, convulsions); à plus forte dose, atteinte hépatique aiguë possible. Sensibilité moindre chez le lapin; données limitées chez le chat.' },
     { nom: 'Pâte à pain crue (levure)', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'La levure peut fermenter et produire des gaz dans le système digestif, causant un ballonnement douloureux de l\'estomac pouvant évoluer en torsion, une urgence vitale. La fermentation produit aussi de l\'éthanol, donc une intoxication alcoolique en parallèle est possible (hypoglycémie, dépression du SNC, acidose métabolique).' },
   ],
 medicaments: [
-    { nom: 'AINS (ibuprofène, naproxène, aspirine)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Inhibition des prostaglandines (COX) : vomissements (parfois sanglants), ulcères gastriques et hémorragie digestive, douleur abdominale, puis insuffisance rénale aiguë. À forte dose, signes neurologiques (ataxie, convulsions, coma) et acidose. Le chat y est plus sensible que le chien (glucuronidation limitée). Le naproxène a une longue demi-vie, donc une toxicité prolongée et un risque accru. Pas d\'antidote spécifique : décontamination, protecteurs gastriques, fluidothérapie.' },
     { nom: 'Acétaminophène (paracétamol / Tylenol)', especes: ['chien', 'chat', 'furet'], toxicite: 'Très élevée (mortelle chez le chat)', effets: 'Métabolite toxique (NAPQI) qui épuise le glutathion. Chez le chat et le furet, dose toxique très basse (dès 10 mg/kg) : méthémoglobinémie (sang brun, muqueuses cyanosées), corps de Heinz et anémie hémolytique, oedème de la face et des pattes, dyspnée. Chez le chien, surtout hépatotoxicité (nécrose centrolobulaire, ictère); néphrotoxicité possible à forte dose. Antidote : N-acétylcystéine (NAC); bleu de méthylène et vitamine C contre la méthémoglobinémie.' },
-    { nom: 'Antidépresseurs (ISRS, IRSN, tricycliques)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'ISRS (fluoxétine, sertraline), IRSN et tricycliques (amitriptyline, clomipramine). Le chat est plus sensible que le chien. Petits surdosages : sédation ou agitation, hypersalivation, vomissements, mydriase, tremblements, hyperthermie. Forts surdosages : ataxie, dysphorie, nystagmus, convulsions, et syndrome sérotoninergique (rigidité, hyperthermie, tachycardie). Antidote du syndrome sérotoninergique : cyproheptadine.' },
-    { nom: 'Stimulants (amphétamines, médicaments pour le TDAH)', especes: ['chien', 'chat'], toxicite: 'Élevée à très élevée', effets: 'Amphétamines et dérivés (Adderall, Vyvanse, Ritalin / méthylphénidate), sympathomimétiques. Début souvent rapide (30 min à 2h; plus tardif pour les formes à libération prolongée) : agitation, hyperactivité, halètement, mydriase, tremblements, convulsions, tachycardie, hypertension, hyperthermie. Risque de syndrome sérotoninergique. Soins : sédation (acépromazine ou chlorpromazine), refroidissement, cyproheptadine, contrôle des convulsions.' },
-    { nom: 'Décongestionnants (pseudoéphédrine, éphédrine)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Sympathomimétiques présents dans les médicaments contre le rhume et certains suppléments. Tableau stimulant proche des amphétamines : agitation, halètement, mydriase, tremblements, tachycardie, hypertension, hyperthermie, convulsions. Marge de sécurité étroite chez le chien et le chat.' },
-    { nom: 'Benzodiazépines et somnifères (zolpidem, etc.)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Diazépam, alprazolam, zolpidem (Ambien) et apparentés. Le plus souvent : dépression du SNC, sédation, ataxie, faiblesse, hypotension; parfois excitation paradoxale (agitation, vocalises), surtout avec le zolpidem. Dépression respiratoire possible à forte dose. Le flumazénil peut servir d\'antidote dans certains cas.' },
-    { nom: 'Médicaments cardiaques (bêta-bloquants, bloqueurs calciques)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Bêta-bloquants (aténolol, propranolol) et bloqueurs des canaux calciques (amlodipine, diltiazem). Bradycardie, hypotension parfois sévère et réfractaire, faiblesse, effondrement, troubles du rythme. Les formes à libération prolongée retardent et allongent les signes. Prise en charge en soins intensifs (fluides, calcium, vasopresseurs, parfois émulsion lipidique IV).' },
-    { nom: 'Vitamine D et analogues (cholécalciférol, calcipotriène)', especes: ['chien', 'chat'], toxicite: 'Très élevée', effets: 'Suppléments de vitamine D, multivitamines, rodenticides au cholécalciférol et crèmes pour le psoriasis (calcipotriène). Provoque une hypercalcémie et une hyperphosphatémie : vomissements, diarrhée, abattement, faiblesse, polyuro-polydipsie, puis minéralisation des tissus mous et insuffisance rénale aiguë. Signes parfois retardés de 12 à 72h. Lapins, oiseaux et chevaux y sont aussi sensibles. Marge étroite; surveillance du calcium et du phosphore sur plusieurs jours.' },
-    { nom: '5-Fluorouracile (crème anticancéreuse)', especes: ['chien', 'chat'], toxicite: 'Très élevée (souvent mortelle chez le chien)', effets: 'Crème ou lotion dermatologique (kératoses, cancers cutanés). Même une faible exposition est dramatique chez le chien : vomissements et diarrhée sévères, convulsions réfractaires en moins d\'une heure, puis aplasie médullaire. Pronostic réservé à sombre; urgence absolue.' },
-    { nom: 'Baclofène (myorelaxant)', especes: ['chien', 'chat'], toxicite: 'Très élevée', effets: 'Myorelaxant humain à marge de sécurité très étroite. Vocalises, désorientation, hypersalivation, vomissements, faiblesse, puis dépression marquée du SNC, dépression respiratoire, bradycardie, convulsions, coma. Soins intensifs prolongés souvent nécessaires.' },
+    { nom: 'AINS (ibuprofène, naproxène, aspirine)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Inhibition des prostaglandines (COX) : vomissements (parfois sanglants), ulcères gastriques et hémorragie digestive, douleur abdominale, puis insuffisance rénale aiguë. À forte dose, signes neurologiques (ataxie, convulsions, coma) et acidose. Le chat y est plus sensible que le chien (glucuronidation limitée). Le naproxène a une longue demi-vie, donc une toxicité prolongée et un risque accru. Pas d\'antidote spécifique : décontamination, protecteurs gastriques, fluidothérapie.' },
     { nom: 'Antibiotiques chez les herbivores et petits rongeurs (risque iatrogène)', especes: ['lapin', 'cobaye', 'chinchilla', 'rongeur'], toxicite: 'Très élevée (mortelle)', effets: 'Risque iatrogène, pas une ingestion accidentelle. Le lapin, le cobaye, le chinchilla et le hamster ont une flore intestinale à dominante Gram positif, essentielle à leur digestion. Les antibiotiques qui ciblent le Gram positif (pénicillines comme l\'amoxicilline et l\'ampicilline, céphalosporines, lincosamides comme la clindamycine et la lincomycine, macrolides comme l\'érythromycine) détruisent cette flore et laissent proliférer Clostridium difficile : entérotoxémie souvent mortelle, parfois même à dose thérapeutique. Signes 6 à 48h après le début du traitement : anorexie, diarrhée, déshydratation, hypothermie, abattement. Risque plus élevé par voie orale. La streptomycine et la dihydrostreptomycine sont en plus directement toxiques chez la gerbille, le cobaye, le hamster et la souris. Privilégier un spectre Gram négatif (ex. fluoroquinolones) et la voie parentérale.' },
+    { nom: 'Antidépresseurs (ISRS, IRSN, tricycliques)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'ISRS (fluoxétine, sertraline), IRSN et tricycliques (amitriptyline, clomipramine). Le chat est plus sensible que le chien. Petits surdosages : sédation ou agitation, hypersalivation, vomissements, mydriase, tremblements, hyperthermie. Forts surdosages : ataxie, dysphorie, nystagmus, convulsions, et syndrome sérotoninergique (rigidité, hyperthermie, tachycardie). Antidote du syndrome sérotoninergique : cyproheptadine.' },
+    { nom: 'Baclofène (myorelaxant)', especes: ['chien', 'chat'], toxicite: 'Très élevée', effets: 'Myorelaxant humain à marge de sécurité très étroite. Vocalises, désorientation, hypersalivation, vomissements, faiblesse, puis dépression marquée du SNC, dépression respiratoire, bradycardie, convulsions, coma. Soins intensifs prolongés souvent nécessaires.' },
+    { nom: 'Benzodiazépines et somnifères (zolpidem, etc.)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Diazépam, alprazolam, zolpidem (Ambien) et apparentés. Le plus souvent : dépression du SNC, sédation, ataxie, faiblesse, hypotension; parfois excitation paradoxale (agitation, vocalises), surtout avec le zolpidem. Dépression respiratoire possible à forte dose. Le flumazénil peut servir d\'antidote dans certains cas.' },
+    { nom: 'Décongestionnants (pseudoéphédrine, éphédrine)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Sympathomimétiques présents dans les médicaments contre le rhume et certains suppléments. Tableau stimulant proche des amphétamines : agitation, halètement, mydriase, tremblements, tachycardie, hypertension, hyperthermie, convulsions. Marge de sécurité étroite chez le chien et le chat.' },
+    { nom: '5-Fluorouracile (crème anticancéreuse)', especes: ['chien', 'chat'], toxicite: 'Très élevée (souvent mortelle chez le chien)', effets: 'Crème ou lotion dermatologique (kératoses, cancers cutanés). Même une faible exposition est dramatique chez le chien : vomissements et diarrhée sévères, convulsions réfractaires en moins d\'une heure, puis aplasie médullaire. Pronostic réservé à sombre; urgence absolue.' },
+    { nom: 'Médicaments cardiaques (bêta-bloquants, bloqueurs calciques)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Bêta-bloquants (aténolol, propranolol) et bloqueurs des canaux calciques (amlodipine, diltiazem). Bradycardie, hypotension parfois sévère et réfractaire, faiblesse, effondrement, troubles du rythme. Les formes à libération prolongée retardent et allongent les signes. Prise en charge en soins intensifs (fluides, calcium, vasopresseurs, parfois émulsion lipidique IV).' },
+    { nom: 'Stimulants (amphétamines, médicaments pour le TDAH)', especes: ['chien', 'chat'], toxicite: 'Élevée à très élevée', effets: 'Amphétamines et dérivés (Adderall, Vyvanse, Ritalin / méthylphénidate), sympathomimétiques. Début souvent rapide (30 min à 2h; plus tardif pour les formes à libération prolongée) : agitation, hyperactivité, halètement, mydriase, tremblements, convulsions, tachycardie, hypertension, hyperthermie. Risque de syndrome sérotoninergique. Soins : sédation (acépromazine ou chlorpromazine), refroidissement, cyproheptadine, contrôle des convulsions.' },
+    { nom: 'Vitamine D et analogues (cholécalciférol, calcipotriène)', especes: ['chien', 'chat'], toxicite: 'Très élevée', effets: 'Suppléments de vitamine D, multivitamines, rodenticides au cholécalciférol et crèmes pour le psoriasis (calcipotriène). Provoque une hypercalcémie et une hyperphosphatémie : vomissements, diarrhée, abattement, faiblesse, polyuro-polydipsie, puis minéralisation des tissus mous et insuffisance rénale aiguë. Signes parfois retardés de 12 à 72h. Lapins, oiseaux et chevaux y sont aussi sensibles. Marge étroite; surveillance du calcium et du phosphore sur plusieurs jours.' },
   ],
- produits_menagers: [
+  produits_menagers: [
     { nom: 'Antigel (éthylène glycol)', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Très élevée (mortelle)', effets: 'Goût sucré attirant, très faible dose suffisante (le chat est extrêmement sensible). Évolution en trois temps : phase d\'ébriété neurologique (30 min à 12h : ataxie, dépression, vomissements, polyuro-polydipsie, convulsions), phase cardiopulmonaire (12-24h), puis insuffisance rénale aiguë par cristaux d\'oxalate de calcium (chat 12-24h, chien 36-72h), souvent irréversible. Urgence absolue : antidote (fomépizole ou éthanol) efficace seulement si administré tôt.' },
     { nom: 'Piles et batteries', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Modérée à élevée', effets: 'Piles alcalines percées : brûlures caustiques de la bouche et du tube digestif. Piles boutons (surtout lithium) : nécrose des tissus par courant électrique en quelques heures si logées dans l\'oesophage, brûlures, perforation possible. Métaux lourds (zinc, plomb) en cas de rétention : intoxication métallique; risque aussi d\'obstruction. Les oiseaux sont particulièrement sensibles aux métaux.' },
     { nom: 'Huiles essentielles', especes: ['chien', 'chat', 'oiseau', 'furet'], toxicite: 'Élevée', effets: 'Phénols et terpènes (arbre à thé, gaulthérie, pin, agrumes, eucalyptus, cannelle, menthe, etc.). Le chat métabolise mal ces composés (déficit de glucuronidation hépatique). Exposition par ingestion, voie cutanée ou inhalation (diffuseurs). Signes : hypersalivation, vomissements, ataxie, tremblements, dépression du SNC, atteinte hépatique, irritation cutanée. Les oiseaux sont extrêmement sensibles par inhalation (détresse respiratoire).' },
@@ -86,7 +86,7 @@ medicaments: [
     { nom: 'Feuilles d\'assouplissant (dryer sheets)', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'Détergents cationiques (surtout dans les feuilles neuves) : brûlures chimiques et ulcères sévères de la bouche, de l\'oesophage et de l\'estomac. Risque aussi de corps étranger et d\'obstruction digestive.' },
     { nom: 'Assouplissant liquide', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'Détergents cationiques : brûlures chimiques et ulcères sévères de la bouche, de l\'oesophage et de l\'estomac.' },
   ],
- metaux: [
+  metaux: [
     { nom: 'Plomb (plombs de pêche, balles, batteries, vieilles peintures, poussières de rénovation, tuyaux anciens)', especes: ['chien', 'chat', 'furet', 'oiseau', 'cheval', 'vache'], toxicite: 'Élevée à très élevée', effets: 'Sources variées : plombs de pêche et de chasse, batteries, jouets, vieilles peintures, poussières de rénovation, soudures, tuyaux anciens. Atteinte digestive (vomissements, douleur abdominale, constipation ou diarrhée), neurologique (ataxie, hyperexcitabilité, convulsions, cécité corticale) et hématologique. À la formule : ponctuations basophiles et nombreux globules rouges nucléés sans anémie sévère, très évocateurs. Les oiseaux y sont particulièrement sensibles (sauvagine avalant des plombs, perroquets qui rongent), de même que les bovins (batteries, peinture, vieux équipements). Antidotes : chélation (CaEDTA, succimer/DMSA, parfois D-pénicillamine).' },
     { nom: 'Zinc (pièces de 1 cent, boulons galvanisés, écrous de cages, crèmes à l\'oxyde de zinc, fermetures éclair)', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Élevée', effets: 'Le chien est le plus touché (ingestion de pièces de monnaie surtout; au Canada, les 1 cent de la fin des années 1990 et du début des années 2000, ont une très forte teneur en zinc. Phase digestive d\'abord (anorexie, vomissements, diarrhée), puis quelques heures à quelques jours plus tard hémolyse intravasculaire : anémie, ictère, hémoglobinurie, parfois insuffisance rénale, pancréatite et CIVD. Peut être confondu avec une anémie hémolytique à médiation immune, d\'où l\'importance de la radiographie (objet métallique). Le furet fait les mêmes signes plus des saignements digestifs; chez l\'oiseau : respiration superficielle, plumes ébouriffées, yeux fermés. Bovins, chevaux et porcs aussi exposés. Traitement : retrait de l\'objet et soins de soutien; la chélation est controversée.' },
     { nom: 'Mercure (poissons contaminés, thermomètres brisés, désinfectants anciens)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Distinction importante : le mercure organique (méthylmercure, accumulé dans les gros poissons) est très neurotoxique et bien absorbé, alors que le mercure élémentaire d\'un thermomètre brisé est mal absorbé par voie orale et présente un risque bien moindre. Le chat est l\'espèce classique (« maladie du chat fou »). Signes neurologiques surtout : ataxie, tremblements, incoordination, cécité, parfois convulsions; troubles digestifs et atteinte rénale possibles. Exposition chronique surtout.' },
@@ -99,22 +99,125 @@ medicaments: [
   ],
 }
 
-const ANTIDOTES = [
-  { generique: 'Acétylcystéine (NAC)', notes: 'Antidote de l\'intoxication à l\'acétaminophène (donneur de glutathion) et du phénol. Sert aussi de protecteur hépatique dans l\'atteinte du foie au xylitol, sans en être un antidote spécifique (l\'urgence du xylitol est l\'hypoglycémie, traitée au dextrose). Mucolytique par ailleurs. Plus efficace administrée tôt, mais un bénéfice reste possible plus tardivement.' },
-  { generique: 'Atropine', notes: 'Antidote des signes muscariniques lors d\'intoxication aux organophosphorés ou aux carbamates (crise cholinergique). Pour les organophosphorés, on l\'associe au pralidoxime. N\'est PAS indiquée pour les pyréthrinoïdes (perméthrine).' },
-  { generique: 'Bleu de méthylène', notes: 'Antidote de la méthémoglobinémie (ex. acétaminophène, agents oxydants). À utiliser avec prudence et à faible dose chez le chat, car il peut lui-même causer une anémie à corps de Heinz et une hémolyse. Aussi colorant diagnostique.' },
-  { generique: 'Cyproheptadine', notes: 'Antagoniste de la sérotonine (récepteurs 5-HT2A), antidote du syndrome sérotoninergique : surdosage d\'antidépresseurs (ISRS, IRSN, tricycliques), de stimulants (amphétamines) ou de 5-HTP. Donnée par voie orale ou en lavement rectal, répétée selon les signes.' },
-  { generique: 'Dimercaprol (B.A.L.)', notes: 'Chélateur de référence pour l\'arsenic et le mercure; aussi pour le plomb sous forme grave, en association avec le CaEDTA. Administré IM, assez toxique.' },
-  { generique: 'EDTA de calcium (CaEDTA)', notes: 'Chélateur du plomb (et du zinc en médecine vétérinaire). N\'est pas le chélateur de choix pour le mercure ni l\'arsenic, où l\'on préfère le dimercaprol (BAL) ou le succimer (DMSA).' },
-  { generique: 'Émulsion lipidique intraveineuse (Intralipid)', notes: 'Pour les intoxications par des toxines lipophiles : anesthésiques locaux (bupivacaïne), pyréthrinoïdes (perméthrine), baclofène, bloqueurs des canaux calciques et bêta-bloquants, lactones macrocycliques (ivermectine). Agit comme un « piège lipidique » qui séquestre la molécule dans un compartiment lipidique sanguin élargi. Adjuvant aux soins de soutien, pas un antidote spécifique.' },
-  { generique: 'Succimer (DMSA)', notes: 'Chélateur oral du plomb, du mercure et de l\'arsenic. Souvent préféré aujourd\'hui (voie orale, mieux toléré que le BAL ou le CaEDTA). Ne chélate pas de façon notable le zinc, le cuivre ni le fer.' },
-  { generique: 'Éthanol', notes: 'Antidote de l\'intoxication à l\'éthylène glycol (antigel) par compétition sur l\'alcool déshydrogénase. Moins préféré que le fomépizole, car il provoque dépression du SNC, acidose et hyperosmolalité.' },
-  { generique: 'Flumazénil', notes: 'Antagoniste des récepteurs aux benzodiazépines; réverse la sédation des benzodiazépines et du zolpidem. Effet court, donc à répéter si la dépression du SNC revient. À éviter en cas d\'ingestion mixte avec un proconvulsivant (ex. tricycliques), car il peut abaisser le seuil convulsif.' },
-  { generique: 'Fomépizole (4-MP)', notes: 'Antidote de choix de l\'intoxication à l\'éthylène glycol (antigel), inhibiteur de l\'alcool déshydrogénase. Utilisable chez le chat à dose plus élevée que chez le chien (125 mg/kg puis 31,25 mg/kg), et plus efficace que l\'éthanol s\'il est donné dans les 3 heures. L\'ancienne idée d\'une contre-indication féline visait les doses canines, qui sont inefficaces chez le chat.' },
-  { generique: 'Pamidronate', notes: 'Bisphosphonate contre l\'hypercalcémie de l\'intoxication à la vitamine D (cholécalciférol). Inhibe la résorption osseuse par les ostéoclastes et fait baisser la calcémie. S\'emploie avec les autres mesures contre l\'hypercalcémie (fluides salins, diurèse, parfois calcitonine, corticostéroïdes).' },
-  { generique: 'Pralidoxime (2-PAM)', notes: 'Réactivateur de la cholinestérase pour les organophosphorés, d\'autant plus efficace qu\'il est donné tôt. Peu ou pas utile pour les carbamates. S\'emploie avec l\'atropine, pas à sa place.' },
-  { generique: 'Silibinine / Silymarine', notes: 'Rôle antidotique surtout pour les champignons à amatoxines (Amanita), où la silibinine bloque la captation de la toxine par les hépatocytes. Pour le palmier de Sago et le xylitol, sert plutôt de protecteur hépatique (adjuvant), pas d\'antidote spécifique.' },
-  { generique: 'Vitamine K1 (phytoménadione)', notes: 'Antidote des rodenticides anticoagulants (warfarine, bromadiolone, brodifacoum, diphacinone). Traitement de 2 à 4 semaines, plus long pour les molécules de 2e génération; mieux absorbée par voie orale avec un repas gras. Transfusion de plasma ou de sang si saignement grave.' },
+// ─── ANTIDOTES PAR INTOXICATION ──────────────────────────
+
+const INTOXICATIONS_ANTIDOTES = [
+  {
+    intoxication: 'Acétaminophène (paracétamol)',
+    icone: 'ti-pill',
+    antidotes: [
+      { generique: 'N-Acétylcystéine (NAC)', notes: 'Antidote principal - donneur de glutathion, neutralise le métabolite toxique NAPQI. Plus efficace dans les 4–8 premières heures, mais un bénéfice reste possible plus tardivement. Administrée IV ou PO.' },
+      { generique: 'Bleu de méthylène', notes: 'Contre la méthémoglobinémie (sang brun, muqueuses cyanosées). Surtout utile chez le chat. Prudence : à forte dose, il peut lui-même provoquer une hémolyse chez le chat - utiliser à faible dose (1–1,5 mg/kg IV).' },
+      { generique: 'Vitamine C (acide ascorbique)', notes: 'Adjuvant réducteur contre la méthémoglobinémie, souvent associé au bleu de méthylène.' },
+    ],
+  },
+  {
+    intoxication: 'Antigel (éthylène glycol)',
+    icone: 'ti-droplet',
+    antidotes: [
+      { generique: 'Fomépizole (4-MP)', notes: 'Antidote de choix - inhibiteur de l\'alcool déshydrogénase. Efficace chez le chien et le chat (dose plus élevée chez le chat : 125 mg/kg charge puis 31,25 mg/kg). À donner le plus tôt possible, avant l\'insuffisance rénale. Bien supérieur à l\'éthanol.' },
+      { generique: 'Éthanol', notes: 'Alternative si le fomépizole est indisponible - compétition sur l\'alcool déshydrogénase. Moins préféré : provoque dépression du SNC, acidose et hyperosmolalité.' },
+    ],
+  },
+  {
+    intoxication: 'Organophosphorés / Carbamates',
+    icone: 'ti-bug',
+    antidotes: [
+      { generique: 'Atropine', notes: 'Contre les signes muscariniques (hypersalivation, mictions, défécations, bradycardie, bronchospasme -- syndrome SLUD). À titrer jusqu\'à l\'assèchement des sécrétions bronchiques, pas jusqu\'à la mydriase. Doses élevées souvent nécessaires.' },
+      { generique: 'Pralidoxime (2-PAM)', notes: 'Réactivateur de la cholinestérase, surtout pour les organophosphorés. Efficacité douteuse et bénéfice limité contre les carbamates (la liaison à l\'enzyme se défait spontanément, sans « vieillissement »), mais pas contre-indiqué. D\'autant plus efficace qu\'il est donné tôt, idéalement dans les 24 h. S\'associe à l\'atropine, ne la remplace pas.' },
+    ],
+  },
+  {
+    intoxication: 'Rodenticides anticoagulants',
+    icone: 'ti-mouse',
+    antidotes: [
+      { generique: 'Vitamine K1 (phytoménadione)', notes: 'Antidote spécifique. La durée dépend de la molécule plutôt que de la génération : environ 2 semaines pour la warfarine, 4 semaines pour toutes les autres, y compris les longues durées d\'action (bromadiolone, brodifacoum, et le diphacinone, qui est en fait un produit de 1re génération à action prolongée). Mieux absorbée PO avec un repas gras. Contrôler le PT 48 à 72 h après l\'arrêt : s\'il reste allongé, prolonger de 2 semaines. Transfusion de plasma ou de sang complet si saignement actif ou anémie sévère.' },
+    ],
+  },
+  {
+    intoxication: 'Plomb',
+    icone: 'ti-fish',
+    antidotes: [
+      { generique: 'Succimer (DMSA)', notes: 'Chélateur oral préféré en première intention chez l\'animal ambulatoire - bien toléré. Ne chélate pas le zinc, le cuivre ni le fer.' },
+      { generique: 'CaEDTA (EDTA de calcium)', notes: 'Chélateur IV/SC du plomb, souvent utilisé en milieu hospitalier. Parfois associé au succimer ou au dimercaprol pour les cas graves.' },
+      { generique: 'Dimercaprol (BAL)', notes: 'Réservé aux formes graves - administré IM, toxicité propre notable. Chélateur de référence historique pour le plomb, arsenic et mercure.' },
+    ],
+  },
+  {
+    intoxication: 'Arsenic',
+    icone: 'ti-flask',
+    antidotes: [
+      { generique: 'Dimercaprol (BAL)', notes: 'Chélateur de référence pour l\'arsenic aigu - administré IM. Toxicité propre notable.' },
+      { generique: 'Succimer (DMSA)', notes: 'Alternative orale, mieux tolérée, de plus en plus préférée pour les formes moins sévères.' },
+    ],
+  },
+  {
+    intoxication: 'Mercure',
+    icone: 'ti-thermometer',
+    antidotes: [
+      { generique: 'Dimercaprol (BAL)', notes: 'Pour le mercure inorganique et les expositions aiguës - administré IM.' },
+      { generique: 'Succimer (DMSA)', notes: 'Chélateur de choix pour le mercure organique (le dimercaprol est à éviter dans cette forme, car il peut redistribuer le mercure vers le cerveau). Voie orale, mieux toléré que le BAL.' },
+    ],
+  },
+  {
+    intoxication: 'Syndrome sérotoninergique',
+    icone: 'ti-brain',
+    antidotes: [
+      { generique: 'Cyproheptadine', notes: 'Antagoniste des récepteurs 5-HT2A. Indiqué lors de surdosage d\'ISRS, IRSN, antidépresseurs tricycliques, amphétamines ou 5-HTP. Administrée par voie orale ou en lavement rectal; à répéter selon les signes. Traitement adjuvant : sédation, refroidissement, fluidothérapie.' },
+    ],
+  },
+  {
+    intoxication: 'Benzodiazépines / Zolpidem',
+    icone: 'ti-zzz',
+    antidotes: [
+      { generique: 'Flumazénil', notes: 'Antagoniste des récepteurs aux benzodiazépines - réverse la sédation. Effet court (30–60 min), à répéter si la dépression du SNC revient. À éviter si ingestion mixte avec un proconvulsivant (ex. tricycliques), car il peut abaisser le seuil convulsif.' },
+    ],
+  },
+  {
+    intoxication: 'Vitamine D (cholécalciférol)',
+    icone: 'ti-sun',
+    antidotes: [
+      { generique: 'Pamidronate', notes: 'Bisphosphonate contre l\'hypercalcémie - inhibe la résorption osseuse par les ostéoclastes. S\'associe aux fluides salins IV, diurèse forcée, et parfois calcitonine ou corticostéroïdes. Surveiller la calcémie et la phosphatémie sur plusieurs jours.' },
+    ],
+  },
+  {
+    intoxication: 'Champignons à amatoxines (Amanita)',
+    icone: 'ti-mushroom',
+    antidotes: [
+      { generique: 'Silibinine / Silymarine', notes: 'Bloque la captation hépatique des amatoxines par les hépatocytes. Antidote le plus reconnu pour ce type d\'empoisonnement - à débuter le plus tôt possible. Traitement de soutien hépatique intensif en parallèle.' },
+    ],
+  },
+  {
+    intoxication: 'Pyréthrinoïdes / Perméthrine',
+    icone: 'ti-paw',
+    antidotes: [
+      { generique: 'Méthocarbamol', notes: 'Myorelaxant central pour contrôler les tremblements et fasciculations - traitement symptomatique principal chez le chat intoxiqué. Anticonvulsivants (diazépam, phénobarbital) si convulsions. Décontamination (bain eau tiède + savon vaisselle) en priorité.' },
+      { generique: 'Émulsion lipidique IV (Intralipid)', notes: 'Adjuvant en cas de signes sévères réfractaires - séquestre les molécules lipophiles dans un compartiment lipidique sanguin. Pas un antidote spécifique. NOTE : l\'atropine est CONTRE-INDIQUÉE (ce n\'est pas une crise cholinergique).' },
+    ],
+  },
+  {
+    intoxication: 'Baclofène / Bloqueurs calciques / Bêta-bloquants',
+    icone: 'ti-heart-rate-monitor',
+    antidotes: [
+      { generique: 'Émulsion lipidique IV (Intralipid)', notes: 'Piège lipidique pour les molécules lipophiles (baclofène, diltiazem, vérapamil, propranolol). Adjuvant aux soins intensifs (fluides, vasopresseurs, gluconate de calcium pour les bloqueurs calciques).' },
+    ],
+  },
+  {
+    intoxication: 'Méthémoglobinémie (agents oxydants)',
+    icone: 'ti-droplet-half-2',
+    antidotes: [
+      { generique: 'Bleu de méthylène', notes: 'Antidote de la méthémoglobinémie - réduit la méthémoglobine en hémoglobine fonctionnelle. Prudence chez le chat : peut lui-même causer hémolyse et corps de Heinz à forte dose. Utiliser à 1–1,5 mg/kg IV lent.' },
+      { generique: 'Vitamine C (acide ascorbique)', notes: 'Réducteur adjuvant, moins puissant que le bleu de méthylène mais sans risque hémolytique.' },
+    ],
+  },
+  {
+    intoxication: 'Palmier de Sago / Xylitol (hépatotoxicité)',
+    icone: 'ti-plant-2',
+    antidotes: [
+      { generique: 'N-Acétylcystéine (NAC)', notes: 'Hépatoprotecteur adjuvant - restaure le glutathion intrahépatique. Pas un antidote spécifique, mais réduit les dommages oxydatifs hépatiques.' },
+      { generique: 'Silibinine / Silymarine', notes: 'Hépatoprotecteur adjuvant - soutient la fonction hépatique. Rôle plus marginal ici que pour les amatoxines.' },
+    ],
+  },
 ]
 
 const TESTS_DIAG = [
@@ -229,6 +332,7 @@ export default function Toxicologie() {
   const [onglet, setOnglet] = useState('plantes')
   const [selectionne, setSelectionne] = useState(null)
   const [filtrePlante, setFiltrePlante] = useState('toutes')
+  const [intoxicationSelectionnee, setIntoxicationSelectionnee] = useState(null)
 
   const toxiquesActifs = TOXIQUES[onglet] || []
 
@@ -284,11 +388,9 @@ export default function Toxicologie() {
               <button key={t.nom} className="toxico-plante-card" onClick={() => setSelectionne(t)}>
                 <PhotoPlante img={t.img} nom={t.nom} />
                 <div className="toxico-plante-contenu">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', flex: 1 }}>{t.nom}</span>
-                    <IconesEspeces especes={t.especes} />
-                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', display: 'block' }}>{t.nom}</span>
                   <span style={{ fontSize: 12, color: couleurToxicite(t.toxicite), fontWeight: 600, marginTop: 4, display: 'block' }}>{t.toxicite}</span>
+                  <div style={{ marginTop: 6 }}><IconesEspeces especes={t.especes} /></div>
                 </div>
               </button>
             ))}
@@ -309,29 +411,82 @@ export default function Toxicologie() {
                 onClick={() => setSelectionne(t)}
                 style={{ textAlign: 'left', padding: '12px 14px', width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer' }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', flex: 1 }}>{t.nom}</span>
-                  <IconesEspeces especes={t.especes} />
-                </div>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', display: 'block' }}>{t.nom}</span>
                 <span style={{ fontSize: 12, color: couleurToxicite(t.toxicite), fontWeight: 600, marginTop: 4, display: 'block' }}>{t.toxicite}</span>
+                <div style={{ marginTop: 6 }}><IconesEspeces especes={t.especes} /></div>
               </button>
             ))}
           </div>
         )}
 
-        {/* ─── ANTIDOTES ──────────────────────── */}
+        {/* ─── ANTIDOTES PAR INTOXICATION ─────── */}
         {onglet === 'antidotes' && (
-          <div className="labo-ref-tableau">
-            <div className="labo-ref-header" style={{ gridTemplateColumns: '1fr 3fr' }}>
-              <span>Générique</span>
-              <span>Notes</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
+            <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: 0 }}>
+              Sélectionnez un type d'intoxication pour afficher le ou les antidotes correspondants.
+            </p>
+
+            {/* Grille de chips d'intoxication */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {INTOXICATIONS_ANTIDOTES.map((item, i) => {
+                const estSelectionnee = intoxicationSelectionnee === i
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setIntoxicationSelectionnee(estSelectionnee ? null : i)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '8px 14px',
+                      borderRadius: 999,
+                      border: estSelectionnee ? '2px solid var(--primary)' : '1px solid var(--border)',
+                      background: estSelectionnee ? 'var(--primary)' : 'var(--bg-card)',
+                      color: estSelectionnee ? '#fff' : 'var(--text-primary)',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    <i className={`ti ${item.icone}`} style={{ fontSize: 15 }}></i>
+                    {item.intoxication}
+                  </button>
+                )
+              })}
             </div>
-            {ANTIDOTES.map((a, i) => (
-              <div key={i} className="labo-ref-ligne" style={{ gridTemplateColumns: '1fr 3fr' }}>
-                <span style={{ fontWeight: 700 }}>{a.generique}</span>
-                <span style={{ fontSize: 12 }}>{a.notes}</span>
-              </div>
-            ))}
+
+            {/* Antidotes de l'intoxication sélectionnée */}
+            {intoxicationSelectionnee !== null && (() => {
+              const item = INTOXICATIONS_ANTIDOTES[intoxicationSelectionnee]
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)', margin: 0 }}>
+                    <i className={`ti ${item.icone}`} style={{ marginRight: 6 }}></i>
+                    {item.intoxication}
+                  </p>
+                  {item.antidotes.map((a, j) => (
+                    <div
+                      key={j}
+                      style={{
+                        background: 'var(--bg-card)',
+                        border: '1px solid var(--border)',
+                        borderLeft: '4px solid var(--primary)',
+                        borderRadius: 10,
+                        padding: '12px 14px',
+                      }}
+                    >
+                      <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 6px 0' }}>
+                        {a.generique}
+                      </p>
+                      <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                        {a.notes}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )
+            })()}
           </div>
         )}
 
@@ -366,10 +521,10 @@ export default function Toxicologie() {
                     <i className="ti ti-phone" style={{ marginRight: 6, color: 'var(--primary)' }}></i>{r.telephone}
                   </p>
                   {r.web && (
-  <a href={`https://${r.web}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--primary)', margin: 0, display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-    <i className="ti ti-world" style={{ marginRight: 6 }}></i>{r.web}
-  </a>
-)}
+                    <a href={`https://${r.web}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--primary)', margin: 0, display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                      <i className="ti ti-world" style={{ marginRight: 6 }}></i>{r.web}
+                    </a>
+                  )}
                 </div>
               </div>
             ))}

@@ -36,6 +36,7 @@ const SECTIONS = [
       'SIROIS, M. Mosby\'s veterinary PDQ: Veterinary facts at hand (3e éd.). Elsevier, 2018, 326 p.',
       'AVANZI, M. Le vétérinaire chez vous. De Vecchi, 2009, 576 p.',
       'PETERSON, M.E., KUTZLER, M.-A. Small Animal Pediatrics. Elsevier, 2011, 544 p.',
+      'HOVDA, L.R., BRUTLAG, A.G., POPPENGA, R.H. et EPSTEIN, S.E. Blackwell\'s Five-Minute Veterinary Consult Clinical Companion: Small Animal Toxicology (3e éd.). Wiley Blackwell, 2024, 947 p.',
       { texte: 'MERCK MANUAL, Veterinary Manual. En ligne :', href: 'https://www.merckvetmanual.com/pharmacology/' },
       { texte: 'ASPCA Animal Poison Control. En ligne :', href: 'https://www.aspca.org/pet-care/aspca-poison-control/toxic-and-non-toxic-plants' },
     ],
