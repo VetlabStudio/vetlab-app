@@ -18,8 +18,6 @@ const DROGUES = [
   { id: 'mes-drogues', label: 'Médicaments favoris', route: '/drogues/mes-drogues', accent: false, favori: true },
 ]
 
-const TOXICOLOGIE = { id: 'toxicologie', label: 'Toxicologie', route: '/drogues/toxicologie', pro: true }
-
 export default function Pharmacologie() {
   const navigate = useNavigate()
   const { estPro } = useProfil()
@@ -43,21 +41,6 @@ export default function Pharmacologie() {
             {d.pro && <BadgePro />}
           </button>
         ))}
-      </div>
-
-      <div className="accueil-v2-drogues-grid accueil-v2-drogues-grid--1col" style={{ marginTop: 10 }}>
-        <button
-          key={TOXICOLOGIE.id}
-          className="labo-categorie-btn"
-          onClick={() => navigate(TOXICOLOGIE.route)}
-          style={{ position: 'relative' }}
-        >
-          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src="/icone-poison.svg" alt="" style={{ width: 28, height: 28, marginRight: 15 }} />
-            <span>{TOXICOLOGIE.label}</span>
-          </span>
-          {TOXICOLOGIE.pro && <BadgePro />}
-        </button>
       </div>
 
       <button className="btn-fab" onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}>+</button>

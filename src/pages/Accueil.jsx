@@ -24,6 +24,7 @@ const REFERENCES = [
   { id: 'laboratoire', label: 'Laboratoire', icone: '/icone-laboratoire.svg', route: '/labo' },
   { id: 'chirurgie', label: 'Chirurgie', icone: '/icone-chirurgie-ref.svg', route: '/chirurgie' },
   { id: 'soins-generaux', label: 'Soins\ngénéraux', icone: '/icone-soins-generaux.svg', route: '/soins-generaux' },
+  { id: 'toxicologie', label: 'Toxicologie', icone: '/icone-toxico.svg', route: '/drogues/toxicologie', pro: true },
 ]
 
 export default function Accueil() {
@@ -88,9 +89,11 @@ export default function Accueil() {
               key={r.id}
               className="accueil-v2-calc-tuile"
               onClick={() => navigate(r.route)}
+              style={{ position: 'relative' }}
             >
               <img src={r.icone} alt={r.label} className="accueil-v2-calc-icone accueil-v2-calc-icone--ref" />
               <span className="accueil-v2-calc-label">{r.label}</span>
+              {r.pro && <BadgePro />}
             </button>
           ))}
         </div>
