@@ -7,7 +7,7 @@ export default function RejoindreEquipe() {
   const navigate = useNavigate()
   const token = searchParams.get('token')
 
-  const [statut, setStatut] = useState('chargement') // chargement | valide | invalide | accepte | erreur
+  const [statut, setStatut] = useState('chargement')
   const [invitation, setInvitation] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -19,7 +19,7 @@ export default function RejoindreEquipe() {
   async function verifierToken() {
     const { data, error } = await supabase
       .from('team_invitations')
-      .select('*, teams(nom_clinique)')
+      .select('*, equipes(nom)')
       .eq('token', token)
       .eq('status', 'pending')
       .single()
@@ -45,8 +45,8 @@ export default function RejoindreEquipe() {
     }
 
     const { error: membreErr } = await supabase
-      .from('team_members')
-      .upsert({ team_id: invitation.team_id, user_id: user.id, role: invitation.role }, { onConflict: 'team_id,user_id' })
+      .from('membres_equipe')
+      .upsert({ equipe_id: invitation.team_id, user_id: user.id, role: invitation.role }, { onConflict: 'equipe_id,user_id' })
 
     if (membreErr) { setStatut('erreur'); setLoading(false); return }
 
@@ -57,7 +57,7 @@ export default function RejoindreEquipe() {
 
     await supabase
       .from('profiles')
-      .update({ plan: 'equipe' })
+      .update({ plan: 'equipe', equipe_id: invitation.team_id, role: invitation.role })
       .eq('id', user.id)
 
     setStatut('accepte')
@@ -92,7 +92,7 @@ export default function RejoindreEquipe() {
               Vous êtes invité(e) à rejoindre
             </p>
             <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--primary)', marginBottom: 24 }}>
-              {invitation.teams?.nom_clinique}
+              {invitation.equipes?.nom}
             </p>
             <button
               onClick={accepterInvitation}
@@ -103,7 +103,7 @@ export default function RejoindreEquipe() {
                 cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
               }}
             >
-              {loading ? 'Connexion...' : 'Accepter l\'invitation'}
+              {loading ? 'Connexion...' : "Accepter l'invitation"}
             </button>
           </>
         )}
@@ -111,36 +111,24 @@ export default function RejoindreEquipe() {
         {statut === 'invalide' && (
           <>
             <i className="ti ti-link-off" style={{ fontSize: 40, color: 'var(--accent-red)', display: 'block', marginBottom: 16 }}></i>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
-              Lien invalide
-            </p>
-            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>
-              Ce lien d'invitation est invalide ou a déjà été utilisé.
-            </p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Lien invalide</p>
+            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Ce lien d'invitation est invalide ou a déjà été utilisé.</p>
           </>
         )}
 
         {statut === 'erreur' && (
           <>
             <i className="ti ti-alert-circle" style={{ fontSize: 40, color: 'var(--accent-red)', display: 'block', marginBottom: 16 }}></i>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
-              Courriel non concordant
-            </p>
-            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>
-              Cette invitation a été envoyée à une autre adresse courriel.
-            </p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Courriel non concordant</p>
+            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Cette invitation a été envoyée à une autre adresse courriel.</p>
           </>
         )}
 
         {statut === 'accepte' && (
           <>
             <i className="ti ti-circle-check" style={{ fontSize: 40, color: '#4CAF50', display: 'block', marginBottom: 16 }}></i>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
-              Bienvenue dans l'équipe!
-            </p>
-            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>
-              Redirection en cours...
-            </p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Bienvenue dans l'équipe!</p>
+            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Redirection en cours...</p>
           </>
         )}
       </div>

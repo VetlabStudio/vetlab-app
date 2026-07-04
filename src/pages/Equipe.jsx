@@ -61,44 +61,49 @@ function NotesPerso() {
     : notes.filter(n => n.categorie === filtreCategorie)
 
   return (
-    <div className="page-calculateurs">
-      <div className="calc-form">
-        {categories.length > 1 && (
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
-            {categories.map(c => (
-              <button key={c} onClick={() => setFiltreCategorie(c)} style={{
-                fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 999, cursor: 'pointer',
-                border: '1px solid var(--border)',
-                background: filtreCategorie === c ? 'var(--primary)' : 'var(--bg-card)',
-                color: filtreCategorie === c ? '#fff' : 'var(--text-secondary)',
-              }}>{c}</button>
-            ))}
-          </div>
-        )}
-
-        {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>}
-
-        {!loading && notesFiltrees.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <i className="ti ti-notes" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }}></i>
-            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune note pour l'instant.</p>
-          </div>
-        )}
-
-        <div className="notes-grille">
-          {notesFiltrees.map(note => (
-            <div key={note.id} className="note-carte" style={{ background: note.couleur || '#FFF9C4' }}>
-              <button className="note-carte-supprimer" onClick={e => { e.stopPropagation(); setShowConfirmSupprimer(note.id) }}>
-                <i className="ti ti-x"></i>
-              </button>
-              <div className="note-carte-contenu" onClick={() => navigate(`/notes/${note.id}`)}>
-                {note.titre && <p className="note-carte-titre">{note.titre}</p>}
-                {note.categorie && <span className="note-carte-categorie">{note.categorie}</span>}
-                <p className="note-carte-apercu">{apercu(note.contenu)}</p>
-              </div>
-            </div>
+    <div style={{ padding: '16px 16px 80px' }}>
+      {categories.length > 1 && (
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+          {categories.map(c => (
+            <button key={c} onClick={() => setFiltreCategorie(c)} style={{
+              fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 999, cursor: 'pointer',
+              border: '1px solid var(--border)',
+              background: filtreCategorie === c ? 'var(--primary)' : 'var(--bg-card)',
+              color: filtreCategorie === c ? '#fff' : 'var(--text-secondary)',
+            }}>{c}</button>
           ))}
         </div>
+      )}
+
+      {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>}
+
+      {!loading && notesFiltrees.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '40px 0' }}>
+          <i className="ti ti-notes" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }}></i>
+          <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune note pour l'instant.</p>
+        </div>
+      )}
+
+      <div className="notes-grille" style={{ width: '100%' }}>
+        {notesFiltrees.map(note => (
+          <div key={note.id} className="note-tuile" style={{ background: note.couleur || '#FFF9C4' }}>
+            <div className="note-tuile-header">
+              <p className="note-tuile-titre">{note.titre || '(sans titre)'}</p>
+              <button className="note-tuile-supprimer" onClick={e => { e.stopPropagation(); setShowConfirmSupprimer(note.id) }}>
+                <i className="ti ti-x"></i>
+              </button>
+            </div>
+            {note.categorie && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
+                background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start',
+              }}>{note.categorie}</span>
+            )}
+            <p className="note-tuile-apercu" onClick={() => navigate(`/notes/${note.id}`)} style={{ cursor: 'pointer', flex: 1 }}>
+              {apercu(note.contenu)}
+            </p>
+          </div>
+        ))}
       </div>
 
       <button className="btn-fab" onClick={creerNote}>+</button>
@@ -122,22 +127,24 @@ function NotesPerso() {
   )
 }
 
-// ─── BABILLARD ────────────────────────────────────────────
+// ─── BABILLARD (notes partagées) ──────────────────────────
 function Babillard() {
   const { teamId } = useProfil()
-  const [messages, setMessages] = useState([])
+  const [notes, setNotes] = useState([])
   const [membres, setMembres] = useState([])
   const [loading, setLoading] = useState(true)
-  const [texte, setTexte] = useState('')
-  const [envoi, setEnvoi] = useState(false)
   const [userId, setUserId] = useState(null)
+  const [showForm, setShowForm] = useState(false)
+  const [noteActive, setNoteActive] = useState(null)
+  const [confirmSupprimer, setConfirmSupprimer] = useState(null)
+  const [saving, setSaving] = useState(false)
   const [showTagMenu, setShowTagMenu] = useState(false)
   const [tagPos, setTagPos] = useState(0)
   const textareaRef = useRef(null)
-  const [confirmSupprimer, setConfirmSupprimer] = useState(null)
+  const [form, setForm] = useState({ titre: '', contenu: '', couleur: COULEURS[0] })
 
   useEffect(() => {
-    if (!teamId) return
+    if (!teamId) { setLoading(false); return }
     charger()
 
     const channel = supabase
@@ -161,21 +168,20 @@ function Babillard() {
       .select('*, profiles(nom)')
       .eq('team_id', teamId)
       .order('created_at', { ascending: false })
-      .limit(100)
 
     const { data: mems } = await supabase
-      .from('team_members')
+      .from('membres_equipe')
       .select('user_id, profiles(nom)')
-      .eq('team_id', teamId)
+      .eq('equipe_id', teamId)
 
-    setMessages(msgs || [])
+    setNotes(msgs || [])
     setMembres(mems || [])
     setLoading(false)
   }
 
-  function handleTexteChange(e) {
+  function handleContenuChange(e) {
     const val = e.target.value
-    setTexte(val)
+    setForm(f => ({ ...f, contenu: val }))
     const pos = e.target.selectionStart
     const avant = val.slice(0, pos)
     const dernier = avant.lastIndexOf('@')
@@ -187,26 +193,27 @@ function Babillard() {
     }
   }
 
-  function insererTag(nom) {
-    const avant = texte.slice(0, tagPos)
-    const apres = texte.slice(textareaRef.current.selectionStart)
-    const nouveau = avant + '@' + nom + ' ' + apres
-    setTexte(nouveau)
-    setShowTagMenu(false)
-    textareaRef.current.focus()
-  }
-
   function membresFiltrés() {
-    const recherche = texte.slice(tagPos + 1, textareaRef.current?.selectionStart || texte.length).toLowerCase()
+    const selectionStart = textareaRef.current?.selectionStart || form.contenu.length
+    const recherche = form.contenu.slice(tagPos + 1, selectionStart).toLowerCase()
     return membres.filter(m => m.profiles?.nom?.toLowerCase().includes(recherche))
   }
 
-  async function envoyer() {
-    if (!texte.trim() || envoi) return
-    setEnvoi(true)
+  function insererTag(nom) {
+    const avant = form.contenu.slice(0, tagPos)
+    const apres = form.contenu.slice(textareaRef.current?.selectionStart || form.contenu.length)
+    const nouveau = avant + '@' + nom + ' ' + apres
+    setForm(f => ({ ...f, contenu: nouveau }))
+    setShowTagMenu(false)
+    setTimeout(() => textareaRef.current?.focus(), 0)
+  }
+
+  async function publier() {
+    if (!form.contenu.trim() || saving) return
+    setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
 
-    const tags = [...texte.matchAll(/@([\w\s]+?)(?=\s|$)/g)].map(m => m[1].trim())
+    const tags = [...form.contenu.matchAll(/@([\w\s]+?)(?=\s|$)/g)].map(m => m[1].trim())
     const taggedIds = membres
       .filter(m => tags.some(t => m.profiles?.nom?.toLowerCase() === t.toLowerCase()))
       .map(m => m.user_id)
@@ -214,22 +221,34 @@ function Babillard() {
     await supabase.from('babillard_messages').insert({
       team_id: teamId,
       user_id: user.id,
-      contenu: texte.trim(),
-      tags: taggedIds,
+      titre: form.titre.trim() || null,
+      contenu: form.contenu.trim(),
+      couleur: form.couleur,
+      ...(taggedIds.length > 0 ? { tags: taggedIds } : {}),
     })
 
     if (taggedIds.length > 0) {
-      const notifs = taggedIds.map(uid => ({
-        user_id: uid,
-        type: 'tag_babillard',
-        message: `${user.email} vous a tagué dans le babillard`,
-        reference_type: 'babillard',
-      }))
-      await supabase.from('notifications').insert(notifs)
+      await supabase.from('notifications').insert(
+        taggedIds.map(uid => ({
+          user_id: uid,
+          type: 'tag_babillard',
+          message: `${user.email} vous a tagué dans le babillard`,
+          reference_type: 'babillard',
+        }))
+      )
     }
 
-    setTexte('')
-    setEnvoi(false)
+    setForm({ titre: '', contenu: '', couleur: COULEURS[0] })
+    setShowTagMenu(false)
+    setShowForm(false)
+    setSaving(false)
+  }
+
+  async function supprimerNote(id) {
+    await supabase.from('babillard_messages').delete().eq('id', id)
+    setNotes(prev => prev.filter(n => n.id !== id))
+    setConfirmSupprimer(null)
+    setNoteActive(null)
   }
 
   function formatDate(iso) {
@@ -243,110 +262,174 @@ function Babillard() {
   }
 
   function renderContenu(contenu) {
+    if (!contenu) return ''
     return contenu.replace(/@([\w\s]+?)(?=\s|$)/g, '<span style="color:var(--primary);font-weight:600">@$1</span>')
   }
 
-  async function supprimerMessage(id) {
-    await supabase.from('babillard_messages').delete().eq('id', id)
-    setMessages(prev => prev.filter(m => m.id !== id))
-    setConfirmSupprimer(null)
+  function apercu(contenu) {
+    if (!contenu) return ''
+    return contenu.length > 90 ? contenu.slice(0, 90) + '...' : contenu
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Messages */}
-      <div style={{ flex: 1, overflow: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column-reverse', gap: 12 }}>
-        {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14, textAlign: 'center' }}>Chargement...</p>}
-        {!loading && messages.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <i className="ti ti-messages" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }}></i>
-            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucun message. Soyez le premier!</p>
-          </div>
-        )}
-        {messages.map(msg => (
-          <div key={msg.id} style={{
-            background: 'var(--bg-card)', borderRadius: 12, padding: '10px 14px',
-            border: '1px solid var(--border)',
-            alignSelf: msg.user_id === userId ? 'flex-end' : 'flex-start',
-            maxWidth: '85%',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4, gap: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)' }}>
-                {msg.profiles?.nom || 'Membre'}
-              </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>{formatDate(msg.created_at)}</span>
-                {msg.user_id === userId && (
-                  <button onClick={() => setConfirmSupprimer(msg.id)} style={{
-                    background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                    color: 'var(--text-hint)', fontSize: 13,
-                  }}>
-                    <i className="ti ti-x"></i>
-                  </button>
-                )}
-              </div>
+    <div style={{ padding: '16px 16px 80px', position: 'relative' }}>
+      {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>}
+
+      {!loading && notes.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '40px 0' }}>
+          <i className="ti ti-messages" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }}></i>
+          <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune note d'équipe pour l'instant.</p>
+        </div>
+      )}
+
+      <div className="notes-grille" style={{ width: '100%' }}>
+        {notes.map(note => (
+          <div
+            key={note.id}
+            className="note-tuile"
+            style={{ background: note.couleur || '#FFF9C4', cursor: 'pointer' }}
+            onClick={() => setNoteActive(note)}
+          >
+            <div className="note-tuile-header">
+              {note.titre
+                ? <p className="note-tuile-titre">{note.titre}</p>
+                : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>
+              }
             </div>
-            <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0, lineHeight: 1.5 }}
-              dangerouslySetInnerHTML={{ __html: renderContenu(msg.contenu) }} />
+            <p className="note-tuile-apercu"
+              dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }}
+            />
+            <p className="note-tuile-date">
+              <span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>
+              {' · '}{formatDate(note.created_at)}
+            </p>
           </div>
         ))}
       </div>
 
-      {/* Tag menu */}
-      {showTagMenu && membresFiltrés().length > 0 && (
-        <div style={{
-          background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 10,
-          margin: '0 16px', padding: 6,
-        }}>
-          {membresFiltrés().map(m => (
-            <button key={m.user_id} onClick={() => insererTag(m.profiles?.nom)} style={{
-              display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px',
-              background: 'none', border: 'none', cursor: 'pointer', fontSize: 14,
-              color: 'var(--text-primary)', borderRadius: 8,
-            }}>
-              @{m.profiles?.nom}
-            </button>
-          ))}
+      <button className="btn-fab" onClick={() => setShowForm(true)}>+</button>
+
+      {/* Popup: voir une note */}
+      {noteActive && (
+        <div className="popup-overlay" onClick={() => setNoteActive(null)}>
+          <div className="popup-card" style={{ background: noteActive.couleur || '#FFF9C4' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div>
+                {noteActive.titre && (
+                  <p style={{ fontSize: 16, fontWeight: 700, color: '#333', margin: '0 0 4px' }}>{noteActive.titre}</p>
+                )}
+                <p style={{ fontSize: 12, color: '#666', margin: 0 }}>
+                  {noteActive.profiles?.nom || 'Membre'} · {formatDate(noteActive.created_at)}
+                </p>
+              </div>
+              {noteActive.user_id === userId && (
+                <button onClick={() => setConfirmSupprimer(noteActive.id)} style={{
+                  background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
+                  padding: '6px 10px', cursor: 'pointer', color: '#555', fontSize: 14,
+                }}>
+                  <i className="ti ti-trash"></i>
+                </button>
+              )}
+            </div>
+            <p style={{ fontSize: 14, color: '#333', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}
+              dangerouslySetInnerHTML={{ __html: renderContenu(noteActive.contenu) }}
+            />
+            <div style={{ marginTop: 16 }}>
+              <button className="labo-btn-secondary" style={{ width: '100%' }} onClick={() => setNoteActive(null)}>Fermer</button>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* Zone de saisie */}
-      <div style={{
-        padding: '10px 16px 16px', borderTop: '1px solid var(--border)',
-        background: 'var(--bg-card)', display: 'flex', gap: 10, alignItems: 'flex-end',
-      }}>
-        <textarea
-          ref={textareaRef}
-          value={texte}
-          onChange={handleTexteChange}
-          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyer() } }}
-          placeholder="Message… (@ pour taguer)"
-          rows={2}
-          style={{
-            flex: 1, resize: 'none', border: '1px solid var(--border)', borderRadius: 10,
-            padding: '10px 12px', fontSize: 14, background: 'var(--bg-secondary)',
-            color: 'var(--text-primary)', fontFamily: 'inherit', outline: 'none',
-          }}
-        />
-        <button onClick={envoyer} disabled={!texte.trim() || envoi} style={{
-          background: 'var(--primary)', border: 'none', borderRadius: 10, padding: '10px 14px',
-          color: '#fff', cursor: texte.trim() ? 'pointer' : 'not-allowed', opacity: texte.trim() ? 1 : 0.5,
-          fontSize: 18,
-        }}>
-          <i className="ti ti-send"></i>
-        </button>
-      </div>
+      {/* Popup: nouvelle note */}
+      {showForm && (
+        <div className="popup-overlay" onClick={() => setShowForm(false)}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Nouvelle note d'équipe</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <input
+                placeholder="Titre (optionnel)"
+                value={form.titre}
+                onChange={e => setForm(f => ({ ...f, titre: e.target.value }))}
+                style={{
+                  border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
+                  fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)', outline: 'none',
+                }}
+              />
+              <div style={{ position: 'relative' }}>
+                <textarea
+                  ref={textareaRef}
+                  placeholder="Contenu… (@ pour taguer un membre)"
+                  value={form.contenu}
+                  onChange={handleContenuChange}
+                  rows={4}
+                  style={{
+                    width: '100%', resize: 'none', border: '1px solid var(--border)', borderRadius: 10,
+                    padding: '10px 12px', fontSize: 14, background: 'var(--bg-secondary)',
+                    color: 'var(--text-primary)', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+                  }}
+                />
+                {showTagMenu && membresFiltrés().length > 0 && (
+                  <div style={{
+                    position: 'absolute', bottom: '100%', left: 0, right: 0,
+                    background: 'var(--bg-card)', border: '1px solid var(--border)',
+                    borderRadius: 10, padding: 4, zIndex: 10,
+                  }}>
+                    {membresFiltrés().map(m => (
+                      <button key={m.user_id} onClick={() => insererTag(m.profiles?.nom)} style={{
+                        display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px',
+                        background: 'none', border: 'none', cursor: 'pointer', fontSize: 14,
+                        color: 'var(--text-primary)', borderRadius: 8,
+                      }}>
+                        @{m.profiles?.nom}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Couleur */}
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>Couleur :</span>
+                {COULEURS.map(c => (
+                  <button key={c} onClick={() => setForm(f => ({ ...f, couleur: c }))} style={{
+                    width: 24, height: 24, borderRadius: '50%', background: c, border: 'none', cursor: 'pointer',
+                    outline: form.couleur === c ? '2px solid var(--primary)' : 'none',
+                    outlineOffset: 2,
+                  }} />
+                ))}
+              </div>
+            </div>
+
+            <div className="popup-actions-centrees" style={{ marginTop: 16 }}>
+              <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => { setShowForm(false); setShowTagMenu(false) }}>Annuler</button>
+              <button
+                style={{
+                  flex: 1, background: 'var(--primary)', color: '#fff', border: 'none',
+                  borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 700,
+                  cursor: form.contenu.trim() ? 'pointer' : 'not-allowed', opacity: form.contenu.trim() ? 1 : 0.5,
+                }}
+                onClick={publier}
+                disabled={!form.contenu.trim() || saving}
+              >
+                {saving ? 'Publication...' : 'Publier'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {confirmSupprimer && (
         <div className="popup-overlay" onClick={() => setConfirmSupprimer(null)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
               <i className="ti ti-trash" style={{ fontSize: 36, color: 'var(--accent-red)', marginBottom: 10, display: 'block' }}></i>
-              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Supprimer ce message?</p>
+              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Supprimer cette note?</p>
             </div>
             <div className="popup-actions-centrees">
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setConfirmSupprimer(null)}>Annuler</button>
-              <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => supprimerMessage(confirmSupprimer)}>Supprimer</button>
+              <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => supprimerNote(confirmSupprimer)}>Supprimer</button>
             </div>
           </div>
         </div>
@@ -374,7 +457,7 @@ function Taches() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    if (!teamId) return
+    if (!teamId) { setLoading(false); return }
     charger()
 
     const channel = supabase
@@ -395,14 +478,14 @@ function Taches() {
 
     const { data: t } = await supabase
       .from('taches')
-      .select('*, profiles!taches_created_by_fkey(nom), assignee:profiles!taches_assignee_id_fkey(nom), modifie_par:profiles!taches_modifie_par_fkey(nom)')
+      .select('*')
       .eq('team_id', teamId)
       .order('date_echeance', { ascending: true, nullsFirst: false })
 
     const { data: mems } = await supabase
-      .from('team_members')
+      .from('membres_equipe')
       .select('user_id, profiles(nom)')
-      .eq('team_id', teamId)
+      .eq('equipe_id', teamId)
 
     setTaches(t || [])
     setMembres(mems || [])
@@ -463,97 +546,94 @@ function Taches() {
   }))
 
   return (
-    <div className="page-calculateurs">
-      <div className="calc-form">
-        {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>}
+    <div style={{ padding: '16px 16px 80px' }}>
+      {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>}
 
-        {tachesParStatut.map(groupe => groupe.items.length > 0 && (
-          <div key={groupe.id} style={{ marginBottom: 20 }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: groupe.couleur, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
-              {groupe.label} ({groupe.items.length})
-            </p>
-            {groupe.items.map(tache => {
-              const echeance = formatDate(tache.date_echeance)
-              return (
-                <div key={tache.id} style={{
-                  background: 'var(--bg-card)', borderRadius: 12, padding: '12px 14px',
-                  border: '1px solid var(--border)', marginBottom: 8,
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0, flex: 1,
-                      textDecoration: tache.statut === 'termine' ? 'line-through' : 'none',
-                      opacity: tache.statut === 'termine' ? 0.6 : 1,
-                    }}>
-                      {tache.titre}
-                    </p>
-                    <button onClick={() => setConfirmSupprimer(tache.id)} style={{
-                      background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)', fontSize: 14, padding: 0,
-                    }}>
-                      <i className="ti ti-trash"></i>
-                    </button>
+      {tachesParStatut.map(groupe => groupe.items.length > 0 && (
+        <div key={groupe.id} style={{ marginBottom: 20 }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: groupe.couleur, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+            {groupe.label} ({groupe.items.length})
+          </p>
+          {groupe.items.map(tache => {
+            const echeance = formatDate(tache.date_echeance)
+            return (
+              <div key={tache.id} style={{
+                background: 'var(--bg-card)', borderRadius: 12, padding: '12px 14px',
+                border: '1px solid var(--border)', marginBottom: 8,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0, flex: 1,
+                    textDecoration: tache.statut === 'termine' ? 'line-through' : 'none',
+                    opacity: tache.statut === 'termine' ? 0.6 : 1,
+                  }}>
+                    {tache.titre}
+                  </p>
+                  <button onClick={() => setConfirmSupprimer(tache.id)} style={{
+                    background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)', fontSize: 14, padding: 0,
+                  }}>
+                    <i className="ti ti-trash"></i>
+                  </button>
+                </div>
+
+                {tache.description && (
+                  <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '4px 0 0', lineHeight: 1.4 }}>
+                    {tache.description}
+                  </p>
+                )}
+
+                <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {STATUTS.map(s => (
+                      <button key={s.id} onClick={() => changerStatut(tache, s.id)} style={{
+                        fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 999,
+                        border: 'none', cursor: 'pointer',
+                        background: tache.statut === s.id ? s.bg : 'var(--bg-secondary)',
+                        color: tache.statut === s.id ? s.couleur : 'var(--text-hint)',
+                      }}>
+                        {s.label}
+                      </button>
+                    ))}
                   </div>
 
-                  {tache.description && (
-                    <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '4px 0 0', lineHeight: 1.4 }}>
-                      {tache.description}
-                    </p>
+                  <div style={{ flex: 1 }} />
+
+                  {tache.assignee_id && membres.find(m => m.user_id === tache.assignee_id) && (
+                    <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
+                      <i className="ti ti-user" style={{ marginRight: 3 }}></i>
+                      {membres.find(m => m.user_id === tache.assignee_id)?.profiles?.nom}
+                    </span>
                   )}
 
-                  <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-                    {/* Statut chips */}
-                    <div style={{ display: 'flex', gap: 4 }}>
-                      {STATUTS.map(s => (
-                        <button key={s.id} onClick={() => changerStatut(tache, s.id)} style={{
-                          fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 999,
-                          border: 'none', cursor: 'pointer',
-                          background: tache.statut === s.id ? s.bg : 'var(--bg-secondary)',
-                          color: tache.statut === s.id ? s.couleur : 'var(--text-hint)',
-                        }}>
-                          {s.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div style={{ flex: 1 }} />
-
-                    {tache.assignee?.nom && (
-                      <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-                        <i className="ti ti-user" style={{ marginRight: 3 }}></i>{tache.assignee.nom}
-                      </span>
-                    )}
-
-                    {echeance && (
-                      <span style={{
-                        fontSize: 11, fontWeight: 600,
-                        color: echeance.rouge ? 'var(--accent-red)' : echeance.orange ? '#F57C00' : 'var(--text-hint)',
-                      }}>
-                        <i className="ti ti-calendar" style={{ marginRight: 3 }}></i>{echeance.texte}
-                      </span>
-                    )}
-                  </div>
-
-                  {tache.modifie_par && tache.modifie_le && (
-                    <p style={{ fontSize: 11, color: 'var(--text-hint)', margin: '6px 0 0' }}>
-                      Modifié par {tache.modifie_par?.nom || 'un membre'} · {new Date(tache.modifie_le).toLocaleString('fr-CA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                    </p>
+                  {echeance && (
+                    <span style={{
+                      fontSize: 11, fontWeight: 600,
+                      color: echeance.rouge ? 'var(--accent-red)' : echeance.orange ? '#F57C00' : 'var(--text-hint)',
+                    }}>
+                      <i className="ti ti-calendar" style={{ marginRight: 3 }}></i>{echeance.texte}
+                    </span>
                   )}
                 </div>
-              )
-            })}
-          </div>
-        ))}
 
-        {!loading && taches.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <i className="ti ti-checklist" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }}></i>
-            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune tâche pour l'instant.</p>
-          </div>
-        )}
-      </div>
+                {tache.modifie_par && tache.modifie_le && (
+                  <p style={{ fontSize: 11, color: 'var(--text-hint)', margin: '6px 0 0' }}>
+                    Modifié par {membres.find(m => m.user_id === tache.modifie_par)?.profiles?.nom || 'un membre'} · {new Date(tache.modifie_le).toLocaleString('fr-CA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      ))}
+
+      {!loading && taches.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '40px 0' }}>
+          <i className="ti ti-checklist" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }}></i>
+          <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune tâche pour l'instant.</p>
+        </div>
+      )}
 
       <button className="btn-fab" onClick={() => setShowForm(true)}>+</button>
 
-      {/* Formulaire nouvelle tâche */}
       {showForm && (
         <div className="popup-overlay" onClick={() => setShowForm(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
@@ -641,6 +721,112 @@ function Taches() {
   )
 }
 
+// ─── CLOCHE NOTIFICATIONS (mini, blanche) ─────────────────
+function ClocheMini() {
+  const [count, setCount] = useState(0)
+  const [open, setOpen] = useState(false)
+  const [notifs, setNotifs] = useState([])
+  const { estEquipe } = useProfil()
+
+  useEffect(() => {
+    if (!estEquipe) return
+    charger()
+    let active = true
+    let channel = null
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!active || !user) return
+      const name = 'notifs-eq-' + user.id + '-' + Date.now()
+      channel = supabase
+        .channel(name)
+        .on('postgres_changes', {
+          event: 'INSERT', schema: 'public', table: 'notifications',
+          filter: `user_id=eq.${user.id}`,
+        }, () => charger())
+        .subscribe()
+    })
+    return () => { active = false; if (channel) supabase.removeChannel(channel) }
+  }, [estEquipe])
+
+  async function charger() {
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(20)
+    setNotifs(data || [])
+    setCount((data || []).filter(n => !n.lu).length)
+  }
+
+  async function marquerLues() {
+    const { data: { user } } = await supabase.auth.getUser()
+    await supabase.from('notifications').update({ lu: true }).eq('user_id', user.id).eq('lu', false)
+    setCount(0)
+    setNotifs(prev => prev.map(n => ({ ...n, lu: true })))
+  }
+
+  if (!estEquipe) return null
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={() => { setOpen(o => !o); if (!open && count > 0) marquerLues() }}
+        style={{
+          background: 'none', border: 'none', cursor: 'pointer', padding: '10px 14px',
+          color: '#fff', fontSize: 20, position: 'relative',
+        }}
+      >
+        <i className="ti ti-bell"></i>
+        {count > 0 && (
+          <span style={{
+            position: 'absolute', top: 6, right: 8, background: 'var(--accent-red)',
+            color: '#fff', borderRadius: '50%', width: 16, height: 16,
+            fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {count > 9 ? '9+' : count}
+          </span>
+        )}
+      </button>
+
+      {open && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setOpen(false)} />
+          <div style={{
+            position: 'absolute', top: 44, right: 0, zIndex: 100, width: 280,
+            background: 'var(--bg-card)', border: '1px solid var(--border)',
+            borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+            overflow: 'hidden',
+          }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Notifications</p>
+            </div>
+            {notifs.length === 0 ? (
+              <div style={{ padding: '24px 16px', textAlign: 'center' }}>
+                <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>Aucune notification</p>
+              </div>
+            ) : (
+              <div style={{ maxHeight: 320, overflow: 'auto' }}>
+                {notifs.map(n => (
+                  <div key={n.id} style={{
+                    padding: '12px 16px', borderBottom: '1px solid var(--border)',
+                    background: n.lu ? 'transparent' : 'var(--bg-secondary)',
+                  }}>
+                    <p style={{ fontSize: 13, color: 'var(--text-primary)', margin: 0, lineHeight: 1.4 }}>{n.message}</p>
+                    <p style={{ fontSize: 11, color: 'var(--text-hint)', margin: '4px 0 0' }}>
+                      {new Date(n.created_at).toLocaleString('fr-CA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 // ─── PAGE ÉQUIPE ──────────────────────────────────────────
 export default function Equipe() {
   const [sousOnglet, setSousOnglet] = useState('notes')
@@ -663,7 +849,7 @@ export default function Equipe() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Barre supérieure avec sous-onglets + bouton gestion */}
+      {/* Barre supérieure avec sous-onglets + actions */}
       <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', background: 'var(--bg-card)', alignItems: 'center' }}>
         <div style={{ display: 'flex', flex: 1 }}>
           {SOUS_ONGLETS.map(o => (
@@ -684,14 +870,17 @@ export default function Equipe() {
             </button>
           ))}
         </div>
-        {(roleEquipe === 'admin' || roleEquipe === 'proprietaire') && (
-          <button onClick={() => navigate('/equipe/gestion')} style={{
-            background: 'none', border: 'none', cursor: 'pointer', padding: '10px 14px',
-            color: 'var(--text-hint)', fontSize: 20,
-          }}>
-            <i className="ti ti-settings"></i>
-          </button>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', background: 'var(--primary)', borderRadius: '0 0 0 12px' }}>
+          {(roleEquipe === 'admin' || roleEquipe === 'proprietaire') && (
+            <button onClick={() => navigate('/equipe/gestion')} style={{
+              background: 'none', border: 'none', cursor: 'pointer', padding: '10px 12px',
+              color: '#fff', fontSize: 20,
+            }}>
+              <i className="ti ti-settings"></i>
+            </button>
+          )}
+          <ClocheMini />
+        </div>
       </div>
 
       {/* Contenu */}

@@ -195,7 +195,8 @@ async function ouvrirPortail() {
 
   if (loading) return <div className="admin-loading">Chargement...</div>
 
-  const estPro = profil?.plan === 'pro'
+  const estEquipe = profil?.plan === 'equipe'
+  const estPro = profil?.plan === 'pro' || estEquipe
 
   return (
     <div className="profil-page">
@@ -260,17 +261,21 @@ async function ouvrirPortail() {
         <div className="profil-item">
           <div>
             <p className="profil-item-label">Forfait actuel</p>
-            <p className="profil-item-valeur" style={{ textTransform: 'capitalize' }}>
-              {estPro
-                ? <span style={{ color: 'var(--accent-gold)', fontWeight: 700 }}>Pro</span>
-                : 'Gratuit'
+            <p className="profil-item-valeur">
+              {estEquipe
+                ? <span style={{ color: 'var(--primary)', fontWeight: 700 }}>Équipe</span>
+                : estPro
+                  ? <span style={{ color: 'var(--accent-gold)', fontWeight: 700 }}>Pro</span>
+                  : 'Gratuit'
               }
             </p>
           </div>
           {estPro && (
             <span style={{
-              fontSize: 11, fontWeight: 700, color: 'var(--accent-gold)',
-              background: 'rgba(215,163,92,0.15)', padding: '3px 10px', borderRadius: 999
+              fontSize: 11, fontWeight: 700,
+              color: estEquipe ? 'var(--primary)' : 'var(--accent-gold)',
+              background: estEquipe ? 'rgba(37,77,86,0.1)' : 'rgba(215,163,92,0.15)',
+              padding: '3px 10px', borderRadius: 999
             }}>Actif</span>
           )}
         </div>
@@ -290,24 +295,20 @@ async function ouvrirPortail() {
         </div>
 
         {/* PRO */}
-        {estPro ? (
-          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
+        {estPro && !estEquipe ? (
+          <div className="profil-forfait-item">
             <div className="profil-forfait-header">
               <span className="profil-forfait-nom">Pro</span>
-              <span className="profil-forfait-badge" style={{ color: 'var(--primary)', background: 'rgba(37,77,86,0.1)' }}>Actif</span>
+              <span className="profil-forfait-badge" style={{ color: 'var(--accent-gold)', background: 'rgba(215,163,92,0.15)' }}>Actif</span>
             </div>
             <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>Tu bénéficies de toutes les fonctionnalités Pro.</p>
-<button
-  className="profil-portal-btn"
-  onClick={ouvrirPortail}
-  disabled={checkoutLoading}
->
-  <i className="ti ti-settings"></i>
-  {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
-</button>
+            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
+              <i className="ti ti-settings"></i>
+              {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
+            </button>
           </div>
-        ) : (
-          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
+        ) : !estEquipe ? (
+          <div className="profil-forfait-item">
             <div className="profil-forfait-header">
               <span className="profil-forfait-nom">Pro</span>
             </div>
@@ -315,19 +316,11 @@ async function ouvrirPortail() {
               Accès complet : personnalisation des médicaments et protocoles de labo, outil d'examen, monitoring anesthésique, toxicologie et plus.
             </p>
             <div className="profil-stripe-choix">
-              <button
-                className="profil-stripe-btn"
-                onClick={() => ouvrirCheckout(PRICE_MONTHLY)}
-                disabled={checkoutLoading}
-              >
+              <button className="profil-stripe-btn" onClick={() => ouvrirCheckout(PRICE_MONTHLY)} disabled={checkoutLoading}>
                 <span className="profil-stripe-prix">7,99 $</span>
                 <span className="profil-stripe-periode">par mois</span>
               </button>
-              <button
-                className="profil-stripe-btn profil-stripe-btn--annuel"
-                onClick={() => ouvrirCheckout(PRICE_ANNUAL)}
-                disabled={checkoutLoading}
-              >
+              <button className="profil-stripe-btn profil-stripe-btn--annuel" onClick={() => ouvrirCheckout(PRICE_ANNUAL)} disabled={checkoutLoading}>
                 <span className="profil-stripe-economie">Économise 37 %</span>
                 <span className="profil-stripe-prix">59 $</span>
                 <span className="profil-stripe-periode">par année</span>
@@ -339,51 +332,47 @@ async function ouvrirPortail() {
               </p>
             )}
           </div>
-        )}
-      </div>
+        ) : null}
 
-      {/* FORFAIT CLINIQUE */}
-      <div className="profil-section">
-        <div className="profil-forfaits-titre">Pour les cliniques</div>
-        <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
-          <div className="profil-forfait-header">
-            <span className="profil-forfait-nom">Clinique</span>
-            <span style={{
-              fontSize: 10, fontWeight: 700, color: 'var(--text-hint)',
-              background: 'var(--champ-bg)', padding: '2px 8px', borderRadius: 999,
-              border: '1px solid var(--border)', textTransform: 'uppercase', letterSpacing: 0.5,
-            }}>Bientôt</span>
-          </div>
-          <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
-            Accès partagé pour toute votre équipe, gestion des membres, rôles admin et technicien. Un seul abonnement pour toute la clinique.
-          </p>
-          {interetEnvoye ? (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '10px 14px', borderRadius: 'var(--radius-md)',
-              background: 'rgba(37,77,86,0.08)', color: 'var(--primary)',
-              fontSize: 13, fontWeight: 600,
-            }}>
-              <i className="ti ti-circle-check"></i>
-              Merci ! On te contactera dès que le forfait Clinique sera disponible.
+        {/* ÉQUIPE */}
+        {estEquipe ? (
+          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
+            <div className="profil-forfait-header">
+              <span className="profil-forfait-nom">Équipe</span>
+              <span className="profil-forfait-badge" style={{ color: 'var(--primary)', background: 'rgba(37,77,86,0.1)' }}>Actif</span>
             </div>
-          ) : (
+            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
+              Accès complet pour toute la clinique — fonctionnalités Pro incluses, babillard d'équipe, panneau de tâches et gestion des membres.
+            </p>
+            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
+              <i className="ti ti-settings"></i>
+              {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
+            </button>
+          </div>
+        ) : (
+          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
+            <div className="profil-forfait-header">
+              <span className="profil-forfait-nom">Équipe</span>
+            </div>
+            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
+              Accès partagé pour toute la clinique, gestion des membres, babillard d'équipe, tâches et plus.
+            </p>
             <button
               className="profil-portal-btn"
               onClick={() => {
-                const sujet = encodeURIComponent('Intérêt — Forfait Clinique Adjuvet')
+                const sujet = encodeURIComponent('Intérêt — Forfait Équipe Adjuvet')
                 const corps = encodeURIComponent(
-                  `Bonjour,\n\nJe suis ${profil?.nom || ''} (${profil?.email || ''}) et je suis intéressé(e) par le forfait Clinique d'Adjuvet.\n\nMerci de me contacter dès qu'il sera disponible.`
+                  `Bonjour,\n\nJe suis ${profil?.nom || ''} (${profil?.email || ''}) et je suis intéressé(e) par le forfait Équipe d'Adjuvet.\n\nMerci de me contacter.`
                 )
                 window.open(`mailto:info@vetlabstudio.ca?subject=${sujet}&body=${corps}`)
                 setInteretEnvoye(true)
               }}
             >
               <i className="ti ti-building-hospital"></i>
-              Je suis intéressé(e) par le forfait Clinique
+              {interetEnvoye ? 'Message envoyé !' : 'Nous contacter pour le forfait Équipe'}
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* ACTIONS */}
