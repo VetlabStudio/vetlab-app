@@ -73,11 +73,19 @@ export default function EquipeGestion() {
     })
 
     if (!error) {
-      setMsgSucces(`Invitation envoyée à ${emailInvit.trim()}`)
+      const lien = `${window.location.origin}/rejoindre?token=${token}`
+      const nomClinique = equipe?.nom || 'notre équipe'
+      const sujet = encodeURIComponent(`Invitation à rejoindre ${nomClinique} sur Adjuvet`)
+      const corps = encodeURIComponent(
+        `Bonjour,\n\nVous avez été invité(e) à rejoindre ${nomClinique} sur l'application Adjuvet.\n\nCliquez sur le lien ci-dessous pour accepter l'invitation :\n${lien}\n\nÀ bientôt!`
+      )
+      window.open(`mailto:${emailInvit.trim()}?subject=${sujet}&body=${corps}`)
+
+      setMsgSucces(`Invitation créée — votre app courriel devrait s'ouvrir.`)
       setEmailInvit('')
       setRoleInvit('membre')
       charger()
-      setTimeout(() => setMsgSucces(''), 4000)
+      setTimeout(() => setMsgSucces(''), 6000)
     }
     setEnvoi(false)
   }

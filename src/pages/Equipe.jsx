@@ -13,52 +13,140 @@ const SOUS_ONGLETS = [
 
 // ─── NOTES PERSO ─────────────────────────────────────────
 function NotesPerso() {
-  const navigate = useNavigate()
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
   const [filtreCategorie, setFiltreCategorie] = useState('Toutes')
-  const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(null)
+  const [showForm, setShowForm] = useState(false)
+  const [noteActive, setNoteActive] = useState(null)
+  const [editForm, setEditForm] = useState(null)
+  const [confirmSupprimer, setConfirmSupprimer] = useState(null)
+  const [form, setForm] = useState({ titre: '', contenu: '', couleur: COULEURS[0], categorie: '' })
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => { chargerNotes() }, [])
 
   async function chargerNotes() {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase
-      .from('notes')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('updated_at', { ascending: false })
+    const { data } = await supabase.from('notes').select('*').eq('user_id', user.id).order('updated_at', { ascending: false })
     setNotes(data || [])
     setLoading(false)
   }
 
   async function creerNote() {
+    if (!form.contenu.trim() && !form.titre.trim()) return
+    setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
-    const couleur = COULEURS[Math.floor(Math.random() * COULEURS.length)]
-    const { data } = await supabase
-      .from('notes')
-      .insert({ user_id: user.id, titre: '', contenu: '', couleur })
-      .select()
-      .single()
-    if (data) navigate(`/notes/${data.id}`)
+    const { data } = await supabase.from('notes').insert({
+      user_id: user.id,
+      titre: form.titre.trim() || null,
+      contenu: form.contenu.trim(),
+      couleur: form.couleur,
+      categorie: form.categorie.trim() || null,
+    }).select().single()
+    if (data) setNotes(prev => [data, ...prev])
+    setForm({ titre: '', contenu: '', couleur: COULEURS[0], categorie: '' })
+    setShowForm(false)
+    setSaving(false)
+  }
+
+  function ouvrirEdit(note) {
+    setNoteActive(note)
+    setEditForm({ titre: note.titre || '', contenu: note.contenu || '', couleur: note.couleur || COULEURS[0], categorie: note.categorie || '' })
+  }
+
+  async function sauvegarderEdit() {
+    setSaving(true)
+    await supabase.from('notes').update({
+      titre: editForm.titre.trim() || null,
+      contenu: editForm.contenu.trim(),
+      couleur: editForm.couleur,
+      categorie: editForm.categorie.trim() || null,
+      updated_at: new Date().toISOString(),
+    }).eq('id', noteActive.id)
+    setNotes(prev => prev.map(n => n.id === noteActive.id ? { ...n, ...editForm } : n))
+    setNoteActive(null)
+    setEditForm(null)
+    setSaving(false)
   }
 
   async function supprimerNote(id) {
     await supabase.from('notes').delete().eq('id', id)
     setNotes(prev => prev.filter(n => n.id !== id))
-    setShowConfirmSupprimer(null)
+    setConfirmSupprimer(null)
+    setNoteActive(null)
+    setEditForm(null)
   }
 
-  function apercu(contenu) {
-    if (!contenu) return ''
-    return contenu.length > 80 ? contenu.slice(0, 80) + '...' : contenu
+  const inputStyle = {
+    border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
+    fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
+    outline: 'none', width: '100%', boxSizing: 'border-box',
   }
 
   const categories = ['Toutes', ...new Set(notes.map(n => n.categorie).filter(Boolean))]
-  const notesFiltrees = filtreCategorie === 'Toutes'
-    ? notes
-    : notes.filter(n => n.categorie === filtreCategorie)
+  const notesFiltrees = filtreCategorie === 'Toutes' ? notes : notes.filter(n => n.categorie === filtreCategorie)
+
+  function PopupNoteForm({ titre: titrePop, valeurs, setValeurs, onSauvegarder, onAnnuler, onSupprimer, labelBtn }) {
+    return (
+      <div className="popup-overlay" onClick={onAnnuler}>
+        <div className="popup-card" onClick={e => e.stopPropagation()}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{titrePop}</p>
+            {onSupprimer && (
+              <button onClick={onSupprimer} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent-red)', fontSize: 18 }}>
+                <i className="ti ti-trash"></i>
+              </button>
+            )}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <input placeholder="Titre (optionnel)" value={valeurs.titre} onChange={e => setValeurs(v => ({ ...v, titre: e.target.value }))} style={inputStyle} />
+            <textarea
+              placeholder="Contenu…"
+              value={valeurs.contenu}
+              onChange={e => setValeurs(v => ({ ...v, contenu: e.target.value }))}
+              rows={5}
+              style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
+            />
+            <input
+              placeholder="Catégorie (optionnel)"
+              value={valeurs.categorie}
+              onChange={e => setValeurs(v => ({ ...v, categorie: e.target.value }))}
+              style={inputStyle}
+              list="notes-perso-cats"
+            />
+            <datalist id="notes-perso-cats">
+              {categories.filter(c => c !== 'Toutes').map(c => <option key={c} value={c} />)}
+            </datalist>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>Couleur :</span>
+              {COULEURS.map(c => (
+                <button key={c} onClick={() => setValeurs(v => ({ ...v, couleur: c }))} style={{
+                  width: 24, height: 24, borderRadius: '50%', background: c, border: 'none', cursor: 'pointer',
+                  outline: valeurs.couleur === c ? '2px solid var(--primary)' : 'none', outlineOffset: 2,
+                }} />
+              ))}
+            </div>
+          </div>
+          <div className="popup-actions-centrees" style={{ marginTop: 16 }}>
+            <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={onAnnuler}>Annuler</button>
+            <button
+              style={{
+                flex: 1, background: 'var(--primary)', color: '#fff', border: 'none',
+                borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 700,
+                cursor: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 'pointer' : 'not-allowed',
+                opacity: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 1 : 0.5,
+              }}
+              onClick={onSauvegarder}
+              disabled={!valeurs.contenu.trim() && !valeurs.titre.trim() || saving}
+            >
+              {saving ? '...' : labelBtn}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div style={{ padding: '16px 16px 80px' }}>
@@ -77,7 +165,7 @@ function NotesPerso() {
 
       {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>}
 
-      {!loading && notesFiltrees.length === 0 && (
+      {!loading && notes.length === 0 && (
         <div style={{ textAlign: 'center', padding: '40px 0' }}>
           <i className="ti ti-notes" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }}></i>
           <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune note pour l'instant.</p>
@@ -86,30 +174,49 @@ function NotesPerso() {
 
       <div className="notes-grille" style={{ width: '100%' }}>
         {notesFiltrees.map(note => (
-          <div key={note.id} className="note-tuile" style={{ background: note.couleur || '#FFF9C4' }}>
+          <div key={note.id} className="note-tuile" style={{ background: note.couleur || '#FFF9C4', cursor: 'pointer' }} onClick={() => ouvrirEdit(note)}>
             <div className="note-tuile-header">
               <p className="note-tuile-titre">{note.titre || '(sans titre)'}</p>
-              <button className="note-tuile-supprimer" onClick={e => { e.stopPropagation(); setShowConfirmSupprimer(note.id) }}>
-                <i className="ti ti-x"></i>
-              </button>
             </div>
             {note.categorie && (
-              <span style={{
-                fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
-                background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start',
-              }}>{note.categorie}</span>
+              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start' }}>
+                {note.categorie}
+              </span>
             )}
-            <p className="note-tuile-apercu" onClick={() => navigate(`/notes/${note.id}`)} style={{ cursor: 'pointer', flex: 1 }}>
-              {apercu(note.contenu)}
+            <p className="note-tuile-apercu" style={{ flex: 1 }}>
+              {note.contenu?.length > 80 ? note.contenu.slice(0, 80) + '...' : note.contenu}
             </p>
           </div>
         ))}
       </div>
 
-      <button className="btn-fab" onClick={creerNote}>+</button>
+      <button className="btn-fab" onClick={() => setShowForm(true)}>+</button>
 
-      {showConfirmSupprimer && (
-        <div className="popup-overlay" onClick={() => setShowConfirmSupprimer(null)}>
+      {showForm && (
+        <PopupNoteForm
+          titrePop="Nouvelle note"
+          valeurs={form}
+          setValeurs={setForm}
+          onSauvegarder={creerNote}
+          onAnnuler={() => setShowForm(false)}
+          labelBtn="Créer"
+        />
+      )}
+
+      {noteActive && editForm && (
+        <PopupNoteForm
+          titrePop="Modifier la note"
+          valeurs={editForm}
+          setValeurs={setEditForm}
+          onSauvegarder={sauvegarderEdit}
+          onAnnuler={() => { setNoteActive(null); setEditForm(null) }}
+          onSupprimer={() => setConfirmSupprimer(noteActive.id)}
+          labelBtn="Sauvegarder"
+        />
+      )}
+
+      {confirmSupprimer && (
+        <div className="popup-overlay" onClick={() => setConfirmSupprimer(null)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
               <i className="ti ti-trash" style={{ fontSize: 36, color: 'var(--accent-red)', marginBottom: 10, display: 'block' }}></i>
@@ -117,8 +224,8 @@ function NotesPerso() {
               <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Cette action est irréversible.</p>
             </div>
             <div className="popup-actions-centrees">
-              <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setShowConfirmSupprimer(null)}>Annuler</button>
-              <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => supprimerNote(showConfirmSupprimer)}>Supprimer</button>
+              <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setConfirmSupprimer(null)}>Annuler</button>
+              <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => supprimerNote(confirmSupprimer)}>Supprimer</button>
             </div>
           </div>
         </div>
@@ -136,12 +243,16 @@ function Babillard() {
   const [userId, setUserId] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [noteActive, setNoteActive] = useState(null)
+  const [noteEditActive, setNoteEditActive] = useState(null)
+  const [editBabForm, setEditBabForm] = useState(null)
   const [confirmSupprimer, setConfirmSupprimer] = useState(null)
   const [saving, setSaving] = useState(false)
   const [showTagMenu, setShowTagMenu] = useState(false)
   const [tagPos, setTagPos] = useState(0)
   const textareaRef = useRef(null)
-  const [form, setForm] = useState({ titre: '', contenu: '', couleur: COULEURS[0] })
+  const [form, setForm] = useState({ titre: '', contenu: '', couleur: COULEURS[0], categorie: '' })
+  const [recherche, setRecherche] = useState('')
+  const [filtreCategorie, setFiltreCategorie] = useState('Toutes')
 
   useEffect(() => {
     if (!teamId) { setLoading(false); return }
@@ -224,6 +335,7 @@ function Babillard() {
       titre: form.titre.trim() || null,
       contenu: form.contenu.trim(),
       couleur: form.couleur,
+      ...(form.categorie.trim() ? { categorie: form.categorie.trim() } : {}),
       ...(taggedIds.length > 0 ? { tags: taggedIds } : {}),
     })
 
@@ -238,7 +350,7 @@ function Babillard() {
       )
     }
 
-    setForm({ titre: '', contenu: '', couleur: COULEURS[0] })
+    setForm({ titre: '', contenu: '', couleur: COULEURS[0], categorie: '' })
     setShowTagMenu(false)
     setShowForm(false)
     setSaving(false)
@@ -249,6 +361,28 @@ function Babillard() {
     setNotes(prev => prev.filter(n => n.id !== id))
     setConfirmSupprimer(null)
     setNoteActive(null)
+  }
+
+  function ouvrirEditBab(note) {
+    setNoteActive(null)
+    setNoteEditActive(note)
+    setEditBabForm({ titre: note.titre || '', contenu: note.contenu || '', couleur: note.couleur || COULEURS[0], categorie: note.categorie || '' })
+  }
+
+  async function sauvegarderEditBab() {
+    if (!editBabForm.contenu.trim()) return
+    setSaving(true)
+    await supabase.from('babillard_messages').update({
+      titre: editBabForm.titre.trim() || null,
+      contenu: editBabForm.contenu.trim(),
+      couleur: editBabForm.couleur,
+      categorie: editBabForm.categorie.trim() || null,
+      updated_at: new Date().toISOString(),
+    }).eq('id', noteEditActive.id)
+    setNotes(prev => prev.map(n => n.id === noteEditActive.id ? { ...n, ...editBabForm } : n))
+    setNoteEditActive(null)
+    setEditBabForm(null)
+    setSaving(false)
   }
 
   function formatDate(iso) {
@@ -271,8 +405,54 @@ function Babillard() {
     return contenu.length > 90 ? contenu.slice(0, 90) + '...' : contenu
   }
 
+  const inputStyle = {
+    border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
+    fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
+    outline: 'none', width: '100%', boxSizing: 'border-box',
+  }
+
+  const categories = ['Toutes', ...new Set(notes.map(n => n.categorie).filter(Boolean))]
+
+  const notesFiltrees = notes.filter(note => {
+    const nomAuteur = note.profiles?.nom?.toLowerCase() || ''
+    const matchRecherche = !recherche.trim() || nomAuteur.includes(recherche.toLowerCase())
+    const matchCategorie = filtreCategorie === 'Toutes' || note.categorie === filtreCategorie
+    return matchRecherche && matchCategorie
+  })
+
   return (
     <div style={{ padding: '16px 16px 80px', position: 'relative' }}>
+      {/* Barre de recherche par membre */}
+      <div style={{ position: 'relative', marginBottom: 10 }}>
+        <i className="ti ti-search" style={{
+          position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)',
+          color: 'var(--text-hint)', fontSize: 15, pointerEvents: 'none',
+        }}></i>
+        <input
+          placeholder="Rechercher par membre…"
+          value={recherche}
+          onChange={e => setRecherche(e.target.value)}
+          style={{
+            ...inputStyle,
+            paddingLeft: 32,
+          }}
+        />
+      </div>
+
+      {/* Filtres catégorie */}
+      {categories.length > 1 && (
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+          {categories.map(c => (
+            <button key={c} onClick={() => setFiltreCategorie(c)} style={{
+              fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 999, cursor: 'pointer',
+              border: '1px solid var(--border)',
+              background: filtreCategorie === c ? 'var(--primary)' : 'var(--bg-card)',
+              color: filtreCategorie === c ? '#fff' : 'var(--text-secondary)',
+            }}>{c}</button>
+          ))}
+        </div>
+      )}
+
       {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>}
 
       {!loading && notes.length === 0 && (
@@ -282,8 +462,14 @@ function Babillard() {
         </div>
       )}
 
+      {!loading && notes.length > 0 && notesFiltrees.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '32px 0' }}>
+          <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucun résultat.</p>
+        </div>
+      )}
+
       <div className="notes-grille" style={{ width: '100%' }}>
-        {notes.map(note => (
+        {notesFiltrees.map(note => (
           <div
             key={note.id}
             className="note-tuile"
@@ -296,6 +482,12 @@ function Babillard() {
                 : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>
               }
             </div>
+            {note.categorie && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
+                background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4,
+              }}>{note.categorie}</span>
+            )}
             <p className="note-tuile-apercu"
               dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }}
             />
@@ -314,7 +506,13 @@ function Babillard() {
         <div className="popup-overlay" onClick={() => setNoteActive(null)}>
           <div className="popup-card" style={{ background: noteActive.couleur || '#FFF9C4' }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-              <div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {noteActive.categorie && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
+                    background: 'rgba(0,0,0,0.1)', color: '#444', display: 'inline-block', marginBottom: 6,
+                  }}>{noteActive.categorie}</span>
+                )}
                 {noteActive.titre && (
                   <p style={{ fontSize: 16, fontWeight: 700, color: '#333', margin: '0 0 4px' }}>{noteActive.titre}</p>
                 )}
@@ -322,20 +520,88 @@ function Babillard() {
                   {noteActive.profiles?.nom || 'Membre'} · {formatDate(noteActive.created_at)}
                 </p>
               </div>
-              {noteActive.user_id === userId && (
-                <button onClick={() => setConfirmSupprimer(noteActive.id)} style={{
-                  background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
-                  padding: '6px 10px', cursor: 'pointer', color: '#555', fontSize: 14,
-                }}>
-                  <i className="ti ti-trash"></i>
-                </button>
-              )}
+              <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 8 }}>
+                {noteActive.user_id === userId && (
+                  <button onClick={() => ouvrirEditBab(noteActive)} style={{
+                    background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
+                    padding: '6px 10px', cursor: 'pointer', color: '#555', fontSize: 14,
+                  }}>
+                    <i className="ti ti-pencil"></i>
+                  </button>
+                )}
+                {noteActive.user_id === userId && (
+                  <button onClick={() => setConfirmSupprimer(noteActive.id)} style={{
+                    background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
+                    padding: '6px 10px', cursor: 'pointer', color: '#555', fontSize: 14,
+                  }}>
+                    <i className="ti ti-trash"></i>
+                  </button>
+                )}
+              </div>
             </div>
             <p style={{ fontSize: 14, color: '#333', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}
               dangerouslySetInnerHTML={{ __html: renderContenu(noteActive.contenu) }}
             />
             <div style={{ marginTop: 16 }}>
               <button className="labo-btn-secondary" style={{ width: '100%' }} onClick={() => setNoteActive(null)}>Fermer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup: modifier une note du babillard */}
+      {noteEditActive && editBabForm && (
+        <div className="popup-overlay" onClick={() => { setNoteEditActive(null); setEditBabForm(null) }}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Modifier la note</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <input
+                placeholder="Titre (optionnel)"
+                value={editBabForm.titre}
+                onChange={e => setEditBabForm(f => ({ ...f, titre: e.target.value }))}
+                style={inputStyle}
+              />
+              <textarea
+                placeholder="Contenu…"
+                value={editBabForm.contenu}
+                onChange={e => setEditBabForm(f => ({ ...f, contenu: e.target.value }))}
+                rows={5}
+                style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
+              />
+              <input
+                placeholder="Catégorie (optionnel)"
+                value={editBabForm.categorie}
+                onChange={e => setEditBabForm(f => ({ ...f, categorie: e.target.value }))}
+                style={inputStyle}
+                list="bab-edit-categories"
+              />
+              <datalist id="bab-edit-categories">
+                {categories.filter(c => c !== 'Toutes').map(c => <option key={c} value={c} />)}
+              </datalist>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>Couleur :</span>
+                {COULEURS.map(c => (
+                  <button key={c} onClick={() => setEditBabForm(f => ({ ...f, couleur: c }))} style={{
+                    width: 24, height: 24, borderRadius: '50%', background: c, border: 'none', cursor: 'pointer',
+                    outline: editBabForm.couleur === c ? '2px solid var(--primary)' : 'none', outlineOffset: 2,
+                  }} />
+                ))}
+              </div>
+            </div>
+            <div className="popup-actions-centrees" style={{ marginTop: 16 }}>
+              <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => { setNoteEditActive(null); setEditBabForm(null) }}>Annuler</button>
+              <button
+                style={{
+                  flex: 1, background: 'var(--primary)', color: '#fff', border: 'none',
+                  borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 700,
+                  cursor: editBabForm.contenu.trim() ? 'pointer' : 'not-allowed',
+                  opacity: editBabForm.contenu.trim() ? 1 : 0.5,
+                }}
+                onClick={sauvegarderEditBab}
+                disabled={!editBabForm.contenu.trim() || saving}
+              >
+                {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+              </button>
             </div>
           </div>
         </div>
@@ -352,10 +618,7 @@ function Babillard() {
                 placeholder="Titre (optionnel)"
                 value={form.titre}
                 onChange={e => setForm(f => ({ ...f, titre: e.target.value }))}
-                style={{
-                  border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
-                  fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)', outline: 'none',
-                }}
+                style={inputStyle}
               />
               <div style={{ position: 'relative' }}>
                 <textarea
@@ -364,11 +627,7 @@ function Babillard() {
                   value={form.contenu}
                   onChange={handleContenuChange}
                   rows={4}
-                  style={{
-                    width: '100%', resize: 'none', border: '1px solid var(--border)', borderRadius: 10,
-                    padding: '10px 12px', fontSize: 14, background: 'var(--bg-secondary)',
-                    color: 'var(--text-primary)', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
-                  }}
+                  style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
                 />
                 {showTagMenu && membresFiltrés().length > 0 && (
                   <div style={{
@@ -388,6 +647,20 @@ function Babillard() {
                   </div>
                 )}
               </div>
+
+              {/* Catégorie */}
+              <input
+                placeholder="Catégorie (optionnel, ex: Urgence, Admin…)"
+                value={form.categorie}
+                onChange={e => setForm(f => ({ ...f, categorie: e.target.value }))}
+                style={inputStyle}
+                list="bab-categories"
+              />
+              {categories.length > 1 && (
+                <datalist id="bab-categories">
+                  {categories.filter(c => c !== 'Toutes').map(c => <option key={c} value={c} />)}
+                </datalist>
+              )}
 
               {/* Couleur */}
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -440,10 +713,24 @@ function Babillard() {
 
 // ─── TÂCHES ───────────────────────────────────────────────
 const STATUTS = [
-  { id: 'todo', label: 'À faire', couleur: 'var(--text-hint)', bg: 'var(--bg-secondary)' },
-  { id: 'en_cours', label: 'En cours', couleur: '#1976D2', bg: '#E3F2FD' },
-  { id: 'termine', label: 'Terminé', couleur: '#388E3C', bg: '#E8F5E9' },
+  { id: 'todo', label: 'À faire', couleur: '#666', bg: 'var(--bg-secondary)', icone: 'ti-circle' },
+  { id: 'en_cours', label: 'En cours', couleur: '#1976D2', bg: '#E3F2FD', icone: 'ti-clock' },
+  { id: 'termine', label: 'Terminé', couleur: '#388E3C', bg: '#E8F5E9', icone: 'ti-circle-check' },
 ]
+
+function BadgeStatut({ statut, onClick }) {
+  const s = STATUTS.find(x => x.id === statut) || STATUTS[0]
+  return (
+    <button onClick={onClick} style={{
+      fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999,
+      border: 'none', cursor: onClick ? 'pointer' : 'default',
+      background: s.bg, color: s.couleur, display: 'flex', alignItems: 'center', gap: 4,
+    }}>
+      <i className={`ti ${s.icone}`} style={{ fontSize: 11 }}></i>
+      {s.label}
+    </button>
+  )
+}
 
 function Taches() {
   const { teamId } = useProfil()
@@ -452,6 +739,8 @@ function Taches() {
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
   const [showForm, setShowForm] = useState(false)
+  const [tacheActive, setTacheActive] = useState(null)
+  const [editForm, setEditForm] = useState(null)
   const [confirmSupprimer, setConfirmSupprimer] = useState(null)
   const [form, setForm] = useState({ titre: '', description: '', assignee_id: '', date_echeance: '' })
   const [saving, setSaving] = useState(false)
@@ -492,14 +781,15 @@ function Taches() {
     setLoading(false)
   }
 
-  async function changerStatut(tache, nouveauStatut) {
+  async function toggleTermine(tache) {
     const { data: { user } } = await supabase.auth.getUser()
+    const nouveauStatut = tache.statut === 'termine' ? 'todo' : 'termine'
     await supabase.from('taches').update({
       statut: nouveauStatut,
       modifie_par: user.id,
       modifie_le: new Date().toISOString(),
     }).eq('id', tache.id)
-    charger()
+    setTaches(prev => prev.map(t => t.id === tache.id ? { ...t, statut: nouveauStatut } : t))
   }
 
   async function creerTache() {
@@ -522,10 +812,42 @@ function Taches() {
     setSaving(false)
   }
 
+  async function sauvegarderEdit() {
+    if (!editForm?.titre?.trim()) return
+    setSaving(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    await supabase.from('taches').update({
+      titre: editForm.titre.trim(),
+      description: editForm.description?.trim() || null,
+      assignee_id: editForm.assignee_id || null,
+      date_echeance: editForm.date_echeance || null,
+      statut: editForm.statut,
+      modifie_par: user.id,
+      modifie_le: new Date().toISOString(),
+    }).eq('id', tacheActive.id)
+    setTaches(prev => prev.map(t => t.id === tacheActive.id ? { ...t, ...editForm } : t))
+    setTacheActive(null)
+    setEditForm(null)
+    setSaving(false)
+  }
+
+  function ouvrirEdit(tache) {
+    setTacheActive(tache)
+    setEditForm({
+      titre: tache.titre || '',
+      description: tache.description || '',
+      assignee_id: tache.assignee_id || '',
+      date_echeance: tache.date_echeance ? tache.date_echeance.slice(0, 10) : '',
+      statut: tache.statut || 'todo',
+    })
+  }
+
   async function supprimerTache(id) {
     await supabase.from('taches').delete().eq('id', id)
     setTaches(prev => prev.filter(t => t.id !== id))
     setConfirmSupprimer(null)
+    setTacheActive(null)
+    setEditForm(null)
   }
 
   function formatDate(iso) {
@@ -545,85 +867,15 @@ function Taches() {
     items: taches.filter(t => t.statut === s.id),
   }))
 
+  const inputStyle = {
+    border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
+    fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
+    outline: 'none', width: '100%', boxSizing: 'border-box',
+  }
+
   return (
     <div style={{ padding: '16px 16px 80px' }}>
       {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>}
-
-      {tachesParStatut.map(groupe => groupe.items.length > 0 && (
-        <div key={groupe.id} style={{ marginBottom: 20 }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: groupe.couleur, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
-            {groupe.label} ({groupe.items.length})
-          </p>
-          {groupe.items.map(tache => {
-            const echeance = formatDate(tache.date_echeance)
-            return (
-              <div key={tache.id} style={{
-                background: 'var(--bg-card)', borderRadius: 12, padding: '12px 14px',
-                border: '1px solid var(--border)', marginBottom: 8,
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0, flex: 1,
-                    textDecoration: tache.statut === 'termine' ? 'line-through' : 'none',
-                    opacity: tache.statut === 'termine' ? 0.6 : 1,
-                  }}>
-                    {tache.titre}
-                  </p>
-                  <button onClick={() => setConfirmSupprimer(tache.id)} style={{
-                    background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)', fontSize: 14, padding: 0,
-                  }}>
-                    <i className="ti ti-trash"></i>
-                  </button>
-                </div>
-
-                {tache.description && (
-                  <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '4px 0 0', lineHeight: 1.4 }}>
-                    {tache.description}
-                  </p>
-                )}
-
-                <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', gap: 4 }}>
-                    {STATUTS.map(s => (
-                      <button key={s.id} onClick={() => changerStatut(tache, s.id)} style={{
-                        fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 999,
-                        border: 'none', cursor: 'pointer',
-                        background: tache.statut === s.id ? s.bg : 'var(--bg-secondary)',
-                        color: tache.statut === s.id ? s.couleur : 'var(--text-hint)',
-                      }}>
-                        {s.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div style={{ flex: 1 }} />
-
-                  {tache.assignee_id && membres.find(m => m.user_id === tache.assignee_id) && (
-                    <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-                      <i className="ti ti-user" style={{ marginRight: 3 }}></i>
-                      {membres.find(m => m.user_id === tache.assignee_id)?.profiles?.nom}
-                    </span>
-                  )}
-
-                  {echeance && (
-                    <span style={{
-                      fontSize: 11, fontWeight: 600,
-                      color: echeance.rouge ? 'var(--accent-red)' : echeance.orange ? '#F57C00' : 'var(--text-hint)',
-                    }}>
-                      <i className="ti ti-calendar" style={{ marginRight: 3 }}></i>{echeance.texte}
-                    </span>
-                  )}
-                </div>
-
-                {tache.modifie_par && tache.modifie_le && (
-                  <p style={{ fontSize: 11, color: 'var(--text-hint)', margin: '6px 0 0' }}>
-                    Modifié par {membres.find(m => m.user_id === tache.modifie_par)?.profiles?.nom || 'un membre'} · {new Date(tache.modifie_le).toLocaleString('fr-CA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      ))}
 
       {!loading && taches.length === 0 && (
         <div style={{ textAlign: 'center', padding: '40px 0' }}>
@@ -632,59 +884,105 @@ function Taches() {
         </div>
       )}
 
+      {tachesParStatut.map(groupe => groupe.items.length > 0 && (
+        <div key={groupe.id} style={{ marginBottom: 20 }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: groupe.couleur, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+            {groupe.label} ({groupe.items.length})
+          </p>
+          {groupe.items.map(tache => {
+            const echeance = formatDate(tache.date_echeance)
+            const termine = tache.statut === 'termine'
+            return (
+              <div key={tache.id} style={{
+                background: 'var(--bg-card)', borderRadius: 12, padding: '12px 14px',
+                border: '1px solid var(--border)', marginBottom: 8,
+                display: 'flex', gap: 12, alignItems: 'flex-start',
+              }}>
+                {/* Checkbox circle */}
+                <button
+                  onClick={() => toggleTermine(tache)}
+                  style={{
+                    flexShrink: 0, width: 24, height: 24, borderRadius: '50%', border: 'none',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 16, marginTop: 1,
+                    background: termine ? '#388E3C' : 'transparent',
+                    color: termine ? '#fff' : 'var(--text-hint)',
+                    outline: termine ? 'none' : '2px solid var(--border)',
+                  }}
+                >
+                  {termine && <i className="ti ti-check" style={{ fontSize: 13 }}></i>}
+                </button>
+
+                {/* Contenu cliquable */}
+                <div style={{ flex: 1, cursor: 'pointer', minWidth: 0 }} onClick={() => ouvrirEdit(tache)}>
+                  <p style={{
+                    fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0,
+                    textDecoration: termine ? 'line-through' : 'none',
+                    opacity: termine ? 0.5 : 1,
+                  }}>
+                    {tache.titre}
+                  </p>
+                  {tache.description && (
+                    <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '3px 0 0', lineHeight: 1.4 }}>
+                      {tache.description}
+                    </p>
+                  )}
+                  <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <BadgeStatut statut={tache.statut} />
+                    {tache.assignee_id && membres.find(m => m.user_id === tache.assignee_id) && (
+                      <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
+                        <i className="ti ti-user" style={{ marginRight: 3 }}></i>
+                        {membres.find(m => m.user_id === tache.assignee_id)?.profiles?.nom}
+                      </span>
+                    )}
+                    {echeance && (
+                      <span style={{
+                        fontSize: 11, fontWeight: 600,
+                        color: echeance.rouge ? 'var(--accent-red)' : echeance.orange ? '#F57C00' : 'var(--text-hint)',
+                      }}>
+                        <i className="ti ti-calendar" style={{ marginRight: 3 }}></i>{echeance.texte}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      ))}
+
       <button className="btn-fab" onClick={() => setShowForm(true)}>+</button>
 
+      {/* Popup: nouvelle tâche */}
       {showForm && (
         <div className="popup-overlay" onClick={() => setShowForm(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Nouvelle tâche</p>
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <input
                 placeholder="Titre de la tâche *"
                 value={form.titre}
                 onChange={e => setForm(f => ({ ...f, titre: e.target.value }))}
-                style={{
-                  border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
-                  fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-                  outline: 'none',
-                }}
+                style={inputStyle}
               />
               <textarea
                 placeholder="Description (optionnel)"
                 value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 rows={2}
-                style={{
-                  border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
-                  fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-                  outline: 'none', resize: 'none', fontFamily: 'inherit',
-                }}
+                style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
               />
-              <select
-                value={form.assignee_id}
-                onChange={e => setForm(f => ({ ...f, assignee_id: e.target.value }))}
-                style={{
-                  border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
-                  fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-                }}
-              >
+              <select value={form.assignee_id} onChange={e => setForm(f => ({ ...f, assignee_id: e.target.value }))} style={inputStyle}>
                 <option value="">Assigner à… (optionnel)</option>
-                {membres.map(m => (
-                  <option key={m.user_id} value={m.user_id}>{m.profiles?.nom}</option>
-                ))}
+                {membres.map(m => <option key={m.user_id} value={m.user_id}>{m.profiles?.nom}</option>)}
               </select>
               <input
                 type="date"
                 value={form.date_echeance}
                 onChange={e => setForm(f => ({ ...f, date_echeance: e.target.value }))}
-                style={{
-                  border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
-                  fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-                }}
+                style={inputStyle}
               />
             </div>
-
             <div className="popup-actions-centrees" style={{ marginTop: 20 }}>
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setShowForm(false)}>Annuler</button>
               <button
@@ -703,6 +1001,87 @@ function Taches() {
         </div>
       )}
 
+      {/* Popup: modifier une tâche */}
+      {tacheActive && editForm && (
+        <div className="popup-overlay" onClick={() => { setTacheActive(null); setEditForm(null) }}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Modifier la tâche</p>
+              <button onClick={() => setConfirmSupprimer(tacheActive.id)} style={{
+                background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent-red)', fontSize: 18,
+              }}>
+                <i className="ti ti-trash"></i>
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <input
+                placeholder="Titre *"
+                value={editForm.titre}
+                onChange={e => setEditForm(f => ({ ...f, titre: e.target.value }))}
+                style={inputStyle}
+              />
+              <textarea
+                placeholder="Description (optionnel)"
+                value={editForm.description}
+                onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+                rows={2}
+                style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
+              />
+              <select value={editForm.assignee_id} onChange={e => setEditForm(f => ({ ...f, assignee_id: e.target.value }))} style={inputStyle}>
+                <option value="">Assigner à… (optionnel)</option>
+                {membres.map(m => <option key={m.user_id} value={m.user_id}>{m.profiles?.nom}</option>)}
+              </select>
+              <input
+                type="date"
+                value={editForm.date_echeance}
+                onChange={e => setEditForm(f => ({ ...f, date_echeance: e.target.value }))}
+                style={inputStyle}
+              />
+
+              <div>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Statut</p>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {STATUTS.map(s => (
+                    <button
+                      key={s.id}
+                      onClick={() => setEditForm(f => ({ ...f, statut: s.id }))}
+                      style={{
+                        fontSize: 12, fontWeight: 700, padding: '6px 14px', borderRadius: 999,
+                        border: editForm.statut === s.id ? `2px solid ${s.couleur}` : '2px solid transparent',
+                        cursor: 'pointer',
+                        background: editForm.statut === s.id ? s.bg : 'var(--bg-secondary)',
+                        color: editForm.statut === s.id ? s.couleur : 'var(--text-hint)',
+                        display: 'flex', alignItems: 'center', gap: 5,
+                      }}
+                    >
+                      <i className={`ti ${s.icone}`} style={{ fontSize: 12 }}></i>
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="popup-actions-centrees" style={{ marginTop: 20 }}>
+              <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => { setTacheActive(null); setEditForm(null) }}>Annuler</button>
+              <button
+                style={{
+                  flex: 1, background: 'var(--primary)', color: '#fff', border: 'none',
+                  borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 700,
+                  cursor: editForm.titre.trim() ? 'pointer' : 'not-allowed', opacity: editForm.titre.trim() ? 1 : 0.5,
+                }}
+                onClick={sauvegarderEdit}
+                disabled={!editForm.titre.trim() || saving}
+              >
+                {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup: confirmer suppression */}
       {confirmSupprimer && (
         <div className="popup-overlay" onClick={() => setConfirmSupprimer(null)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
