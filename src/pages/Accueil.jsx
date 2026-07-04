@@ -9,6 +9,13 @@ function ClocheMiniAccueil() {
   const [open, setOpen] = useState(false)
   const [notifs, setNotifs] = useState([])
   const { estEquipe } = useProfil()
+  const navigate = useNavigate()
+
+  function naviguerNotif(notif) {
+    setOpen(false)
+    if (notif.reference_type === 'babillard') navigate('/equipe?tab=babillard')
+    else if (notif.reference_type === 'tache') navigate('/equipe?tab=taches')
+  }
 
   useEffect(() => {
     if (!estEquipe) return
@@ -90,10 +97,14 @@ function ClocheMiniAccueil() {
             ) : (
               <div style={{ maxHeight: 320, overflow: 'auto' }}>
                 {notifs.map(n => (
-                  <div key={n.id} style={{
-                    padding: '12px 16px', borderBottom: '1px solid var(--border)',
-                    background: n.lu ? 'transparent' : 'var(--bg-secondary)',
-                  }}>
+                  <div key={n.id}
+                    onClick={() => naviguerNotif(n)}
+                    style={{
+                      padding: '12px 16px', borderBottom: '1px solid var(--border)',
+                      background: n.lu ? 'transparent' : 'var(--bg-secondary)',
+                      cursor: n.reference_type ? 'pointer' : 'default',
+                    }}
+                  >
                     <p style={{ fontSize: 13, color: 'var(--text-primary)', margin: 0, lineHeight: 1.4 }}>{n.message}</p>
                     <p style={{ fontSize: 11, color: 'var(--text-hint)', margin: '4px 0 0' }}>
                       {new Date(n.created_at).toLocaleString('fr-CA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}

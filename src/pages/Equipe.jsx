@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
 
@@ -375,7 +375,7 @@ function Babillard() {
       ? membres.filter(m => m.user_id !== user.id).map(m => m.user_id)
       : membres.filter(m => m.profiles?.nom && form.contenu.includes('@' + m.profiles.nom)).map(m => m.user_id)
 
-    await supabase.from('babillard_messages').insert({
+    const { data: newMsg } = await supabase.from('babillard_messages').insert({
       team_id: teamId,
       user_id: user.id,
       titre: form.titre.trim() || null,
@@ -383,7 +383,7 @@ function Babillard() {
       couleur: form.couleur,
       ...(form.categorie.trim() ? { categorie: form.categorie.trim() } : {}),
       ...(taggedIds.length > 0 ? { tags: taggedIds } : {}),
-    })
+    }).select('id').single()
 
     if (taggedIds.length > 0) {
       const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
@@ -396,6 +396,7 @@ function Babillard() {
             ? `${auteurNom} a tagué toute l'équipe dans le babillard`
             : `${auteurNom} vous a tagué dans le babillard`,
           reference_type: 'babillard',
+          reference_id: newMsg?.id || null,
         }))
       )
     }
@@ -856,7 +857,7 @@ function Taches() {
     if (!form.titre.trim()) return
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
-    await supabase.from('taches').insert({
+    const { data: newTache } = await supabase.from('taches').insert({
       team_id: teamId,
       titre: form.titre.trim(),
       description: form.description.trim() || null,
@@ -866,7 +867,7 @@ function Taches() {
       created_by: user.id,
       modifie_par: user.id,
       modifie_le: new Date().toISOString(),
-    })
+    }).select('id').single()
     if (form.assignee_id && form.assignee_id !== user.id) {
       const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
       await supabase.from('notifications').insert({
@@ -874,6 +875,7 @@ function Taches() {
         type: 'tache_assignee',
         message: `${monProfil?.nom || user.email} vous a assigné une tâche : ${form.titre.trim()}`,
         reference_type: 'tache',
+        reference_id: newTache?.id || null,
       })
     }
     setForm({ titre: '', description: '', assignee_id: '', date_echeance: '' })
@@ -902,6 +904,7 @@ function Taches() {
         type: 'tache_assignee',
         message: `${monProfil?.nom || user.email} vous a assigné une tâche : ${editForm.titre.trim()}`,
         reference_type: 'tache',
+        reference_id: tacheActive.id,
       })
     }
     setTaches(prev => prev.map(t => t.id === tacheActive.id ? { ...t, ...editForm } : t))
@@ -1204,6 +1207,13 @@ function ClocheMini() {
   const [open, setOpen] = useState(false)
   const [notifs, setNotifs] = useState([])
   const { estEquipe } = useProfil()
+  const navigate = useNavigate()
+
+  function naviguerNotif(notif) {
+    setOpen(false)
+    if (notif.reference_type === 'babillard') navigate('/equipe?tab=babillard')
+    else if (notif.reference_type === 'tache') navigate('/equipe?tab=taches')
+  }
 
   useEffect(() => {
     if (!estEquipe) return
@@ -1285,10 +1295,14 @@ function ClocheMini() {
             ) : (
               <div style={{ maxHeight: 320, overflow: 'auto' }}>
                 {notifs.map(n => (
-                  <div key={n.id} style={{
-                    padding: '12px 16px', borderBottom: '1px solid var(--border)',
-                    background: n.lu ? 'transparent' : 'var(--bg-secondary)',
-                  }}>
+                  <div key={n.id}
+                    onClick={() => naviguerNotif(n)}
+                    style={{
+                      padding: '12px 16px', borderBottom: '1px solid var(--border)',
+                      background: n.lu ? 'transparent' : 'var(--bg-secondary)',
+                      cursor: n.reference_type ? 'pointer' : 'default',
+                    }}
+                  >
                     <p style={{ fontSize: 13, color: 'var(--text-primary)', margin: 0, lineHeight: 1.4 }}>{n.message}</p>
                     <p style={{ fontSize: 11, color: 'var(--text-hint)', margin: '4px 0 0' }}>
                       {new Date(n.created_at).toLocaleString('fr-CA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
@@ -1306,7 +1320,9 @@ function ClocheMini() {
 
 // ─── PAGE ÉQUIPE ──────────────────────────────────────────
 export default function Equipe() {
-  const [sousOnglet, setSousOnglet] = useState('notes')
+  const [searchParams] = useSearchParams()
+  const tabParam = searchParams.get('tab')
+  const [sousOnglet, setSousOnglet] = useState(tabParam || 'notes')
   const { estEquipe, chargement, roleEquipe } = useProfil()
   const navigate = useNavigate()
 

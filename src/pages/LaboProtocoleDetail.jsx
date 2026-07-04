@@ -230,7 +230,7 @@ async function supprimerProtocole() {
           }}>
             {type === 'base' ? 'Personnaliser ce protocole' : 'Modifier le protocole'}
           </button>
-        )}
+        ) : null}
       </div>
 
       {/* ─── TITRE ──────────────────────────── */}
