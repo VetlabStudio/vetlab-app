@@ -85,6 +85,9 @@ const LaRadiologieCharteForm = lazy(() => import('./pages/LaRadiologieCharteForm
 const Toxicologie = lazy(() => import('./pages/Toxicologie'))
 const Notes = lazy(() => import('./pages/Notes'))
 const NoteDetail = lazy(() => import('./pages/NoteDetail'))
+const Equipe = lazy(() => import('./pages/Equipe'))
+const EquipeGestion = lazy(() => import('./pages/EquipeGestion'))
+const RejoindreEquipe = lazy(() => import('./pages/RejoindreEquipe'))
 const Chirurgie = lazy(() => import('./pages/Chirurgie'))
 const ChirurgieInstruments = lazy(() => import('./pages/ChirurgieInstruments'))
 const ChirurgieTubes = lazy(() => import('./pages/ChirurgieTubes'))
@@ -225,6 +228,9 @@ export default function App() {
         <Route path="/accueil" element={<RouteProtegee session={session}><Accueil /></RouteProtegee>} />
         <Route path="/notes" element={<RouteProtegee session={session}><Notes /></RouteProtegee>} />
         <Route path="/notes/:id" element={<RouteProtegee session={session}><NoteDetail /></RouteProtegee>} />
+        <Route path="/equipe" element={<RouteProtegee session={session}><Equipe /></RouteProtegee>} />
+        <Route path="/equipe/gestion" element={<RouteProtegee session={session}><EquipeGestion /></RouteProtegee>} />
+        <Route path="/rejoindre" element={<Suspense fallback={null}><RejoindreEquipe /></Suspense>} />
 
         {/* CALCULATEURS */}
         <Route path="/calculateurs" element={<RouteProtegee session={session}><Calculateurs /></RouteProtegee>} />
