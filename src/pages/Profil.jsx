@@ -8,6 +8,10 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 const PRICE_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_MONTHLY
 const PRICE_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_ANNUAL
 
+const FORFAITS_EQUIPE = [
+  { id: 'price_1TpY3sGqH2jbhVzIxpxGTHPD', sieges: '6 à 10', prix: '449', periode: 'par année' },
+]
+
 export default function Profil() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -43,7 +47,13 @@ export default function Profil() {
   useEffect(() => {
     chargerProfil()
     if (searchParams.get('paiement') === 'succes') {
-      afficherSucces('Abonnement Pro activé ! Bienvenue dans la famille Pro.')
+      const plan = sessionStorage.getItem('checkout_plan') || 'pro'
+      sessionStorage.removeItem('checkout_plan')
+      if (plan === 'equipe') {
+        afficherSucces('Abonnement Équipe activé ! Bienvenue dans le forfait Équipe.')
+      } else {
+        afficherSucces('Abonnement Pro activé ! Bienvenue dans la famille Pro.')
+      }
       navigate('/profil', { replace: true })
     }
   }, [])
@@ -316,11 +326,11 @@ async function ouvrirPortail() {
               Accès complet : personnalisation des médicaments et protocoles de labo, outil d'examen, monitoring anesthésique, toxicologie et plus.
             </p>
             <div className="profil-stripe-choix">
-              <button className="profil-stripe-btn" onClick={() => ouvrirCheckout(PRICE_MONTHLY)} disabled={checkoutLoading}>
+              <button className="profil-stripe-btn" onClick={() => { sessionStorage.setItem('checkout_plan', 'pro'); ouvrirCheckout(PRICE_MONTHLY) }} disabled={checkoutLoading}>
                 <span className="profil-stripe-prix">7,99 $</span>
                 <span className="profil-stripe-periode">par mois</span>
               </button>
-              <button className="profil-stripe-btn profil-stripe-btn--annuel" onClick={() => ouvrirCheckout(PRICE_ANNUAL)} disabled={checkoutLoading}>
+              <button className="profil-stripe-btn profil-stripe-btn--annuel" onClick={() => { sessionStorage.setItem('checkout_plan', 'pro'); ouvrirCheckout(PRICE_ANNUAL) }} disabled={checkoutLoading}>
                 <span className="profil-stripe-economie">Économise 37 %</span>
                 <span className="profil-stripe-prix">59 $</span>
                 <span className="profil-stripe-periode">par année</span>
@@ -355,22 +365,28 @@ async function ouvrirPortail() {
               <span className="profil-forfait-nom">Équipe</span>
             </div>
             <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
-              Accès partagé pour toute la clinique, gestion des membres, babillard d'équipe, tâches et plus.
+              Accès partagé pour toute la clinique — fonctionnalités Pro incluses pour tous les membres, babillard d'équipe, tâches partagées et gestion des membres.
             </p>
-            <button
-              className="profil-portal-btn"
-              onClick={() => {
-                const sujet = encodeURIComponent('Intérêt — Forfait Équipe Adjuvet')
-                const corps = encodeURIComponent(
-                  `Bonjour,\n\nJe suis ${profil?.nom || ''} (${profil?.email || ''}) et je suis intéressé(e) par le forfait Équipe d'Adjuvet.\n\nMerci de me contacter.`
-                )
-                window.open(`mailto:info@vetlabstudio.ca?subject=${sujet}&body=${corps}`)
-                setInteretEnvoye(true)
-              }}
-            >
-              <i className="ti ti-building-hospital"></i>
-              {interetEnvoye ? 'Message envoyé !' : 'Nous contacter pour le forfait Équipe'}
-            </button>
+            <div className="profil-stripe-choix">
+              {FORFAITS_EQUIPE.map(f => (
+                <button
+                  key={f.id}
+                  className="profil-stripe-btn"
+                  onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(f.id) }}
+                  disabled={checkoutLoading}
+                  style={{ flex: 1 }}
+                >
+                  <span className="profil-stripe-prix">{f.prix} $</span>
+                  <span className="profil-stripe-periode">{f.periode}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 2 }}>{f.sieges} membres</span>
+                </button>
+              ))}
+            </div>
+            {checkoutLoading && (
+              <p style={{ fontSize: 12, color: 'var(--text-hint)', textAlign: 'center', marginTop: 8 }}>
+                Chargement du formulaire...
+              </p>
+            )}
           </div>
         )}
       </div>
