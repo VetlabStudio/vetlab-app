@@ -13,7 +13,8 @@ export default function DroguesCategorie({ categorie }) {
   const [dropdownOuvert, setDropdownOuvert] = useState(false)
   const [sousCategorieFiltree, setSousCategorieFiltree] = useState('Tous')
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro } = useProfil()
+  const { estPro, estEquipe, roleEquipe } = useProfil()
+  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
 
   useEffect(() => {
     chargerDonnees()
@@ -223,7 +224,7 @@ const tries = [...medsAvecCustom, ...(medsCustom || []).map(m => ({ ...m, estCus
           )}
         </div>
       )}
-      <button className="btn-fab" onClick={() => estPro ? navigate(`/drogues/ajouter?categorie=${encodeURIComponent(categorie)}`) : setShowProMsg(true)}>+</button>
+      {peutModifier && <button className="btn-fab" onClick={() => estPro ? navigate(`/drogues/ajouter?categorie=${encodeURIComponent(categorie)}`) : setShowProMsg(true)}>+</button>}
 
       {showProMsg && (
         <div className="popup-overlay" onClick={() => setShowProMsg(false)}>

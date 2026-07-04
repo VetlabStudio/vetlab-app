@@ -1,10 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useProfil } from '../context/ProfilContext'
 
 export default function LaboNouveauProtocole() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { estEquipe, roleEquipe } = useProfil()
+  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
+
+  useEffect(() => {
+    if (!peutModifier) navigate(-1)
+  }, [peutModifier])
   const categorieId = searchParams.get('categorie')
 
   const [titre, setTitre] = useState('')

@@ -13,8 +13,8 @@ export default function LaboProtocoles() {
   const [loading, setLoading] = useState(true)
   const { setTitreCustom } = useContext(TitreContext)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro } = useProfil()
-  console.log('estPro labo:', estPro)
+  const { estPro, estEquipe, roleEquipe } = useProfil()
+  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
 
   useEffect(() => {
   chargerDonnees()
@@ -62,15 +62,17 @@ export default function LaboProtocoles() {
       </div>
 
       {/* Bouton ajouter */}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-  <button
-    className="labo-btn-ajouter"
-    style={{ width: '100%' }}
-    onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${categorieId}`) : setShowProMsg(true)}
-  >
-    <i className="ti ti-plus"></i> Ajouter un protocole
-  </button>
-</div>
+      {peutModifier && (
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <button
+            className="labo-btn-ajouter"
+            style={{ width: '100%' }}
+            onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${categorieId}`) : setShowProMsg(true)}
+          >
+            <i className="ti ti-plus"></i> Ajouter un protocole
+          </button>
+        </div>
+      )}
       {showProMsg && (
   <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
     <div className="popup-card" onClick={e => e.stopPropagation()}>

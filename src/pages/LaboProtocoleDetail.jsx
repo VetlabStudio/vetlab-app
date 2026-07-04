@@ -19,7 +19,8 @@ export default function LaboProtocoleDetail() {
   const [showReorganiser, setShowReorganiser] = useState(false)
   const { setTitreCustom } = useContext(TitreContext)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro } = useProfil()
+  const { estPro, estEquipe, roleEquipe } = useProfil()
+  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(false)
 
   useEffect(() => {
@@ -219,16 +220,16 @@ async function supprimerProtocole() {
               Enregistrer
             </button>
           </>
-        ) : (
+        ) : peutModifier ? (
           <button className="labo-btn-secondary" onClick={() => {
-  if (type === 'base' && !estPro) {
-    setShowProMsg(true)
-  } else {
-    setModeEdit(true)
-  }
-}}>
-  {type === 'base' ? 'Personnaliser ce protocole' : 'Modifier le protocole'}
-</button>
+            if (type === 'base' && !estPro) {
+              setShowProMsg(true)
+            } else {
+              setModeEdit(true)
+            }
+          }}>
+            {type === 'base' ? 'Personnaliser ce protocole' : 'Modifier le protocole'}
+          </button>
         )}
       </div>
 

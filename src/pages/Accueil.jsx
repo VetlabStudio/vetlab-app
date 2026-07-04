@@ -56,7 +56,7 @@ function ClocheMiniAccueil() {
         onClick={() => { setOpen(o => !o); if (!open && count > 0) marquerLues() }}
         style={{
           background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px',
-          color: '#fff', fontSize: 22, position: 'relative', display: 'flex',
+          color: '#fff', fontSize: 30, position: 'relative', display: 'flex',
         }}
       >
         <i className="ti ti-bell"></i>
@@ -157,24 +157,16 @@ export default function Accueil() {
     <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
     <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
   </div>
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+  <div style={{ alignSelf: 'flex-start' }}>
     <ClocheMiniAccueil />
-    <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
   </div>
 </div>
 
       {/* SECTION CALCULATEURS */}
       <section className="accueil-v2-section">
-        {/* BOUTON PRÉCONSULTATION */}
-        <button className="accueil-v2-preconsult-btn" onClick={() => navigate('/soins-generaux/examen-physique')}>
-          <i className="ti ti-clipboard-heart"></i>
-          <span>Démarrer un examen</span>
-          <BadgePro />
-        </button>
-
         <h2 className="accueil-v2-titre-section">Boîte à outils</h2>
         <div className="accueil-v2-calc-grid">
-        {CALCULATEURS.map(c => (
+          {CALCULATEURS.map(c => (
             <button
               key={c.id}
               className="accueil-v2-calc-tuile"
@@ -187,6 +179,13 @@ export default function Accueil() {
             </button>
           ))}
         </div>
+
+        {/* BOUTON PRÉCONSULTATION */}
+        <button className="accueil-v2-preconsult-btn" onClick={() => navigate('/soins-generaux/examen-physique')}>
+          <i className="ti ti-clipboard-heart"></i>
+          <span>Démarrer un examen</span>
+          <BadgePro />
+        </button>
       </section>
 
       {/* SECTION RÉFÉRENCES */}

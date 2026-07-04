@@ -20,7 +20,8 @@ const DROGUES = [
 
 export default function Pharmacologie() {
   const navigate = useNavigate()
-  const { estPro } = useProfil()
+  const { estPro, estEquipe, roleEquipe } = useProfil()
+  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
   const [showProMsg, setShowProMsg] = useState(false)
 
   return (
@@ -43,7 +44,7 @@ export default function Pharmacologie() {
         ))}
       </div>
 
-      <button className="btn-fab" onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}>+</button>
+      {peutModifier && <button className="btn-fab" onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}>+</button>}
 
       {showProMsg && (
         <div className="popup-overlay" onClick={() => setShowProMsg(false)}>

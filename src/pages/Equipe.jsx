@@ -52,6 +52,10 @@ function NotesPerso() {
 
   function ouvrirEdit(note) {
     setNoteActive(note)
+    setEditForm(null)
+  }
+
+  function passerEnEdition(note) {
     setEditForm({ titre: note.titre || '', contenu: note.contenu || '', couleur: note.couleur || COULEURS[0], categorie: note.categorie || '' })
   }
 
@@ -203,13 +207,55 @@ function NotesPerso() {
         />
       )}
 
+      {/* Popup: lecture */}
+      {noteActive && !editForm && (
+        <div className="popup-overlay" onClick={() => setNoteActive(null)}>
+          <div className="popup-card" style={{ background: noteActive.couleur || '#FFF9C4' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {noteActive.categorie && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
+                    background: 'rgba(0,0,0,0.1)', color: '#444', display: 'inline-block', marginBottom: 6,
+                  }}>{noteActive.categorie}</span>
+                )}
+                {noteActive.titre && (
+                  <p style={{ fontSize: 16, fontWeight: 700, color: '#333', margin: '0 0 4px' }}>{noteActive.titre}</p>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 8 }}>
+                <button onClick={() => passerEnEdition(noteActive)} style={{
+                  background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
+                  padding: '6px 10px', cursor: 'pointer', color: '#555', fontSize: 14,
+                }}>
+                  <i className="ti ti-pencil"></i>
+                </button>
+                <button onClick={() => setConfirmSupprimer(noteActive.id)} style={{
+                  background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
+                  padding: '6px 10px', cursor: 'pointer', color: '#555', fontSize: 14,
+                }}>
+                  <i className="ti ti-trash"></i>
+                </button>
+              </div>
+            </div>
+            <p style={{ fontSize: 14, color: '#333', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>
+              {noteActive.contenu}
+            </p>
+            <div style={{ marginTop: 16 }}>
+              <button className="labo-btn-secondary" style={{ width: '100%' }} onClick={() => setNoteActive(null)}>Fermer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup: édition */}
       {noteActive && editForm && (
         <PopupNoteForm
           titrePop="Modifier la note"
           valeurs={editForm}
           setValeurs={setEditForm}
           onSauvegarder={sauvegarderEdit}
-          onAnnuler={() => { setNoteActive(null); setEditForm(null) }}
+          onAnnuler={() => setEditForm(null)}
           onSupprimer={() => setConfirmSupprimer(noteActive.id)}
           labelBtn="Sauvegarder"
         />
@@ -269,8 +315,8 @@ function Babillard() {
     return () => supabase.removeChannel(channel)
   }, [teamId])
 
-  async function charger() {
-    setLoading(true)
+  async function charger(silent = false) {
+    if (!silent) setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     setUserId(user.id)
 
@@ -324,10 +370,10 @@ function Babillard() {
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
 
-    const tags = [...form.contenu.matchAll(/@([\w\s]+?)(?=\s|$)/g)].map(m => m[1].trim())
-    const taggedIds = membres
-      .filter(m => tags.some(t => m.profiles?.nom?.toLowerCase() === t.toLowerCase()))
-      .map(m => m.user_id)
+    const tagEquipe = form.contenu.includes('@equipe')
+    const taggedIds = tagEquipe
+      ? membres.filter(m => m.user_id !== user.id).map(m => m.user_id)
+      : membres.filter(m => m.profiles?.nom && form.contenu.includes('@' + m.profiles.nom)).map(m => m.user_id)
 
     await supabase.from('babillard_messages').insert({
       team_id: teamId,
@@ -340,11 +386,15 @@ function Babillard() {
     })
 
     if (taggedIds.length > 0) {
+      const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
+      const auteurNom = monProfil?.nom || user.email
       await supabase.from('notifications').insert(
         taggedIds.map(uid => ({
           user_id: uid,
           type: 'tag_babillard',
-          message: `${user.email} vous a tagué dans le babillard`,
+          message: tagEquipe
+            ? `${auteurNom} a tagué toute l'équipe dans le babillard`
+            : `${auteurNom} vous a tagué dans le babillard`,
           reference_type: 'babillard',
         }))
       )
@@ -354,6 +404,7 @@ function Babillard() {
     setShowTagMenu(false)
     setShowForm(false)
     setSaving(false)
+    charger(true)
   }
 
   async function supprimerNote(id) {
@@ -629,12 +680,21 @@ function Babillard() {
                   rows={4}
                   style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
                 />
-                {showTagMenu && membresFiltrés().length > 0 && (
+                {showTagMenu && (membresFiltrés().length > 0 || 'equipe'.includes(form.contenu.slice(tagPos + 1, textareaRef.current?.selectionStart || form.contenu.length).toLowerCase())) && (
                   <div style={{
                     position: 'absolute', bottom: '100%', left: 0, right: 0,
                     background: 'var(--bg-card)', border: '1px solid var(--border)',
                     borderRadius: 10, padding: 4, zIndex: 10,
                   }}>
+                    {'equipe'.includes(form.contenu.slice(tagPos + 1, textareaRef.current?.selectionStart || form.contenu.length).toLowerCase()) && (
+                      <button onClick={() => insererTag('equipe')} style={{
+                        display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px',
+                        background: 'none', border: 'none', cursor: 'pointer', fontSize: 14,
+                        color: 'var(--primary)', fontWeight: 700, borderRadius: 8,
+                      }}>
+                        @equipe <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--text-hint)' }}>— notifier tout le monde</span>
+                      </button>
+                    )}
                     {membresFiltrés().map(m => (
                       <button key={m.user_id} onClick={() => insererTag(m.profiles?.nom)} style={{
                         display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px',
@@ -760,8 +820,8 @@ function Taches() {
     return () => supabase.removeChannel(channel)
   }, [teamId])
 
-  async function charger() {
-    setLoading(true)
+  async function charger(silent = false) {
+    if (!silent) setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
     setUserId(user.id)
 
@@ -807,9 +867,19 @@ function Taches() {
       modifie_par: user.id,
       modifie_le: new Date().toISOString(),
     })
+    if (form.assignee_id && form.assignee_id !== user.id) {
+      const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
+      await supabase.from('notifications').insert({
+        user_id: form.assignee_id,
+        type: 'tache_assignee',
+        message: `${monProfil?.nom || user.email} vous a assigné une tâche : ${form.titre.trim()}`,
+        reference_type: 'tache',
+      })
+    }
     setForm({ titre: '', description: '', assignee_id: '', date_echeance: '' })
     setShowForm(false)
     setSaving(false)
+    charger(true)
   }
 
   async function sauvegarderEdit() {
@@ -825,6 +895,15 @@ function Taches() {
       modifie_par: user.id,
       modifie_le: new Date().toISOString(),
     }).eq('id', tacheActive.id)
+    if (editForm.assignee_id && editForm.assignee_id !== tacheActive.assignee_id && editForm.assignee_id !== user.id) {
+      const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
+      await supabase.from('notifications').insert({
+        user_id: editForm.assignee_id,
+        type: 'tache_assignee',
+        message: `${monProfil?.nom || user.email} vous a assigné une tâche : ${editForm.titre.trim()}`,
+        reference_type: 'tache',
+      })
+    }
     setTaches(prev => prev.map(t => t.id === tacheActive.id ? { ...t, ...editForm } : t))
     setTacheActive(null)
     setEditForm(null)
@@ -852,14 +931,17 @@ function Taches() {
 
   function formatDate(iso) {
     if (!iso) return null
-    const d = new Date(iso)
+    const d = new Date(iso + 'T12:00:00')
     const auj = new Date()
     auj.setHours(0, 0, 0, 0)
-    const diff = Math.floor((new Date(iso).setHours(0,0,0,0) - auj) / 86400000)
+    const diff = Math.floor((new Date(iso + 'T00:00:00') - auj) / 86400000)
     if (diff < 0) return { texte: 'En retard', rouge: true }
     if (diff === 0) return { texte: "Aujourd'hui", orange: true }
     if (diff === 1) return { texte: 'Demain', orange: true }
-    return { texte: d.toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' }) }
+    const jour = d.toLocaleDateString('fr-CA', { weekday: 'long' })
+    const jourCap = jour.charAt(0).toUpperCase() + jour.slice(1)
+    const date = d.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })
+    return { texte: `${jourCap} le ${date}` }
   }
 
   const tachesParStatut = STATUTS.map(s => ({
@@ -976,12 +1058,20 @@ function Taches() {
                 <option value="">Assigner à… (optionnel)</option>
                 {membres.map(m => <option key={m.user_id} value={m.user_id}>{m.profiles?.nom}</option>)}
               </select>
-              <input
-                type="date"
-                value={form.date_echeance}
-                onChange={e => setForm(f => ({ ...f, date_echeance: e.target.value }))}
-                style={inputStyle}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="date"
+                  value={form.date_echeance}
+                  onChange={e => setForm(f => ({ ...f, date_echeance: e.target.value }))}
+                  style={{ ...inputStyle, color: form.date_echeance ? 'var(--text-primary)' : 'transparent' }}
+                />
+                {!form.date_echeance && (
+                  <span style={{
+                    position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+                    fontSize: 14, color: 'var(--text-hint)', pointerEvents: 'none',
+                  }}>Date d'échéance (optionnel)</span>
+                )}
+              </div>
             </div>
             <div className="popup-actions-centrees" style={{ marginTop: 20 }}>
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setShowForm(false)}>Annuler</button>
@@ -1032,12 +1122,20 @@ function Taches() {
                 <option value="">Assigner à… (optionnel)</option>
                 {membres.map(m => <option key={m.user_id} value={m.user_id}>{m.profiles?.nom}</option>)}
               </select>
-              <input
-                type="date"
-                value={editForm.date_echeance}
-                onChange={e => setEditForm(f => ({ ...f, date_echeance: e.target.value }))}
-                style={inputStyle}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="date"
+                  value={editForm.date_echeance}
+                  onChange={e => setEditForm(f => ({ ...f, date_echeance: e.target.value }))}
+                  style={{ ...inputStyle, color: editForm.date_echeance ? 'var(--text-primary)' : 'transparent' }}
+                />
+                {!editForm.date_echeance && (
+                  <span style={{
+                    position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
+                    fontSize: 14, color: 'var(--text-hint)', pointerEvents: 'none',
+                  }}>Date d'échéance (optionnel)</span>
+                )}
+              </div>
 
               <div>
                 <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Statut</p>

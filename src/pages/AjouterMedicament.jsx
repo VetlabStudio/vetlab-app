@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { TitreContext } from '../App'
+import { useProfil } from '../context/ProfilContext'
 
 const CATEGORIES = [
   'Anesthésiques / Analgésiques',
@@ -52,6 +53,12 @@ export default function AjouterMedicament() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { setTitreCustom } = useContext(TitreContext)
+  const { estEquipe, roleEquipe } = useProfil()
+  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
+
+  useEffect(() => {
+    if (!peutModifier) navigate(-1)
+  }, [peutModifier])
   const categorieParam = searchParams.get('categorie')
   const [form, setForm] = useState(
     CATEGORIES.includes(categorieParam) ? { ...VIDE, categorie: categorieParam } : VIDE

@@ -98,7 +98,8 @@ const { setTitreCustom } = useContext(TitreContext)
   const [resultat, setResultat] = useState(null)
   const [horsPlage, setHorsPlage] = useState(false)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro } = useProfil()
+  const { estPro, estEquipe, roleEquipe } = useProfil()
+  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
 const estProRef = useRef(estPro)
 estProRef.current = estPro
 
@@ -245,9 +246,9 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
       }).join(', ')
     : ''}
 </span></div>
-        <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => estPro ? navigate(`/drogues/fiche/${id}/personnaliser`) : setShowProMsg(true)}>
-  <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Modifier
-</button>
+        {peutModifier && <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => estPro ? navigate(`/drogues/fiche/${id}/personnaliser`) : setShowProMsg(true)}>
+          <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Modifier
+        </button>}
       </div>
 
       <div className="fiche-scroll">
