@@ -19,13 +19,20 @@ export default function RejoindreEquipe() {
   async function verifierToken() {
     const { data, error } = await supabase
       .from('team_invitations')
-      .select('*, equipes(nom)')
+      .select('*')
       .eq('token', token)
       .eq('status', 'pending')
       .single()
 
     if (error || !data) { setStatut('invalide'); return }
-    setInvitation(data)
+
+    const { data: equipeData } = await supabase
+      .from('equipes')
+      .select('nom')
+      .eq('id', data.team_id)
+      .single()
+
+    setInvitation({ ...data, equipes: equipeData })
     setStatut('valide')
   }
 
