@@ -84,22 +84,25 @@ export default function EquipeGestion() {
       const baseUrl = import.meta.env.VITE_APP_URL || 'https://adjuvet.app'
       const lien = `${baseUrl}/rejoindre?token=${token}`
       const nomClinique = equipe?.nom || 'notre équipe'
-      const sujet = encodeURIComponent(`Invitation à rejoindre ${nomClinique} sur Adjuvet`)
-      const corps = encodeURIComponent(
-        `Bonjour,\n\nVous avez été invité(e) à rejoindre ${nomClinique} sur Adjuvet.\n\nPour accepter l'invitation, suivez ces deux étapes :\n\n` +
-        `Étape 1 — Créer votre compte (ou vous connecter)\n` +
-        `Rendez-vous sur ${baseUrl} et créez un compte avec cette adresse courriel (${emailInvit.trim()}), ou connectez-vous si vous en avez déjà un.\n\n` +
-        `Étape 2 — Activer votre accès équipe\n` +
-        `Une fois connecté(e), cliquez sur le lien ci-dessous pour lier votre compte au forfait équipe de ${nomClinique} :\n${lien}\n\n` +
-        `À bientôt sur Adjuvet!`
-      )
-      window.open(`mailto:${emailInvit.trim()}?subject=${sujet}&body=${corps}`)
 
-      setMsgSucces(`Invitation créée — votre app courriel devrait s'ouvrir.`)
+      const { error: fnError } = await supabase.functions.invoke('send-invitation', {
+        body: {
+          email: emailInvit.trim().toLowerCase(),
+          nomClinique,
+          lien,
+          emailInvite: emailInvit.trim().toLowerCase(),
+        },
+      })
+
+      if (fnError) {
+        setErreurInvit("Invitation créée mais l'envoi du courriel a échoué. Transmets le lien manuellement.")
+      } else {
+        setMsgSucces(`Invitation envoyée à ${emailInvit.trim()}.`)
+      }
       setEmailInvit('')
       setRoleInvit('membre')
       charger()
-      setTimeout(() => setMsgSucces(''), 6000)
+      setTimeout(() => { setMsgSucces(''); setErreurInvit('') }, 6000)
     }
     setEnvoi(false)
   }
