@@ -308,7 +308,8 @@ function grouperParJour(notes) {
 
 // ─── BABILLARD (notes partagées) ──────────────────────────
 function Babillard() {
-  const { teamId } = useProfil()
+  const { teamId, roleEquipe } = useProfil()
+  const peutEpingler = roleEquipe === 'admin' || roleEquipe === 'proprietaire'
   const [notes, setNotes] = useState([])
   const [membres, setMembres] = useState([])
   const [loading, setLoading] = useState(true)
@@ -325,6 +326,10 @@ function Babillard() {
   const [form, setForm] = useState({ titre: '', contenu: '', couleur: COULEURS[0], categorie: '' })
   const [recherche, setRecherche] = useState('')
   const [filtreCategorie, setFiltreCategorie] = useState('Toutes')
+  const [showArchives, setShowArchives] = useState(false)
+  const [archives, setArchives] = useState([])
+  const [loadingArchives, setLoadingArchives] = useState(false)
+  const [rechercheArchives, setRechercheArchives] = useState('')
 
   useEffect(() => {
     if (!teamId) { setLoading(false); return }
@@ -346,10 +351,20 @@ function Babillard() {
     const { data: { user } } = await supabase.auth.getUser()
     setUserId(user.id)
 
+    const limite90j = new Date()
+    limite90j.setDate(limite90j.getDate() - 90)
+    await supabase.from('babillard_messages')
+      .update({ archived: true })
+      .eq('team_id', teamId)
+      .eq('archived', false)
+      .eq('epingle', false)
+      .lt('created_at', limite90j.toISOString())
+
     const { data: msgs } = await supabase
       .from('babillard_messages')
       .select('*, profiles(nom)')
       .eq('team_id', teamId)
+      .eq('archived', false)
       .order('created_at', { ascending: false })
 
     const { data: mems } = await supabase
@@ -360,6 +375,31 @@ function Babillard() {
     setNotes(msgs || [])
     setMembres(mems || [])
     setLoading(false)
+  }
+
+  async function chargerArchives() {
+    setLoadingArchives(true)
+    const { data } = await supabase
+      .from('babillard_messages')
+      .select('*, profiles(nom)')
+      .eq('team_id', teamId)
+      .eq('archived', true)
+      .order('created_at', { ascending: false })
+    setArchives(data || [])
+    setLoadingArchives(false)
+  }
+
+  async function toggleEpingle(note) {
+    const nouveau = !note.epingle
+    await supabase.from('babillard_messages').update({ epingle: nouveau }).eq('id', note.id)
+    setNotes(prev => prev.map(n => n.id === note.id ? { ...n, epingle: nouveau } : n))
+    setNoteActive(prev => prev?.id === note.id ? { ...prev, epingle: nouveau } : prev)
+  }
+
+  async function archiverNote(id) {
+    await supabase.from('babillard_messages').update({ archived: true, epingle: false }).eq('id', id)
+    setNotes(prev => prev.filter(n => n.id !== id))
+    setNoteActive(null)
   }
 
   function handleContenuChange(e) {
@@ -491,11 +531,21 @@ function Babillard() {
 
   const categories = ['Toutes', ...new Set(notes.map(n => n.categorie).filter(Boolean))]
 
+  const notesEpinglees = notes.filter(n => n.epingle)
   const notesFiltrees = notes.filter(note => {
+    if (note.epingle) return false
     const nomAuteur = note.profiles?.nom?.toLowerCase() || ''
     const matchRecherche = !recherche.trim() || nomAuteur.includes(recherche.toLowerCase())
     const matchCategorie = filtreCategorie === 'Toutes' || note.categorie === filtreCategorie
     return matchRecherche && matchCategorie
+  })
+  const archivesFiltrees = archives.filter(note => {
+    if (!rechercheArchives.trim()) return true
+    const nomAuteur = note.profiles?.nom?.toLowerCase() || ''
+    const contenu = (note.contenu || '').toLowerCase()
+    const titre = (note.titre || '').toLowerCase()
+    const q = rechercheArchives.toLowerCase()
+    return nomAuteur.includes(q) || contenu.includes(q) || titre.includes(q)
   })
 
   return (
@@ -540,50 +590,96 @@ function Babillard() {
         </div>
       )}
 
-      {!loading && notes.length > 0 && notesFiltrees.length === 0 && (
+      {!loading && notes.length > 0 && notesFiltrees.length === 0 && notesEpinglees.length === 0 && (
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
           <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucun résultat.</p>
         </div>
       )}
 
+      {/* Notes épinglées */}
+      {!loading && notesEpinglees.length > 0 && (
+        <div style={{ marginBottom: 8 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-gold)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+            <i className="ti ti-pin"></i> Épinglées
+          </p>
+          <div className="notes-grille" style={{ width: '100%' }}>
+            {notesEpinglees.map(note => (
+              <div key={note.id} className="note-tuile" style={{ background: note.couleur || '#FFF9C4', cursor: 'pointer', outline: '2px solid var(--accent-gold)', outlineOffset: 1 }} onClick={() => setNoteActive(note)}>
+                <div className="note-tuile-header">
+                  {note.titre ? <p className="note-tuile-titre">{note.titre}</p> : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>}
+                </div>
+                {note.categorie && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4 }}>{note.categorie}</span>}
+                <p className="note-tuile-apercu" dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }} />
+                <p className="note-tuile-date"><span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>{' · '}{formatDate(note.created_at)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Notes normales groupées par jour */}
       {grouperParJour(notesFiltrees).map(groupe => (
         <div key={groupe.label}>
-          <p style={{
-            fontSize: 11, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase',
-            letterSpacing: 1, marginBottom: 8, marginTop: 12,
-          }}>{groupe.label}</p>
+          <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8, marginTop: 12 }}>{groupe.label}</p>
           <div className="notes-grille" style={{ width: '100%' }}>
             {groupe.notes.map(note => (
-              <div
-                key={note.id}
-                className="note-tuile"
-                style={{ background: note.couleur || '#FFF9C4', cursor: 'pointer' }}
-                onClick={() => setNoteActive(note)}
-              >
+              <div key={note.id} className="note-tuile" style={{ background: note.couleur || '#FFF9C4', cursor: 'pointer' }} onClick={() => setNoteActive(note)}>
                 <div className="note-tuile-header">
-                  {note.titre
-                    ? <p className="note-tuile-titre">{note.titre}</p>
-                    : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>
-                  }
+                  {note.titre ? <p className="note-tuile-titre">{note.titre}</p> : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>}
                 </div>
-                {note.categorie && (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
-                    background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4,
-                  }}>{note.categorie}</span>
-                )}
-                <p className="note-tuile-apercu"
-                  dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }}
-                />
-                <p className="note-tuile-date">
-                  <span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>
-                  {' · '}{formatDate(note.created_at)}
-                </p>
+                {note.categorie && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4 }}>{note.categorie}</span>}
+                <p className="note-tuile-apercu" dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }} />
+                <p className="note-tuile-date"><span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>{' · '}{formatDate(note.created_at)}</p>
               </div>
             ))}
           </div>
         </div>
       ))}
+
+      {/* Archives */}
+      {!loading && (
+        <div style={{ textAlign: 'center', marginTop: 24, marginBottom: 8 }}>
+          <button onClick={() => { setShowArchives(v => !v); if (!showArchives) chargerArchives() }} style={{
+            fontSize: 13, color: 'var(--text-hint)', background: 'none', border: '1px solid var(--border)',
+            borderRadius: 20, padding: '6px 16px', cursor: 'pointer',
+          }}>
+            <i className={`ti ti-${showArchives ? 'chevron-up' : 'archive'}`} style={{ marginRight: 6 }}></i>
+            {showArchives ? 'Masquer les archives' : 'Voir les archives'}
+          </button>
+        </div>
+      )}
+
+      {showArchives && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ position: 'relative', marginBottom: 10 }}>
+            <i className="ti ti-search" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-hint)', fontSize: 15, pointerEvents: 'none' }}></i>
+            <input
+              placeholder="Rechercher dans les archives…"
+              value={rechercheArchives}
+              onChange={e => setRechercheArchives(e.target.value)}
+              style={{ ...inputStyle, paddingLeft: 32 }}
+            />
+          </div>
+          {loadingArchives ? (
+            <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>
+          ) : archivesFiltrees.length === 0 ? (
+            <p style={{ fontSize: 14, color: 'var(--text-hint)', textAlign: 'center', padding: '16px 0' }}>Aucune archive{rechercheArchives ? ' pour cette recherche' : ''}.</p>
+          ) : (
+            <div className="notes-grille" style={{ width: '100%' }}>
+              {archivesFiltrees.map(note => (
+                <div key={note.id} className="note-tuile" style={{ background: note.couleur || '#FFF9C4', cursor: 'pointer', opacity: 0.75 }} onClick={() => setNoteActive(note)}>
+                  <div className="note-tuile-header">
+                    {note.titre ? <p className="note-tuile-titre">{note.titre}</p> : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>}
+                  </div>
+                  {note.categorie && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4 }}>{note.categorie}</span>}
+                  <p className="note-tuile-apercu" dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }} />
+                  <p className="note-tuile-date"><span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>{' · '}{formatDate(note.created_at)}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <button className="btn-fab" onClick={() => setShowForm(true)}>+</button>
 
@@ -607,6 +703,23 @@ function Babillard() {
                 </p>
               </div>
               <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 8 }}>
+                {peutEpingler && (
+                  <button onClick={() => toggleEpingle(noteActive)} style={{
+                    background: noteActive.epingle ? 'rgba(215,163,92,0.2)' : 'rgba(0,0,0,0.08)',
+                    border: 'none', borderRadius: 8, padding: '6px 10px', cursor: 'pointer',
+                    color: noteActive.epingle ? 'var(--accent-gold)' : '#555', fontSize: 14,
+                  }} title={noteActive.epingle ? 'Désépingler' : 'Épingler'}>
+                    <i className="ti ti-pin"></i>
+                  </button>
+                )}
+                {(noteActive.user_id === userId || peutEpingler) && (
+                  <button onClick={() => archiverNote(noteActive.id)} style={{
+                    background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
+                    padding: '6px 10px', cursor: 'pointer', color: '#555', fontSize: 14,
+                  }} title="Archiver">
+                    <i className="ti ti-archive"></i>
+                  </button>
+                )}
                 {noteActive.user_id === userId && (
                   <button onClick={() => ouvrirEditBab(noteActive)} style={{
                     background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
@@ -880,12 +993,13 @@ function Taches() {
   async function toggleTermine(tache) {
     const { data: { user } } = await supabase.auth.getUser()
     const nouveauStatut = tache.statut === 'termine' ? 'todo' : 'termine'
+    const maintenant = new Date().toISOString()
     await supabase.from('taches').update({
       statut: nouveauStatut,
       modifie_par: user.id,
-      modifie_le: new Date().toISOString(),
+      modifie_le: maintenant,
     }).eq('id', tache.id)
-    setTaches(prev => prev.map(t => t.id === tache.id ? { ...t, statut: nouveauStatut } : t))
+    setTaches(prev => prev.map(t => t.id === tache.id ? { ...t, statut: nouveauStatut, modifie_par: user.id, modifie_le: maintenant } : t))
   }
 
   async function creerTache() {
@@ -1214,6 +1328,13 @@ function Taches() {
                     </button>
                   ))}
                 </div>
+                {editForm.statut === 'termine' && tacheActive.modifie_par && (
+                  <p style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 10 }}>
+                    {'Terminé par '}
+                    {membres.find(m => m.user_id === tacheActive.modifie_par)?.profiles?.nom || 'un membre'}
+                    {tacheActive.modifie_le && (' le ' + new Date(tacheActive.modifie_le).toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' }))}
+                  </p>
+                )}
               </div>
             </div>
 
