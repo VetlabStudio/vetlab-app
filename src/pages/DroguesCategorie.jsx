@@ -13,17 +13,19 @@ export default function DroguesCategorie({ categorie }) {
   const [dropdownOuvert, setDropdownOuvert] = useState(false)
   const [sousCategorieFiltree, setSousCategorieFiltree] = useState('Tous')
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro, estEquipe, roleEquipe } = useProfil()
+  const { estPro, estEquipe, roleEquipe, teamId } = useProfil()
   const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
 
   useEffect(() => {
     chargerDonnees()
-  }, [categorie])
+  }, [categorie, estEquipe, teamId])
 
   async function chargerDonnees() {
     setLoading(true)
     try {
       const { data: { user } } = await supabase.auth.getUser()
+
+      const customFilter = estEquipe && teamId ? ['equipe_id', teamId] : ['user_id', user.id]
 
       const [{ data: meds }, { data: medsCustom }, { data: favs }] = await Promise.all([
   supabase
@@ -34,7 +36,7 @@ export default function DroguesCategorie({ categorie }) {
   supabase
     .from('medicaments_custom')
     .select('*')
-    .eq('user_id', user.id)
+    .eq(customFilter[0], customFilter[1])
     .eq('categorie', categorie)
     .is('medicament_id', null),
  supabase
@@ -49,7 +51,7 @@ export default function DroguesCategorie({ categorie }) {
       const medsCustomBase = await supabase
   .from('medicaments_custom')
   .select('*')
-  .eq('user_id', user.id)
+  .eq(customFilter[0], customFilter[1])
   .eq('categorie', categorie)
   .not('medicament_id', 'is', null)
 

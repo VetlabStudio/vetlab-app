@@ -19,7 +19,7 @@ export default function LaboProtocoles() {
   useEffect(() => {
   chargerDonnees()
   return () => setTitreCustom('')
-  }, [categorieId])
+  }, [categorieId, estEquipe, teamId])
 
   async function chargerDonnees() {
     setLoading(true)
