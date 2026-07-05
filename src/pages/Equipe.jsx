@@ -839,6 +839,7 @@ function Taches() {
   const [confirmSupprimer, setConfirmSupprimer] = useState(null)
   const [form, setForm] = useState({ titre: '', description: '', assignee_id: '', date_echeance: '' })
   const [saving, setSaving] = useState(false)
+  const [filtreMes, setFiltreMes] = useState(false)
 
   useEffect(() => {
     if (!teamId) { setLoading(false); return }
@@ -981,9 +982,10 @@ function Taches() {
     return { texte: `${jourCap} le ${date}` }
   }
 
+  const tachesFiltrees = filtreMes ? taches.filter(t => t.assignee_id === userId) : taches
   const tachesParStatut = STATUTS.map(s => ({
     ...s,
-    items: taches.filter(t => t.statut === s.id),
+    items: tachesFiltrees.filter(t => t.statut === s.id),
   }))
 
   const inputStyle = {
@@ -994,12 +996,29 @@ function Taches() {
 
   return (
     <div style={{ padding: '16px 16px 80px' }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+        {[{ id: false, label: 'Toutes' }, { id: true, label: 'Mes tâches' }].map(f => (
+          <button key={String(f.id)} onClick={() => setFiltreMes(f.id)} style={{
+            fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 999, cursor: 'pointer',
+            border: '1px solid var(--border)',
+            background: filtreMes === f.id ? 'var(--primary)' : 'var(--bg-card)',
+            color: filtreMes === f.id ? '#fff' : 'var(--text-secondary)',
+          }}>{f.label}</button>
+        ))}
+      </div>
+
       {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>}
 
       {!loading && taches.length === 0 && (
         <div style={{ textAlign: 'center', padding: '40px 0' }}>
           <i className="ti ti-checklist" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }}></i>
           <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune tâche pour l'instant.</p>
+        </div>
+      )}
+
+      {!loading && taches.length > 0 && tachesFiltrees.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '32px 0' }}>
+          <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune tâche assignée à vous.</p>
         </div>
       )}
 
@@ -1402,7 +1421,7 @@ export default function Equipe() {
             </button>
           ))}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', background: 'var(--primary)', borderRadius: '0 0 0 12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', background: 'var(--primary)', borderRadius: '0 0 0 12px', marginTop: -14 }}>
           {(roleEquipe === 'admin' || roleEquipe === 'proprietaire') && (
             <button onClick={() => navigate('/equipe/gestion')} style={{
               background: 'none', border: 'none', cursor: 'pointer', padding: '10px 12px',

@@ -62,6 +62,12 @@ export default function EquipeGestion() {
     }
 
     setEnvoi(true)
+    await supabase.from('team_invitations')
+      .delete()
+      .eq('team_id', teamId)
+      .eq('email', emailInvit.trim().toLowerCase())
+      .neq('status', 'pending')
+
     const token = crypto.randomUUID()
     const { error } = await supabase.from('team_invitations').insert({
       team_id: teamId,
@@ -73,7 +79,8 @@ export default function EquipeGestion() {
     })
 
     if (!error) {
-      const lien = `${window.location.origin}/rejoindre?token=${token}`
+      const baseUrl = import.meta.env.VITE_APP_URL || 'https://adjuvet.app'
+      const lien = `${baseUrl}/rejoindre?token=${token}`
       const nomClinique = equipe?.nom || 'notre équipe'
       const sujet = encodeURIComponent(`Invitation à rejoindre ${nomClinique} sur Adjuvet`)
       const corps = encodeURIComponent(
@@ -91,7 +98,7 @@ export default function EquipeGestion() {
   }
 
   async function annulerInvitation(id) {
-    await supabase.from('team_invitations').update({ status: 'expired' }).eq('id', id)
+    await supabase.from('team_invitations').delete().eq('id', id)
     setInvitations(prev => prev.filter(i => i.id !== id))
   }
 

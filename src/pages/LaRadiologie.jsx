@@ -8,7 +8,6 @@ const CATEGORIE_ID = 'af3ffd7b-ac2f-4e43-adf0-7108bf79099c'
 
 const REFERENCES = [
   { id: 'notions-base', label: 'Notions de base : mA, kVp et distance', icone: 'ti-radioactive', route: '/labo/radiologie/notions-base', pro: true },
-  { id: 'depannage', label: 'Dépannage', icone: 'ti-tool', route: '/labo/radiologie/depannage', pro: false },
   { id: 'charte', label: 'Charte radiographique personnalisée', icone: 'ti-notebook', route: '/labo/radiologie/charte', pro: true },
 ]
 
