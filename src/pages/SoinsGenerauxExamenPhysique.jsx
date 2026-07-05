@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 import { TitreContext } from '../App'
+import { useProfil } from '../context/ProfilContext'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
@@ -90,10 +91,12 @@ export default function SoinsGenerauxExamenPhysique() {
   const [showReinit, setShowReinit] = useState(false)
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(null)
   const [copie, setCopie] = useState(false)
+  const [showModifs, setShowModifs] = useState(false)
   const [popupEspece, setPopupEspece] = useState(false)
   const [rechercheHistorique, setRechercheHistorique] = useState('')
   const [joursOuverts, setJoursOuverts] = useState(() => new Set())
   const { setTitreCustom } = useContext(TitreContext)
+  const { profil, estEquipe, teamId } = useProfil()
 
   useEffect(() => {
     setTitreCustom(vue === 'formulaire' ? (currentId ? 'Modifier l\'examen' : 'Nouvel examen') : 'Démarrer un examen')
@@ -123,11 +126,10 @@ export default function SoinsGenerauxExamenPhysique() {
   async function chargerHistorique() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { data } = await supabase
-      .from('examens_physiques')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+    const query = supabase.from('examens_physiques').select('*').order('created_at', { ascending: false })
+    const { data } = estEquipe && teamId
+      ? await query.eq('equipe_id', teamId)
+      : await query.eq('user_id', user.id)
     setHistorique(data || [])
   }
 
@@ -171,9 +173,11 @@ export default function SoinsGenerauxExamenPhysique() {
         await supabase.from('examens_physiques').delete().eq('id', item.id)
       }
     }
+    const payload = { user_id: user.id, animal_nom: 'Sans nom', resume: '', donnees: nouveauForm }
+    if (estEquipe && teamId) payload.equipe_id = teamId
     const { data } = await supabase
       .from('examens_physiques')
-      .insert({ user_id: user.id, animal_nom: 'Sans nom', resume: '', donnees: nouveauForm })
+      .insert(payload)
       .select()
       .single()
     if (data) {
@@ -191,15 +195,15 @@ export default function SoinsGenerauxExamenPhysique() {
 
   function genererResume() {
     const lignes = []
+    const especeLabel = ESPECES.find(e => e.id === form.espece)?.label
     lignes.push('EXAMEN PHYSIQUE - PRÉCONSULTATION')
     lignes.push(`Animal : ${form.animalNom || '—'}`)
-    const especeLabel = ESPECES.find(e => e.id === form.espece)?.label
-    if (especeLabel) lignes.push(`Espèce : ${especeLabel}`)
-    if (form.race?.trim()) lignes.push(`Race : ${form.race.trim()}`)
-    if (form.sexe) lignes.push(`Sexe : ${form.sexe === 'femelle' ? 'Femelle' : 'Mâle'}${form.sterilise ? ' (stérilisé(e))' : ''}`)
-    if (form.poids) lignes.push(`Poids : ${form.poids} ${form.poidsUnite || 'kg'}`)
+    lignes.push(`Espèce : ${especeLabel || '—'}`)
+    lignes.push(`Race : ${form.race?.trim() || '—'}`)
+    lignes.push(`Sexe : ${form.sexe === 'femelle' ? 'Femelle' : form.sexe === 'male' ? 'Mâle' : '—'}${form.sexe && form.sterilise ? ' (stérilisé(e))' : ''}`)
+    lignes.push(`Poids : ${form.poids ? form.poids + ' ' + (form.poidsUnite || 'kg') : '—'}`)
     lignes.push(`Date : ${dateAffichee}`)
-    if (form.raisonVisite?.trim()) lignes.push(`Raison de la visite : ${form.raisonVisite.trim()}`)
+    lignes.push(`Raison de la visite : ${form.raisonVisite?.trim() || '—'}`)
     lignes.push('')
     lignes.push('Paramètres vitaux :')
     lignes.push(`- Température : ${form.temperature ? form.temperature + ' °C' : '—'}`)
@@ -220,14 +224,12 @@ export default function SoinsGenerauxExamenPhysique() {
       } else if (note.trim()) {
         lignes.push(`- ${s.titre} : ${note.trim()}`)
       } else {
-        lignes.push(`- ${s.titre} : Anormal - voir note`)
+        lignes.push(`- ${s.titre} : —`)
       }
     })
-    if (form.commentairesProprietaire.trim()) {
-      lignes.push('')
-      lignes.push('Commentaires du propriétaire :')
-      lignes.push(form.commentairesProprietaire.trim())
-    }
+    lignes.push('')
+    lignes.push('Commentaires du propriétaire :')
+    lignes.push(form.commentairesProprietaire?.trim() || '—')
     return lignes.join('\n')
   }
 
@@ -334,10 +336,16 @@ export default function SoinsGenerauxExamenPhysique() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
+    const maintenant = new Date().toISOString()
+    const entreeModif = { nom: profil?.nom || 'Membre', timestamp: maintenant }
+
     if (currentId) {
+      const { data: currentRec } = await supabase
+        .from('examens_physiques').select('historique_modifs').eq('id', currentId).single()
+      const modifs = [...(currentRec?.historique_modifs || []), entreeModif]
       await supabase
         .from('examens_physiques')
-        .update({ animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form, updated_at: new Date().toISOString() })
+        .update({ animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form, updated_at: maintenant, historique_modifs: modifs })
         .eq('id', currentId)
     } else {
       if (historique.length >= MAX_HISTORIQUE) {
@@ -348,11 +356,9 @@ export default function SoinsGenerauxExamenPhysique() {
           await supabase.from('examens_physiques').delete().eq('id', item.id)
         }
       }
-      const { data } = await supabase
-        .from('examens_physiques')
-        .insert({ user_id: user.id, animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form })
-        .select()
-        .single()
+      const payload = { user_id: user.id, animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form, historique_modifs: [entreeModif] }
+      if (estEquipe && teamId) payload.equipe_id = teamId
+      const { data } = await supabase.from('examens_physiques').insert(payload).select().single()
       if (data) setCurrentId(data.id)
     }
     await chargerHistorique()
@@ -427,8 +433,6 @@ export default function SoinsGenerauxExamenPhysique() {
     return Array.from(groupes.entries())
       .sort((a, b) => b[0].localeCompare(a[0]))
   }, [historique])
-
-
 
   function toggleJour(cle) {
     setJoursOuverts(prev => {
@@ -559,15 +563,53 @@ export default function SoinsGenerauxExamenPhysique() {
                 <span>{itemConsulte.animal_nom}</span>
                 <button className="popup-close" onClick={() => setItemConsulte(null)}>✕</button>
               </div>
-              <textarea
-                className="form-textarea"
-                style={{ width: '100%', minHeight: 320, fontFamily: 'monospace', fontSize: 12 }}
-                value={itemConsulte.resume}
-                readOnly
-              />
+              {itemConsulte.resume ? (
+                <textarea
+                  className="form-textarea"
+                  style={{ width: '100%', minHeight: 320, fontFamily: 'monospace', fontSize: 12 }}
+                  value={itemConsulte.resume}
+                  readOnly
+                />
+              ) : (
+                <div style={{ padding: '20px 0', textAlign: 'center' }}>
+                  <i className="ti ti-file-description" style={{ fontSize: 36, color: 'var(--text-hint)', display: 'block', marginBottom: 10 }}></i>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>Examen en cours</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 16 }}>Aucun résumé généré — l'examen n'a pas encore été finalisé.</p>
+                  {itemConsulte.donnees && (
+                    <div style={{ textAlign: 'left', background: 'var(--bg-secondary)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                      {itemConsulte.donnees.espece && <div><strong>Espèce :</strong> {itemConsulte.donnees.espece}</div>}
+                      {itemConsulte.donnees.race && <div><strong>Race :</strong> {itemConsulte.donnees.race}</div>}
+                      {itemConsulte.donnees.poids && <div><strong>Poids :</strong> {itemConsulte.donnees.poids} {itemConsulte.donnees.poidsUnite || 'kg'}</div>}
+                      {itemConsulte.donnees.raisonVisite && <div><strong>Raison :</strong> {itemConsulte.donnees.raisonVisite}</div>}
+                    </div>
+                  )}
+                </div>
+              )}
               <button className="labo-btn-primary" style={{ width: '100%', marginTop: 12 }} onClick={() => modifier(itemConsulte)}>
                 Modifier
               </button>
+              {itemConsulte.historique_modifs?.length > 0 && (
+                <div style={{ marginTop: 10, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                  <button
+                    onClick={() => setShowModifs(v => !v)}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: 'var(--bg-secondary)', border: 'none', cursor: 'pointer' }}
+                  >
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1 }}>
+                      Historique des modifications ({itemConsulte.historique_modifs.length})
+                    </span>
+                    <i className={`ti ti-chevron-${showModifs ? 'up' : 'down'}`} style={{ fontSize: 14, color: 'var(--text-hint)' }}></i>
+                  </button>
+                  {showModifs && (
+                    <div style={{ padding: '8px 12px 10px', background: 'var(--bg-card)', maxHeight: 220, overflowY: 'auto' }}>
+                      {[...itemConsulte.historique_modifs].reverse().map((m, i) => (
+                        <p key={i} style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                          Mis à jour par <strong>{m.nom}</strong> · {new Date(m.timestamp).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })} à {new Date(m.timestamp).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="popup-actions-centrees" style={{ marginTop: 8 }}>
                 <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => copierResume(itemConsulte.resume)}>
                   {copie ? 'Copié !' : 'Copier'}

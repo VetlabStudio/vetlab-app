@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate, Link } from 'react-router-dom'
 
@@ -7,7 +7,16 @@ export default function Connexion() {
   const [motDePasse, setMotDePasse] = useState('')
   const [erreur, setErreur] = useState(null)
   const [chargement, setChargement] = useState(false)
+  const [confirmé, setConfirmé] = useState(false)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const hash = window.location.hash
+    if (hash.includes('type=signup') || hash.includes('type=email_change')) {
+      setConfirmé(true)
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+  }, [])
 
   const handleConnexion = async (e) => {
     e.preventDefault()
@@ -32,6 +41,19 @@ export default function Connexion() {
       <div className="auth-card">
         <img src="/logo-adjuvet.png" alt="Vetlab Studio" className="auth-logo" />
         <h1 className="auth-titre">Connexion</h1>
+
+        {confirmé && (
+          <div style={{
+            background: 'rgba(76, 175, 80, 0.12)', border: '1px solid rgba(76, 175, 80, 0.4)',
+            borderRadius: 10, padding: '12px 16px', marginBottom: 16,
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <i className="ti ti-circle-check" style={{ fontSize: 20, color: '#4CAF50', flexShrink: 0 }}></i>
+            <p style={{ fontSize: 14, color: '#4CAF50', margin: 0, fontWeight: 600 }}>
+              Adresse courriel confirmée ! Tu peux maintenant te connecter.
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleConnexion} className="auth-form">
           <div className="champ">

@@ -53,7 +53,7 @@ export default function AjouterMedicament() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { setTitreCustom } = useContext(TitreContext)
-  const { estEquipe, roleEquipe } = useProfil()
+  const { estEquipe, roleEquipe, teamId } = useProfil()
   const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
 
   useEffect(() => {
@@ -134,6 +134,7 @@ export default function AjouterMedicament() {
       notes:               form.notes,
       especes:             form.especes,
     }
+    if (estEquipe && teamId) payload.equipe_id = teamId
 
     const { error } = await supabase.from('medicaments_custom').insert({
       ...payload,

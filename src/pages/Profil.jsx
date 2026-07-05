@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useProfil } from '../context/ProfilContext'
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
 
@@ -9,7 +10,7 @@ const PRICE_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_MONTHLY
 const PRICE_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_ANNUAL
 
 const FORFAITS_EQUIPE = [
-  { id: 'price_1TpY3sGqH2jbhVzIxpxGTHPD', sieges: 10, prix: '99', periode: 'par mois' },
+  { id: 'price_1TpY3sGqH2jbhVzIxpxGTHPD', sieges: '6 à 10', prix: '449', periode: 'par année' },
 ]
 
 export default function Profil() {
@@ -37,6 +38,9 @@ export default function Profil() {
   const [succes, setSucces] = useState('')
   const [saving, setSaving] = useState(false)
 
+  const { roleEquipe } = useProfil()
+  const peutGererAbonnement = !roleEquipe || roleEquipe === 'proprietaire' || roleEquipe === 'admin'
+
   // Stripe
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [clientSecret, setClientSecret] = useState(null)
@@ -47,7 +51,13 @@ export default function Profil() {
   useEffect(() => {
     chargerProfil()
     if (searchParams.get('paiement') === 'succes') {
-      afficherSucces('Abonnement Pro activé ! Bienvenue dans la famille Pro.')
+      const plan = sessionStorage.getItem('checkout_plan') || 'pro'
+      sessionStorage.removeItem('checkout_plan')
+      if (plan === 'equipe') {
+        afficherSucces('Abonnement Équipe activé ! Bienvenue dans le forfait Équipe.')
+      } else {
+        afficherSucces('Abonnement Pro activé ! Bienvenue dans la famille Pro.')
+      }
       navigate('/profil', { replace: true })
     }
   }, [])
@@ -131,7 +141,7 @@ export default function Profil() {
   // ─── DÉCONNEXION ──────────────────────────────
   async function deconnecter() {
     await supabase.auth.signOut()
-    navigate('/connexion')
+    window.location.href = '/connexion'
   }
 
   // ─── STRIPE PORTAL ────────────────────────────
@@ -306,10 +316,12 @@ async function ouvrirPortail() {
               <span className="profil-forfait-badge" style={{ color: 'var(--accent-gold)', background: 'rgba(215,163,92,0.15)' }}>Actif</span>
             </div>
             <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>Tu bénéficies de toutes les fonctionnalités Pro.</p>
-            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
-              <i className="ti ti-settings"></i>
-              {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
-            </button>
+            {peutGererAbonnement && (
+              <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
+                <i className="ti ti-settings"></i>
+                {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
+              </button>
+            )}
           </div>
         ) : !estEquipe ? (
           <div className="profil-forfait-item">
@@ -320,11 +332,11 @@ async function ouvrirPortail() {
               Accès complet : personnalisation des médicaments et protocoles de labo, outil d'examen, monitoring anesthésique, toxicologie et plus.
             </p>
             <div className="profil-stripe-choix">
-              <button className="profil-stripe-btn" onClick={() => ouvrirCheckout(PRICE_MONTHLY)} disabled={checkoutLoading}>
+              <button className="profil-stripe-btn" onClick={() => { sessionStorage.setItem('checkout_plan', 'pro'); ouvrirCheckout(PRICE_MONTHLY) }} disabled={checkoutLoading}>
                 <span className="profil-stripe-prix">7,99 $</span>
                 <span className="profil-stripe-periode">par mois</span>
               </button>
-              <button className="profil-stripe-btn profil-stripe-btn--annuel" onClick={() => ouvrirCheckout(PRICE_ANNUAL)} disabled={checkoutLoading}>
+              <button className="profil-stripe-btn profil-stripe-btn--annuel" onClick={() => { sessionStorage.setItem('checkout_plan', 'pro'); ouvrirCheckout(PRICE_ANNUAL) }} disabled={checkoutLoading}>
                 <span className="profil-stripe-economie">Économise 37 %</span>
                 <span className="profil-stripe-prix">59 $</span>
                 <span className="profil-stripe-periode">par année</span>
@@ -346,12 +358,14 @@ async function ouvrirPortail() {
               <span className="profil-forfait-badge" style={{ color: 'var(--primary)', background: 'rgba(37,77,86,0.1)' }}>Actif</span>
             </div>
             <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
-              Accès complet pour toute la clinique — fonctionnalités Pro incluses, base de données de médicaments et protocoles partagés, babillard d'équipe et panneau de tâches.
+              Accès complet pour toute la clinique — fonctionnalités Pro incluses, babillard d'équipe et panneau de tâches partagés. 449 $/an · 6 à 10 membres.
             </p>
-            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
-              <i className="ti ti-settings"></i>
-              {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
-            </button>
+            {peutGererAbonnement && (
+              <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
+                <i className="ti ti-settings"></i>
+                {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
+              </button>
+            )}
           </div>
         ) : (
           <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
@@ -359,20 +373,20 @@ async function ouvrirPortail() {
               <span className="profil-forfait-nom">Équipe</span>
             </div>
             <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
-              Accès partagé pour toute la clinique — fonctionnalités Pro incluses pour tous les membres, babillard d'équipe, tâches partagées et gestion des membres.
+              Accès partagé pour toute la clinique — fonctionnalités Pro incluses pour tous les membres, babillard d'équipe, tâches partagées et gestion des membres. 449 $/an · 6 à 10 membres.
             </p>
             <div className="profil-stripe-choix">
               {FORFAITS_EQUIPE.map(f => (
                 <button
                   key={f.id}
                   className="profil-stripe-btn"
-                  onClick={() => ouvrirCheckout(f.id)}
+                  onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(f.id) }}
                   disabled={checkoutLoading}
                   style={{ flex: 1 }}
                 >
                   <span className="profil-stripe-prix">{f.prix} $</span>
                   <span className="profil-stripe-periode">{f.periode}</span>
-                  <span style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 2 }}>jusqu'à {f.sieges} membres</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 2 }}>{f.sieges} membres</span>
                 </button>
               ))}
             </div>

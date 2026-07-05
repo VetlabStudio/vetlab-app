@@ -98,10 +98,14 @@ const { setTitreCustom } = useContext(TitreContext)
   const [resultat, setResultat] = useState(null)
   const [horsPlage, setHorsPlage] = useState(false)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro, estEquipe, roleEquipe } = useProfil()
+  const { estPro, estEquipe, roleEquipe, teamId } = useProfil()
   const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
 const estProRef = useRef(estPro)
 estProRef.current = estPro
+const estEquipeRef = useRef(estEquipe)
+estEquipeRef.current = estEquipe
+const teamIdRef = useRef(teamId)
+teamIdRef.current = teamId
 
 useEffect(() => {
   chargerDonnees()
@@ -171,10 +175,15 @@ useEffect(() => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
+      const isEquipe = estEquipeRef.current
+      const equipeId = teamIdRef.current
+
       const [{ data: medBase }, { data: medCustomParId }, { data: medCustomDirect }, { data: fav }, { data: profil }] = await Promise.all([
   supabase.from('medicaments').select('*').eq('id', id).maybeSingle(),
-  supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
-  supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('id', id).maybeSingle(),
+  isEquipe && equipeId
+    ? supabase.from('medicaments_custom').select('*').eq('equipe_id', equipeId).eq('medicament_id', id).maybeSingle()
+    : supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
+  supabase.from('medicaments_custom').select('*').eq('id', id).maybeSingle(),
   supabase.from('favoris').select('id').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
   supabase.from('profiles').select('role').eq('id', user.id).single(),
 ])

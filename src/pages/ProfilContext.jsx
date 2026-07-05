@@ -39,15 +39,23 @@ export function ProfilProvider({ children }) {
       return
     }
 
-    const { data: profilData } = await supabase
+    let { data: profilData } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
       .single()
 
-    if (profilData && !profilData.nom && user.user_metadata?.nom) {
-      await supabase.from('profiles').update({ nom: user.user_metadata.nom }).eq('id', user.id)
-      profilData.nom = user.user_metadata.nom
+    const nomMeta = user.user_metadata?.nom
+    if (!profilData && nomMeta) {
+      const { data: inserted } = await supabase
+        .from('profiles')
+        .upsert({ id: user.id, nom: nomMeta }, { onConflict: 'id' })
+        .select()
+        .single()
+      profilData = inserted
+    } else if (profilData && !profilData.nom && nomMeta) {
+      await supabase.from('profiles').update({ nom: nomMeta }).eq('id', user.id)
+      profilData = { ...profilData, nom: nomMeta }
     }
 
     setProfil(profilData)

@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import IconesEspeces from '../components/IconesEspeces'
+import { useProfil } from '../context/ProfilContext'
 
 export default function MesDrogues() {
   const navigate = useNavigate()
+  const { estEquipe, teamId } = useProfil()
   const [favoris, setFavoris] = useState([])
   const [loading, setLoading] = useState(true)
   const [especeFiltree, setEspeceFiltree] = useState('tous')
@@ -40,7 +42,9 @@ export default function MesDrogues() {
           ? supabase.from('medicaments_custom').select('*').in('id', idsCustom).order('nom', { ascending: true })
           : { data: [] },
         idsBase.length > 0
-          ? supabase.from('medicaments_custom').select('*').eq('user_id', user.id).in('medicament_id', idsBase).order('nom', { ascending: true })
+          ? estEquipe && teamId
+            ? supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).in('medicament_id', idsBase).order('nom', { ascending: true })
+            : supabase.from('medicaments_custom').select('*').eq('user_id', user.id).in('medicament_id', idsBase).order('nom', { ascending: true })
           : { data: [] },
       ])
 

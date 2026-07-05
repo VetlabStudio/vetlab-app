@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 import { TitreContext } from '../App'
+import { useProfil } from '../context/ProfilContext'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import IconesEspeces, { ESPECES_CONFIG } from '../components/IconesEspeces'
@@ -148,6 +149,7 @@ export default function ChirurgieMonitoring() {
   const [itemConsulte, setItemConsulte] = useState(null)
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(null)
   const [showResume, setShowResume] = useState(null)
+  const [showModifs, setShowModifs] = useState(false)
   const [copie, setCopie] = useState(false)
   const [popupEspece, setPopupEspece] = useState(false)
   const [rechercheHistorique, setRechercheHistorique] = useState('')
@@ -160,6 +162,7 @@ export default function ChirurgieMonitoring() {
   const [tousMedicaments, setTousMedicaments] = useState([])
 
   const { setTitreCustom } = useContext(TitreContext)
+  const { profil, estEquipe, teamId } = useProfil()
 
   useEffect(() => {
     if (vue === 'setup') setTitreCustom(currentId ? 'Modifier le monitoring' : 'Démarrer l\'anesthésie')
@@ -192,11 +195,10 @@ export default function ChirurgieMonitoring() {
   async function chargerHistorique() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { data } = await supabase
-      .from('monitorings_anesthesiques')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+    const query = supabase.from('monitorings_anesthesiques').select('*').order('created_at', { ascending: false })
+    const { data } = estEquipe && teamId
+      ? await query.eq('equipe_id', teamId)
+      : await query.eq('user_id', user.id)
     setHistorique(data || [])
   }
 
@@ -227,9 +229,11 @@ export default function ChirurgieMonitoring() {
         await supabase.from('monitorings_anesthesiques').delete().eq('id', item.id)
       }
     }
+    const payload = { user_id: user.id, animal_nom: 'Sans nom', resume: '', donnees: nouveauForm }
+    if (estEquipe && teamId) payload.equipe_id = teamId
     const { data } = await supabase
       .from('monitorings_anesthesiques')
-      .insert({ user_id: user.id, animal_nom: 'Sans nom', resume: '', donnees: nouveauForm })
+      .insert(payload)
       .select()
       .single()
     if (data) {
@@ -336,12 +340,12 @@ export default function ChirurgieMonitoring() {
     const lignes = []
     lignes.push('MONITORING ANESTHÉSIQUE')
     lignes.push(`Animal : ${form.animalNom || '—'}`)
-    if (especeLabel) lignes.push(`Espèce : ${especeLabel}`)
-    if (form.race?.trim()) lignes.push(`Race : ${form.race.trim()}`)
-    if (form.sexe) lignes.push(`Sexe : ${form.sexe === 'femelle' ? 'Femelle' : 'Mâle'}${form.sterilise ? ' (stérilisé(e))' : ''}`)
-    if (form.poids) lignes.push(`Poids : ${form.poids} ${form.poidsUnite}`)
-    if (form.procedure) lignes.push(`Procédure : ${form.procedure}`)
-    if (form.asa) lignes.push(`Risque anesthésique (ASA) : ${form.asa}`)
+    lignes.push(`Espèce : ${especeLabel || '—'}`)
+    lignes.push(`Race : ${form.race?.trim() || '—'}`)
+    lignes.push(`Sexe : ${form.sexe === 'femelle' ? 'Femelle' : form.sexe === 'male' ? 'Mâle' : '—'}${form.sexe && form.sterilise ? ' (stérilisé(e))' : ''}`)
+    lignes.push(`Poids : ${form.poids ? form.poids + ' ' + form.poidsUnite : '—'}`)
+    lignes.push(`Procédure : ${form.procedure || '—'}`)
+    lignes.push(`Risque anesthésique (ASA) : ${form.asa || '—'}`)
     lignes.push('')
     lignes.push('Évaluation pré-anesthésique :')
     lignes.push(`- Température : ${form.temperature ? form.temperature + ' °C' : '—'}`)
@@ -349,7 +353,7 @@ export default function ChirurgieMonitoring() {
     lignes.push(`- FR : ${form.fr ? form.fr + ' rpm' : '—'}`)
     lignes.push(`- TRC : ${form.trc ? form.trc + ' sec' : '—'}`)
     lignes.push(`- Muqueuses : ${form.muqueuses.length ? form.muqueuses.join(', ') : '—'}`)
-    if (form.particularites.trim()) lignes.push(`- Particularités : ${form.particularites.trim()}`)
+    lignes.push(`- Particularités : ${form.particularites?.trim() || '—'}`)
     lignes.push('')
     lignes.push('Accès veineux et fluides IV :')
     lignes.push(`- Cathéter : ${form.accesCalibre || '—'}${form.accesSite ? ' (' + form.accesSite + ')' : ''}`)
@@ -364,14 +368,16 @@ export default function ChirurgieMonitoring() {
     lignes.push(`- Ballonnet : ${form.ballonnet || '—'}`)
     lignes.push(`- Ballon réservoir : ${form.ballonReservoir || '—'}`)
     lignes.push(`- O₂ : ${form.o2Lmin ? form.o2Lmin + ' L/min' : '—'}`)
+    lignes.push('')
+    lignes.push('Médicaments administrés :')
     const medsAdministres = form.medications.filter(m => m.administre)
     if (medsAdministres.length) {
-      lignes.push('')
-      lignes.push('Médicaments administrés :')
       medsAdministres.forEach(m => {
         const { doseMg, volume } = doseEtVolume(poidsKg, m.doseMgKg, m.concentration)
         lignes.push(`  - ${m.nom} | Concentration : ${m.concentration || '—'} mg/mL | Dose : ${m.doseMgKg || '—'} mg/kg${doseMg != null ? ` (${doseMg.toFixed(2)} mg)` : ''} | Volume : ${volume != null ? volume.toFixed(2) + ' mL' : '—'} | Voie : ${m.voie || '—'} | Heure : ${m.heureAdministration || '—'}`)
       })
+    } else {
+      lignes.push('  —')
     }
     lignes.push('')
     lignes.push(`Heure de début de l'anesthésie : ${form.heureDebut || '—'}`)
@@ -388,7 +394,7 @@ export default function ChirurgieMonitoring() {
     }
     lignes.push('')
     lignes.push(`Heure de fin de l'anesthésie : ${form.heureFin || '—'}`)
-    if (form.notesFin.trim()) lignes.push(`Notes de fin : ${form.notesFin.trim()}`)
+    lignes.push(`Notes de fin : ${form.notesFin?.trim() || '—'}`)
     lignes.push('')
     lignes.push('Récupération :')
     lignes.push(`- Extubation : ${form.extubationHeure || '—'}${form.extubationEtat ? ' (' + form.extubationEtat + ')' : ''}`)
@@ -397,7 +403,7 @@ export default function ChirurgieMonitoring() {
     lignes.push(`- FR : ${form.postFr || '—'}`)
     lignes.push(`- TRC : ${form.postTrc || '—'}`)
     lignes.push(`- Douleur : ${form.postDouleur || '—'}`)
-    if (form.postCommentaires.trim()) lignes.push(`- Commentaires : ${form.postCommentaires.trim()}`)
+    lignes.push(`- Commentaires : ${form.postCommentaires?.trim() || '—'}`)
     return lignes.join('\n')
   }
 
@@ -546,10 +552,16 @@ export default function ChirurgieMonitoring() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
+    const maintenant = new Date().toISOString()
+    const entreeModif = { nom: profil?.nom || 'Membre', timestamp: maintenant }
+
     if (currentId) {
+      const { data: currentRec } = await supabase
+        .from('monitorings_anesthesiques').select('historique_modifs').eq('id', currentId).single()
+      const modifs = [...(currentRec?.historique_modifs || []), entreeModif]
       await supabase
         .from('monitorings_anesthesiques')
-        .update({ animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form, updated_at: new Date().toISOString() })
+        .update({ animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form, updated_at: maintenant, historique_modifs: modifs })
         .eq('id', currentId)
     } else {
       if (historique.length >= MAX_HISTORIQUE) {
@@ -560,11 +572,9 @@ export default function ChirurgieMonitoring() {
           await supabase.from('monitorings_anesthesiques').delete().eq('id', item.id)
         }
       }
-      const { data } = await supabase
-        .from('monitorings_anesthesiques')
-        .insert({ user_id: user.id, animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form })
-        .select()
-        .single()
+      const payload = { user_id: user.id, animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form, historique_modifs: [entreeModif] }
+      if (estEquipe && teamId) payload.equipe_id = teamId
+      const { data } = await supabase.from('monitorings_anesthesiques').insert(payload).select().single()
       if (data) setCurrentId(data.id)
     }
     await chargerHistorique()
@@ -634,8 +644,6 @@ export default function ChirurgieMonitoring() {
     return Array.from(groupes.entries())
       .sort((a, b) => b[0].localeCompare(a[0]))
   }, [historique])
-
-  
 
   function toggleJour(cle) {
     setJoursOuverts(prev => {
@@ -753,15 +761,53 @@ export default function ChirurgieMonitoring() {
                 <span>{itemConsulte.animal_nom}</span>
                 <button className="popup-close" onClick={() => setItemConsulte(null)}>✕</button>
               </div>
-              <textarea
-                className="form-textarea"
-                style={{ width: '100%', minHeight: 320, fontFamily: 'monospace', fontSize: 12 }}
-                value={itemConsulte.resume}
-                readOnly
-              />
+              {itemConsulte.resume ? (
+                <textarea
+                  className="form-textarea"
+                  style={{ width: '100%', minHeight: 320, fontFamily: 'monospace', fontSize: 12 }}
+                  value={itemConsulte.resume}
+                  readOnly
+                />
+              ) : (
+                <div style={{ padding: '20px 0', textAlign: 'center' }}>
+                  <i className="ti ti-heartbeat" style={{ fontSize: 36, color: 'var(--text-hint)', display: 'block', marginBottom: 10 }}></i>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>Monitoring en cours</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 16 }}>Aucun résumé généré — le monitoring n'a pas encore été finalisé.</p>
+                  {itemConsulte.donnees && (
+                    <div style={{ textAlign: 'left', background: 'var(--bg-secondary)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                      {itemConsulte.donnees.espece && <div><strong>Espèce :</strong> {itemConsulte.donnees.espece}</div>}
+                      {itemConsulte.donnees.race && <div><strong>Race :</strong> {itemConsulte.donnees.race}</div>}
+                      {itemConsulte.donnees.poids && <div><strong>Poids :</strong> {itemConsulte.donnees.poids} {itemConsulte.donnees.poidsUnite || 'kg'}</div>}
+                      {itemConsulte.donnees.procedure && <div><strong>Procédure :</strong> {itemConsulte.donnees.procedure}</div>}
+                    </div>
+                  )}
+                </div>
+              )}
               <button className="labo-btn-primary" style={{ width: '100%', marginTop: 12 }} onClick={() => modifier(itemConsulte)}>
                 Modifier
               </button>
+              {itemConsulte.historique_modifs?.length > 0 && (
+                <div style={{ marginTop: 10, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                  <button
+                    onClick={() => setShowModifs(v => !v)}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: 'var(--bg-secondary)', border: 'none', cursor: 'pointer' }}
+                  >
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1 }}>
+                      Historique des modifications ({itemConsulte.historique_modifs.length})
+                    </span>
+                    <i className={`ti ti-chevron-${showModifs ? 'up' : 'down'}`} style={{ fontSize: 14, color: 'var(--text-hint)' }}></i>
+                  </button>
+                  {showModifs && (
+                    <div style={{ padding: '8px 12px 10px', background: 'var(--bg-card)', maxHeight: 220, overflowY: 'auto' }}>
+                      {[...itemConsulte.historique_modifs].reverse().map((m, i) => (
+                        <p key={i} style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                          Mis à jour par <strong>{m.nom}</strong> · {new Date(m.timestamp).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })} à {new Date(m.timestamp).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="popup-actions-centrees" style={{ marginTop: 8 }}>
                 <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => copierResume(itemConsulte.resume)}>
                   {copie ? 'Copié !' : 'Copier'}

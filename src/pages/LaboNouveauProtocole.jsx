@@ -6,7 +6,7 @@ import { useProfil } from '../context/ProfilContext'
 export default function LaboNouveauProtocole() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { estEquipe, roleEquipe } = useProfil()
+  const { estEquipe, roleEquipe, teamId } = useProfil()
   const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
 
   useEffect(() => {
@@ -58,14 +58,17 @@ export default function LaboNouveauProtocole() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
+      const payload = {
+        user_id: user.id,
+        categorie_id: categorieId,
+        titre: titre.trim(),
+        description: materiel.filter(m => m.trim()).join('\n'),
+      }
+      if (estEquipe && teamId) payload.equipe_id = teamId
+
       const { data: proto } = await supabase
         .from('labo_protocoles_user')
-        .insert({
-          user_id: user.id,
-          categorie_id: categorieId,
-          titre: titre.trim(),
-          description: materiel.filter(m => m.trim()).join('\n'),
-        })
+        .insert(payload)
         .select()
         .single()
 
