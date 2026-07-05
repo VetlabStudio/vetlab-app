@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useNavigate, Link } from 'react-router-dom'
 
 export default function Inscription() {
+  const [nom, setNom] = useState('')
   const [email, setEmail] = useState('')
   const [motDePasse, setMotDePasse] = useState('')
   const [confirmation, setConfirmation] = useState('')
@@ -37,6 +38,7 @@ export default function Inscription() {
     const { error } = await supabase.auth.signUp({
       email,
       password: motDePasse,
+      options: { data: { nom: nom.trim() } },
     })
 
     if (error) {
@@ -73,6 +75,17 @@ export default function Inscription() {
         <h1 className="auth-titre">Créer un compte</h1>
 
         <form onSubmit={handleInscription} className="auth-form">
+          <div className="champ">
+            <label>Nom complet</label>
+            <input
+              type="text"
+              value={nom}
+              onChange={(e) => setNom(e.target.value)}
+              placeholder="Prénom Nom"
+              required
+            />
+          </div>
+
           <div className="champ">
             <label>Courriel</label>
             <input

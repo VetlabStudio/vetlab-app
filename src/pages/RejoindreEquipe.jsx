@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useProfil } from '../context/ProfilContext'
 
 export default function RejoindreEquipe() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const { chargerProfil } = useProfil()
   const token = searchParams.get('token')
 
   const [statut, setStatut] = useState('chargement')
@@ -67,9 +69,10 @@ export default function RejoindreEquipe() {
       .update({ plan: 'equipe', equipe_id: invitation.team_id, role: invitation.role })
       .eq('id', user.id)
 
+    await chargerProfil()
     setStatut('accepte')
     setLoading(false)
-    setTimeout(() => navigate('/equipe'), 2000)
+    setTimeout(() => navigate('/accueil'), 2000)
   }
 
   return (
