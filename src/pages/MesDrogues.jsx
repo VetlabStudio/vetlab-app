@@ -13,7 +13,7 @@ export default function MesDrogues() {
 
   useEffect(() => {
     chargerFavoris()
-  }, [])
+  }, [estEquipe, teamId])
 
   async function chargerFavoris() {
     setLoading(true)

@@ -336,8 +336,11 @@ export default function SoinsGenerauxExamenPhysique() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
+    const { data: profilFrais } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
+    const nomUtilisateur = profilFrais?.nom || user.user_metadata?.nom || user.email || 'Membre'
+
     const maintenant = new Date().toISOString()
-    const entreeModif = { nom: profil?.nom || 'Membre', timestamp: maintenant }
+    const entreeModif = { nom: nomUtilisateur, timestamp: maintenant }
 
     if (currentId) {
       const { data: currentRec } = await supabase

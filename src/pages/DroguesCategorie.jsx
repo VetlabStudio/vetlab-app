@@ -25,7 +25,9 @@ export default function DroguesCategorie({ categorie }) {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
-      const customFilter = estEquipe && teamId ? ['equipe_id', teamId] : ['user_id', user.id]
+      const customOrFilter = estEquipe && teamId
+        ? `user_id.eq.${user.id},equipe_id.eq.${teamId}`
+        : `user_id.eq.${user.id}`
 
       const [{ data: meds }, { data: medsCustom }, { data: favs }] = await Promise.all([
   supabase
@@ -36,7 +38,7 @@ export default function DroguesCategorie({ categorie }) {
   supabase
     .from('medicaments_custom')
     .select('*')
-    .eq(customFilter[0], customFilter[1])
+    .or(customOrFilter)
     .eq('categorie', categorie)
     .is('medicament_id', null),
  supabase
@@ -51,7 +53,7 @@ export default function DroguesCategorie({ categorie }) {
       const medsCustomBase = await supabase
   .from('medicaments_custom')
   .select('*')
-  .eq(customFilter[0], customFilter[1])
+  .or(customOrFilter)
   .eq('categorie', categorie)
   .not('medicament_id', 'is', null)
 

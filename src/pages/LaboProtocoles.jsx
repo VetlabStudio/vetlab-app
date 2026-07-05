@@ -26,8 +26,11 @@ export default function LaboProtocoles() {
     const { data: { user } } = await supabase.auth.getUser()
 
     const protosUserQuery = estEquipe && teamId
-      ? supabase.from('labo_protocoles_user').select('*').eq('equipe_id', teamId).eq('categorie_id', categorieId).order('ordre')
-      : supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', categorieId).order('ordre')
+      ? supabase.from('labo_protocoles_user').select('*')
+          .or(`user_id.eq.${user.id},equipe_id.eq.${teamId}`)
+          .eq('categorie_id', categorieId).order('ordre')
+      : supabase.from('labo_protocoles_user').select('*')
+          .eq('user_id', user.id).eq('categorie_id', categorieId).order('ordre')
 
     const [{ data: cat }, { data: protos }, { data: protosUser }] = await Promise.all([
       supabase.from('labo_categories').select('*').eq('id', categorieId).single(),

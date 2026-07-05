@@ -8,6 +8,7 @@ const CATEGORIE_ID = 'af3ffd7b-ac2f-4e43-adf0-7108bf79099c'
 
 const REFERENCES = [
   { id: 'notions-base', label: 'Notions de base : mA, kVp et distance', icone: 'ti-radioactive', route: '/labo/radiologie/notions-base', pro: true },
+  { id: 'depannage', label: 'Dépannage', icone: 'ti-tool', route: '/labo/radiologie/depannage', pro: false },
   { id: 'charte', label: 'Charte radiographique personnalisée', icone: 'ti-notebook', route: '/labo/radiologie/charte', pro: true },
 ]
 
@@ -16,19 +17,24 @@ export default function LaRadiologie() {
   const [protocoles, setProtocoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro, estEquipe, roleEquipe } = useProfil()
+  const { estPro, estEquipe, roleEquipe, teamId } = useProfil()
   const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
 
   useEffect(() => {
     chargerProtocoles()
-  }, [])
+  }, [estEquipe, teamId])
 
   async function chargerProtocoles() {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
+
+    const protosUserQuery = estEquipe && teamId
+      ? supabase.from('labo_protocoles_user').select('*').or(`user_id.eq.${user.id},equipe_id.eq.${teamId}`).eq('categorie_id', CATEGORIE_ID).order('ordre')
+      : supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', CATEGORIE_ID).order('ordre')
+
     const [{ data: protos }, { data: protosUser }] = await Promise.all([
       supabase.from('labo_protocoles').select('*').eq('categorie_id', CATEGORIE_ID).order('ordre'),
-      supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', CATEGORIE_ID).order('ordre'),
+      protosUserQuery,
     ])
     const protosBaseIds = (protosUser || []).map(p => p.protocole_base_id).filter(Boolean)
     setProtocoles([
