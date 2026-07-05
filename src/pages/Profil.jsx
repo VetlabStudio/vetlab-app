@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useProfil } from '../context/ProfilContext'
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
 
@@ -36,6 +37,9 @@ export default function Profil() {
   const [erreur, setErreur] = useState('')
   const [succes, setSucces] = useState('')
   const [saving, setSaving] = useState(false)
+
+  const { roleEquipe } = useProfil()
+  const peutGererAbonnement = !roleEquipe || roleEquipe === 'proprietaire' || roleEquipe === 'admin'
 
   // Stripe
   const [checkoutLoading, setCheckoutLoading] = useState(false)
@@ -312,10 +316,12 @@ async function ouvrirPortail() {
               <span className="profil-forfait-badge" style={{ color: 'var(--accent-gold)', background: 'rgba(215,163,92,0.15)' }}>Actif</span>
             </div>
             <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>Tu bénéficies de toutes les fonctionnalités Pro.</p>
-            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
-              <i className="ti ti-settings"></i>
-              {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
-            </button>
+            {peutGererAbonnement && (
+              <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
+                <i className="ti ti-settings"></i>
+                {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
+              </button>
+            )}
           </div>
         ) : !estEquipe ? (
           <div className="profil-forfait-item">
@@ -354,10 +360,12 @@ async function ouvrirPortail() {
             <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
               Accès complet pour toute la clinique — fonctionnalités Pro incluses, babillard d'équipe, panneau de tâches et gestion des membres.
             </p>
-            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
-              <i className="ti ti-settings"></i>
-              {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
-            </button>
+            {peutGererAbonnement && (
+              <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
+                <i className="ti ti-settings"></i>
+                {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
+              </button>
+            )}
           </div>
         ) : (
           <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>

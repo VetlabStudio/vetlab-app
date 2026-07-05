@@ -147,6 +147,8 @@ const REFERENCES = [
 export default function Accueil() {
   const navigate = useNavigate()
   const [prenom, setPrenom] = useState('')
+  const [nomClinique, setNomClinique] = useState('')
+  const { estEquipe, teamId } = useProfil()
 
   useEffect(() => {
     async function chargerProfil() {
@@ -158,16 +160,25 @@ export default function Accueil() {
     chargerProfil()
   }, [])
 
+  useEffect(() => {
+    if (!teamId) return
+    supabase.from('equipes').select('nom').eq('id', teamId).single()
+      .then(({ data }) => { if (data?.nom) setNomClinique(data.nom) })
+  }, [teamId])
+
   return (
     <div className="accueil-v2">
 
       {/* HEADER */}
       <div className="accueil-v2-header">
         <div>
-    <h1 className="accueil-v2-accueil">Accueil</h1>
-    <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
-    <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
-  </div>
+          {estEquipe && nomClinique && (
+            <p style={{ fontSize: 16, fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 0 }}>{nomClinique}</p>
+          )}
+          <h1 className="accueil-v2-accueil">Accueil</h1>
+          <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
+          <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
+        </div>
   <div style={{ alignSelf: 'flex-start' }}>
     <ClocheMiniAccueil />
   </div>

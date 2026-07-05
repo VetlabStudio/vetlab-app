@@ -17,6 +17,8 @@ export default function EquipeGestion() {
   const [confirmRevoquer, setConfirmRevoquer] = useState(null)
   const [userId, setUserId] = useState(null)
   const [erreurInvit, setErreurInvit] = useState('')
+  const [editNomClinique, setEditNomClinique] = useState(false)
+  const [nouveauNomClinique, setNouveauNomClinique] = useState('')
 
   useEffect(() => {
     if (!teamId) return
@@ -84,7 +86,12 @@ export default function EquipeGestion() {
       const nomClinique = equipe?.nom || 'notre équipe'
       const sujet = encodeURIComponent(`Invitation à rejoindre ${nomClinique} sur Adjuvet`)
       const corps = encodeURIComponent(
-        `Bonjour,\n\nVous avez été invité(e) à rejoindre ${nomClinique} sur l'application Adjuvet.\n\nCliquez sur le lien ci-dessous pour accepter l'invitation :\n${lien}\n\nÀ bientôt!`
+        `Bonjour,\n\nVous avez été invité(e) à rejoindre ${nomClinique} sur Adjuvet.\n\nPour accepter l'invitation, suivez ces deux étapes :\n\n` +
+        `Étape 1 — Créer votre compte (ou vous connecter)\n` +
+        `Rendez-vous sur ${baseUrl} et créez un compte avec cette adresse courriel (${emailInvit.trim()}), ou connectez-vous si vous en avez déjà un.\n\n` +
+        `Étape 2 — Activer votre accès équipe\n` +
+        `Une fois connecté(e), cliquez sur le lien ci-dessous pour lier votre compte au forfait équipe de ${nomClinique} :\n${lien}\n\n` +
+        `À bientôt sur Adjuvet!`
       )
       window.open(`mailto:${emailInvit.trim()}?subject=${sujet}&body=${corps}`)
 
@@ -110,6 +117,13 @@ export default function EquipeGestion() {
     }
     setMembres(prev => prev.filter(m => m.id !== memberId))
     setConfirmRevoquer(null)
+  }
+
+  async function sauvegarderNomClinique() {
+    if (!nouveauNomClinique.trim()) return
+    await supabase.from('equipes').update({ nom: nouveauNomClinique.trim() }).eq('id', teamId)
+    setEquipe(prev => ({ ...prev, nom: nouveauNomClinique.trim() }))
+    setEditNomClinique(false)
   }
 
   async function changerRole(memberId, nouveauRole) {
@@ -138,7 +152,29 @@ export default function EquipeGestion() {
         {equipe && (
           <div style={{ marginBottom: 24, width: '100%' }}>
             <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Clinique</p>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>{equipe.nom}</p>
+            {editNomClinique ? (
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+                <input
+                  value={nouveauNomClinique}
+                  onChange={e => setNouveauNomClinique(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') sauvegarderNomClinique(); if (e.key === 'Escape') setEditNomClinique(false) }}
+                  autoFocus
+                  style={{
+                    flex: 1, border: '1px solid var(--border)', borderRadius: 8, padding: '6px 10px',
+                    fontSize: 16, fontWeight: 700, background: 'var(--bg-secondary)', color: 'var(--text-primary)', outline: 'none',
+                  }}
+                />
+                <button onClick={sauvegarderNomClinique} style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>Sauvegarder</button>
+                <button onClick={() => setEditNomClinique(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)', fontSize: 18 }}>✕</button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{equipe.nom}</p>
+                <button onClick={() => { setNouveauNomClinique(equipe.nom); setEditNomClinique(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)', fontSize: 15, padding: 0 }}>
+                  <i className="ti ti-pencil"></i>
+                </button>
+              </div>
+            )}
             <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{membres.length} / {equipe.max_membres || '∞'} membres</p>
           </div>
         )}
