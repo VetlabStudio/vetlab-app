@@ -11,6 +11,73 @@ const SOUS_ONGLETS = [
   { id: 'taches', label: 'Tâches', icone: 'ti-checklist' },
 ]
 
+// ─── POPUP FORMULAIRE NOTE (partagé) ─────────────────────
+function PopupNoteForm({ titre: titrePop, valeurs, setValeurs, onSauvegarder, onAnnuler, onSupprimer, labelBtn, saving, categories = [] }) {
+  const inputStyle = {
+    border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
+    fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
+    outline: 'none', width: '100%', boxSizing: 'border-box',
+  }
+  return (
+    <div className="popup-overlay" onClick={onAnnuler}>
+      <div className="popup-card" onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{titrePop}</p>
+          {onSupprimer && (
+            <button onClick={onSupprimer} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent-red)', fontSize: 18 }}>
+              <i className="ti ti-trash"></i>
+            </button>
+          )}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <input placeholder="Titre (optionnel)" value={valeurs.titre} onChange={e => setValeurs(v => ({ ...v, titre: e.target.value }))} style={inputStyle} />
+          <textarea
+            placeholder="Contenu…"
+            value={valeurs.contenu}
+            onChange={e => setValeurs(v => ({ ...v, contenu: e.target.value }))}
+            rows={5}
+            style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
+          />
+          <input
+            placeholder="Catégorie (optionnel)"
+            value={valeurs.categorie}
+            onChange={e => setValeurs(v => ({ ...v, categorie: e.target.value }))}
+            style={inputStyle}
+            list="notes-perso-cats"
+          />
+          <datalist id="notes-perso-cats">
+            {categories.map(c => <option key={c} value={c} />)}
+          </datalist>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>Couleur :</span>
+            {COULEURS.map(c => (
+              <button key={c} onClick={() => setValeurs(v => ({ ...v, couleur: c }))} style={{
+                width: 24, height: 24, borderRadius: '50%', background: c, border: 'none', cursor: 'pointer',
+                outline: valeurs.couleur === c ? '2px solid var(--primary)' : 'none', outlineOffset: 2,
+              }} />
+            ))}
+          </div>
+        </div>
+        <div className="popup-actions-centrees" style={{ marginTop: 16 }}>
+          <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={onAnnuler}>Annuler</button>
+          <button
+            style={{
+              flex: 1, background: 'var(--primary)', color: '#fff', border: 'none',
+              borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 700,
+              cursor: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 'pointer' : 'not-allowed',
+              opacity: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 1 : 0.5,
+            }}
+            onClick={onSauvegarder}
+            disabled={!valeurs.contenu.trim() && !valeurs.titre.trim() || saving}
+          >
+            {saving ? '...' : labelBtn}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── NOTES PERSO ─────────────────────────────────────────
 function NotesPerso() {
   const [notes, setNotes] = useState([])
@@ -82,75 +149,9 @@ function NotesPerso() {
     setEditForm(null)
   }
 
-  const inputStyle = {
-    border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
-    fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-    outline: 'none', width: '100%', boxSizing: 'border-box',
-  }
-
   const categories = ['Toutes', ...new Set(notes.map(n => n.categorie).filter(Boolean))]
   const notesFiltrees = filtreCategorie === 'Toutes' ? notes : notes.filter(n => n.categorie === filtreCategorie)
-
-  function PopupNoteForm({ titre: titrePop, valeurs, setValeurs, onSauvegarder, onAnnuler, onSupprimer, labelBtn }) {
-    return (
-      <div className="popup-overlay" onClick={onAnnuler}>
-        <div className="popup-card" onClick={e => e.stopPropagation()}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{titrePop}</p>
-            {onSupprimer && (
-              <button onClick={onSupprimer} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent-red)', fontSize: 18 }}>
-                <i className="ti ti-trash"></i>
-              </button>
-            )}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <input placeholder="Titre (optionnel)" value={valeurs.titre} onChange={e => setValeurs(v => ({ ...v, titre: e.target.value }))} style={inputStyle} />
-            <textarea
-              placeholder="Contenu…"
-              value={valeurs.contenu}
-              onChange={e => setValeurs(v => ({ ...v, contenu: e.target.value }))}
-              rows={5}
-              style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
-            />
-            <input
-              placeholder="Catégorie (optionnel)"
-              value={valeurs.categorie}
-              onChange={e => setValeurs(v => ({ ...v, categorie: e.target.value }))}
-              style={inputStyle}
-              list="notes-perso-cats"
-            />
-            <datalist id="notes-perso-cats">
-              {categories.filter(c => c !== 'Toutes').map(c => <option key={c} value={c} />)}
-            </datalist>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>Couleur :</span>
-              {COULEURS.map(c => (
-                <button key={c} onClick={() => setValeurs(v => ({ ...v, couleur: c }))} style={{
-                  width: 24, height: 24, borderRadius: '50%', background: c, border: 'none', cursor: 'pointer',
-                  outline: valeurs.couleur === c ? '2px solid var(--primary)' : 'none', outlineOffset: 2,
-                }} />
-              ))}
-            </div>
-          </div>
-          <div className="popup-actions-centrees" style={{ marginTop: 16 }}>
-            <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={onAnnuler}>Annuler</button>
-            <button
-              style={{
-                flex: 1, background: 'var(--primary)', color: '#fff', border: 'none',
-                borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 700,
-                cursor: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 'pointer' : 'not-allowed',
-                opacity: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 1 : 0.5,
-              }}
-              onClick={onSauvegarder}
-              disabled={!valeurs.contenu.trim() && !valeurs.titre.trim() || saving}
-            >
-              {saving ? '...' : labelBtn}
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const catsOptions = categories.filter(c => c !== 'Toutes')
 
   return (
     <div style={{ padding: '16px 16px 80px' }}>
@@ -204,6 +205,8 @@ function NotesPerso() {
           onSauvegarder={creerNote}
           onAnnuler={() => setShowForm(false)}
           labelBtn="Créer"
+          saving={saving}
+          categories={catsOptions}
         />
       )}
 
@@ -258,6 +261,8 @@ function NotesPerso() {
           onAnnuler={() => setEditForm(null)}
           onSupprimer={() => setConfirmSupprimer(noteActive.id)}
           labelBtn="Sauvegarder"
+          saving={saving}
+          categories={catsOptions}
         />
       )}
 
@@ -278,6 +283,27 @@ function NotesPerso() {
       )}
     </div>
   )
+}
+
+function grouperParJour(notes) {
+  const auj = new Date(); auj.setHours(0, 0, 0, 0)
+  const hier = new Date(auj); hier.setDate(hier.getDate() - 1)
+  const map = new Map()
+  for (const note of notes) {
+    const d = new Date(note.created_at)
+    const jour = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+    const key = jour.getTime()
+    let label
+    if (key === auj.getTime()) label = "Aujourd'hui"
+    else if (key === hier.getTime()) label = 'Hier'
+    else {
+      const jourNom = jour.toLocaleDateString('fr-CA', { weekday: 'long' })
+      label = jourNom.charAt(0).toUpperCase() + jourNom.slice(1) + ' le ' + jour.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })
+    }
+    if (!map.has(key)) map.set(key, { label, notes: [] })
+    map.get(key).notes.push(note)
+  }
+  return Array.from(map.values())
 }
 
 // ─── BABILLARD (notes partagées) ──────────────────────────
@@ -309,7 +335,7 @@ function Babillard() {
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'babillard_messages',
         filter: `team_id=eq.${teamId}`
-      }, () => charger())
+      }, () => charger(true))
       .subscribe()
 
     return () => supabase.removeChannel(channel)
@@ -520,36 +546,44 @@ function Babillard() {
         </div>
       )}
 
-      <div className="notes-grille" style={{ width: '100%' }}>
-        {notesFiltrees.map(note => (
-          <div
-            key={note.id}
-            className="note-tuile"
-            style={{ background: note.couleur || '#FFF9C4', cursor: 'pointer' }}
-            onClick={() => setNoteActive(note)}
-          >
-            <div className="note-tuile-header">
-              {note.titre
-                ? <p className="note-tuile-titre">{note.titre}</p>
-                : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>
-              }
-            </div>
-            {note.categorie && (
-              <span style={{
-                fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
-                background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4,
-              }}>{note.categorie}</span>
-            )}
-            <p className="note-tuile-apercu"
-              dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }}
-            />
-            <p className="note-tuile-date">
-              <span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>
-              {' · '}{formatDate(note.created_at)}
-            </p>
+      {grouperParJour(notesFiltrees).map(groupe => (
+        <div key={groupe.label}>
+          <p style={{
+            fontSize: 11, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase',
+            letterSpacing: 1, marginBottom: 8, marginTop: 12,
+          }}>{groupe.label}</p>
+          <div className="notes-grille" style={{ width: '100%' }}>
+            {groupe.notes.map(note => (
+              <div
+                key={note.id}
+                className="note-tuile"
+                style={{ background: note.couleur || '#FFF9C4', cursor: 'pointer' }}
+                onClick={() => setNoteActive(note)}
+              >
+                <div className="note-tuile-header">
+                  {note.titre
+                    ? <p className="note-tuile-titre">{note.titre}</p>
+                    : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>
+                  }
+                </div>
+                {note.categorie && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
+                    background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4,
+                  }}>{note.categorie}</span>
+                )}
+                <p className="note-tuile-apercu"
+                  dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }}
+                />
+                <p className="note-tuile-date">
+                  <span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>
+                  {' · '}{formatDate(note.created_at)}
+                </p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
 
       <button className="btn-fab" onClick={() => setShowForm(true)}>+</button>
 
@@ -1325,6 +1359,11 @@ export default function Equipe() {
   const [sousOnglet, setSousOnglet] = useState(tabParam || 'notes')
   const { estEquipe, chargement, roleEquipe } = useProfil()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const tab = searchParams.get('tab')
+    if (tab) setSousOnglet(tab)
+  }, [searchParams])
 
   if (chargement) return null
 

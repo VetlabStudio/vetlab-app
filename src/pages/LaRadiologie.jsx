@@ -8,6 +8,7 @@ const CATEGORIE_ID = 'af3ffd7b-ac2f-4e43-adf0-7108bf79099c'
 
 const REFERENCES = [
   { id: 'notions-base', label: 'Notions de base : mA, kVp et distance', icone: 'ti-radioactive', route: '/labo/radiologie/notions-base', pro: true },
+  { id: 'depannage', label: 'Dépannage', icone: 'ti-tool', route: '/labo/radiologie/depannage', pro: false },
   { id: 'charte', label: 'Charte radiographique personnalisée', icone: 'ti-notebook', route: '/labo/radiologie/charte', pro: true },
 ]
 
@@ -16,7 +17,8 @@ export default function LaRadiologie() {
   const [protocoles, setProtocoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro } = useProfil()
+  const { estPro, estEquipe, roleEquipe } = useProfil()
+  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
 
   useEffect(() => {
     chargerProtocoles()
@@ -51,11 +53,13 @@ export default function LaRadiologie() {
           ))}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <button className="labo-btn-ajouter" style={{ width: '80%' }} onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
-          <i className="ti ti-plus"></i> Ajouter un protocole
-        </button>
-      </div>
+      {peutModifier && (
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <button className="labo-btn-ajouter" style={{ width: '80%' }} onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
+            <i className="ti ti-plus"></i> Ajouter un protocole
+          </button>
+        </div>
+      )}
 
       <div className="labo-section-titre" style={{ marginTop: 8 }}>Références & Interprétation</div>
       <div className="labo-protocoles-grid">

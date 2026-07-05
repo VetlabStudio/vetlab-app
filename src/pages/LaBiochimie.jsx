@@ -16,7 +16,8 @@ export default function LaBiochimie() {
   const [protocoles, setProtocoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro } = useProfil()
+  const { estPro, estEquipe, roleEquipe } = useProfil()
+  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
 
   useEffect(() => {
     chargerProtocoles()
@@ -63,11 +64,13 @@ setProtocoles([
         )}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <button className="labo-btn-ajouter" style={{ width: '80%' }} onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
-          <i className="ti ti-plus"></i> Ajouter un protocole
-        </button>
-      </div>
+      {peutModifier && (
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <button className="labo-btn-ajouter" style={{ width: '80%' }} onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
+            <i className="ti ti-plus"></i> Ajouter un protocole
+          </button>
+        </div>
+      )}
 
       {/* ─── RÉFÉRENCES ─────────────────────── */}
       <div className="labo-section-titre" style={{ marginTop: 8 }}>Références & Interprétation</div>
