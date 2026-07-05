@@ -8,7 +8,7 @@ const QUALITE_LABEL = Object.fromEntries(qualiteOptions.map(q => [q.value, q.lab
 
 export default function LaRadiologieCharte() {
   const navigate = useNavigate()
-  const { entrees, loading, supprimerEntree } = useCharteRadio()
+  const { entrees, loading, userId, supprimerEntree } = useCharteRadio()
   const [rechercheEspece, setRechercheEspece] = useState('toutes')
   const [rechercheRegion, setRechercheRegion] = useState('toutes')
 
@@ -62,32 +62,62 @@ export default function LaRadiologieCharte() {
           ) : (
             entreesFiltrees.map(e => (
               <div key={e.id} className="charte-item">
+
                 <div className="charte-item-haut">
                   <div className="charte-item-titre">
-                    <span className="admin-item-nom">{e.region}</span>
-                    <span className="admin-item-categorie">{ESPECES_CONFIG[e.espece]?.label || e.espece}</span>
+                    <span className="charte-item-region">{e.region}</span>
+                    <span className="charte-item-espece">{ESPECES_CONFIG[e.espece]?.label || e.espece}</span>
                   </div>
                   {e.qualite && (
                     <span className={`charte-badge charte-badge-${e.qualite}`}>{QUALITE_LABEL[e.qualite]}</span>
                   )}
                 </div>
 
-                <div className="charte-item-meta">
-                  {(e.epaisseur_min || e.epaisseur_max) && (
-                    <span>Épaisseur : {e.epaisseur_min ?? '?'}{e.epaisseur_max ? ` à ${e.epaisseur_max}` : ''} cm</span>
-                  )}
-                  <span>{e.kv} kV</span>
-                  <span>{e.mas} mAs</span>
-                  <span>DFF {e.dff} cm</span>
-                  <span>{e.grille ? 'Grille' : 'Sans grille'}</span>
+                <div className="charte-valeurs">
+                  <div className="charte-valeur">
+                    <span className="charte-valeur-num">{e.kv}</span>
+                    <span className="charte-valeur-unit">kV</span>
+                  </div>
+                  <div className="charte-valeur">
+                    <span className="charte-valeur-num">{e.mas}</span>
+                    <span className="charte-valeur-unit">mAs</span>
+                  </div>
+                  <div className="charte-valeur">
+                    <span className="charte-valeur-num">{e.dff}</span>
+                    <span className="charte-valeur-unit">cm DFF</span>
+                  </div>
                 </div>
+
+                {((e.epaisseur_min || e.epaisseur_max) || e.grille) && (
+                  <div className="charte-details">
+                    {(e.epaisseur_min || e.epaisseur_max) && (
+                      <span className="charte-detail-item">
+                        <i className="ti ti-ruler-2"></i>
+                        {e.epaisseur_min ?? '?'}{e.epaisseur_max ? ` – ${e.epaisseur_max}` : ''} cm
+                      </span>
+                    )}
+                    {e.grille && (
+                      <span className="charte-detail-item">
+                        <i className="ti ti-grid-dots"></i>Grille antidiffusante
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {e.notes && <p className="charte-item-notes">{e.notes}</p>}
 
-                <div className="admin-item-actions">
-                  <button className="btn-edit" onClick={() => navigate(`/labo/radiologie/charte/${e.id}/modifier`)}><i className="ti ti-edit"></i></button>
-                  <button className="btn-delete" onClick={() => setASupprimer({ id: e.id, region: e.region, espece: ESPECES_CONFIG[e.espece]?.label || e.espece })}><i className="ti ti-trash"></i></button>
+                <div className="charte-item-bas">
+                  {e.ajoutee_par && (
+                    <span className="charte-item-ajouteur">Ajouté par {e.ajoutee_par}</span>
+                  )}
+                  {e.user_id === userId && (
+                    <div className="admin-item-actions">
+                      <button className="btn-edit" onClick={() => navigate(`/labo/radiologie/charte/${e.id}/modifier`)}><i className="ti ti-edit"></i></button>
+                      <button className="btn-delete" onClick={() => setASupprimer({ id: e.id, region: e.region, espece: ESPECES_CONFIG[e.espece]?.label || e.espece })}><i className="ti ti-trash"></i></button>
+                    </div>
+                  )}
                 </div>
+
               </div>
             ))
           )}

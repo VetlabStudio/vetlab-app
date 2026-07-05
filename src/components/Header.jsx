@@ -88,8 +88,7 @@ const titres = {
   '/soins-generaux/abreviations': 'Abréviations courantes',
   '/soins-generaux/termes-directionnels': 'Termes directionnels',
   '/labo/radiologie/notions-base': 'Notions de base : mA, kVp et distance',
-  '/labo/radiologie/depannage': 'Dépannage',
-  '/labo/radiologie/charte': 'Charte radiographique personnelle',
+  '/labo/radiologie/charte': 'Charte radiographique personnalisée',
   '/equipe': 'Équipe',
   '/equipe/gestion': 'Gestion de l\'équipe',
   }

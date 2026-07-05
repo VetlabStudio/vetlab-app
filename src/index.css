@@ -5888,11 +5888,11 @@ input[type="number"] {
 .charte-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
+  border-radius: 12px;
+  padding: 14px 16px;
 }
 
 .charte-item-haut {
@@ -5905,7 +5905,20 @@ input[type="number"] {
 .charte-item-titre {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+}
+
+.charte-item-region {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.charte-item-espece {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .charte-badge {
@@ -5914,6 +5927,7 @@ input[type="number"] {
   padding: 4px 10px;
   border-radius: 20px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .charte-badge-bon {
@@ -5931,24 +5945,88 @@ input[type="number"] {
   color: var(--accent-red);
 }
 
-.charte-item-meta {
+.charte-valeurs {
+  display: flex;
+  gap: 8px;
+}
+
+.charte-valeur {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-section);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  min-width: 64px;
+  flex: 1;
+}
+
+.charte-valeur-num {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.charte-valeur-unit {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-hint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.charte-details {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  font-size: 12px;
+  gap: 8px;
+}
+
+.charte-detail-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
   color: var(--text-secondary);
+  background: var(--bg-section);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+
+.charte-detail-item i {
+  font-size: 14px;
+  color: var(--text-hint);
 }
 
 .charte-item-notes {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-hint);
   margin: 0;
+  line-height: 1.5;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.charte-item-bas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 28px;
+}
+
+.charte-item-ajouteur {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin: 0;
 }
 
 .charte-checkbox-item {
@@ -5964,6 +6042,7 @@ input[type="number"] {
   margin: -4px 0 0;
   line-height: 1.4;
 }
+
 /* ─── TOXICOLOGIE — CARTE PLANTE AVEC PHOTO ──── */
 .toxico-plante-card {
   display: flex;
