@@ -38,6 +38,11 @@ body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+input, textarea, [contenteditable="true"] {
+  user-select: text;
 }
 
 h1 { font-size: 22px; font-weight: 700; color: var(--primary); }
@@ -190,7 +195,7 @@ input  { font-family: var(--font); }
   background-position: center right;
   background-repeat: no-repeat;
   margin: -1.5rem -16px 0;
-  padding: 20px 16px 30px;
+  padding: 30px 16px 30px;
 }
 
 .accueil-v2-header-top {
