@@ -147,9 +147,7 @@ export default function Fluidotherapie() {
               <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
             </div>
             <div className="champ-input">
-              <div className="champ-icone-wrapper">
-                <img src="/icone-poids.svg" alt="poids" />
-              </div>
+             
               <input
                 type="text"
                 inputMode="decimal"
@@ -163,7 +161,7 @@ export default function Fluidotherapie() {
           <div className="fluido-card fluido-card--resume">
             <p className="fluido-resume-titre">RÉSUMÉ RAPIDE</p>
             <div className="fluido-resume-ligne">
-              <span>Débit maintenance</span>
+              <span>Débit de maintenance</span>
               <strong>{maintenance > 0 ? `${maintenance} ml/h` : '— ml/h'}</strong>
             </div>
             <div className="fluido-resume-ligne">
@@ -218,7 +216,7 @@ export default function Fluidotherapie() {
               <p className="range-hint">Déficit : <strong>{deficitFluide} ml</strong></p>
             )}
             <button className="fluido-btn-tableau" onClick={() => setPopupDeshy(true)}>
-              <i className="ti ti-clipboard-list"></i>
+              <i className="ti ti-clipboard-list" style={{ fontSize: 22 }}></i>
               <span>Voir le tableau de déshydratation</span>
               <i className="ti ti-chevron-right"></i>
             </button>
