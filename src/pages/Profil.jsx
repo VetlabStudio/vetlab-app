@@ -42,6 +42,7 @@ export default function Profil() {
   // Stripe
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [clientSecret, setClientSecret] = useState(null)
+  const [qteEquipe, setQteEquipe] = useState(1)
 
   // Forfait clinique
   const [interetEnvoye, setInteretEnvoye] = useState(false)
@@ -168,7 +169,7 @@ async function ouvrirPortail() {
 }
 
   // ─── STRIPE CHECKOUT ──────────────────────────
-  async function ouvrirCheckout(priceId) {
+  async function ouvrirCheckout(priceId, quantity = 1) {
     setCheckoutLoading(true)
     setErreur('')
     try {
@@ -181,7 +182,7 @@ async function ouvrirPortail() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ priceId }),
+          body: JSON.stringify({ priceId, quantity }),
         }
       )
       const data = await response.json()
@@ -376,21 +377,6 @@ async function ouvrirPortail() {
             </div>
           </div>
 
-          <div className="forfait-equipe-tarifs">
-            <div className="forfait-equipe-tarif-ligne">
-              <span>Jusqu'à 5 unités</span>
-              <span className="forfait-equipe-tarif-prix">49 $/unité</span>
-            </div>
-            <div className="forfait-equipe-tarif-ligne">
-              <span>6 – 10 unités</span>
-              <span className="forfait-equipe-tarif-prix">44 $/unité</span>
-            </div>
-            <div className="forfait-equipe-tarif-ligne">
-              <span>11 – 20 unités</span>
-              <span className="forfait-equipe-tarif-prix">39 $/unité</span>
-            </div>
-          </div>
-
           {estEquipe ? (
             peutGererAbonnement && (
               <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
@@ -400,9 +386,34 @@ async function ouvrirPortail() {
             )
           ) : (
             <>
+              <div className="forfait-equipe-tarifs">
+                <div className="forfait-equipe-tarif-ligne">
+                  <span>Jusqu'à 5 membres</span>
+                  <span className="forfait-equipe-tarif-prix">49 $/membre</span>
+                </div>
+                <div className="forfait-equipe-tarif-ligne">
+                  <span>6 – 10 membres</span>
+                  <span className="forfait-equipe-tarif-prix">44 $/membre</span>
+                </div>
+                <div className="forfait-equipe-tarif-ligne">
+                  <span>11 – 20 membres</span>
+                  <span className="forfait-equipe-tarif-prix">39 $/membre</span>
+                </div>
+              </div>
+              <div className="forfait-qte-wrapper">
+                <span className="forfait-qte-label">Nombre de membres</span>
+                <div className="forfait-qte-stepper">
+                  <button className="forfait-qte-btn" onClick={() => setQteEquipe(q => Math.max(1, q - 1))}>−</button>
+                  <span className="forfait-qte-valeur">{qteEquipe}</span>
+                  <button className="forfait-qte-btn" onClick={() => setQteEquipe(q => Math.min(20, q + 1))}>+</button>
+                </div>
+                <span className="forfait-qte-total">
+                  Total : {qteEquipe * (qteEquipe <= 5 ? 49 : qteEquipe <= 10 ? 44 : 39)} $/an
+                </span>
+              </div>
               <button
                 className="forfait-prix-btn forfait-equipe-cta"
-                onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(PRICE_EQUIPE) }}
+                onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(PRICE_EQUIPE, qteEquipe) }}
                 disabled={checkoutLoading}
               >
                 S'abonner — Forfait Équipe
@@ -411,11 +422,13 @@ async function ouvrirPortail() {
             </>
           )}
 
-          <p className="forfait-equipe-contact">
-            Plus de 20 employés ?{' '}
-            <a href="mailto:vetlabstudio@gmail.com" className="forfait-sur-mesure-lien">Contactez-nous</a>,
-            on s'occupe de vous personnellement.
-          </p>
+          {!estEquipe && (
+            <p className="forfait-equipe-contact">
+              Plus de 20 employés ?{' '}
+              <a href="mailto:info@vetlabstudio.ca" className="forfait-sur-mesure-lien">Contactez-nous</a>,
+              on s'occupe de vous personnellement.
+            </p>
+          )}
         </div>
 
         <div className="forfait-securite">

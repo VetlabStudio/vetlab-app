@@ -6190,6 +6190,66 @@ input[type="number"] {
   margin: 0;
 }
 
+.forfait-qte-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
+.forfait-qte-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.forfait-qte-stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.forfait-qte-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.forfait-qte-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.forfait-qte-valeur {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 24px;
+  text-align: center;
+}
+
+.forfait-qte-total {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
 
 /* ─── CHARTE RADIOGRAPHIQUE ─────────────────────────────────── */
 .charte-item {
