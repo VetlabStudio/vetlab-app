@@ -9,11 +9,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 const PRICE_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_MONTHLY
 const PRICE_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_ANNUAL
 
-const FORFAITS_EQUIPE = [
-  { id: 'price_1TqBCwGqH2jbhVzIiUeTmlSW', nom: 'Essentielle', sieges: '0 à 5',   prix: '249', economie: null },
-  { id: 'price_1TpY3sGqH2jbhVzIxpxGTHPD', nom: 'Plus',        sieges: '6 à 10',  prix: '449', economie: '11 %' },
-  { id: 'price_1TqBE0GqH2jbhVzISFLpGx37', nom: 'Pro',         sieges: '11 à 15', prix: '749', economie: '18 %' },
-]
+const PRICE_EQUIPE = 'price_1TqBCwGqH2jbhVzIiUeTmlSW'
 
 export default function Profil() {
   const navigate = useNavigate()
@@ -375,12 +371,26 @@ async function ouvrirPortail() {
                 {estEquipe && <span className="forfait-actif-chip forfait-actif-chip--equipe">Actif</span>}
               </span>
               <span className="forfait-card-desc">
-                {estEquipe
-                  ? 'Accès complet pour toute la clinique — fonctionnalités Pro incluses pour tous les membres.'
-                  : 'Accès partagé pour toute votre clinique. Fonctionnalités Pro incluses pour tous les membres.'}
+                Accès partagé pour toute votre clinique — fonctionnalités Pro incluses pour tous les membres, base de données partagée, babillard et attribution de tâches.
               </span>
             </div>
           </div>
+
+          <div className="forfait-equipe-tarifs">
+            <div className="forfait-equipe-tarif-ligne">
+              <span>Jusqu'à 5 unités</span>
+              <span className="forfait-equipe-tarif-prix">49 $/unité</span>
+            </div>
+            <div className="forfait-equipe-tarif-ligne">
+              <span>6 – 10 unités</span>
+              <span className="forfait-equipe-tarif-prix">44 $/unité</span>
+            </div>
+            <div className="forfait-equipe-tarif-ligne">
+              <span>11 – 20 unités</span>
+              <span className="forfait-equipe-tarif-prix">39 $/unité</span>
+            </div>
+          </div>
+
           {estEquipe ? (
             peutGererAbonnement && (
               <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
@@ -390,38 +400,29 @@ async function ouvrirPortail() {
             )
           ) : (
             <>
-              <div className="forfait-equipe-grille">
-                {FORFAITS_EQUIPE.map(f => (
-                  <button
-                    key={f.id || f.nom}
-                    className="forfait-equipe-btn"
-                    onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(f.id) }}
-                    disabled={checkoutLoading || !f.id}
-                  >
-                    {f.economie && <span className="forfait-economie-chip">{f.economie}</span>}
-                    <span className="forfait-equipe-nom">Équipe {f.nom}</span>
-                    <span className="forfait-equipe-sieges">{f.sieges} membres</span>
-                    <span className="forfait-prix-num">{f.prix} $</span>
-                    <span className="forfait-prix-periode">par année</span>
-                  </button>
-                ))}
-              </div>
+              <button
+                className="forfait-prix-btn forfait-equipe-cta"
+                onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(PRICE_EQUIPE) }}
+                disabled={checkoutLoading}
+              >
+                S'abonner — Forfait Équipe
+              </button>
               {checkoutLoading && <p className="forfait-chargement">Chargement du formulaire...</p>}
             </>
           )}
-        </div>
 
-        <p className="forfait-sur-mesure">
-          Si aucun forfait ne correspond à votre équipe,{' '}
-          <a href="mailto:vetlabstudio@gmail.com" className="forfait-sur-mesure-lien">contactez-nous</a>{' '}
-          pour un forfait sur mesure.
-        </p>
+          <p className="forfait-equipe-contact">
+            Plus de 20 employés ?{' '}
+            <a href="mailto:vetlabstudio@gmail.com" className="forfait-sur-mesure-lien">Contactez-nous</a>,
+            on s'occupe de vous personnellement.
+          </p>
+        </div>
 
         <div className="forfait-securite">
           <i className="ti ti-shield-check"></i>
           <div>
             <span className="forfait-securite-titre">Sécurisé et fiable</span>
-            <span className="forfait-securite-sous">Vos données sont protégées et confidentielles.</span>
+            <span className="forfait-securite-sous">Paiements gérés par la plateforme Stripe.</span>
           </div>
         </div>
 

@@ -6054,8 +6054,10 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
   padding: 14px 10px;
+  min-height: 82px;
   background: var(--bg);
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
@@ -6100,53 +6102,46 @@ input[type="number"] {
   display: inline-block;
 }
 
-.forfait-equipe-grille {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.forfait-equipe-btn {
+.forfait-equipe-tarifs {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 12px 6px;
+  gap: 6px;
   background: var(--bg);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  font-family: var(--font);
-  cursor: pointer;
-  transition: all 0.15s;
-  text-align: center;
+  padding: 10px 14px;
 }
 
-.forfait-equipe-btn:hover:not(:disabled) {
-  border-color: var(--primary);
-  background: rgba(37, 77, 86, 0.04);
+.forfait-equipe-tarif-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
-.forfait-equipe-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.forfait-equipe-nom {
-  font-size: 11px;
+.forfait-equipe-tarif-prix {
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.forfait-equipe-sieges {
-  font-size: 10px;
-  color: var(--text-hint);
-  margin-bottom: 4px;
+.forfait-equipe-cta {
+  width: 100%;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--primary);
+  border-color: var(--primary);
+  background: rgba(37, 77, 86, 0.05);
 }
 
-.forfait-sur-mesure {
+.forfait-equipe-cta:hover:not(:disabled) {
+  background: rgba(37, 77, 86, 0.1);
+}
+
+.forfait-equipe-contact {
   font-size: 12px;
   color: var(--text-hint);
-  text-align: center;
   line-height: 1.5;
   margin: 0;
 }
@@ -6161,8 +6156,7 @@ input[type="number"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  justify-content: center;
-  padding: 10px 0 4px;
+  padding: 4px 0;
   color: var(--text-hint);
   font-size: 12px;
 }
@@ -6170,6 +6164,7 @@ input[type="number"] {
 .forfait-securite i {
   font-size: 18px;
   color: var(--primary);
+  flex-shrink: 0;
 }
 
 .forfait-securite div {
@@ -6194,6 +6189,7 @@ input[type="number"] {
   text-align: center;
   margin: 0;
 }
+
 
 /* ─── CHARTE RADIOGRAPHIQUE ─────────────────────────────────── */
 .charte-item {
