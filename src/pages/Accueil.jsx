@@ -63,14 +63,14 @@ function ClocheMiniAccueil() {
         onClick={() => { setOpen(o => !o); if (!open && count > 0) marquerLues() }}
         style={{
           background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px',
-          color: '#fff', fontSize: 30, position: 'relative', display: 'flex',
+          color: 'var(--primary)', fontSize: 26, position: 'relative', display: 'flex',
         }}
       >
         <i className="ti ti-bell"></i>
         {count > 0 && (
           <span style={{
             position: 'absolute', top: 0, right: 0, background: 'var(--accent-red)',
-            color: '#fff', borderRadius: '50%', width: 16, height: 16,
+            color: 'var(--primary)', borderRadius: '50%', width: 16, height: 16,
             fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             {count > 9 ? '9+' : count}
@@ -171,18 +171,25 @@ export default function Accueil() {
 
       {/* HEADER */}
       <div className="accueil-v2-header">
-        <div>
+        <div className="accueil-v2-header-top">
+          <img src="/logo-adjuvet.png" alt="Adjuvet" className="accueil-v2-logo-header" />
+          <ClocheMiniAccueil />
+        </div>
+        <div className="accueil-v2-header-texte">
           {estEquipe && nomClinique && (
-            <p style={{ fontSize: 16, fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginTop: 0 }}>{nomClinique}</p>
+            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6, marginTop: 0 }}>{nomClinique}</p>
           )}
-          <h1 className="accueil-v2-accueil">Accueil</h1>
+          
           <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
           <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
         </div>
-  <div style={{ alignSelf: 'flex-start' }}>
-    <ClocheMiniAccueil />
-  </div>
-</div>
+        {/* BOUTON PRÉCONSULTATION */}
+        <button className="accueil-v2-preconsult-btn" onClick={() => navigate('/soins-generaux/examen-physique')}>
+          <i className="ti ti-clipboard-heart"></i>
+          <span>Démarrer un examen</span>
+          <BadgePro />
+        </button>
+      </div>
 
       {/* SECTION CALCULATEURS */}
       <section className="accueil-v2-section">
@@ -202,12 +209,7 @@ export default function Accueil() {
           ))}
         </div>
 
-        {/* BOUTON PRÉCONSULTATION */}
-        <button className="accueil-v2-preconsult-btn" onClick={() => navigate('/soins-generaux/examen-physique')}>
-          <i className="ti ti-clipboard-heart"></i>
-          <span>Démarrer un examen</span>
-          <BadgePro />
-        </button>
+        
       </section>
 
       {/* SECTION RÉFÉRENCES */}

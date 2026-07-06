@@ -728,7 +728,7 @@ function Babillard() {
                     <i className="ti ti-pencil"></i>
                   </button>
                 )}
-                {noteActive.user_id === userId && (
+                {(noteActive.user_id === userId || peutEpingler) && (
                   <button onClick={() => setConfirmSupprimer(noteActive.id)} style={{
                     background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
                     padding: '6px 10px', cursor: 'pointer', color: '#555', fontSize: 14,
