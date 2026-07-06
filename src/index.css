@@ -5884,6 +5884,317 @@ input[type="number"] {
   cursor: not-allowed;
 }
 
+/* ─── FORFAITS (nouvelle section profil) ───────────────────── */
+.forfaits-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.forfaits-en-tete {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: var(--radius-md);
+  padding: 16px;
+  color: #fff;
+}
+
+.forfaits-en-tete-icone {
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.forfaits-en-tete-titre {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.forfaits-en-tete-sous {
+  font-size: 12px;
+  opacity: 0.85;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.forfait-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+.forfait-card--pro {
+  border-color: var(--primary-light);
+}
+
+.forfait-card--actif {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 77, 86, 0.08);
+}
+
+.forfait-card-badge-pop {
+  position: absolute;
+  top: -1px;
+  right: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--primary);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 0 0 8px 8px;
+}
+
+.forfait-card-haut {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.forfait-card-icone {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.forfait-card-icone--pro {
+  background: rgba(215, 163, 92, 0.1);
+  border-color: rgba(215, 163, 92, 0.3);
+  color: var(--accent-gold);
+}
+
+.forfait-card-icone--equipe {
+  background: rgba(37, 77, 86, 0.08);
+  border-color: rgba(37, 77, 86, 0.2);
+  color: var(--primary);
+}
+
+.forfait-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.forfait-card-nom {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.forfait-card-desc {
+  font-size: 12px;
+  color: var(--text-hint);
+  line-height: 1.5;
+}
+
+.forfait-actif-chip {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  background: rgba(215, 163, 92, 0.15);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.forfait-actif-chip--equipe {
+  color: var(--primary);
+  background: rgba(37, 77, 86, 0.1);
+}
+
+.forfait-card-prix-fixe {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.forfait-prix-num {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.forfait-prix-note {
+  font-size: 11px;
+  color: var(--text-hint);
+  white-space: nowrap;
+}
+
+.forfait-prix-choix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.forfait-prix-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 14px 10px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.forfait-prix-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: rgba(37, 77, 86, 0.04);
+}
+
+.forfait-prix-btn--annuel {
+  border-color: var(--accent-gold);
+  background: rgba(215, 163, 92, 0.05);
+}
+
+.forfait-prix-btn--annuel:hover:not(:disabled) {
+  background: rgba(215, 163, 92, 0.1);
+}
+
+.forfait-prix-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.forfait-prix-periode {
+  font-size: 11px;
+  color: var(--text-hint);
+  font-weight: 500;
+}
+
+.forfait-economie-chip {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  background: rgba(215, 163, 92, 0.15);
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+
+.forfait-equipe-grille {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.forfait-equipe-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 6px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.forfait-equipe-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: rgba(37, 77, 86, 0.04);
+}
+
+.forfait-equipe-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.forfait-equipe-nom {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.forfait-equipe-sieges {
+  font-size: 10px;
+  color: var(--text-hint);
+  margin-bottom: 4px;
+}
+
+.forfait-sur-mesure {
+  font-size: 12px;
+  color: var(--text-hint);
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.forfait-sur-mesure-lien {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forfait-securite {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  padding: 10px 0 4px;
+  color: var(--text-hint);
+  font-size: 12px;
+}
+
+.forfait-securite i {
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.forfait-securite div {
+  display: flex;
+  flex-direction: column;
+}
+
+.forfait-securite-titre {
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.forfait-securite-sous {
+  font-size: 11px;
+  color: var(--text-hint);
+}
+
+.forfait-chargement {
+  font-size: 12px;
+  color: var(--text-hint);
+  text-align: center;
+  margin: 0;
+}
+
 /* ─── CHARTE RADIOGRAPHIQUE ─────────────────────────────────── */
 .charte-item {
   display: flex;
