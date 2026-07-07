@@ -2,6 +2,10 @@ import { useNavigate } from 'react-router-dom'
 import BadgePro from '../components/BadgePro'
 
 const CHIRURGIE = [
+  { id: 'checklists', label: 'Checklists anesthésiques', route: '/chirurgie/checklists' },
+  { id: 'jeune', label: 'Recommandations de jeûne', route: '/chirurgie/jeune' },
+  { id: 'oxygene', label: 'Débit d\'oxygène', route: '/chirurgie/oxygene' },
+  { id: 'asa', label: 'Classification ASA', route: '/chirurgie/asa' },
   { id: 'instruments', label: 'Instruments de chirurgie', route: '/chirurgie/instruments', pro: true },
   { id: 'tubes', label: 'Tubes endotrachéaux', route: '/chirurgie/tubes', pro: true },
   { id: 'capnographie', label: 'Interprétation de la capnographie', route: '/chirurgie/capnographie', pro: true },

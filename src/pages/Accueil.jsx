@@ -183,6 +183,7 @@ export default function Accueil() {
           <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
           <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
         </div>
+        
         {/* BOUTON PRÉCONSULTATION */}
         <button className="accueil-v2-preconsult-btn" onClick={() => navigate('/soins-generaux/examen-physique')}>
           <i className="ti ti-clipboard-heart"></i>

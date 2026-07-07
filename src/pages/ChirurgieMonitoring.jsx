@@ -51,7 +51,11 @@ const MESURE_PARAMS = [
 function etatInitial() {
   return {
     animalNom: '',
+    proprietaireNom: '',
+    consentementSigne: false,
     procedure: '',
+    veterinaire: '',
+    technicien: '',
     espece: '',
     race: '',
     sexe: '',
@@ -59,6 +63,8 @@ function etatInitial() {
     poids: '',
     poidsUnite: 'kg',
     asa: '',
+    antecedents: '',
+    problemesAnticipes: '',
     temperature: '',
     fc: '',
     fr: '',
@@ -70,6 +76,14 @@ function etatInitial() {
     soluteType: '',
     debit: '',
     volumeTotal: '',
+    checkMachineQuotidien: false,
+    checkO2Pret: false,
+    checkEtancheite: false,
+    checkValveAPL: false,
+    checkMoniteur: false,
+    checkRechauffement: false,
+    checkIntubation: false,
+    checkUrgence: false,
     agentInhale: '',
     circuit: '',
     tubeET: '',
@@ -150,6 +164,7 @@ export default function ChirurgieMonitoring() {
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(null)
   const [showResume, setShowResume] = useState(null)
   const [showModifs, setShowModifs] = useState(false)
+  const [showAlertValveAPL, setShowAlertValveAPL] = useState(false)
   const [copie, setCopie] = useState(false)
   const [popupEspece, setPopupEspece] = useState(false)
   const [rechercheHistorique, setRechercheHistorique] = useState('')
@@ -300,13 +315,17 @@ export default function ChirurgieMonitoring() {
 
   // ─── DÉMARRAGE ──────────────────────
   function demarrerAnesthesie() {
+    if (!form.checkValveAPL) {
+      setShowAlertValveAPL(true)
+      return
+    }
     setForm(prev => ({ ...prev, heureDebut: prev.heureDebut || heureActuelle() }))
     setVue('monitoring')
   }
 
   // ─── MESURES ──────────────────────
   function ouvrirPopupMesure() {
-    const init = { heure: heureActuelle() }
+    const init = { heure: heureActuelle(), lubrifiantOculaire: false }
     MESURE_PARAMS.forEach(p => { init[p.key] = '' })
     setPopupMesure(init)
   }
@@ -340,12 +359,21 @@ export default function ChirurgieMonitoring() {
     const lignes = []
     lignes.push('MONITORING ANESTHÉSIQUE')
     lignes.push(`Animal : ${form.animalNom || '—'}`)
+    lignes.push(`Propriétaire : ${form.proprietaireNom || '—'}`)
+    lignes.push(`Consentement signé : ${form.consentementSigne ? 'Oui' : 'Non'}`)
     lignes.push(`Espèce : ${especeLabel || '—'}`)
     lignes.push(`Race : ${form.race?.trim() || '—'}`)
     lignes.push(`Sexe : ${form.sexe === 'femelle' ? 'Femelle' : form.sexe === 'male' ? 'Mâle' : '—'}${form.sexe && form.sterilise ? ' (stérilisé(e))' : ''}`)
     lignes.push(`Poids : ${form.poids ? form.poids + ' ' + form.poidsUnite : '—'}`)
-    lignes.push(`Procédure : ${form.procedure || '—'}`)
+    lignes.push('')
+    lignes.push('Procédure :')
+    lignes.push(`- Type : ${form.procedure || '—'}`)
+    lignes.push(`- Vétérinaire : ${form.veterinaire || '—'}`)
+    lignes.push(`- Technicien.ne : ${form.technicien || '—'}`)
+    lignes.push('')
     lignes.push(`Risque anesthésique (ASA) : ${form.asa || '—'}`)
+    lignes.push(`- Antécédents / Problèmes présents : ${form.antecedents?.trim() || '—'}`)
+    lignes.push(`- Problèmes à anticiper : ${form.problemesAnticipes?.trim() || '—'}`)
     lignes.push('')
     lignes.push('Évaluation pré-anesthésique :')
     lignes.push(`- Température : ${form.temperature ? form.temperature + ' °C' : '—'}`)
@@ -362,12 +390,20 @@ export default function ChirurgieMonitoring() {
     lignes.push(`- Volume total prévu : ${form.volumeTotal || '—'}`)
     lignes.push('')
     lignes.push('Maintien anesthésique :')
+    lignes.push(`- Contrôle quotidien machine : ${form.checkMachineQuotidien ? 'Oui' : 'Non'}`)
+    lignes.push(`- O₂ prêt à l'emploi : ${form.checkO2Pret ? 'Oui' : 'Non'}`)
+    lignes.push(`- Test d'étanchéité : ${form.checkEtancheite ? 'Oui' : 'Non'}`)
+    lignes.push(`- Valve APL ouverte : ${form.checkValveAPL ? 'Oui' : 'Non'}`)
     lignes.push(`- Agent inhalé : ${form.agentInhale || '—'}`)
     lignes.push(`- Circuit : ${form.circuit || '—'}`)
     lignes.push(`- Tube endotrachéal : ${form.tubeET || '—'}`)
     lignes.push(`- Ballonnet : ${form.ballonnet || '—'}`)
     lignes.push(`- Ballon réservoir : ${form.ballonReservoir || '—'}`)
     lignes.push(`- O₂ : ${form.o2Lmin ? form.o2Lmin + ' L/min' : '—'}`)
+    lignes.push(`- Moniteur de surveillance : ${form.checkMoniteur ? 'Oui' : 'Non'}`)
+    lignes.push(`- Dispositif de réchauffement : ${form.checkRechauffement ? 'Oui' : 'Non'}`)
+    lignes.push(`- Matériel pour intubation : ${form.checkIntubation ? 'Oui' : 'Non'}`)
+    lignes.push(`- Équipement d'urgence : ${form.checkUrgence ? 'Oui' : 'Non'}`)
     lignes.push('')
     lignes.push('Médicaments administrés :')
     const medsAdministres = form.medications.filter(m => m.administre)
@@ -384,13 +420,15 @@ export default function ChirurgieMonitoring() {
     if (form.mesures.length) {
       lignes.push('')
       lignes.push('Suivi des paramètres :')
-      const largeurLabel = Math.max(...MESURE_PARAMS.map(p => p.label.length), 'Heure'.length) + 1
+      const tousParams = [...MESURE_PARAMS, { key: 'lubrifiantOculaire', label: 'Lubrifiant oculaire' }]
+      const largeurLabel = Math.max(...tousParams.map(p => p.label.length), 'Heure'.length) + 1
       const largeurCol = Math.max(...form.mesures.map(m => m.heure.length), 5) + 2
       const colonne = (texte) => String(texte).padEnd(largeurCol)
       lignes.push('Heure'.padEnd(largeurLabel) + form.mesures.map(m => colonne(m.heure)).join(''))
       MESURE_PARAMS.forEach(p => {
         lignes.push(p.label.padEnd(largeurLabel) + form.mesures.map(m => colonne(m[p.key] || '—')).join(''))
       })
+      lignes.push('Lubrifiant oculaire'.padEnd(largeurLabel) + form.mesures.map(m => colonne(m.lubrifiantOculaire ? 'Oui' : 'Non')).join(''))
     }
     lignes.push('')
     lignes.push(`Heure de fin de l'anesthésie : ${form.heureFin || '—'}`)
@@ -427,17 +465,22 @@ export default function ChirurgieMonitoring() {
     }
     doc.setFontSize(8.5)
     const infos = [
-      `Animal : ${donneesPdf.animalNom || '—'}`,
+      `Animal : ${donneesPdf.animalNom || '—'}   Propriétaire : ${donneesPdf.proprietaireNom || '—'}   Consentement : ${donneesPdf.consentementSigne ? 'Oui' : 'Non'}`,
       `Espèce : ${especeLabel || '—'}${donneesPdf.race?.trim() ? '   Race : ' + donneesPdf.race.trim() : ''}   Sexe : ${donneesPdf.sexe === 'femelle' ? 'Femelle' : donneesPdf.sexe === 'male' ? 'Mâle' : '—'}${donneesPdf.sterilise ? ' (stérilisé(e))' : ''}`,
       `Poids : ${donneesPdf.poids ? donneesPdf.poids + ' ' + donneesPdf.poidsUnite : '—'}   Procédure : ${donneesPdf.procedure || '—'}`,
+      `Vétérinaire : ${donneesPdf.veterinaire || '—'}   Technicien.ne : ${donneesPdf.technicien || '—'}`,
       `ASA : ${donneesPdf.asa || '—'}`,
+      donneesPdf.antecedents?.trim() ? `Antécédents : ${donneesPdf.antecedents.trim()}` : null,
+      donneesPdf.problemesAnticipes?.trim() ? `Problèmes à anticiper : ${donneesPdf.problemesAnticipes.trim()}` : null,
       `Température : ${donneesPdf.temperature || '—'}   FC : ${donneesPdf.fc || '—'}   FR : ${donneesPdf.fr || '—'}   TRC : ${donneesPdf.trc || '—'}`,
       `Muqueuses : ${donneesPdf.muqueuses.join(', ') || '—'}`,
       `Accès veineux : ${donneesPdf.accesCalibre || '—'} ${donneesPdf.accesSite || ''} | Soluté : ${donneesPdf.soluteType || '—'} | Débit : ${donneesPdf.debit || '—'}`,
+      `Vérifications : Machine ${donneesPdf.checkMachineQuotidien ? '✓' : '✗'} | O₂ ${donneesPdf.checkO2Pret ? '✓' : '✗'} | Étanchéité ${donneesPdf.checkEtancheite ? '✓' : '✗'} | Valve APL ${donneesPdf.checkValveAPL ? '✓' : '✗'}`,
+      `Équipements : Moniteur ${donneesPdf.checkMoniteur ? '✓' : '✗'} | Réchauffement ${donneesPdf.checkRechauffement ? '✓' : '✗'} | Intubation ${donneesPdf.checkIntubation ? '✓' : '✗'} | Urgence ${donneesPdf.checkUrgence ? '✓' : '✗'}`,
       `Maintien : ${donneesPdf.agentInhale || '—'} | Circuit : ${donneesPdf.circuit || '—'} | Tube ET : ${donneesPdf.tubeET || '—'}`,
       `Ballonnet : ${donneesPdf.ballonnet || '—'} | Ballon réservoir : ${donneesPdf.ballonReservoir || '—'} | O2 : ${donneesPdf.o2Lmin || '—'} L/min`,
       `Heure de début : ${donneesPdf.heureDebut || '—'}   Heure de fin : ${donneesPdf.heureFin || '—'}`,
-    ]
+    ].filter(Boolean)
     const recup = [
       `Notes de fin : ${donneesPdf.notesFin || '—'}`,
       `Extubation : ${donneesPdf.extubationHeure || '—'} (${donneesPdf.extubationEtat || '—'})`,
@@ -505,7 +548,10 @@ export default function ChirurgieMonitoring() {
         autoTable(doc, {
           startY: y,
           head: [['Paramètre', ...chunk.map(m => m.heure)]],
-          body: MESURE_PARAMS.map(p => [p.label, ...chunk.map(m => m[p.key] || '—')]),
+          body: [
+            ...MESURE_PARAMS.map(p => [p.label, ...chunk.map(m => m[p.key] || '—')]),
+            ['Lubrifiant oculaire', ...chunk.map(m => m.lubrifiantOculaire ? 'Oui' : 'Non')],
+          ],
           styles: { fontSize: 8 },
           headStyles: { fillColor: [37, 77, 86] },
           tableWidth: largeurTableau < largeurPage - 28 ? largeurTableau : 'auto',
@@ -712,6 +758,9 @@ export default function ChirurgieMonitoring() {
                       <div className="examen-historique-info">
                         <h3 className="examen-historique-nom">{item.animal_nom}</h3>
                         <p className="examen-historique-date">{formaterDate(item.created_at)}</p>
+                        {!item.resume && item.donnees?.heureDebut && (
+                          <span className="monitoring-badge-encours">En cours</span>
+                        )}
                       </div>
                       <button className="examen-historique-supprimer" onClick={e => { e.stopPropagation(); setShowConfirmSupprimer(item) }}>
                         <i className="ti ti-trash"></i>
@@ -738,6 +787,9 @@ export default function ChirurgieMonitoring() {
                                 <div className="examen-historique-info">
                                   <h3 className="examen-historique-nom">{item.animal_nom}</h3>
                                   <p className="examen-historique-date">{formaterDate(item.created_at)}</p>
+                                  {!item.resume && item.donnees?.heureDebut && (
+                                    <span className="monitoring-badge-encours">En cours</span>
+                                  )}
                                 </div>
                                 <button className="examen-historique-supprimer" onClick={e => { e.stopPropagation(); setShowConfirmSupprimer(item) }}>
                                   <i className="ti ti-trash"></i>
@@ -877,9 +929,13 @@ export default function ChirurgieMonitoring() {
               <input type="text" className="form-input" value={form.animalNom} onChange={e => modifierChamp('animalNom', e.target.value)} placeholder="Ex. : Charlie" />
             </div>
             <div className="form-groupe">
-              <label className="form-label">Type de procédure</label>
-              <input type="text" className="form-input" value={form.procedure} onChange={e => modifierChamp('procedure', e.target.value)} placeholder="Ex. : Castration" />
+              <label className="form-label">Nom du propriétaire</label>
+              <input type="text" className="form-input" value={form.proprietaireNom || ''} onChange={e => modifierChamp('proprietaireNom', e.target.value)} placeholder="Ex. : Marie Tremblay" />
             </div>
+            <label className="voie-item" style={{ marginBottom: 4 }}>
+              <span style={{ fontSize: 14, fontWeight: 500 }}>Consentement du propriétaire signé</span>
+              <input type="checkbox" checked={form.consentementSigne || false} onChange={e => modifierChamp('consentementSigne', e.target.checked)} />
+            </label>
             <div className="form-groupe">
               <label className="form-label">Espèce</label>
               <div className="espece-choisir">
@@ -944,6 +1000,30 @@ export default function ChirurgieMonitoring() {
           </div>
         )}
 
+        {/* Procédure */}
+        <div className="postop-section">
+          <div className="postop-section-header">
+            <div className="postop-section-icone" style={{ background: 'rgba(37,77,86,0.1)', color: 'var(--primary)' }}>
+              <i className="ti ti-scissors"></i>
+            </div>
+            <h2 className="postop-section-titre">Procédure</h2>
+          </div>
+          <div className="form-scroll" style={{ padding: 16, gap: 12 }}>
+            <div className="form-groupe">
+              <label className="form-label">Type de procédure</label>
+              <input type="text" className="form-input" value={form.procedure} onChange={e => modifierChamp('procedure', e.target.value)} placeholder="Ex. : Castration" />
+            </div>
+            <div className="form-groupe">
+              <label className="form-label">Nom du vétérinaire</label>
+              <input type="text" className="form-input" value={form.veterinaire || ''} onChange={e => modifierChamp('veterinaire', e.target.value)} placeholder="Ex. : Dr. Dupont" />
+            </div>
+            <div className="form-groupe">
+              <label className="form-label">Nom du / de la technicien.ne</label>
+              <input type="text" className="form-input" value={form.technicien || ''} onChange={e => modifierChamp('technicien', e.target.value)} placeholder="Ex. : Sophie Martin" />
+            </div>
+          </div>
+        </div>
+
         {/* ASA */}
         <div className="postop-section">
           <div className="postop-section-header">
@@ -957,6 +1037,14 @@ export default function ChirurgieMonitoring() {
               {ASA_OPTIONS.map(opt => (
                 <button key={opt} type="button" className={`toggle-btn ${form.asa === opt ? 'actif' : ''}`} onClick={() => modifierChamp('asa', form.asa === opt ? '' : opt)}>{opt}</button>
               ))}
+            </div>
+            <div className="form-groupe">
+              <label className="form-label">Antécédents / Problèmes présents</label>
+              <textarea className="form-textarea" rows={2} value={form.antecedents || ''} onChange={e => modifierChamp('antecedents', e.target.value)} placeholder="Ex. : Souffle cardiaque grade II, obésité..." />
+            </div>
+            <div className="form-groupe">
+              <label className="form-label">Problèmes à anticiper</label>
+              <textarea className="form-textarea" rows={2} value={form.problemesAnticipes || ''} onChange={e => modifierChamp('problemesAnticipes', e.target.value)} placeholder="Ex. : Risque de régurgitation, instabilité hémodynamique..." />
             </div>
           </div>
         </div>
@@ -1043,6 +1131,20 @@ export default function ChirurgieMonitoring() {
           </div>
           <div className="form-scroll" style={{ padding: 16, gap: 12 }}>
             <div className="form-groupe">
+              <label className="form-label" style={{ marginBottom: 6 }}>Vérifications machine</label>
+              {[
+                { champ: 'checkMachineQuotidien', label: 'Contrôle quotidien de la machine' },
+                { champ: 'checkO2Pret', label: 'O₂ prêt à l\'emploi' },
+                { champ: 'checkEtancheite', label: 'Test d\'étanchéité' },
+                { champ: 'checkValveAPL', label: 'Valve APL ouverte' },
+              ].map(({ champ, label }) => (
+                <label key={champ} className="voie-item" style={{ marginBottom: 4 }}>
+                  <span style={{ fontSize: 14 }}>{label}</span>
+                  <input type="checkbox" checked={form[champ] || false} onChange={e => modifierChamp(champ, e.target.checked)} />
+                </label>
+              ))}
+            </div>
+            <div className="form-groupe">
               <label className="form-label">Agent inhalé</label>
               <input type="text" className="form-input" value={form.agentInhale} onChange={e => modifierChamp('agentInhale', e.target.value)} placeholder="Ex. : Isoflurane" />
             </div>
@@ -1068,6 +1170,20 @@ export default function ChirurgieMonitoring() {
             <div className="form-groupe">
               <label className="form-label">O₂ (L/min)</label>
               <input type="number" inputMode="decimal" className="form-input" value={form.o2Lmin} onChange={e => modifierChamp('o2Lmin', e.target.value)} placeholder="Ex. : 1" />
+            </div>
+            <div className="form-groupe">
+              <label className="form-label" style={{ marginBottom: 6 }}>Les équipements sont-ils prêts ?</label>
+              {[
+                { champ: 'checkMoniteur', label: 'Moniteur de surveillance' },
+                { champ: 'checkRechauffement', label: 'Dispositif de réchauffement' },
+                { champ: 'checkIntubation', label: 'Matériel pour intubation' },
+                { champ: 'checkUrgence', label: 'Équipement d\'urgence prêt' },
+              ].map(({ champ, label }) => (
+                <label key={champ} className="voie-item" style={{ marginBottom: 4 }}>
+                  <span style={{ fontSize: 14 }}>{label}</span>
+                  <input type="checkbox" checked={form[champ] || false} onChange={e => modifierChamp(champ, e.target.checked)} />
+                </label>
+              ))}
             </div>
           </div>
         </div>
@@ -1156,27 +1272,6 @@ export default function ChirurgieMonitoring() {
                     <label className="form-label">Voie</label>
                     <input type="text" className="form-input" value={m.voie} onChange={e => modifierMedication(m.id, 'voie', e.target.value)} placeholder="IV, IM, SC..." />
                   </div>
-                  <div className="monitoring-med-card-row">
-                    <label className="form-label">Administré</label>
-                    <div className="toggle-groupe">
-                      <button
-                        type="button"
-                        className={`toggle-btn ${m.administre ? 'actif' : ''}`}
-                        onClick={() => toggleAdministreMedication(m.id, true)}
-                      >Oui</button>
-                      <button
-                        type="button"
-                        className={`toggle-btn ${!m.administre ? 'actif' : ''}`}
-                        onClick={() => toggleAdministreMedication(m.id, false)}
-                      >Non</button>
-                    </div>
-                  </div>
-                  {m.administre && (
-                    <div className="monitoring-med-card-row">
-                      <label className="form-label">Heure d'administration</label>
-                      <input type="time" className="form-input" value={m.heureAdministration || heureActuelle()} onChange={e => modifierMedication(m.id, 'heureAdministration', e.target.value)} />
-                    </div>
-                  )}
                 </div>
               )
             })}
@@ -1203,6 +1298,35 @@ export default function ChirurgieMonitoring() {
             <i className="ti ti-player-play"></i> {form.heureDebut ? 'Continuer le monitoring' : 'Commencer le monitoring'}
           </button>
         </div>
+
+        {/* Popup alerte valve APL */}
+        {showAlertValveAPL && (
+          <div className="popup-overlay" onClick={() => setShowAlertValveAPL(false)}>
+            <div className="popup-card" onClick={e => e.stopPropagation()}>
+              <div className="popup-header">
+                <span style={{ color: '#702F3A' }}><i className="ti ti-alert-triangle" style={{ marginRight: 6 }} />Attention — Valve APL</span>
+                <button className="popup-close" onClick={() => setShowAlertValveAPL(false)}>✕</button>
+              </div>
+              <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
+                <i className="ti ti-alert-triangle" style={{ fontSize: 44, color: '#702F3A', marginBottom: 12, display: 'block' }}></i>
+                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
+                  La valve APL n'est pas cochée comme ouverte.
+                </p>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                  Assurez-vous que la valve d'échappement (APL) est bien ouverte avant de commencer le monitoring. Une valve fermée peut causer un barotraumatisme.
+                </p>
+              </div>
+              <div className="popup-actions-centrees">
+                <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => { modifierChamp('checkValveAPL', true); setShowAlertValveAPL(false) }}>
+                  Confirmer et ouvrir
+                </button>
+                <button className="labo-btn-primary" style={{ flex: 1 }} onClick={() => { setShowAlertValveAPL(false); setForm(prev => ({ ...prev, heureDebut: prev.heureDebut || heureActuelle() })); setVue('monitoring') }}>
+                  Continuer quand même
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     )
   }
@@ -1309,6 +1433,10 @@ export default function ChirurgieMonitoring() {
                         {chunk.map((m, j) => <td key={j}>{m[p.key] || '—'}</td>)}
                       </tr>
                     ))}
+                    <tr>
+                      <td>Lubrifiant oculaire</td>
+                      {chunk.map((m, j) => <td key={j}>{m.lubrifiantOculaire ? 'Oui' : 'Non'}</td>)}
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -1342,6 +1470,10 @@ export default function ChirurgieMonitoring() {
                   <input type="text" inputMode="decimal" className="form-input" value={popupMesure[p.key]} onChange={e => setPopupMesure(prev => ({ ...prev, [p.key]: e.target.value }))} />
                 </div>
               ))}
+              <label className="voie-item">
+                <span style={{ fontSize: 14, fontWeight: 500 }}>Lubrifiant oculaire</span>
+                <input type="checkbox" checked={popupMesure.lubrifiantOculaire || false} onChange={e => setPopupMesure(prev => ({ ...prev, lubrifiantOculaire: e.target.checked }))} />
+              </label>
             </div>
             <button className="labo-btn-primary" style={{ width: '100%', marginTop: 12 }} onClick={ajouterMesure}>
               Terminé

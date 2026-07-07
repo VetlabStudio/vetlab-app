@@ -87,7 +87,9 @@ const NoteDetail = lazy(() => import('./pages/NoteDetail'))
 const Equipe = lazy(() => import('./pages/Equipe'))
 const EquipeGestion = lazy(() => import('./pages/EquipeGestion'))
 const RejoindreEquipe = lazy(() => import('./pages/RejoindreEquipe'))
-const Chirurgie = lazy(() => import('./pages/Chirurgie'))
+const ChirurgieChecklists = lazy(() => import('./pages/ChirurgieChecklists'))
+const ChirurgieJeune = lazy(() => import('./pages/ChirurgieJeune'))
+const ChirurgieOxygene = lazy(() => import('./pages/ChirurgieOxygene'))
 const ChirurgieInstruments = lazy(() => import('./pages/ChirurgieInstruments'))
 const ChirurgieTubes = lazy(() => import('./pages/ChirurgieTubes'))
 const ChirurgieMonitoring = lazy(() => import('./pages/ChirurgieMonitoring'))
@@ -312,6 +314,9 @@ export default function App() {
         <Route path="/chirurgie/capnographie" element={<RouteProtegee session={session}><ProGate><ChirurgieCapnographie /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/post-op" element={<RouteProtegee session={session}><ProGate><ChirurgiePostOp /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/asa" element={<RouteProtegee session={session}><ProGate><ChirurgieASA /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/checklists" element={<RouteProtegee session={session}><ChirurgieChecklists /></RouteProtegee>} />
+        <Route path="/chirurgie/jeune" element={<RouteProtegee session={session}><ChirurgieJeune /></RouteProtegee>} />
+        <Route path="/chirurgie/oxygene" element={<RouteProtegee session={session}><ChirurgieOxygene /></RouteProtegee>} />
         <Route path="/chirurgie/douleur" element={<RouteProtegee session={session}><ChirurgieDouleur /></RouteProtegee>} />
         <Route path="/chirurgie/ecg" element={<RouteProtegee session={session}><ProGate><ChirurgieECG /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />
