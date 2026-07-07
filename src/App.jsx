@@ -93,6 +93,7 @@ const ChirurgieTubes = lazy(() => import('./pages/ChirurgieTubes'))
 const ChirurgieMonitoring = lazy(() => import('./pages/ChirurgieMonitoring'))
 const ChirurgieCapnographie = lazy(() => import('./pages/ChirurgieCapnographie'))
 const ChirurgiePostOp = lazy(() => import('./pages/ChirurgiePostOp'))
+const ChirurgieASA = lazy(() => import('./pages/ChirurgieASA'))
 const ChirurgieDouleur = lazy(() => import('./pages/ChirurgieDouleur'))
 const ChirurgieECG = lazy(() => import('./pages/ChirurgieECG'))
 const ChirurgieECGElectrodes = lazy(() => import('./pages/ChirurgieECGElectrodes'))
@@ -310,6 +311,7 @@ export default function App() {
         <Route path="/chirurgie/monitoring" element={<RouteProtegee session={session}><ProGate><ChirurgieMonitoring /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/capnographie" element={<RouteProtegee session={session}><ProGate><ChirurgieCapnographie /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/post-op" element={<RouteProtegee session={session}><ProGate><ChirurgiePostOp /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/asa" element={<RouteProtegee session={session}><ProGate><ChirurgieASA /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/douleur" element={<RouteProtegee session={session}><ChirurgieDouleur /></RouteProtegee>} />
         <Route path="/chirurgie/ecg" element={<RouteProtegee session={session}><ProGate><ChirurgieECG /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />

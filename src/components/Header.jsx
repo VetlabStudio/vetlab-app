@@ -69,6 +69,7 @@ const titres = {
   '/labo/microbiologie/levures': 'Caractéristiques des levures',
   '/drogues/toxicologie': 'Toxicologie',
   '/notes': 'Notes',
+  '/chirurgie/asa': 'Classification du risque anesthésique (ASA)',
   '/chirurgie/instruments': 'Catalogue d\'instruments',
   '/chirurgie/tubes': 'Tubes endotrachéaux',
   '/chirurgie/monitoring': 'Monitoring anesthésique',

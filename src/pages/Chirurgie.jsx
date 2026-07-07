@@ -7,6 +7,7 @@ import { useProfil } from '../context/ProfilContext'
 const CATEGORIE_ID = '72ffd9e2-c495-44d7-b6ea-97669eb2f69b'
 
 const REFERENCES = [
+  { id: 'asa', label: 'Classification ASA', icone: 'ti-stethoscope', route: '/chirurgie/asa', pro: true },
   { id: 'instruments', label: 'Catalogue d\'instruments', icone: 'ti-scalpel', route: '/chirurgie/instruments', pro: true },
   { id: 'post-op', label: 'Soins post-opératoires', icone: 'ti-heart-rate-monitor', route: '/chirurgie/post-op', pro: true },
 ]
