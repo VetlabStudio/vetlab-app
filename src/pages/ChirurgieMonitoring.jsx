@@ -465,7 +465,8 @@ export default function ChirurgieMonitoring() {
     }
     doc.setFontSize(8.5)
     const infos = [
-      `Animal : ${donneesPdf.animalNom || '—'}   Propriétaire : ${donneesPdf.proprietaireNom || '—'}   Consentement : ${donneesPdf.consentementSigne ? 'Oui' : 'Non'}`,
+      `Animal : ${donneesPdf.animalNom || '—'}`,
+      `Propriétaire : ${donneesPdf.proprietaireNom || '—'}   Consentement : ${donneesPdf.consentementSigne ? 'Oui' : 'Non'}`,
       `Espèce : ${especeLabel || '—'}${donneesPdf.race?.trim() ? '   Race : ' + donneesPdf.race.trim() : ''}   Sexe : ${donneesPdf.sexe === 'femelle' ? 'Femelle' : donneesPdf.sexe === 'male' ? 'Mâle' : '—'}${donneesPdf.sterilise ? ' (stérilisé(e))' : ''}`,
       `Poids : ${donneesPdf.poids ? donneesPdf.poids + ' ' + donneesPdf.poidsUnite : '—'}   Procédure : ${donneesPdf.procedure || '—'}`,
       `Vétérinaire : ${donneesPdf.veterinaire || '—'}   Technicien.ne : ${donneesPdf.technicien || '—'}`,
@@ -475,8 +476,8 @@ export default function ChirurgieMonitoring() {
       `Température : ${donneesPdf.temperature || '—'}   FC : ${donneesPdf.fc || '—'}   FR : ${donneesPdf.fr || '—'}   TRC : ${donneesPdf.trc || '—'}`,
       `Muqueuses : ${donneesPdf.muqueuses.join(', ') || '—'}`,
       `Accès veineux : ${donneesPdf.accesCalibre || '—'} ${donneesPdf.accesSite || ''} | Soluté : ${donneesPdf.soluteType || '—'} | Débit : ${donneesPdf.debit || '—'}`,
-      `Vérifications : Machine ${donneesPdf.checkMachineQuotidien ? '✓' : '✗'} | O₂ ${donneesPdf.checkO2Pret ? '✓' : '✗'} | Étanchéité ${donneesPdf.checkEtancheite ? '✓' : '✗'} | Valve APL ${donneesPdf.checkValveAPL ? '✓' : '✗'}`,
-      `Équipements : Moniteur ${donneesPdf.checkMoniteur ? '✓' : '✗'} | Réchauffement ${donneesPdf.checkRechauffement ? '✓' : '✗'} | Intubation ${donneesPdf.checkIntubation ? '✓' : '✗'} | Urgence ${donneesPdf.checkUrgence ? '✓' : '✗'}`,
+      `Vérifications machine : Quotidien ${donneesPdf.checkMachineQuotidien ? 'Oui' : 'Non'} | O2 ${donneesPdf.checkO2Pret ? 'Oui' : 'Non'} | Etancheite ${donneesPdf.checkEtancheite ? 'Oui' : 'Non'} | Valve APL ${donneesPdf.checkValveAPL ? 'Oui' : 'Non'}`,
+      `Equipements : Moniteur ${donneesPdf.checkMoniteur ? 'Oui' : 'Non'} | Rechauffement ${donneesPdf.checkRechauffement ? 'Oui' : 'Non'} | Intubation ${donneesPdf.checkIntubation ? 'Oui' : 'Non'} | Urgence ${donneesPdf.checkUrgence ? 'Oui' : 'Non'}`,
       `Maintien : ${donneesPdf.agentInhale || '—'} | Circuit : ${donneesPdf.circuit || '—'} | Tube ET : ${donneesPdf.tubeET || '—'}`,
       `Ballonnet : ${donneesPdf.ballonnet || '—'} | Ballon réservoir : ${donneesPdf.ballonReservoir || '—'} | O2 : ${donneesPdf.o2Lmin || '—'} L/min`,
       `Heure de début : ${donneesPdf.heureDebut || '—'}   Heure de fin : ${donneesPdf.heureFin || '—'}`,
