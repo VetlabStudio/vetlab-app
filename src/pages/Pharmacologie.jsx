@@ -27,7 +27,11 @@ export default function Pharmacologie() {
   return (
     <div className="page-calculateurs">
       <div className="accueil-v2-drogues-grid">
-        {DROGUES.map(d => (
+        {[...DROGUES].sort((a, b) => {
+          if (a.favori) return 1
+          if (b.favori) return -1
+          return a.label.localeCompare(b.label, 'fr')
+        }).map(d => (
           <button
             key={d.id}
             className={`accueil-v2-drogue-item ${d.accent ? 'accent' : ''} ${d.favori ? 'favori' : ''}`}
