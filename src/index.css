@@ -694,7 +694,7 @@ input  { font-family: var(--font); }
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 4px 12px 4px 12px;
-  gap: 10px;
+  gap: 0px;
   width: 100%;
 }
 
@@ -708,6 +708,7 @@ input  { font-family: var(--font); }
   justify-content: center;
   flex-shrink: 0;
   margin-left: -8px;
+  margin-right: 5px;
 }
 
 .champ-icone-wrapper img {
@@ -734,7 +735,7 @@ input  { font-family: var(--font); }
 }
 
 .champ-input .unite-fixe {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-hint);
   white-space: nowrap;
@@ -783,7 +784,7 @@ input  { font-family: var(--font); }
   background: transparent;
   border: none;
   font-family: var(--font);
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-hint);
   padding: 8px 1rem 8px 0.5rem;
@@ -816,20 +817,31 @@ input  { font-family: var(--font); }
 
 .radio-btn {
   padding: 6px 14px;
-  border: none;
+  border: 1.5px solid var(--border);
   border-radius: 10px;
-  background: var(--bg);
+  background: transparent;
   color: var(--text-secondary);
   font-family: var(--font);
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
 }
 
 .radio-btn.active {
   background: var(--primary);
+  border-color: var(--primary);
   color: white;
+}
+.dilution-resultat .radio-btn {
+  border-color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.55);
+  background: transparent;
+}
+.dilution-resultat .radio-btn.active {
+  background: white;
+  border-color: white;
+  color: var(--primary);
 }
 
 /* ─── SELECT DANS CHAMP ──────────────────────── */
