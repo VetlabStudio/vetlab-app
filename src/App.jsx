@@ -31,6 +31,7 @@ const AdminLaboProtocoles = lazy(() => import('./pages/AdminLaboProtocoles'))
 const FicheMedicament = lazy(() => import('./pages/FicheMedicament'))
 const Fluidotherapie = lazy(() => import('./pages/Fluidotherapie'))
 const CRI = lazy(() => import('./pages/CRI'))
+const Dextrose = lazy(() => import('./pages/Dextrose'))
 const Conversion = lazy(() => import('./pages/Conversion'))
 const BesoinEnergetique = lazy(() => import('./pages/BesoinEnergetique'))
 const Dilution = lazy(() => import('./pages/Dilution'))
@@ -101,6 +102,20 @@ const ChirurgieECG = lazy(() => import('./pages/ChirurgieECG'))
 const ChirurgieECGElectrodes = lazy(() => import('./pages/ChirurgieECGElectrodes'))
 const ChirurgieECGAnomalies = lazy(() => import('./pages/ChirurgieECGAnomalies'))
 const SoinsGenerauxExamenPhysique = lazy(() => import('./pages/SoinsGenerauxExamenPhysique'))
+const NutritionListe = lazy(() => import('./pages/NutritionListe'))
+const NutritionGestationLactation = lazy(() => import('./pages/NutritionGestationLactation'))
+const NutritionCroissance = lazy(() => import('./pages/NutritionCroissance'))
+const NutritionGeriatrique = lazy(() => import('./pages/NutritionGeriatrique'))
+const NutritionGastroIntestinal = lazy(() => import('./pages/NutritionGastroIntestinal'))
+const NutritionPeau = lazy(() => import('./pages/NutritionPeau'))
+const NutritionDiabete = lazy(() => import('./pages/NutritionDiabete'))
+const NutritionHyperthyroidisme = lazy(() => import('./pages/NutritionHyperthyroidisme'))
+const NutritionCancer = lazy(() => import('./pages/NutritionCancer'))
+const NutritionCardiaque = lazy(() => import('./pages/NutritionCardiaque'))
+const NutritionPertePoids = lazy(() => import('./pages/NutritionPertePoids'))
+const NutritionDentaire = lazy(() => import('./pages/NutritionDentaire'))
+const NutritionRenale = lazy(() => import('./pages/NutritionRenale'))
+const NutritionUrinaire = lazy(() => import('./pages/NutritionUrinaire'))
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -238,6 +253,7 @@ export default function App() {
         <Route path="/calculateurs" element={<RouteProtegee session={session}><Calculateurs /></RouteProtegee>} />
         <Route path="/calculateurs/fluido" element={<RouteProtegee session={session}><Fluidotherapie /></RouteProtegee>} />
         <Route path="/calculateurs/cri" element={<RouteProtegee session={session}><CRI /></RouteProtegee>} />
+        <Route path="/calculateurs/dextrose" element={<RouteProtegee session={session}><Dextrose /></RouteProtegee>} />
         <Route path="/calculateurs/conversion" element={<RouteProtegee session={session}><Conversion /></RouteProtegee>} />
         <Route path="/calculateurs/besoin" element={<RouteProtegee session={session}><BesoinEnergetique /></RouteProtegee>} />
         <Route path="/calculateurs/dilution" element={<RouteProtegee session={session}><Dilution /></RouteProtegee>} />
@@ -322,6 +338,22 @@ export default function App() {
         <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/anomalies" element={<RouteProtegee session={session}><ProGate><ChirurgieECGAnomalies /></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/examen-physique" element={<RouteProtegee session={session}><ProGate><SoinsGenerauxExamenPhysique /></ProGate></RouteProtegee>} />
+
+        {/* NUTRITION */}
+        <Route path="/nutrition" element={<RouteProtegee session={session}><NutritionListe /></RouteProtegee>} />
+        <Route path="/nutrition/gestation-lactation" element={<RouteProtegee session={session}><NutritionGestationLactation /></RouteProtegee>} />
+        <Route path="/nutrition/croissance" element={<RouteProtegee session={session}><NutritionCroissance /></RouteProtegee>} />
+        <Route path="/nutrition/geriatrique" element={<RouteProtegee session={session}><NutritionGeriatrique /></RouteProtegee>} />
+        <Route path="/nutrition/gastro-intestinal" element={<RouteProtegee session={session}><NutritionGastroIntestinal /></RouteProtegee>} />
+        <Route path="/nutrition/peau" element={<RouteProtegee session={session}><NutritionPeau /></RouteProtegee>} />
+        <Route path="/nutrition/diabete" element={<RouteProtegee session={session}><NutritionDiabete /></RouteProtegee>} />
+        <Route path="/nutrition/hyperthyroidisme" element={<RouteProtegee session={session}><NutritionHyperthyroidisme /></RouteProtegee>} />
+        <Route path="/nutrition/cancer" element={<RouteProtegee session={session}><NutritionCancer /></RouteProtegee>} />
+        <Route path="/nutrition/cardiaque" element={<RouteProtegee session={session}><NutritionCardiaque /></RouteProtegee>} />
+        <Route path="/nutrition/perte-poids" element={<RouteProtegee session={session}><NutritionPertePoids /></RouteProtegee>} />
+        <Route path="/nutrition/dentaire" element={<RouteProtegee session={session}><NutritionDentaire /></RouteProtegee>} />
+        <Route path="/nutrition/renale" element={<RouteProtegee session={session}><NutritionRenale /></RouteProtegee>} />
+        <Route path="/nutrition/urinaire" element={<RouteProtegee session={session}><NutritionUrinaire /></RouteProtegee>} />
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />

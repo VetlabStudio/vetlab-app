@@ -1073,7 +1073,7 @@ export default function ChirurgieMonitoring() {
             </div>
             <div className="form-groupe">
               <label className="form-label">TRC (sec)</label>
-              <input type="text" className="form-input" value={form.trc} onChange={e => modifierChamp('trc', e.target.value)} placeholder="Ex. : 1-2" />
+              <input type="text" inputMode="decimal" className="form-input" value={form.trc} onChange={e => modifierChamp('trc', e.target.value)} placeholder="Ex. : 1-2" />
             </div>
             <div className="form-groupe">
               <label className="form-label">Couleur des muqueuses</label>
@@ -1113,11 +1113,11 @@ export default function ChirurgieMonitoring() {
             </div>
             <div className="form-groupe">
               <label className="form-label">Débit</label>
-              <input type="text" className="form-input" value={form.debit} onChange={e => modifierChamp('debit', e.target.value)} placeholder="Ex. : 5 mL/kg/h" />
+              <input type="text" inputMode="decimal" className="form-input" value={form.debit} onChange={e => modifierChamp('debit', e.target.value)} placeholder="Ex. : 5 mL/kg/h" />
             </div>
             <div className="form-groupe">
               <label className="form-label">Volume total prévu</label>
-              <input type="text" className="form-input" value={form.volumeTotal} onChange={e => modifierChamp('volumeTotal', e.target.value)} placeholder="Ex. : 250 mL" />
+              <input type="text" inputMode="decimal" className="form-input" value={form.volumeTotal} onChange={e => modifierChamp('volumeTotal', e.target.value)} placeholder="Ex. : 250 mL" />
             </div>
           </div>
         </div>
@@ -1155,7 +1155,7 @@ export default function ChirurgieMonitoring() {
             </div>
             <div className="form-groupe">
               <label className="form-label">Tube endotrachéal</label>
-              <input type="text" className="form-input" value={form.tubeET} onChange={e => modifierChamp('tubeET', e.target.value)} placeholder="Ex. : 7 mm" />
+              <input type="text" inputMode="decimal" className="form-input" value={form.tubeET} onChange={e => modifierChamp('tubeET', e.target.value)} placeholder="Ex. : 7 mm" />
             </div>
             <div className="form-groupe">
               <label className="form-label">Ballonnet</label>
@@ -1166,7 +1166,7 @@ export default function ChirurgieMonitoring() {
             </div>
             <div className="form-groupe">
               <label className="form-label">Ballon réservoir</label>
-              <input type="text" className="form-input" value={form.ballonReservoir} onChange={e => modifierChamp('ballonReservoir', e.target.value)} placeholder="Ex. : 1 L" />
+              <input type="text" inputMode="decimal" className="form-input" value={form.ballonReservoir} onChange={e => modifierChamp('ballonReservoir', e.target.value)} placeholder="Ex. : 1 L" />
             </div>
             <div className="form-groupe">
               <label className="form-label">O₂ (L/min)</label>
@@ -1510,19 +1510,19 @@ export default function ChirurgieMonitoring() {
               </div>
               <div className="form-groupe">
                 <label className="form-label">Température (récupération)</label>
-                <input type="text" className="form-input" value={form.postTemp} onChange={e => modifierChamp('postTemp', e.target.value)} placeholder="°C" />
+                <input type="text" inputMode="decimal" className="form-input" value={form.postTemp} onChange={e => modifierChamp('postTemp', e.target.value)} placeholder="°C" />
               </div>
               <div className="form-groupe">
                 <label className="form-label">FC (récupération)</label>
-                <input type="text" className="form-input" value={form.postFc} onChange={e => modifierChamp('postFc', e.target.value)} placeholder="bpm" />
+                <input type="text" inputMode="numeric" className="form-input" value={form.postFc} onChange={e => modifierChamp('postFc', e.target.value)} placeholder="bpm" />
               </div>
               <div className="form-groupe">
                 <label className="form-label">FR (récupération)</label>
-                <input type="text" className="form-input" value={form.postFr} onChange={e => modifierChamp('postFr', e.target.value)} placeholder="rpm" />
+                <input type="text" inputMode="numeric" className="form-input" value={form.postFr} onChange={e => modifierChamp('postFr', e.target.value)} placeholder="rpm" />
               </div>
               <div className="form-groupe">
                 <label className="form-label">TRC (récupération)</label>
-                <input type="text" className="form-input" value={form.postTrc} onChange={e => modifierChamp('postTrc', e.target.value)} placeholder="sec" />
+                <input type="text" inputMode="decimal" className="form-input" value={form.postTrc} onChange={e => modifierChamp('postTrc', e.target.value)} placeholder="sec" />
               </div>
               <div className="form-groupe">
                 <label className="form-label">Douleur</label>

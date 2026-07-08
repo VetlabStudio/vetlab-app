@@ -122,7 +122,7 @@ function ClocheMiniAccueil() {
 
 const CALCULATEURS = [
   { id: 'fluido',      label: 'Fluido',              icone: '/icone-fluido.svg',      route: '/calculateurs/fluido' },
-  { id: 'cri',         label: 'CRI',                 icone: '/icone-cri.svg',         route: '/calculateurs/cri' },
+  { id: 'dextrose',    label: 'Dextrose',            icone: '/icone-dilution.svg',    route: '/calculateurs/dextrose' },
   { id: 'conversion',  label: 'Conversion',          icone: '/icone-conversion.svg',  route: '/calculateurs/conversion' },
   { id: 'dilution',    label: 'Dilution\nC1V1-C2V2', icone: '/icone-dilution.svg',    route: '/calculateurs/dilution' },
   { id: 'rcr',         label: 'RCR\nUrgence',        icone: '/icone-ecg.svg',         route: '/calculateurs/rcr' },
@@ -142,6 +142,7 @@ const REFERENCES = [
   { id: 'chirurgie', label: 'Chirurgie', icone: '/icone-chirurgie-ref.svg', route: '/chirurgie' },
   { id: 'soins-generaux', label: 'Soins\ngénéraux', icone: '/icone-soins-generaux.svg', route: '/soins-generaux' },
   { id: 'toxicologie', label: 'Toxicologie', icone: '/toxico.svg', route: '/drogues/toxicologie', pro: true },
+  { id: 'nutrition', label: 'Nutrition', icone: '/icone-nutrition.png', route: '/nutrition' },
 ]
 
 export default function Accueil() {

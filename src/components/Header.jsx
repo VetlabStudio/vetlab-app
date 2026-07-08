@@ -13,6 +13,7 @@ const titres = {
   '/calculateurs/mise-bas': 'Date de mise bas',
   '/calculateurs/toxicite': 'Toxicité chocolat',
   '/calculateurs/rcr': 'RCR Urgence',
+  '/calculateurs/dextrose': 'Dextrose',
   '/calculateurs/tempo': 'Tap BPM',
   '/calculateurs/douleur-aigue': 'Évaluation de la douleur aiguë',
   '/calculateurs/douleur-aigue/chien': 'Douleur aiguë — Chien',
@@ -95,6 +96,20 @@ const titres = {
   '/labo/radiologie/charte': 'Charte radiographique personnalisée',
   '/equipe': 'Équipe',
   '/equipe/gestion': 'Gestion de l\'équipe',
+  '/nutrition': 'Nutrition',
+  '/nutrition/gestation-lactation': 'Gestation et lactation',
+  '/nutrition/croissance': 'Croissance',
+  '/nutrition/geriatrique': 'Animaux gériatriques',
+  '/nutrition/gastro-intestinal': 'Maladies gastro-intestinales',
+  '/nutrition/peau': 'Maladies de peau',
+  '/nutrition/diabete': 'Diabète',
+  '/nutrition/hyperthyroidisme': 'Hyperthyroïdisme',
+  '/nutrition/cancer': 'Cancer',
+  '/nutrition/cardiaque': 'Maladies cardiaques',
+  '/nutrition/perte-poids': 'Perte de poids / Obésité',
+  '/nutrition/dentaire': 'Santé dentaire',
+  '/nutrition/renale': 'Maladies rénales',
+  '/nutrition/urinaire': 'Système urinaire',
   }
 
 export default function Header() {
