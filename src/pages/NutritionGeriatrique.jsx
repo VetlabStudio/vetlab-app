@@ -1,30 +1,38 @@
 const SECTIONS = [
   {
-    titre: 'Principes clés',
+    titre: 'Dysfonction cognitive (syndrome DISHA)',
     principes: [
-      'Surveiller régulièrement le poids et la condition corporelle (objectif : score 4–5/9).',
-      'Évaluer la masse musculaire — la sarcopénie est fréquente et souvent sous-estimée.',
-      'Protéines de haute qualité et haute digestibilité pour maintenir la masse musculaire (éviter la restriction protéique inutile).',
-      'Adapter la densité calorique selon la tendance : réduire si embonpoint, augmenter si perte de poids.',
-      'Maximiser l\'hydratation — les animaux âgés sont plus à risque de déshydratation et de maladies rénales.',
-      'Intégrer des aliments humides ou ajouter de l\'eau si l\'appétit diminue.',
+      'Dépister chez tout patient âgé : désorientation, interactions modifiées, cycles de sommeil perturbés, malpropreté, baisse d\'activité.',
+      'Aliment enrichi en antioxydants (vitamines E et C), cofacteurs mitochondriaux (acide lipoïque, L-carnitine), caroténoïdes, flavonoïdes et oméga-3 (DHA, EPA) : retarde ou renverse partiellement le déclin de l\'apprentissage.',
+      'Combiner avec l\'enrichissement environnemental (exercice, jouets nouveaux, stimulation) — meilleurs résultats qu\'avec l\'aliment seul.',
     ],
   },
   {
-    titre: 'Suppléments bénéfiques',
+    titre: 'Chien senior (dès ~7 ans)',
     principes: [
-      'Acides gras oméga-3 (EPA, DHA) — effets anti-inflammatoires, bénéfiques pour les articulations et la cognition.',
-      'Antioxydants (vitamine E, C, bêta-carotène) — soutien du système immunitaire.',
-      'Glucosamine et chondroïtine — soutien articulaire si arthrose.',
-      'Probiotiques si altération de la flore digestive.',
+      'Densité énergétique : 3,0 à 4,0 kcal/g MS; matières grasses : 7 à 15 % MS.',
+      'Protéines : 15 à 23 % MS chez le chien mature en santé.',
+      'Ne PAS restreindre les protéines chez un senior en santé — risque de malnutrition protéino-énergétique; améliorer la qualité plutôt que réduire la quantité.',
+      'Fibres ≥ 2 % MS (constipation, chiens à tendance obèse).',
+      'Dépistage régulier des maladies chroniques (rénale, cardiaque, endocrinienne) — adapter l\'alimentation en conséquence.',
+    ],
+  },
+  {
+    titre: 'Chat senior (dès 7 ans; besoins critiques à 10–12 ans)',
+    principes: [
+      'Densité énergétique : 3,5 à 4,5 kcal/g MS; matières grasses : 10 à 25 % MS.',
+      'Protéines modérées : 30 à 45 % MS — ne PAS restreindre chez le chat mature en santé.',
+      'Fibres ≤ 5 % MS.',
+      'La sensibilité à la soif diminue avec l\'âge : surveiller l\'hydratation, offrir de l\'eau fraîche en tout temps, favoriser les aliments humides.',
     ],
   },
   {
     titre: 'Points de vigilance',
     principes: [
-      'Dépistage régulier des maladies chroniques (rénale, cardiaque, endocrinienne) — adapter l\'alimentation en conséquence.',
+      'Protéines élevées non recommandées si maladie rénale concomitante — adapter selon la condition.',
+      'Risque de déshydratation accru sous diurétiques ou en IRC.',
       'Faciliter l\'accès à la nourriture (bol surélevé, croquettes plus faciles à mâcher).',
-      'Fractionner les repas si digestion difficile.',
+      'Fractionner les repas si digestion difficile ou si perte d\'appétit.',
     ],
   },
 ]

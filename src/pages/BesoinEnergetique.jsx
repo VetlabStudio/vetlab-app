@@ -4,29 +4,35 @@ function arrondir(val, decimales = 1) {
   return Math.round(val * Math.pow(10, decimales)) / Math.pow(10, decimales)
 }
 
-// ─── FACTEURS PAR ESPÈCE (WSAVA Global Nutrition Toolkit) ──
+function labelFacteur(f) {
+  const suffixe = f.plus ? '+' : ''
+  return f.facteurMax
+    ? `× ${f.facteurMin} – ${f.facteurMax}${suffixe}`
+    : `× ${f.facteurMin}`
+}
+
 const FACTEURS = {
   chat: [
-    { id: 'castre',     label: 'Adulte castré / stérilisé',           facteurMin: 1.2, facteurMax: 1.4 },
-    { id: 'intact',     label: 'Adulte entier',                       facteurMin: 1.4, facteurMax: 1.6 },
-    { id: 'inactif',    label: "Inactif / prédisposé à l'obésité",    facteurMin: 1.0, facteurMax: null },
-    { id: 'perte_poids',label: 'Perte de poids',                      facteurMin: 0.8, facteurMax: null },
-    { id: 'gestation',  label: 'Gestation',                           facteurMin: 1.6, facteurMax: 2.0 },
-    { id: 'lactation',  label: 'Lactation',                           facteurMin: 2.0, facteurMax: 6.0 },
-    { id: 'croissance', label: 'Croissance (chaton)',                 facteurMin: 2.5, facteurMax: null },
+    { id: 'castre',      label: 'Adulte castré / stérilisé',          facteurMin: 1.2, facteurMax: 1.4 },
+    { id: 'intact',      label: 'Adulte entier',                      facteurMin: 1.4, facteurMax: 1.6 },
+    { id: 'inactif',     label: "Inactif / prédisposé à l'obésité",   facteurMin: 1.0, facteurMax: null },
+    { id: 'perte_poids', label: 'Perte de poids',                     facteurMin: 0.8, facteurMax: null },
+    { id: 'gestation',   label: 'Gestation',                          facteurMin: 1.6, facteurMax: 2.0 },
+    { id: 'lactation',   label: 'Lactation',                          facteurMin: 2.0, facteurMax: 6.0 },
+    { id: 'croissance',  label: 'Croissance (chaton)',                 facteurMin: 2.5, facteurMax: null },
   ],
   chien: [
-    { id: 'castre',         label: 'Adulte castré / stérilisé',         facteurMin: 1.4, facteurMax: 1.6 },
-    { id: 'intact',         label: 'Adulte entier',                     facteurMin: 1.6, facteurMax: 1.8 },
-    { id: 'inactif',        label: "Inactif / prédisposé à l'obésité",  facteurMin: 1.0, facteurMax: 1.2 },
-    { id: 'perte_poids',    label: 'Perte de poids',                    facteurMin: 1.0, facteurMax: null },
-    { id: 'gestation',      label: 'Gestation (21 derniers jours)',     facteurMin: 3.0, facteurMax: null },
-    { id: 'lactation',      label: 'Lactation',                         facteurMin: 3.0, facteurMax: 6.0, plus: true },
+    { id: 'castre',           label: 'Adulte castré / stérilisé',       facteurMin: 1.4, facteurMax: 1.6 },
+    { id: 'intact',           label: 'Adulte entier',                   facteurMin: 1.6, facteurMax: 1.8 },
+    { id: 'inactif',          label: "Inactif / prédisposé à l'obésité",facteurMin: 1.0, facteurMax: 1.2 },
+    { id: 'perte_poids',      label: 'Perte de poids',                  facteurMin: 1.0, facteurMax: null },
+    { id: 'gestation',        label: 'Gestation (21 derniers jours)',   facteurMin: 3.0, facteurMax: null },
+    { id: 'lactation',        label: 'Lactation',                       facteurMin: 3.0, facteurMax: 6.0, plus: true },
     { id: 'croissance_jeune', label: 'Croissance (< 4 mois)',           facteurMin: 3.0, facteurMax: null },
     { id: 'croissance_age',   label: 'Croissance (≥ 4 mois)',           facteurMin: 2.0, facteurMax: null },
-    { id: 'travail_leger',  label: 'Travail léger',                     facteurMin: 1.6, facteurMax: 2.0 },
-    { id: 'travail_modere', label: 'Travail modéré',                    facteurMin: 2.0, facteurMax: 5.0 },
-    { id: 'travail_lourd',  label: 'Travail lourd',                     facteurMin: 5.0, facteurMax: 11.0 },
+    { id: 'travail_leger',    label: 'Travail léger',                   facteurMin: 1.6, facteurMax: 2.0 },
+    { id: 'travail_modere',   label: 'Travail modéré',                  facteurMin: 2.0, facteurMax: 5.0 },
+    { id: 'travail_lourd',    label: 'Travail lourd',                   facteurMin: 5.0, facteurMax: 11.0 },
   ],
 }
 
@@ -34,7 +40,7 @@ export default function BesoinEnergetique() {
   const [espece, setEspece] = useState('chien')
   const [poids, setPoids] = useState('')
   const [unitePoids, setUnitePoids] = useState('kg')
-  const [facteurCustom, setFacteurCustom] = useState('')
+  const [conditionId, setConditionId] = useState('castre')
   const [kcalTasse, setKcalTasse] = useState('')
 
   const poidsKg = useMemo(() => {
@@ -48,24 +54,37 @@ export default function BesoinEnergetique() {
     return arrondir((30 * poidsKg) + 70)
   }, [poidsKg])
 
-  function calculerBEQ(facteurMin, facteurMax) {
+  const facteurs = FACTEURS[espece]
+
+  const conditionSelectionnee = useMemo(
+    () => facteurs.find(f => f.id === conditionId) || facteurs[0],
+    [facteurs, conditionId]
+  )
+
+  function beqRange(f) {
     if (!bee) return null
-    const min = arrondir(bee * facteurMin)
-    const max = facteurMax ? arrondir(bee * facteurMax) : null
-    return { min, max }
+    const suffixe = f.plus ? '+' : ''
+    const min = arrondir(bee * f.facteurMin)
+    const max = f.facteurMax ? arrondir(bee * f.facteurMax) : null
+    return max ? `${min} – ${max}${suffixe}` : `${min}`
   }
 
-  const beqCustom = useMemo(() => {
-    const f = parseFloat(facteurCustom)
-    if (!f || !bee) return null
-    return arrondir(bee * f)
-  }, [bee, facteurCustom])
+  const beqPrincipal = useMemo(() => {
+    if (!bee) return null
+    return arrondir(bee * conditionSelectionnee.facteurMin)
+  }, [bee, conditionSelectionnee])
 
   const tassesParJour = useMemo(() => {
     const k = parseFloat(kcalTasse)
-    if (!k || k <= 0 || !beqCustom) return null
-    return arrondir(beqCustom / k, 2)
-  }, [beqCustom, kcalTasse])
+    if (!k || k <= 0 || !beqPrincipal) return null
+    return arrondir(beqPrincipal / k, 2)
+  }, [beqPrincipal, kcalTasse])
+
+  function handleEspece(e) {
+    const nouvelleEspece = e
+    setEspece(nouvelleEspece)
+    setConditionId(FACTEURS[nouvelleEspece][0].id)
+  }
 
   return (
     <div className="page-calculateurs">
@@ -81,7 +100,7 @@ export default function BesoinEnergetique() {
             </span>
             <div
               className={`toggle-slider ${espece === 'chat' ? 'droite' : ''}`}
-              onClick={() => setEspece(espece === 'chien' ? 'chat' : 'chien')}
+              onClick={() => handleEspece(espece === 'chien' ? 'chat' : 'chien')}
             >
               <div className="toggle-thumb"></div>
             </div>
@@ -115,32 +134,48 @@ export default function BesoinEnergetique() {
 
         {/* ─── BEE ────────────────────────────── */}
         <div className="bee-card">
-          <p className="bee-titre">Besoin Énergétique d'Entretien (BEE)</p>
+          <p className="bee-titre">BEE — Besoin Énergétique d'Entretien</p>
           <p className="bee-formule">(30 × poids en kg) + 70 = kcal/jour</p>
           <p className="bee-resultat">{bee > 0 ? `${bee} kcal/jour` : '—'}</p>
         </div>
 
-        {/* ─── FACTEUR PERSONNALISÉ ───────────── */}
+        {/* ─── CONDITION ──────────────────────── */}
         <div className="champ">
-          <label>Facteur</label>
-          <div className="champ-input">
-            <div className="champ-icone-wrapper">
-              <img src="/icone-energie.svg" alt="facteur" />
-            </div>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={facteurCustom}
-              onChange={e => setFacteurCustom(e.target.value.replace(',', '.'))}
-              placeholder="Ex: 1.3"
-            />
-            <span className="unite-fixe">× BEE</span>
-          </div>
+          <label>Condition / stade de vie</label>
+          <select
+            className="champ-select-native"
+            value={conditionId}
+            onChange={e => setConditionId(e.target.value)}
+          >
+            {facteurs.map(f => (
+              <option key={f.id} value={f.id}>
+                {f.label} — {labelFacteur(f)}
+              </option>
+            ))}
+          </select>
         </div>
+
+        {/* ─── RÉSULTAT BEQ ────────────────────── */}
+        {bee > 0 && (
+          <div className="bee-beq-card">
+            <div className="bee-beq-top">
+              <div>
+                <p className="bee-beq-label">BEQ estimé</p>
+                <p className="bee-beq-valeur">{beqPrincipal ? `${beqPrincipal}` : '—'} <span className="bee-beq-unit">kcal/jour</span></p>
+              </div>
+              <div className="bee-beq-facteur-badge">{labelFacteur(conditionSelectionnee)}</div>
+            </div>
+            {conditionSelectionnee.facteurMax && (
+              <p className="bee-beq-fourchette">
+                Fourchette : {arrondir(bee * conditionSelectionnee.facteurMin)} – {arrondir(bee * conditionSelectionnee.facteurMax)}{conditionSelectionnee.plus ? '+' : ''} kcal/jour
+              </p>
+            )}
+          </div>
+        )}
 
         {/* ─── KCAL PAR TASSE ──────────────────── */}
         <div className="champ">
-          <label>Kcal par tasse de nourriture</label>
+          <label>Kcal par tasse (optionnel)</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-energie.svg" alt="kcal par tasse" />
@@ -156,52 +191,20 @@ export default function BesoinEnergetique() {
           </div>
         </div>
 
-        {/* ─── RÉSULTAT BEQ ────────────────────── */}
-        <div className="resultat-card">
-          <h2>Besoin Énergétique Quotidien (BEQ)</h2>
-          <div className="resultat-ligne">
-            <span>BEQ</span>
-            <strong>{beqCustom ? `${beqCustom} kcal/jour` : '—'}</strong>
+        {/* ─── RÉSULTAT TASSES ─────────────────── */}
+        {tassesParJour && (
+          <div className="resultat-card">
+            <div className="resultat-ligne" style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <span>Quantité à donner</span>
+              <strong>{tassesParJour} tasse{tassesParJour > 1 ? 's' : ''}/jour</strong>
+            </div>
           </div>
-          <div className="resultat-ligne">
-            <span>Quantité à donner</span>
-            <strong>{tassesParJour ? `${tassesParJour} tasse/jour` : '—'}</strong>
-          </div>
-        </div>
-
-        {/* ─── TABLEAU DES FACTEURS ───────────── */}
-        <div className="bee-tableau">
-          <div className="bee-tableau-header">
-  <span>Condition</span>
-  <span>BEQ (kcal/jour)</span>
-</div>
-          {FACTEURS[espece].map(f => {
-            const beq = calculerBEQ(f.facteurMin, f.facteurMax)
-            const suffixe = f.plus ? '+' : ''
-            return (
-              <div key={f.id} className="bee-tableau-ligne">
-                <div className="bee-tableau-condition">
-                  <span className="bee-tableau-label">{f.label}</span>
-                  <span className="bee-tableau-facteur">
-                    × {f.facteurMin}{f.facteurMax ? ` – ${f.facteurMax}${suffixe}` : ''}
-                  </span>
-                </div>
-                <span className="bee-tableau-resultat">
-                  {beq
-                    ? beq.max
-                      ? `${beq.min} – ${beq.max}${suffixe}`
-                      : `${beq.min}`
-                    : '—'}
-                </span>
-              </div>
-            )
-          })}
-        </div>
+        )}
 
         {/* ─── AVERTISSEMENT ──────────────────── */}
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
-          Ces valeurs sont des estimations théoriques. Consulte toujours le vétérinaire responsable pour adapter la ration aux besoins spécifiques de l'animal.
+          Ces valeurs sont des estimations théoriques. Ajuster selon l'évolution du poids corporel et de la condition corporelle (BCS).
         </div>
 
       </div>

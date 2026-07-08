@@ -1,40 +1,37 @@
 const SECTIONS = [
   {
-    titre: 'Principes généraux',
-    principes: [
-      'Privilégier les aliments hautement digestibles et pauvres en graisses lors de troubles aigus.',
-      'Fractionner les repas en 3–4 petites portions par jour pour réduire la charge gastrique.',
-      'Réintroduire l\'alimentation progressivement après une période de jeûne thérapeutique (max 24–48 h).',
-      'Éviter les changements brusques d\'alimentation — toute transition doit se faire sur 7–10 jours.',
-    ],
-  },
-  {
-    titre: 'Gastroentérite et diarrhée',
-    principes: [
-      'Aliment digestible (poulet bouilli, riz blanc) en phase aiguë.',
-      'Fibres solubles (psyllium, courge) pour normaliser la consistance des selles.',
-      'Probiotiques pour restaurer le microbiote intestinal.',
-      'Éviter les aliments riches en graisses, les produits laitiers et les aliments épicés.',
-      'Assurer une bonne hydratation — eau fraîche disponible en permanence.',
-    ],
-  },
-  {
-    titre: 'Maladies inflammatoires (MICI)',
-    principes: [
-      'Régime d\'élimination avec une source de protéine nouvelle (hydrolysat ou protéine inédite).',
-      'Acides gras oméga-3 (EPA/DHA) — effets anti-inflammatoires sur la muqueuse intestinale.',
-      'Fibres fermentescibles (prébiotiques) pour soutenir la santé du microbiote.',
-      'Éviter les additifs, colorants et conservateurs susceptibles d\'aggraver l\'inflammation.',
-      'Surveiller la B12 et le folate — leur absorption peut être compromise.',
-    ],
-  },
-  {
     titre: 'Pancréatite',
     principes: [
-      'Régime strictement pauvre en graisses (< 10 % MS chez le chien) en phase de convalescence.',
-      'Fractionner les repas pour éviter les pics de sécrétion pancréatique.',
-      'Éviter à vie les aliments très gras chez les animaux à pancréatite chronique.',
-      'Supplémentation en enzymes pancréatiques si insuffisance pancréatique exocrine (IPE).',
+      'Réalimenter tôt par voie entérale — stimule la régénération de la muqueuse et réduit la translocation bactérienne. Administrer des antiémétiques pour permettre la reprise alimentaire.',
+      'Hydratation : fluides SC ou IV si nausées ou vomissements. Cibles électrolytiques : K 0,8–1,1 % MS, Cl 0,5–1,3 % MS, Na 0,3–0,5 % MS.',
+      'Digestibilité ≥ 85 % MS.',
+      'Protéines : chien 15–30 % MS, chat 30–40 % MS. Éviter l\'excès (stimule la sécrétion pancréatique) tout en couvrant la réparation.',
+      'Matières grasses : chien < 15 % MS, chat < 25 % MS. Si obésité ou hypertriglycéridémie : ≤ 10 % (chien) et ≤ 15 % (chat) MS.',
+      'Fibres : éviter les fibres solubles gélifiantes (pectines, gommes); fibres brutes ≤ 5 % MS. Prébiotiques (pulpe de betterave, lin) utiles.',
+      'Forme : aliments humides réchauffés à 21–38 °C. Oméga-3 comme adjuvant anti-inflammatoire.',
+    ],
+  },
+  {
+    titre: 'Insuffisance pancréatique exocrine (IPE)',
+    principes: [
+      'Enzymes pancréatiques à chaque repas, à vie — les poudres sont plus efficaces que les comprimés; ajouter juste avant le repas.',
+      'Digestibilité élevée : graisses et glucides ≥ 90 % MS, protéines ≥ 87 % MS.',
+      'Matières grasses : chien 10–15 % MS, chat 15–25 % MS.',
+      'Fibres faibles ≤ 5 % MS — les fibres nuisent à l\'activité enzymatique.',
+      'Vitamines liposolubles (A, D, E, K) mal absorbées — surveiller et supplémenter si nécessaire.',
+      'Cobalamine (B12) souvent basse — supplémenter systématiquement. Vitamine K si coagulopathie.',
+      'Petits repas fréquents; DER majoré chez l\'animal amaigri (2 × RER au poids idéal).',
+    ],
+  },
+  {
+    titre: 'Chien brachycéphale',
+    principes: [
+      'Maintenir une condition corporelle idéale — l\'obésité aggrave le syndrome brachycéphale.',
+      'Protéines à digestibilité ≥ 87 % MS; diètes à protéine novatrice ou hydrolysée.',
+      'Matières grasses réduites — le gras retarde la vidange gastrique.',
+      'Éviter les fibres solubles gélifiantes.',
+      'Aliments humides réchauffés, en petits repas fréquents; consistance liquide ou semi-liquide selon la tolérance.',
+      'Utiliser un bol adapté aux brachycéphales (rebord incliné à 45°) — améliore la posture, ralentit la mastication et réduit l\'aérophagie.',
     ],
   },
 ]

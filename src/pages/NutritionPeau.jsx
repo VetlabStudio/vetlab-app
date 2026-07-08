@@ -1,36 +1,30 @@
 const SECTIONS = [
   {
-    titre: 'Principes généraux',
+    titre: 'Nutriments clés de la peau',
     principes: [
-      'La peau est un organe très actif métaboliquement — elle consomme environ 25–30 % des apports en protéines.',
-      'Assurer un apport adéquat en protéines de haute qualité pour le renouvellement du poil et de l\'épiderme.',
-      'Une carence nutritionnelle peut mimer ou aggraver une dermatose — toujours évaluer l\'alimentation.',
+      'La peau consomme une part importante des apports en protéines — qualité, quantité et digestibilité doivent être optimales.',
+      'Les besoins augmentent en croissance, gestation, lactation et maladie.',
+      'Carence en cuivre : perte de couleur du pelage, poil terne.',
+      'Carence en zinc : hyperkératose, dermatoses (surtout races nordiques).',
+      'Vitamine A : régule la kératinisation — l\'excès est aussi problématique que la carence.',
     ],
   },
   {
     titre: 'Acides gras essentiels',
     principes: [
-      'Oméga-6 (acide linoléique) : maintient la barrière cutanée et réduit la perte d\'eau transépidermique.',
-      'Oméga-3 (EPA, DHA) : effets anti-inflammatoires, réduisent le prurit et l\'érythème.',
-      'Ratio oméga-6/oméga-3 recommandé : 5:1 à 10:1.',
-      'Sources : huile de poisson, huile de lin, aliments enrichis en oméga-3.',
+      'Les acides gras essentiels (oméga-3 et oméga-6) sont structurels dans les membranes cellulaires de la peau.',
+      'Les diètes à protéine novatrice enrichies en oméga-3 améliorent peau et pelage, souvent en quelques jours à deux semaines.',
+      'Effet sur le prurit observé chez environ 50 % des chiens atteints de dermatite.',
+      'Sources d\'oméga-3 marins (EPA, DHA) préférables aux sources végétales pour leur efficacité directe.',
     ],
   },
   {
-    titre: 'Micronutriments clés',
+    titre: 'Réaction alimentaire indésirable',
     principes: [
-      'Zinc : essentiel pour la kératinisation et la cicatrisation (déficit = dermatose zinc-responsive, surtout chez les races nordiques).',
-      'Vitamine A : régule la kératinisation — l\'excès est aussi problématique que la carence.',
-      'Vitamines du complexe B (biotine, niacine) : soutiennent la santé du poil et de la peau.',
-      'Vitamine E et sélénium : antioxydants protégeant les acides gras membranaires.',
-    ],
-  },
-  {
-    titre: 'Allergies et hypersensibilités alimentaires',
-    principes: [
-      'Régime d\'élimination strict pendant 8–12 semaines avec une protéine et une source de glucides inédites.',
-      'Hydrolysats de protéines comme alternative aux protéines entières inédites.',
-      'Aucune friandise, complément ou arôme pendant la période d\'élimination.',
+      'La protéine est le nutriment de premier intérêt en cas de réaction alimentaire suspectée (type, source, quantité, digestibilité, exposition antérieure).',
+      'Essai d\'élimination : diète à protéine novatrice ou hydrolysée; idéalement à ingrédients limités (novel protein ou hydrolysat).',
+      'Durée minimale de 8 à 12 semaines, encadrée par un médecin vétérinaire ou un nutritionniste vétérinaire.',
+      'Aucune friandise, arôme, médicament aromatisé ou complément pendant l\'essai — toute exposition à la protéine antigénique invalide le test.',
       'Rechallenge alimentaire pour confirmer le diagnostic avant de formuler un régime à long terme.',
     ],
   },

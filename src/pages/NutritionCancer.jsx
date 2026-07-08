@@ -1,38 +1,36 @@
 const SECTIONS = [
   {
-    titre: 'Considérations générales',
+    titre: 'Cachexie cancéreuse',
     principes: [
-      'La cachexie cancéreuse (perte de masse maigre) peut affecter jusqu\'à 80 % des animaux atteints — prendre en charge tôt.',
-      'Les tumeurs utilisent préférentiellement les glucides — limiter les glucides simples peut être bénéfique.',
-      'Maintenir un apport calorique suffisant pour prévenir la perte de poids involontaire.',
-      'La palatabilité est prioritaire si l\'appétit est réduit (effets secondaires des traitements).',
+      'La cachexie associe une perte de gras ET de masse maigre (contrairement au jeûne simple), avec une dépense énergétique de repos normale ou élevée.',
+      'Prendre en charge tôt — la cachexie peut affecter la majorité des patients oncologiques avant même que les signes cliniques soient évidents.',
+      'Objectif : nourrir le patient tout en limitant les substrats préférentiels des cellules tumorales (glucose).',
     ],
   },
   {
     titre: 'Macronutriments recommandés',
     principes: [
-      'Protéines élevées (> 30–35 % de l\'énergie métabolisable) pour préserver la masse musculaire.',
-      'Graisses comme source d\'énergie privilégiée (les tumeurs les utilisent moins efficacement que les glucides).',
-      'Acides gras oméga-3 (EPA, DHA) : effets anti-inflammatoires, réduction de la cachexie, possibles effets antitumoraux.',
-      'Glucides limités, préférer des sources à faible index glycémique.',
-      'Arginine et glutamine : acides aminés qui soutiennent la fonction immunitaire et la réparation intestinale.',
+      'Répartition calorique cible : 50–60 % des calories en gras, 30–50 % en protéines, le reste en glucides.',
+      'Protéines très digestibles : 30–45 % MS chez le chien, 40–50 % MS chez le chat; minimum 5,14 g/100 kcal, idéal 6–7 g/100 kcal.',
+      'Glucides à index glycémique plus bas : orge, sorgho, maïs plutôt que riz.',
+      'Graisses comme source d\'énergie principale — les cellules tumorales les utilisent moins efficacement que le glucose.',
     ],
   },
   {
-    titre: 'Micronutriments et suppléments',
+    titre: 'Oméga-3 — supplément prioritaire',
     principes: [
-      'Antioxydants (vitamine E, C, sélénium) : soutien immunitaire — attention, ne pas supplémenter en excès pendant la chimiothérapie ou la radiothérapie (risque d\'interférence).',
-      'Probiotiques pour maintenir la santé intestinale si chimiothérapie.',
-      'Éviter la supplémentation excessive sans avis spécialisé (certains suppléments peuvent interagir avec les traitements).',
+      'EPA et DHA sont le nutraceutique le plus important en oncologie vétérinaire.',
+      'Dose cible : EPA 40 mg/kg/jour, DHA 25 mg/kg/jour (environ 1 capsule d\'huile de poisson par 10 lb de poids corporel).',
+      'Effets : réduction de la cachexie, anti-inflammatoire, effets immunomodulateurs.',
     ],
   },
   {
-    titre: 'Gestion de l\'appétit',
+    titre: 'Gestion de l\'appétit et voie d\'alimentation',
     principes: [
-      'Proposer des aliments humides, tièdes et odorants pour stimuler l\'appétit.',
-      'Fractionner en petits repas fréquents si nausées ou mucite orale (chimiothérapie).',
-      'Envisager une stimulation de l\'appétit (mirtazapine chez le chat) si anorexie persistante.',
-      'Support nutritionnel entéral (sonde naso-œsophagienne ou gastrostomie) si nécessaire.',
+      'Voie entérale si le tube digestif est fonctionnel — toujours privilégiée sur la voie parentérale.',
+      'Stratégies de palatabilité : aliments humides, réchauffés, odorants, présentés en petites quantités fréquentes.',
+      'Ne jamais camoufler un médicament dans l\'aliment — risque d\'aversion alimentaire.',
+      'Les stimulants de l\'appétit sont peu fiables; une sonde naso-œsophagienne ou de gastrostomie peut être nécessaire si anorexie persistante.',
     ],
   },
 ]

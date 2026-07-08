@@ -1,30 +1,30 @@
 const SECTIONS = [
   {
-    titre: 'Principes généraux (chat)',
+    titre: 'Contexte (chat)',
     principes: [
-      'L\'hyperthyroïdisme survient presque exclusivement chez le chat de plus de 10 ans.',
+      'L\'hyperthyroïdisme est l\'endocrinopathie la plus fréquente du chat âgé.',
       'La maladie entraîne un catabolisme accru : perte de poids et fonte musculaire malgré un appétit augmenté.',
-      'L\'objectif nutritionnel est de soutenir la masse musculaire et compenser les pertes énergétiques.',
-      'Évaluer systématiquement la fonction rénale avant et pendant le traitement — le traitement peut « démasquer » une insuffisance rénale.',
+      'Options de traitement : thyroïdectomie, antithyroïdiens (méthimazole), iode radioactif, ou aliment à iode limité.',
+      'Évaluer systématiquement la fonction rénale avant et pendant le traitement — le traitement peut « démasquer » une IRC sous-jacente.',
     ],
   },
   {
-    titre: 'Apports nutritionnels recommandés',
+    titre: 'Aliment à iode limité',
+    principes: [
+      'Un aliment à teneur en iode ≤ 0,32 ppm MS (ex. Hill\'s y/d) utilisé comme SEULE source alimentaire normalise les hormones thyroïdiennes.',
+      'La T4 totale baisse en 3 semaines et revient à la normale en 8 à 12 semaines; 90 % des chats restent euthyroïdiens.',
+      'La fonction rénale demeure stable avec cette approche.',
+      'Règle absolue : aucune gâterie, aucun médicament aromatisé ou composé, aucune autre nourriture, aucun supplément contenant des algues.',
+      'Si eau de puits suspectée comme source d\'iode, passer à l\'eau distillée.',
+    ],
+  },
+  {
+    titre: 'Soutien nutritionnel',
     principes: [
       'Protéines de haute qualité et haute digestibilité pour limiter la sarcopénie.',
-      'Densité calorique élevée si perte de poids marquée.',
-      'Phosphore modéré en anticipation d\'une éventuelle insuffisance rénale sous-jacente.',
-      'Oméga-3 (EPA, DHA) — soutien rénal et cardioprotection (cardiomyopathie possible).',
-      'Antioxydants (vitamine E, C) — le stress oxydatif est augmenté dans l\'hyperthyroïdisme.',
-    ],
-  },
-  {
-    titre: 'Régime pauvre en iode (y3)',
-    principes: [
-      'L\'alimentation pauvre en iode (ex. Hill\'s y/d) peut être utilisée comme option de gestion exclusive chez certains chats.',
-      'Efficace uniquement si l\'animal consomme UNIQUEMENT cet aliment (aucune autre source d\'iode).',
-      'Surveiller régulièrement la T4 totale pour confirmer l\'efficacité.',
-      'Option moins courante que le méthimazole ou le traitement à l\'iode radioactif.',
+      'Densité calorique élevée si perte de poids marquée — le métabolisme accéléré augmente les besoins énergétiques.',
+      'Oméga-3 (EPA, DHA) — soutien rénal et cardioprotection (cardiomyopathie secondaire possible).',
+      'Surveiller régulièrement la T4 totale pour confirmer l\'efficacité du traitement choisi.',
     ],
   },
   {
@@ -32,7 +32,7 @@ const SECTIONS = [
     principes: [
       'Après traitement, réévaluer les besoins nutritionnels — le métabolisme se normalise.',
       'Adapter les apports caloriques pour éviter la prise de poids excessive post-traitement.',
-      'Si insuffisance rénale confirmée après traitement : adapter l\'alimentation en conséquence (voir section rénale).',
+      'Si IRC confirmée après traitement : transition vers un aliment rénal (voir section maladies rénales).',
     ],
   },
 ]

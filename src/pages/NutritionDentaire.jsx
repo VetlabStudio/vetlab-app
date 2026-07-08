@@ -2,35 +2,32 @@ const SECTIONS = [
   {
     titre: 'Principes généraux',
     principes: [
-      'L\'alimentation peut prévenir ou ralentir l\'accumulation de tartre et de plaque dentaire.',
-      'La texture de l\'aliment joue un rôle mécanique : les croquettes à grande taille favorisent le contact abrasif avec la dent.',
-      'L\'alimentation seule ne remplace pas le brossage dentaire quotidien ni les détartrages professionnels.',
+      'La gingivite est réversible; la parodontite est surtout irréversible — intervenir tôt.',
+      'La plaque (biofilm bactérien) est le substrat clé : contrôler la plaque, pas seulement le tartre (le contrôle du tartre seul est cosmétique).',
+      'Les aliments mous augmentent plaque et tartre; l\'aliment sec ordinaire ne nettoie PAS bien.',
+      'Les diètes dentaires à texture spéciale et les friandises certifiées VOHC (vohc.org) sont les seuls aliments à efficacité prouvée sur la plaque.',
     ],
   },
   {
-    titre: 'Aliments à privilégier',
+    titre: 'Nutriments clés',
     principes: [
-      'Croquettes à effet mécanique (VOHC — Veterinary Oral Health Council) : croquettes plus grandes et à texture spécifique réduisant la plaque.',
-      'Aliments dentaires formulés (ex. Hill\'s t/d) : fibre orientée pour nettoyer toute la couronne dentaire.',
-      'Friandises dentaires certifiées VOHC (ex. CET chews, Greenies, OraVet) pour une action abrasive douce.',
+      'Vitamine E : ≥ 400 UI/kg MS (chien), ≥ 500 UI/kg MS (chat).',
+      'Vitamine C : ≥ 100 mg/kg MS (chien), 100–200 mg/kg MS (chat).',
+      'Sélénium : 0,5 à 1,3 mg/kg MS.',
+      'Protéines : 16–35 % MS (chien), 30–50 % MS (chat).',
+      'Calcium 0,5–1,5 % MS; phosphore 0,4–1,3 % MS — l\'excès de phosphore favorise le tartre.',
+      'Polyphosphates (HMP) : fixent le calcium salivaire et réduisent la reminéralisation du tartre.',
+      'Zinc : effet antimicrobien sur le biofilm buccal.',
     ],
   },
   {
-    titre: 'Aliments à éviter',
+    titre: 'Soins à domicile',
     principes: [
-      'Aliments humides exclusifs sans hygiène bucco-dentaire : favorisent l\'accumulation de plaque.',
-      'Friandises collantes ou riches en sucres.',
-      'Os à mâcher durs (risque de fractures dentaires : os de bœuf, andouiller, pierre à mâcher).',
-      'Restes de table sucrés ou transformés.',
-    ],
-  },
-  {
-    titre: 'Compléments et additifs',
-    principes: [
-      'Additifs antimicrobiens dans l\'eau de boisson (chlorhexidine, xylitol à faible dose, polyphosphates) — certains certifiés VOHC.',
-      'Zinc : joue un rôle dans la santé gingivale et la résistance aux bactéries parodontales.',
-      'Antioxydants (vitamine C, E) : soutien inflammatoire de la gencive.',
-      'Attention : le xylitol est toxique chez le chien à doses élevées — vérifier la concentration des produits.',
+      'Brossage dentaire = méthode la plus efficace — technique de Bass modifiée, brosse à 45° sur la gencive.',
+      'Débuter le brossage en bas âge pour habituer l\'animal.',
+      'Chlorhexidine 0,1–0,2 % en gel ou rinçage buccal comme adjuvant antimicrobien.',
+      'Friandises dentaires certifiées VOHC ≤ 10 % de l\'apport énergétique total.',
+      'Éviter les os durs (os de bœuf, andouiller, pierre à mâcher) — risque de fractures dentaires.',
     ],
   },
 ]

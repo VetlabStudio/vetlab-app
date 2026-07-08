@@ -1,37 +1,38 @@
 const SECTIONS = [
   {
-    titre: 'Principes généraux',
+    titre: 'Signes de décompensation et objectifs',
     principes: [
+      'Surveiller : rétention liquidienne (distension jugulaire, hépatomégalie, ascite, épanchement pleural), hypertension secondaire, obésité ou cachexie.',
       'Maintenir un poids idéal — l\'obésité augmente la charge cardiaque; la cachexie cardiaque aggrave le pronostic.',
-      'La restriction sodée est recommandée en cas d\'insuffisance cardiaque congestive avérée (stades C–D ACVIM).',
-      'Éviter la restriction sodée trop précoce (stades B1–B2) — peu bénéfique et peut nuire à la palatabilité.',
-      'Assurer un apport calorique suffisant pour prévenir la perte de poids (cachexie cardiaque).',
+      'Protéines très digestibles sans restriction excessive pour préserver la masse maigre.',
     ],
   },
   {
-    titre: 'Sodium et autres minéraux',
+    titre: 'Sodium et chlorure',
     principes: [
-      'Sodium : modéré (30–80 mg/100 kcal) en phase d\'insuffisance compensée; plus strict si ascite ou oedèmes.',
-      'Magnésium : souvent déficient chez les cardiaques — vérifier les taux si arythmies.',
-      'Potassium : risque de déplétion avec les diurétiques — surveiller et supplémenter si nécessaire.',
-      'Éviter les aliments ultra-transformés et riches en sodium (charcuterie, fromages, restes de table).',
+      'La capacité à excréter le sodium diminue avec la progression de la maladie cardiaque.',
+      'Sodium cible : 0,08–0,25 % MS chez le chien, 0,07–0,3 % MS chez le chat.',
+      'Chlorure cible : 1,5 × la teneur en sodium.',
+      'Éviter les aliments ultra-transformés riches en sel (charcuterie, fromages, restes de table).',
+      'La restriction sodée est plus difficile à atteindre chez le chat — palatabilité à surveiller.',
     ],
   },
   {
     titre: 'Taurine et L-carnitine',
     principes: [
-      'Taurine : carence associée à la cardiomyopathie dilatée (DCM) chez le chien et le chat.',
-      'Vérifier les taux de taurine plasmatique chez tout chien avec DCM, surtout si nourri avec aliment grain-free.',
-      'L-carnitine : potentiellement bénéfique dans certaines formes de DCM chez le chien.',
-      'Supplémentation en taurine recommandée chez le chat (besoins métaboliques plus élevés).',
+      'Taurine : acide aminé clé dans l\'insuffisance myocardique — la carence est associée à la cardiomyopathie dilatée (DCM) chez le chien et le chat.',
+      'Vérifier les taux de taurine plasmatique chez tout chien avec DCM, particulièrement si nourri avec un aliment grain-free.',
+      'L-carnitine : nutriment myocardique à considérer dans les formes de DCM à carnitine-responsive.',
+      'Potassium : risque de déplétion avec les diurétiques — surveiller et supplémenter si nécessaire.',
     ],
   },
   {
     titre: 'Acides gras oméga-3',
     principes: [
-      'EPA et DHA : réduisent l\'inflammation, diminuent les cytokines pro-inflammatoires, effets antiarythmiques.',
-      'Dose recommandée : 40 mg EPA+DHA/kg/jour chez le chien.',
-      'Source : huile de poisson (saumon, sardine, anchois) ou suppléments à base d\'huile de poisson.',
+      'EPA et DHA : réduisent l\'inflammation, les cytokines pro-inflammatoires, et ont des effets antiarythmiques.',
+      'Dose cible : EPA 40 mg/kg/jour + DHA 25 mg/kg/jour; aliment visant 80–150 mg/100 kcal d\'EPA + DHA.',
+      'Utile contre la cachexie cardiaque.',
+      'Source : huile de poisson (saumon, sardine, anchois).',
     ],
   },
 ]

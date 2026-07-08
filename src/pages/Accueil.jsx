@@ -183,19 +183,21 @@ export default function Accueil() {
           
           <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
           <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
-        </div>
-        
-        {/* BOUTON PRÉCONSULTATION */}
+              {/* BOUTON PRÉCONSULTATION */}
         <button className="accueil-v2-preconsult-btn" onClick={() => navigate('/soins-generaux/examen-physique')}>
           <i className="ti ti-clipboard-heart"></i>
           <span>Démarrer un examen</span>
           <BadgePro />
         </button>
+        </div>
+        
       </div>
 
       {/* SECTION CALCULATEURS */}
       <section className="accueil-v2-section">
+        
         <h2 className="accueil-v2-titre-section">Boîte à outils</h2>
+      
         <div className="accueil-v2-calc-grid">
           {CALCULATEURS.map(c => (
             <button

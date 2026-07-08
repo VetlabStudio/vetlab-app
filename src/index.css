@@ -2608,6 +2608,64 @@ input[type="number"] {
   color: white;
   margin: 4px 0 0 0;
 }
+/* ─── BEQ CARD ───────────────────────────── */
+.bee-beq-card {
+  width: 100%;
+  border: 1.5px solid var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-card);
+}
+
+.bee-beq-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bee-beq-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bee-beq-valeur {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0;
+  line-height: 1;
+}
+
+.bee-beq-unit {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.bee-beq-facteur-badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(37, 77, 86, 0.1);
+  padding: 6px 12px;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bee-beq-fourchette {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
 
 /* ─── TABLEAU FACTEURS ───────────────────────── */
 .bee-tableau {
@@ -2666,6 +2724,33 @@ input[type="number"] {
   text-align: right;
   white-space: nowrap;
   flex-shrink: 0;
+}
+.bee-tableau-ligne--active {
+  background: var(--primary);
+}
+.bee-tableau-ligne--active .bee-tableau-label,
+.bee-tableau-ligne--active .bee-tableau-facteur,
+.bee-tableau-ligne--active .bee-tableau-resultat {
+  color: #fff;
+}
+
+.champ-select-native {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--champ-bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
 }
 /* ─── PAGE DILUTION ──────────────────────────── */
 

@@ -1,39 +1,35 @@
 const SECTIONS = [
   {
-    titre: 'Principes généraux',
+    titre: 'Contexte et facteurs de risque',
     principes: [
-      'L\'objectif nutritionnel est de minimiser les fluctuations glycémiques post-prandiales.',
-      'La constance est clé : même aliment, même quantité, même horaire à chaque repas.',
-      'Associer les repas à l\'administration d\'insuline selon le protocole vétérinaire.',
-      'Atteindre et maintenir un poids corporel idéal (score 4–5/9).',
+      'Le chien est surtout atteint de diabète de type 1 (insulinodépendant); le chat peut présenter un type 1 ou un type 2.',
+      'Facteurs de risque : obésité (résistance à l\'insuline), certaines maladies, corticostéroïdes, progestatifs, certaines races.',
+      'La perte de poids chez un chat obèse peut induire une rémission diabétique — objectif prioritaire.',
     ],
   },
   {
-    titre: 'Chien diabétique',
+    titre: 'Glucides et fibres',
     principes: [
-      'Régime riche en fibres (fibres solubles et insolubles) pour ralentir l\'absorption du glucose.',
-      'Teneur modérée en graisses — éviter l\'obésité et réduire le risque de pancréatite.',
-      'Protéines de haute qualité pour maintenir la masse musculaire.',
-      'Éviter les aliments riches en sucres simples et en glucides très digestibles.',
-      'Nourrir juste avant ou au moment de l\'injection d\'insuline.',
+      'Chien : aliment à ≤ 55 % de glucides digestibles MS; préférer les glucides complexes (orge) à index glycémique plus bas.',
+      'Chat diabétique : aliment faible en glucides (< 20 % MS) et riche en protéines — les aliments humides sont généralement préférables.',
+      'Fibres : modérées 7–18 % MS (insolubles ou mixtes) dans les aliments riches en glucides pour ralentir l\'absorption du glucose.',
+      'Aliments félins faibles en glucides : fibres plus basses acceptables (2–7 % MS).',
     ],
   },
   {
-    titre: 'Chat diabétique',
+    titre: 'Matières grasses et protéines',
     principes: [
-      'Régime pauvre en glucides (< 10 % de l\'énergie métabolisable) — les chats sont carnivores stricts.',
-      'Régime riche en protéines de haute qualité pour maintenir la masse musculaire.',
-      'Les aliments humides sont souvent préférables (moins de glucides que les croquettes).',
-      'La perte de poids chez un chat obèse peut induire une rémission diabétique.',
-      'Éviter les croquettes standard riches en amidon.',
+      'Matières grasses < 25 % MS — l\'excès favorise la résistance à l\'insuline, la production hépatique de glucose et la pancréatite.',
+      'Protéines en qualité et quantité suffisantes pour éviter la fonte musculaire, sans excès.',
+      'Conserver la même source protéique — un changement d\'aliment peut déstabiliser l\'équilibre glycémique.',
     ],
   },
   {
-    titre: 'Surveillance et ajustements',
+    titre: 'Routine et surveillance',
     principes: [
-      'Peser régulièrement et ajuster les portions si prise ou perte de poids.',
-      'Surveiller la courbe glycémique après tout changement alimentaire.',
-      'En cas d\'hypoglycémie, avoir du miel ou du dextrose à portée de main.',
+      'La constance est clé : même aliment, même quantité, même horaire à chaque repas, coordonnés avec l\'injection d\'insuline.',
+      'Peser régulièrement et surveiller la courbe glycémique après tout changement alimentaire.',
+      'Atteindre et maintenir un poids corporel idéal (score 4–5/9) — ajuster les portions selon l\'évolution du poids.',
     ],
   },
 ]
