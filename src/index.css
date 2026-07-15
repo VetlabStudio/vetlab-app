@@ -2878,6 +2878,7 @@ input[type="number"] {
   gap: 8px;
   width: 100%;
   text-align: center;
+  margin-bottom: 10px;
 }
 
 .dilution-resultat-valeur {
@@ -5099,6 +5100,8 @@ input[type="number"] {
   border: 1px solid rgba(37, 77, 86, 0.15);
   border-radius: 12px;
   padding: 14px 16px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .postop-intro-icone {

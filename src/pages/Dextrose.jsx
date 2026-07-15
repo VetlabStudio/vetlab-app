@@ -28,7 +28,7 @@ export default function Dextrose() {
   }, [concDepart, concFinale])
 
   return (
-    <div className="calculateur-page">
+    <div className="page-calculateurs">
       <div className="postop-intro">
         <i className="ti ti-droplet postop-intro-icone"></i>
         <p className="postop-intro-texte">
