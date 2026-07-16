@@ -110,6 +110,7 @@ const titres = {
   '/nutrition/dentaire': 'Santé dentaire',
   '/nutrition/renale': 'Maladies rénales',
   '/nutrition/urinaire': 'Système urinaire',
+  '/nutrition/neonatologie': 'Néonatologie',
   }
 
 export default function Header() {

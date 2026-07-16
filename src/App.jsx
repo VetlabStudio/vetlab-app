@@ -116,6 +116,7 @@ const NutritionPertePoids = lazy(() => import('./pages/NutritionPertePoids'))
 const NutritionDentaire = lazy(() => import('./pages/NutritionDentaire'))
 const NutritionRenale = lazy(() => import('./pages/NutritionRenale'))
 const NutritionUrinaire = lazy(() => import('./pages/NutritionUrinaire'))
+const NutritionNeonatologie = lazy(() => import('./pages/NutritionNeonatologie'))
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -354,6 +355,7 @@ export default function App() {
         <Route path="/nutrition/dentaire" element={<RouteProtegee session={session}><NutritionDentaire /></RouteProtegee>} />
         <Route path="/nutrition/renale" element={<RouteProtegee session={session}><NutritionRenale /></RouteProtegee>} />
         <Route path="/nutrition/urinaire" element={<RouteProtegee session={session}><NutritionUrinaire /></RouteProtegee>} />
+        <Route path="/nutrition/neonatologie" element={<RouteProtegee session={session}><NutritionNeonatologie /></RouteProtegee>} />
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />

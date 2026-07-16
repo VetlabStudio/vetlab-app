@@ -2,7 +2,7 @@ const SECTIONS = [
   {
     titre: 'Glucides et fibres',
     principes: [
-      'Chien : aliment à ≤ 55 % de glucides digestibles MS; préférer les glucides complexes (orge) à index glycémique plus bas.',
+      'Chien : aliment à ≤ 55 % de glucides digestibles MS (matière sèche); préférer les glucides complexes (orge) à index glycémique plus bas.',
       'Chat : aliment faible en glucides (< 20 % MS) et riche en protéines — aliments humides préférables.',
       'Fibres modérées 7–18 % MS (insolubles ou mixtes) dans les aliments riches en glucides pour ralentir l\'absorption du glucose.',
       'Aliments félins faibles en glucides : fibres plus basses acceptables (2–7 % MS).',

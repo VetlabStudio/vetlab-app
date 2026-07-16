@@ -46,6 +46,8 @@ export default function Fluidotherapie() {
   const [uniteDosageCRI, setUniteDosageCRI] = useState('mg/kg/h')
   const [concentrationCRI, setConcentrationCRI] = useState('')
 
+  // ─── CALCULS ─────────────────────────────────────────
+
   const poidsKg = useMemo(() => {
     const p = parseFloat(poids)
     if (!p || p <= 0) return 0
@@ -68,17 +70,20 @@ export default function Fluidotherapie() {
     maintenance + deficitFluide + pertes
   , [maintenance, deficitFluide, pertes])
 
-  const debitHoraire = useMemo(() => {
-    const debitDeficitEtPertes = duree > 0 ? arrondir((deficitFluide + pertes) / duree) : 0
-    return arrondir(maintenance + debitDeficitEtPertes)
-  }, [maintenance, deficitFluide, pertes, duree])
+const debitHoraire = useMemo(() => {
+  console.log('duree:', duree, 'deficit:', deficitFluide, 'pertes:', pertes, 'maintenance:', maintenance)
+  const debitDeficitEtPertes = duree > 0 ? arrondir((deficitFluide + pertes) / duree) : 0
+  return arrondir(maintenance + debitDeficitEtPertes)
+}, [maintenance, deficitFluide, pertes, duree])
 
+  // Ajuster facteur automatiquement si pas de valeur manuelle
   useEffect(() => {
     if (debitGttsManuel) return
     if (debitHoraire > 0 && debitHoraire < 100) setFacteurGtts(60)
     else if (debitHoraire >= 100) setFacteurGtts(15)
   }, [debitHoraire, debitGttsManuel])
 
+  // Gtts
   const debitPourGtts = parseFloat(debitGttsManuel) || debitHoraire
   const gttsParMin = debitPourGtts > 0 && facteurGtts > 0 && tempsMin > 0
     ? arrondir((debitPourGtts * facteurGtts) / tempsMin, 1)
@@ -86,6 +91,7 @@ export default function Fluidotherapie() {
   const gttsParSec = gttsParMin > 0 ? arrondir(gttsParMin / 60, 2) : 0
   const gttsPar15Sec = gttsParMin > 0 ? arrondir(gttsParMin / 4, 1) : 0
 
+  // CRI
   const debitPourCRI = parseFloat(debitCRIManuel) || debitHoraire
   const dureeSac = debitPourCRI > 0 ? arrondir(volumeSac / debitPourCRI, 1) : 0
   const doseChargeVal = parseFloat(doseCharge)
@@ -103,80 +109,53 @@ export default function Fluidotherapie() {
 
   return (
     <div className="page-calculateurs">
-      <div className="fluido-v2">
+      <div className="calc-form">
 
-        {/* INFO BANNER */}
-        <div className="fluido-info-banner">
-          <i className="ti ti-info-circle"></i>
-          <p>Calculez les besoins en fluides et les débits recommandés en quelques étapes.</p>
-        </div>
-
-        {/* TOP GRID : Espèce + Poids + Résumé rapide */}
-        <div className="fluido-top-grid">
-
-          <div className="fluido-card">
-            <div className="fluido-step-header">
-              <span className="fluido-step-num">1</span>
-              <span className="fluido-step-title">Espèce</span>
+        {/* ─── ESPÈCE ─────────────────────────── */}
+        <div className="champ">
+          <label>Choisir l'espèce</label>
+          <div className="espece-toggle">
+            <span className={`espece-label ${espece === 'chien' ? 'active' : ''}`}>
+              <img src="/icone-chien.svg" alt="Chien" className="espece-icone" />
+              Chien
+            </span>
+            <div
+              className={`toggle-slider ${espece === 'chat' ? 'droite' : ''}`}
+              onClick={() => setEspece(espece === 'chien' ? 'chat' : 'chien')}
+            >
+              <div className="toggle-thumb"></div>
             </div>
-            <div className="fluido-espece-cards">
-              <button
-                className={`fluido-espece-card ${espece === 'chien' ? 'active' : ''}`}
-                onClick={() => setEspece('chien')}
-              >
-                <img src="/icone-chien.svg" alt="Chien" />
-                <span>Chien</span>
-              </button>
-              <button
-                className={`fluido-espece-card ${espece === 'chat' ? 'active' : ''}`}
-                onClick={() => setEspece('chat')}
-              >
-                <img src="/icone-chat.svg" alt="Chat" />
-                <span>Chat</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="fluido-card">
-            <div className="fluido-step-header">
-              <span className="fluido-step-num">2</span>
-              <span className="fluido-step-title">Poids de l'animal</span>
-            </div>
-            <div className="radio-groupe" style={{ alignSelf: 'flex-start' }}>
-              <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
-              <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
-            </div>
-            <div className="champ-input">
-             
-              <input
-                type="text"
-                inputMode="decimal"
-                value={poids}
-                onChange={e => setPoids(e.target.value.replace(',', '.'))}
-                placeholder="Ex: 10"
-              />
-            </div>
-          </div>
-
-          <div className="fluido-card fluido-card--resume">
-            <p className="fluido-resume-titre">RÉSUMÉ RAPIDE</p>
-            <div className="fluido-resume-ligne">
-              <span>Débit de maintenance</span>
-              <strong>{maintenance > 0 ? `${maintenance} ml/h` : '— ml/h'}</strong>
-            </div>
-            <div className="fluido-resume-ligne">
-              <span>gtts/ml</span>
-              <strong>{debitHoraire > 0 ? facteurGtts : '—'}</strong>
-            </div>
+            <span className={`espece-label ${espece === 'chat' ? 'active' : ''}`}>
+              <img src="/icone-chat.svg" alt="Chat" className="espece-icone" />
+              Chat
+            </span>
           </div>
         </div>
 
-        {/* ÉTAPE 3 — Formule de maintenance */}
-        <div className="fluido-card">
-          <div className="fluido-step-header">
-            <span className="fluido-step-num">3</span>
-            <span className="fluido-step-title">Formule de débit de maintenance</span>
-          </div>
+        {/* ─── POIDS ──────────────────────────── */}
+        <div className="champ">
+  <label>Poids de l'animal</label>
+  <div className="champ-input">
+    <div className="champ-icone-wrapper">
+      <img src="/icone-poids.svg" alt="poids" />
+    </div>
+    <input
+      type="text"
+      inputMode="decimal"
+      value={poids}
+      onChange={e => setPoids(e.target.value.replace(',', '.'))}
+      placeholder="Ex: 10"
+    />
+    <div className="radio-groupe">
+      <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
+      <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
+    </div>
+  </div>
+</div>
+
+        {/* ─── FORMULES MAINTENANCE ───────────── */}
+        <div className="champ">
+          <label>Sélectionner une formule de débit de maintenance</label>
           <div className="fluido-formules">
             {FORMULES[espece].map(f => (
               <button
@@ -184,267 +163,273 @@ export default function Fluidotherapie() {
                 className={`fluido-formule-btn ${formuleId === f.id ? 'actif' : ''}`}
                 onClick={() => setFormuleId(f.id)}
               >
-                <span className={`fluido-radio-dot ${formuleId === f.id ? 'checked' : ''}`} />
-                <span>{f.label}</span>
+                {f.label}
               </button>
             ))}
           </div>
           {poidsKg > 0 && (
-            <p className="range-hint" style={{ marginTop: 4 }}>Maintenance : <strong>{maintenance} ml/h</strong></p>
+            <p className="range-hint">Maintenance : <strong>{maintenance} ml/h</strong></p>
           )}
         </div>
 
-        {/* ÉTAPES 4 & 5 — Déshydratation + Pertes */}
-        <div className="fluido-mid-grid">
-
-          <div className="fluido-card">
-            <div className="fluido-step-header">
-              <span className="fluido-step-num">4</span>
-              <span className="fluido-step-title">Déshydratation</span>
-              <span className="fluido-step-val">{dehydratation} %</span>
-            </div>
-            <input
-              type="range" min={0} max={15} step={1}
-              value={dehydratation}
-              onChange={e => setDehydratation(Number(e.target.value))}
-              className="fluido-slider"
-            />
-            <div className="fluido-slider-labels">
-              <span>0 %</span><span>5 %</span><span>10 %</span><span>15 %</span>
-            </div>
-            {poidsKg > 0 && dehydratation > 0 && (
-              <p className="range-hint">Déficit : <strong>{deficitFluide} ml</strong></p>
-            )}
-            <button className="fluido-btn-tableau" onClick={() => setPopupDeshy(true)}>
-              <i className="ti ti-clipboard-list" style={{ fontSize: 22 }}></i>
-              <span>Voir le tableau de déshydratation</span>
-              <i className="ti ti-chevron-right"></i>
-            </button>
+        {/* ─── DÉSHYDRATATION ─────────────────── */}
+        <div className="champ">
+          <label>Déshydratation</label>
+          <div className="fluido-slider-row">
+            <span className="fluido-slider-val">{dehydratation} %</span>
           </div>
+          <input
+            type="range"
+            min={0} max={15} step={1}
+            value={dehydratation}
+            onChange={e => setDehydratation(Number(e.target.value))}
+            className="fluido-slider"
+          />
+          <div className="fluido-slider-labels">
+            <span>0 %</span>
+            <span>15 %</span>
+          </div>
+          {poidsKg > 0 && dehydratation > 0 && (
+            <p className="range-hint">Déficit en fluide : <strong>{deficitFluide} ml</strong></p>
+          )}
+          <button className="fluido-btn-tableau" onClick={() => setPopupDeshy(true)}>
+            Voir le tableau de déshydratation
+          </button>
+        </div>
 
-          <div className="fluido-card">
-            <div className="fluido-step-header">
-              <span className="fluido-step-num">5</span>
-              <span className="fluido-step-title">Pertes en cours</span>
-              <span className="fluido-step-val">{pertes} ml</span>
-            </div>
-            <input
-              type="range" min={0} max={1000} step={10}
-              value={pertes}
-              onChange={e => setPertes(Number(e.target.value))}
-              className="fluido-slider"
-            />
-            <div className="fluido-slider-labels">
-              <span>0 ml</span><span>500 ml</span><span>1000 ml</span>
-            </div>
+        {/* ─── PERTES EN COURS ────────────────── */}
+        <div className="champ">
+          <label>Pertes en cours</label>
+          <div className="fluido-slider-row">
+            <span className="fluido-slider-val">{pertes} ml</span>
+          </div>
+          <input
+            type="range"
+            min={0} max={1000} step={10}
+            value={pertes}
+            onChange={e => setPertes(Number(e.target.value))}
+            className="fluido-slider"
+          />
+          <div className="fluido-slider-labels">
+            <span>0 ml</span>
+            <span>1000 ml</span>
           </div>
         </div>
 
-        {/* ÉTAPE 6 — Durée */}
-        <div className="fluido-card">
-          <div className="fluido-step-header">
-            <span className="fluido-step-num">6</span>
-            <span className="fluido-step-title">Temps pour remplacer la déshydratation et/ou les pertes en cours</span>
-            <span className="fluido-step-val" style={{ whiteSpace: 'nowrap' }}>{duree} h</span>
+        {/* ─── DURÉE ──────────────────────────── */}
+        <div className="champ">
+          <label>Temps pour remplacer la déshydratation et/ou les pertes en cours</label>
+          <div className="fluido-slider-row">
+            <span className="fluido-slider-val">{duree} h</span>
           </div>
           <input
-            type="range" min={1} max={24} step={1}
+            type="range"
+            min={1} max={24} step={1}
             value={duree}
             onChange={e => setDuree(Number(e.target.value))}
             className="fluido-slider"
           />
           <div className="fluido-slider-labels">
-            <span>1 h</span><span>12 h</span><span>24 h</span>
+            <span>1 h</span>
+            <span>24 h</span>
           </div>
         </div>
 
-        {/* BLOC DÉBIT INITIAL + MAINTENANCE */}
-        {poidsKg > 0 && (deficitFluide > 0 || pertes > 0) && (
-          <div className="fluido-card fluido-debit-resultat">
-            <div className="fluido-debit-bloc">
-              <p className="fluido-debit-etiquette">Débit initial</p>
-              <p className="fluido-debit-valeur">{debitHoraire} ml/h <span className="fluido-debit-pendant">pendant {duree} h</span></p>
-              <p className="fluido-debit-detail">
-                Maintenance {maintenance} ml/h + remplacement du déficit et des pertes en cours sur {duree} h
-              </p>
+        {/* ─── RÉSULTAT DÉBIT ─────────────────── */}
+        {poidsKg > 0 && (
+          <div className="fluido-resultat-principal">
+            <p className="fluido-resultat-label">Débit initial :</p>
+            <p className="fluido-resultat-desc">Maintenance + Déficit + Pertes en cours</p>
+            <p className="fluido-resultat-valeur">{debitHoraire} ml/hr pendant {duree} h</p>
+          </div>
+        )}
+
+        {/* ─── CALCULATEUR GTTS/ML ────────────── */}
+        <div className="fluido-section-titre">Calculateur gtts/ml</div>
+
+        <div className="champ">
+          <label>Débit</label>
+          <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-debit.svg" alt="débit" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={debitGttsManuel !== '' ? debitGttsManuel : debitHoraire || ''}
+    onChange={e => setDebitGttsManuel(e.target.value.replace(',', '.'))}
+    placeholder="ml/h"
+  />
+  <span className="unite-fixe">ml/h</span>
+</div>
+        </div>
+
+        <div className="champ">
+          <label>Facteur de gtts/ml</label>
+         <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-facteur.svg" alt="facteur" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={facteurGtts}
+    onChange={e => { setFacteurGtts(Number(e.target.value)); setDebitGttsManuel(debitGttsManuel || String(debitHoraire)) }}
+  />
+  <span className="unite-fixe">gtts/ml</span>
+</div>
+          <p className="range-hint">
+            {debitPourGtts > 0 && debitPourGtts < 100
+              ? '💧 Débit < 100 ml/h — utiliser un microgoutteur (60 gtt/ml)'
+              : debitPourGtts >= 100
+              ? '💧 Débit ≥ 100 ml/h — utiliser un macrogoutteur (10 ou 15 gtt/ml)'
+              : 'Microgoutteur (60 gtt/ml) si débit < 100 ml/h — Macrogoutteur (10 ou 15 gtt/ml) si débit ≥ 100 ml/h'}
+          </p>
+        </div>
+
+        <div className="champ">
+          <label>Temps en minutes</label>
+         <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-duree.svg" alt="durée" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={tempsMin}
+    onChange={e => setTempsMin(Number(e.target.value))}
+  />
+  <span className="unite-fixe">min</span>
+</div>
+        </div>
+
+        {gttsParMin > 0 && (
+          <div className="resultat-card">
+            <h2>Débit :</h2>
+<div className="resultat-ligne">
+  <span>Gouttes aux 15 secondes</span>
+  <strong>{gttsPar15Sec} gtts/15 sec</strong>
+</div>
+<div className="resultat-ligne">
+  <span>Gouttes par seconde</span>
+  <strong>{gttsParSec} gtts/sec</strong>
+</div>
+          </div>
+        )}
+
+        {/* ─── CRI ────────────────────────────── */}
+        <div className="fluido-section-titre">CRI</div>
+
+        <div className="champ">
+          <label>Débit</label>
+          <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-debit.svg" alt="débit" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={debitCRIManuel !== '' ? debitCRIManuel : debitHoraire || ''}
+    onChange={e => setDebitCRIManuel(e.target.value.replace(',', '.'))}
+    placeholder="ml/h"
+  />
+  <span className="unite-fixe">ml/h</span>
+</div>
+        </div>
+
+        <div className="champ">
+          <label>Volume du sac de fluide</label>
+          <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-sac.svg" alt="sac" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={volumeSac}
+    onChange={e => setVolumeSac(Number(e.target.value))}
+  />
+  <span className="unite-fixe">ml</span>
+</div>
+          {dureeSac > 0 && (
+            <p className="range-hint" style={{ color: 'var(--accent-red)', fontWeight: 600 }}>
+              Durée du sac de fluide : {dureeSac} hrs
+            </p>
+          )}
+        </div>
+
+        <div className="champ">
+          <label>Dose de charge (facultatif)</label>
+         <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-seringue.svg" alt="dose" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={doseCharge}
+    onChange={e => setDoseCharge(e.target.value.replace(',', '.'))}
+    placeholder="0"
+  />
+  <span className="unite-fixe">mg/kg IV</span>
+</div>
+        </div>
+
+        <div className="champ">
+          <label>Dosage du CRI</label>
+          <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-dosage.svg" alt="dosage" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={dosageCRI}
+    onChange={e => setDosageCRI(e.target.value.replace(',', '.'))}
+    placeholder="0"
+  />
+  <select className="cri-select" value={uniteDosageCRI} onChange={e => setUniteDosageCRI(e.target.value)}>
+    <option value="mg/kg/h">mg/kg/h</option>
+    <option value="mg/kg/jour">mg/kg/jour</option>
+  </select>
+</div>
+        </div>
+
+        <div className="champ">
+          <label>Concentration</label>
+         <div className="champ-input">
+  <div className="champ-icone-wrapper">
+    <img src="/icone-seringue.svg" alt="concentration" />
+  </div>
+  <input
+    type="text"
+    inputMode="decimal"
+    value={concentrationCRI}
+    onChange={e => setConcentrationCRI(e.target.value.replace(',', '.'))}
+    placeholder="0"
+  />
+  <span className="unite-fixe">mg/ml</span>
+</div>
+        </div>
+
+        {mlDansSac > 0 && (
+          <div className="resultat-card">
+            {mlDoseCharge > 0 && (
+              <div className="resultat-ligne">
+                <span>Dose de charge</span>
+                <strong>{mlDoseCharge} ml</strong>
+              </div>
+            )}
+            <div className="resultat-ligne">
+              <span>À ajouter dans le sac</span>
+              <strong>{mlDansSac} ml</strong>
             </div>
-            <div className="fluido-debit-separateur" />
-            <div className="fluido-debit-bloc">
-              <p className="fluido-debit-suite">Ensuite réduire au débit de maintenance</p>
-              <p className="fluido-debit-valeur">{maintenance} ml/h</p>
+            <div className="fluido-instruction">
+              Retirer <strong>{mlDansSac} ml</strong> de fluide du sac et ajouter <strong>{mlDansSac} ml</strong> de médication.
             </div>
           </div>
         )}
 
-        {/* RÉSULTATS */}
-        <div className="fluido-resultats-section">
-          <div className="fluido-resultats-grid">
-
-            {/* GTTS/ML */}
-            <div className="fluido-resultats-col">
-              <div className="fluido-resultats-col-header">
-                <i className="ti ti-droplets"></i>
-                <span>CALCULATEUR GTTS/ML</span>
-              </div>
-
-              <div className="champ">
-                <label>Débit</label>
-                <div className="champ-input">
-                  <input
-                    type="text" inputMode="decimal"
-                    value={debitGttsManuel !== '' ? debitGttsManuel : debitHoraire || ''}
-                    onChange={e => setDebitGttsManuel(e.target.value.replace(',', '.'))}
-                    placeholder="ml/h"
-                  />
-                  <span className="unite-fixe">ml/h</span>
-                </div>
-              </div>
-
-              <div className="champ">
-                <label>Facteur de gtts/ml</label>
-                <div className="champ-input">
-                  <input
-                    type="text" inputMode="decimal"
-                    value={facteurGtts}
-                    onChange={e => { setFacteurGtts(Number(e.target.value)); setDebitGttsManuel(debitGttsManuel || String(debitHoraire)) }}
-                  />
-                  <span className="unite-fixe">gtts/ml</span>
-                </div>
-                <p className="range-hint">
-                  Microgoutteur (60 gtt/ml)<br />si débit &lt; 100 ml/h<br />
-                  Macrogoutteur (10 ou 15 gtt/ml)<br />si débit ≥ 100 ml/h
-                </p>
-              </div>
-
-              <div className="champ">
-                <label>Temps en minutes</label>
-                <div className="champ-input">
-                  <input
-                    type="text" inputMode="decimal"
-                    value={tempsMin}
-                    onChange={e => setTempsMin(Number(e.target.value))}
-                  />
-                  <span className="unite-fixe">min</span>
-                </div>
-              </div>
-
-              {gttsParMin > 0 && (
-                <div className="resultat-card">
-                  <h2>Débit :</h2>
-                  <div className="resultat-ligne">
-                    <span>Gouttes / 15 sec</span>
-                    <strong>{gttsPar15Sec} gtts</strong>
-                  </div>
-                  <div className="resultat-ligne">
-                    <span>Gouttes / sec</span>
-                    <strong>{gttsParSec} gtts</strong>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* CRI */}
-            <div className="fluido-resultats-col">
-              <div className="fluido-resultats-col-header">
-                <i className="ti ti-droplet"></i>
-                <span>CRI</span>
-              </div>
-
-              <div className="champ">
-                <label>Débit</label>
-                <div className="champ-input">
-                  <input
-                    type="text" inputMode="decimal"
-                    value={debitCRIManuel !== '' ? debitCRIManuel : debitHoraire || ''}
-                    onChange={e => setDebitCRIManuel(e.target.value.replace(',', '.'))}
-                    placeholder="ml/h"
-                  />
-                  <span className="unite-fixe">ml/h</span>
-                </div>
-              </div>
-
-              <div className="champ">
-                <label>Volume du sac de fluide</label>
-                <div className="champ-input">
-                  <input
-                    type="text" inputMode="decimal"
-                    value={volumeSac}
-                    onChange={e => setVolumeSac(Number(e.target.value))}
-                  />
-                  <span className="unite-fixe">ml</span>
-                </div>
-                {dureeSac > 0 && (
-                  <p className="range-hint" style={{ color: 'var(--accent-red)', fontWeight: 600 }}>
-                    Durée du sac : {dureeSac} hrs
-                  </p>
-                )}
-              </div>
-
-              <div className="champ">
-                <label>Dose de charge (facultatif)</label>
-                <div className="champ-input">
-                  <input
-                    type="text" inputMode="decimal"
-                    value={doseCharge}
-                    onChange={e => setDoseCharge(e.target.value.replace(',', '.'))}
-                    placeholder="0"
-                  />
-                  <span className="unite-fixe">mg/kg IV</span>
-                </div>
-              </div>
-
-              <div className="champ">
-                <label>Dosage du CRI</label>
-                <div className="champ-input">
-                  <input
-                    type="text" inputMode="decimal"
-                    value={dosageCRI}
-                    onChange={e => setDosageCRI(e.target.value.replace(',', '.'))}
-                    placeholder="0"
-                  />
-                  <select className="cri-select" value={uniteDosageCRI} onChange={e => setUniteDosageCRI(e.target.value)}>
-                    <option value="mg/kg/h">mg/kg/h</option>
-                    <option value="mg/kg/jour">mg/kg/jour</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="champ">
-                <label>Concentration</label>
-                <div className="champ-input">
-                  <input
-                    type="text" inputMode="decimal"
-                    value={concentrationCRI}
-                    onChange={e => setConcentrationCRI(e.target.value.replace(',', '.'))}
-                    placeholder="0"
-                  />
-                  <span className="unite-fixe">mg/ml</span>
-                </div>
-              </div>
-
-              {mlDansSac > 0 && (
-                <div className="resultat-card">
-                  {mlDoseCharge > 0 && (
-                    <div className="resultat-ligne">
-                      <span>Dose de charge</span>
-                      <strong>{mlDoseCharge} ml</strong>
-                    </div>
-                  )}
-                  <div className="resultat-ligne">
-                    <span>Dans le sac</span>
-                    <strong>{mlDansSac} ml</strong>
-                  </div>
-                  <div className="fluido-instruction">
-                    Retirer <strong>{mlDansSac} ml</strong> du sac et ajouter <strong>{mlDansSac} ml</strong> de médication.
-                  </div>
-                </div>
-              )}
-            </div>
-
-          </div>
-        </div>
-
-        {/* AVERTISSEMENT */}
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
           Valide toujours le dosage avec le vétérinaire responsable avant d'administrer. Ce calculateur est un outil d'aide, ton jugement clinique prime en tout temps.
@@ -452,7 +437,7 @@ export default function Fluidotherapie() {
 
       </div>
 
-      {/* POPUP TABLEAU DÉSHYDRATATION */}
+      {/* ─── POPUP TABLEAU DÉSHYDRATATION ─────── */}
       {popupDeshy && (
         <div className="popup-overlay" onClick={() => setPopupDeshy(false)}>
           <div className="popup-card popup-large" onClick={e => e.stopPropagation()}>
@@ -475,6 +460,7 @@ export default function Fluidotherapie() {
           </div>
         </div>
       )}
+
     </div>
   )
 }

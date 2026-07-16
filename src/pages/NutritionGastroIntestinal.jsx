@@ -3,7 +3,7 @@ const SECTIONS = [
     titre: 'Pancréatite',
     principes: [
       'Réalimenter tôt par voie entérale — administrer des antiémétiques pour permettre la reprise alimentaire.',
-      'Digestibilité ≥ 85 % MS.',
+      'Digestibilité ≥ 85 % MS (matière sèche).',
       'Protéines : chien 15–30 % MS, chat 30–40 % MS.',
       'Matières grasses : chien < 15 % MS, chat < 25 % MS. Si obésité ou hypertriglycéridémie : ≤ 10 % (chien) et ≤ 15 % (chat) MS.',
       'Fibres brutes ≤ 5 % MS; éviter les fibres solubles gélifiantes (pectines, gommes).',

@@ -2,7 +2,7 @@ const SECTIONS = [
   {
     titre: 'Chien senior (dès ~7 ans)',
     principes: [
-      'Densité énergétique : 3,0 à 4,0 kcal/g MS; matières grasses : 7 à 15 % MS.',
+      'Densité énergétique : 3,0 à 4,0 kcal/g MS (matière sèche); matières grasses : 7 à 15 % MS.',
       'Protéines : 15 à 23 % MS — ne PAS restreindre; améliorer la qualité plutôt que réduire la quantité.',
       'Fibres ≥ 2 % MS.',
       'Aliment enrichi en antioxydants (vitamines E et C), cofacteurs mitochondriaux (acide lipoïque, L-carnitine), caroténoïdes et oméga-3 (DHA, EPA).',
@@ -21,7 +21,7 @@ const SECTIONS = [
     titre: 'Points de vigilance',
     principes: [
       'Adapter les protéines si maladie rénale concomitante.',
-      'Surveiller l\'hydratation, notamment sous diurétiques ou en IRC.',
+      'Surveiller l\'hydratation, notamment sous diurétiques ou en insuffisance rénale chronique.',
       'Faciliter l\'accès à la nourriture (bol surélevé, croquettes plus faciles à mâcher).',
       'Fractionner les repas si digestion difficile ou perte d\'appétit.',
     ],

@@ -22,17 +22,17 @@ const FACTEURS = {
     { id: 'croissance',  label: 'Croissance (chaton)',                 facteurMin: 2.5, facteurMax: null },
   ],
   chien: [
-    { id: 'castre',           label: 'Adulte castré / stérilisé',       facteurMin: 1.4, facteurMax: 1.6 },
-    { id: 'intact',           label: 'Adulte entier',                   facteurMin: 1.6, facteurMax: 1.8 },
-    { id: 'inactif',          label: "Inactif / prédisposé à l'obésité",facteurMin: 1.0, facteurMax: 1.2 },
-    { id: 'perte_poids',      label: 'Perte de poids',                  facteurMin: 1.0, facteurMax: null },
-    { id: 'gestation',        label: 'Gestation (21 derniers jours)',   facteurMin: 3.0, facteurMax: null },
-    { id: 'lactation',        label: 'Lactation',                       facteurMin: 3.0, facteurMax: 6.0, plus: true },
-    { id: 'croissance_jeune', label: 'Croissance (< 4 mois)',           facteurMin: 3.0, facteurMax: null },
-    { id: 'croissance_age',   label: 'Croissance (≥ 4 mois)',           facteurMin: 2.0, facteurMax: null },
-    { id: 'travail_leger',    label: 'Travail léger',                   facteurMin: 1.6, facteurMax: 2.0 },
-    { id: 'travail_modere',   label: 'Travail modéré',                  facteurMin: 2.0, facteurMax: 5.0 },
-    { id: 'travail_lourd',    label: 'Travail lourd',                   facteurMin: 5.0, facteurMax: 11.0 },
+    { id: 'castre',           label: 'Adulte castré / stérilisé',        facteurMin: 1.4, facteurMax: 1.6 },
+    { id: 'intact',           label: 'Adulte entier',                    facteurMin: 1.6, facteurMax: 1.8 },
+    { id: 'inactif',          label: "Inactif / prédisposé à l'obésité", facteurMin: 1.0, facteurMax: 1.2 },
+    { id: 'perte_poids',      label: 'Perte de poids',                   facteurMin: 1.0, facteurMax: null },
+    { id: 'gestation',        label: 'Gestation (21 derniers jours)',    facteurMin: 3.0, facteurMax: null },
+    { id: 'lactation',        label: 'Lactation',                        facteurMin: 3.0, facteurMax: 6.0, plus: true },
+    { id: 'croissance_jeune', label: 'Croissance (< 4 mois)',            facteurMin: 3.0, facteurMax: null },
+    { id: 'croissance_age',   label: 'Croissance (≥ 4 mois)',            facteurMin: 2.0, facteurMax: null },
+    { id: 'travail_leger',    label: 'Travail léger',                    facteurMin: 1.6, facteurMax: 2.0 },
+    { id: 'travail_modere',   label: 'Travail modéré',                   facteurMin: 2.0, facteurMax: 5.0 },
+    { id: 'travail_lourd',    label: 'Travail lourd',                    facteurMin: 5.0, facteurMax: 11.0 },
   ],
 }
 
@@ -42,6 +42,7 @@ export default function BesoinEnergetique() {
   const [unitePoids, setUnitePoids] = useState('kg')
   const [conditionId, setConditionId] = useState('castre')
   const [kcalTasse, setKcalTasse] = useState('')
+  const [facteurCustom, setFacteurCustom] = useState('')
 
   const poidsKg = useMemo(() => {
     const p = parseFloat(poids)
@@ -61,30 +62,36 @@ export default function BesoinEnergetique() {
     [facteurs, conditionId]
   )
 
-  function beqRange(f) {
-    if (!bee) return null
-    const suffixe = f.plus ? '+' : ''
-    const min = arrondir(bee * f.facteurMin)
-    const max = f.facteurMax ? arrondir(bee * f.facteurMax) : null
-    return max ? `${min} – ${max}${suffixe}` : `${min}`
-  }
+  const facteurActif = useMemo(() => {
+    const custom = parseFloat(facteurCustom)
+    if (custom > 0) return { facteurMin: custom, facteurMax: null, plus: false }
+    return conditionSelectionnee
+  }, [facteurCustom, conditionSelectionnee])
 
-  const beqPrincipal = useMemo(() => {
-    if (!bee) return null
-    return arrondir(bee * conditionSelectionnee.facteurMin)
-  }, [bee, conditionSelectionnee])
+  const beqMin = useMemo(() => {
+    if (!bee || !facteurActif.facteurMin) return null
+    return arrondir(bee * facteurActif.facteurMin)
+  }, [bee, facteurActif])
 
-  const tassesParJour = useMemo(() => {
+  const beqMax = useMemo(() => {
+    if (!bee || !facteurActif.facteurMax) return null
+    return arrondir(bee * facteurActif.facteurMax)
+  }, [bee, facteurActif])
+
+  const tassesResult = useMemo(() => {
     const k = parseFloat(kcalTasse)
-    if (!k || k <= 0 || !beqPrincipal) return null
-    return arrondir(beqPrincipal / k, 2)
-  }, [beqPrincipal, kcalTasse])
+    if (!k || k <= 0 || !beqMin) return null
+    const min = arrondir(beqMin / k, 2)
+    const max = beqMax ? arrondir(beqMax / k, 2) : null
+    return { min, max }
+  }, [beqMin, beqMax, kcalTasse])
 
   function handleEspece(e) {
-    const nouvelleEspece = e
-    setEspece(nouvelleEspece)
-    setConditionId(FACTEURS[nouvelleEspece][0].id)
+    setEspece(e)
+    setConditionId(FACTEURS[e][0].id)
   }
+
+  const utilisantCustom = parseFloat(facteurCustom) > 0
 
   return (
     <div className="page-calculateurs">
@@ -146,6 +153,7 @@ export default function BesoinEnergetique() {
             className="champ-select-native"
             value={conditionId}
             onChange={e => setConditionId(e.target.value)}
+            style={{ opacity: utilisantCustom ? 0.4 : 1 }}
           >
             {facteurs.map(f => (
               <option key={f.id} value={f.id}>
@@ -153,6 +161,29 @@ export default function BesoinEnergetique() {
               </option>
             ))}
           </select>
+
+          {/* ─── FACTEUR PERSONNALISÉ ─────────── */}
+          <div className="champ-input" style={{ marginTop: 8 }}>
+            <div className="champ-icone-wrapper">
+              <i className="ti ti-math-function" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
+            </div>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={facteurCustom}
+              onChange={e => setFacteurCustom(e.target.value.replace(',', '.'))}
+              placeholder="Facteur personnalisé (ex : 1.8)"
+            />
+            {facteurCustom !== '' && (
+              <button
+                className="radio-btn"
+                onClick={() => setFacteurCustom('')}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
         {/* ─── RÉSULTAT BEQ ────────────────────── */}
@@ -161,15 +192,17 @@ export default function BesoinEnergetique() {
             <div className="bee-beq-top">
               <div>
                 <p className="bee-beq-label">BEQ estimé</p>
-                <p className="bee-beq-valeur">{beqPrincipal ? `${beqPrincipal}` : '—'} <span className="bee-beq-unit">kcal/jour</span></p>
+                <p className="bee-beq-valeur">
+                  {beqMin
+                    ? beqMax ? `${beqMin} – ${beqMax}` : `${beqMin}`
+                    : '—'}
+                  <span className="bee-beq-unit"> kcal/jour</span>
+                </p>
               </div>
-              <div className="bee-beq-facteur-badge">{labelFacteur(conditionSelectionnee)}</div>
+              <div className="bee-beq-facteur-badge">
+                {utilisantCustom ? `× ${parseFloat(facteurCustom)}` : labelFacteur(conditionSelectionnee)}
+              </div>
             </div>
-            {conditionSelectionnee.facteurMax && (
-              <p className="bee-beq-fourchette">
-                Fourchette : {arrondir(bee * conditionSelectionnee.facteurMin)} – {arrondir(bee * conditionSelectionnee.facteurMax)}{conditionSelectionnee.plus ? '+' : ''} kcal/jour
-              </p>
-            )}
           </div>
         )}
 
@@ -192,11 +225,15 @@ export default function BesoinEnergetique() {
         </div>
 
         {/* ─── RÉSULTAT TASSES ─────────────────── */}
-        {tassesParJour && (
+        {tassesResult && (
           <div className="resultat-card">
             <div className="resultat-ligne" style={{ flexDirection: 'row', alignItems: 'center' }}>
               <span>Quantité à donner</span>
-              <strong>{tassesParJour} tasse{tassesParJour > 1 ? 's' : ''}/jour</strong>
+              <strong>
+                {tassesResult.max
+                  ? `${tassesResult.min} – ${tassesResult.max} tasses/jour`
+                  : `${tassesResult.min} tasse${tassesResult.min > 1 ? 's' : ''}/jour`}
+              </strong>
             </div>
           </div>
         )}

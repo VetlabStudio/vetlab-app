@@ -2619,6 +2619,9 @@ input[type="number"] {
   gap: 8px;
   background: var(--bg-card);
 }
+.bee-facteur-custom { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.bee-facteur-custom-row { display: flex; gap: 8px; }
+.champ-aide { font-size: 11px; color: var(--text-secondary); margin: 4px 0 0 0; line-height: 1.4; }
 
 .bee-beq-top {
   display: flex;
@@ -7309,4 +7312,21 @@ input[type="number"] {
   font-weight: 600;
   background: rgba(37,77,86,0.12);
   color: var(--primary);
+}
+/* ─── Facteur personnalisé ─── */
+.bee-facteur-custom {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bee-facteur-custom-row {
+  display: flex;
+  gap: 8px;
+}
+.champ-aide {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin: 4px 0 0 0;
+  line-height: 1.4;
 }

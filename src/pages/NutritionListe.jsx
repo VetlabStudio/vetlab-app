@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 
 const CONDITIONS = [
   { id: 'gestation-lactation', label: 'Gestation et lactation',         route: '/nutrition/gestation-lactation' },
+  { id: 'neonatologie',        label: 'Néonatologie (0–2 semaines)',    route: '/nutrition/neonatologie' },
   { id: 'croissance',          label: 'Croissance',                      route: '/nutrition/croissance' },
   { id: 'geriatrique',         label: 'Animaux gériatriques',            route: '/nutrition/geriatrique' },
   { id: 'gastro-intestinal',   label: 'Maladies gastro-intestinales',    route: '/nutrition/gastro-intestinal' },

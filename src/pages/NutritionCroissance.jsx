@@ -3,7 +3,7 @@ const SECTIONS = [
     titre: 'Énergie et densité',
     principes: [
       'BEQ : environ 3 × BEE en début de croissance, diminuant vers 1,8–2 × BEE à l\'approche de la taille adulte.',
-      'Densité énergétique cible : 3,5 à 4,5 kcal/g MS.',
+      'Densité énergétique cible : 3,5 à 4,5 kcal/g MS (matière sèche).',
       'Repas mesurés et fractionnés — éviter l\'alimentation ad libitum.',
       'Objectif de condition corporelle : score 4–5/9.',
     ],
