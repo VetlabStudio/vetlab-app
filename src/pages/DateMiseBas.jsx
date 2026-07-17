@@ -81,7 +81,7 @@ function ajouterJours(date, jours) {
 }
 
 function formaterDate(date) {
-  return date.toLocaleDateString('fr-CA', {
+  return date.toLocaleDateString('fr-FR', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

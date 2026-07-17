@@ -169,6 +169,7 @@ export default function ChirurgieMonitoring() {
   const [popupEspece, setPopupEspece] = useState(false)
   const [rechercheHistorique, setRechercheHistorique] = useState('')
   const [joursOuverts, setJoursOuverts] = useState(() => new Set())
+  const [medsOuverts, setMedsOuverts] = useState(() => new Set())
 
   const [popupMesure, setPopupMesure] = useState(null) // {heure, ...valeurs}
   const [popupFin, setPopupFin] = useState(false)
@@ -276,10 +277,11 @@ export default function ChirurgieMonitoring() {
 
   function ajouterMedication(med) {
     const { doseMin, concentration } = normaliserMedicament(med)
+    const newId = med.id + '-' + Date.now()
     setForm(prev => ({
       ...prev,
       medications: [...prev.medications, {
-        id: med.id + '-' + Date.now(),
+        id: newId,
         nom: med.nom,
         categorie: categorieMedDefaut(med),
         concentration: isNaN(concentration) ? '' : String(concentration),
@@ -291,6 +293,7 @@ export default function ChirurgieMonitoring() {
     }))
     setRechercheMed('')
     setResultatsMed([])
+    setMedsOuverts(prev => new Set([...prev, newId]))
   }
 
   function modifierMedication(id, champ, valeur) {
@@ -1241,38 +1244,62 @@ export default function ChirurgieMonitoring() {
 
             {form.medications.map(m => {
               const { doseMg, volume } = doseEtVolume(poidsKg, m.doseMgKg, m.concentration)
+              const ouvert = medsOuverts.has(m.id)
               return (
                 <div key={m.id} className="monitoring-med-card">
-                  <div className="monitoring-med-card-header">
-                    <span className="monitoring-med-card-nom">{m.nom}</span>
-                    <button className="examen-historique-supprimer" onClick={() => supprimerMedication(m.id)}><i className="ti ti-trash"></i></button>
-                  </div>
-                  <div className="monitoring-med-card-row">
-                    <label className="form-label">Catégorie</label>
-                    <select className="form-input" value={m.categorie} onChange={e => modifierMedication(m.id, 'categorie', e.target.value)}>
-                      {CATEGORIES_MED.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  <div className="monitoring-med-card-row">
-                    <label className="form-label">Concentration (mg/mL)</label>
-                    <input type="text" inputMode="decimal" className="form-input" value={m.concentration} onChange={e => modifierMedication(m.id, 'concentration', e.target.value.replace(',', '.'))} />
-                  </div>
-                  <div className="monitoring-med-card-row">
-                    <label className="form-label">Dose (mg/kg)</label>
-                    <input type="text" inputMode="decimal" className="form-input" value={m.doseMgKg} onChange={e => modifierMedication(m.id, 'doseMgKg', e.target.value.replace(',', '.'))} />
-                  </div>
-                  <div className="monitoring-med-card-row">
-                    <label className="form-label">Dose totale</label>
-                    <div className="form-input" style={{ background: 'var(--bg)', color: 'var(--text-secondary)' }}>{doseMg != null ? doseMg.toFixed(2) + ' mg' : '—'}</div>
-                  </div>
-                  <div className="monitoring-med-card-row">
-                    <label className="form-label">Volume à administrer</label>
-                    <div className="form-input" style={{ background: 'var(--bg)', color: 'var(--text-secondary)' }}>{volume != null ? volume.toFixed(2) + ' mL' : '—'}</div>
-                  </div>
-                  <div className="monitoring-med-card-row">
-                    <label className="form-label">Voie</label>
-                    <input type="text" className="form-input" value={m.voie} onChange={e => modifierMedication(m.id, 'voie', e.target.value)} placeholder="IV, IM, SC..." />
-                  </div>
+                  <button
+                    type="button"
+                    className="monitoring-med-card-header monitoring-med-card-header--toggle"
+                    onClick={() => setMedsOuverts(prev => {
+                      const next = new Set(prev)
+                      if (next.has(m.id)) next.delete(m.id)
+                      else next.add(m.id)
+                      return next
+                    })}
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, alignItems: 'flex-start', gap: 2 }}>
+                      <span className="monitoring-med-card-nom">{m.nom}</span>
+                      <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                        {volume != null ? <strong style={{ color: 'var(--primary)' }}>{volume.toFixed(2)} mL</strong> : '—'}
+                        {doseMg != null ? <span style={{ color: 'var(--text-hint)' }}> · {doseMg.toFixed(2)} mg</span> : ''}
+                        {m.voie ? <span style={{ color: 'var(--text-hint)' }}> · {m.voie}</span> : ''}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                      <button className="examen-historique-supprimer" onClick={e => { e.stopPropagation(); supprimerMedication(m.id) }}><i className="ti ti-trash"></i></button>
+                      <i className={`ti ti-chevron-${ouvert ? 'up' : 'down'}`} style={{ fontSize: 16, color: 'var(--text-hint)' }}></i>
+                    </div>
+                  </button>
+                  {ouvert && (
+                    <>
+                      <div className="monitoring-med-card-row">
+                        <label className="form-label">Catégorie</label>
+                        <select className="form-input" value={m.categorie} onChange={e => modifierMedication(m.id, 'categorie', e.target.value)}>
+                          {CATEGORIES_MED.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
+                      <div className="monitoring-med-card-row">
+                        <label className="form-label">Concentration (mg/mL)</label>
+                        <input type="text" inputMode="decimal" className="form-input" value={m.concentration} onChange={e => modifierMedication(m.id, 'concentration', e.target.value.replace(',', '.'))} />
+                      </div>
+                      <div className="monitoring-med-card-row">
+                        <label className="form-label">Dose (mg/kg)</label>
+                        <input type="text" inputMode="decimal" className="form-input" value={m.doseMgKg} onChange={e => modifierMedication(m.id, 'doseMgKg', e.target.value.replace(',', '.'))} />
+                      </div>
+                      <div className="monitoring-med-card-row">
+                        <label className="form-label">Dose totale</label>
+                        <div className="form-input" style={{ background: 'var(--bg)', color: 'var(--text-secondary)' }}>{doseMg != null ? doseMg.toFixed(2) + ' mg' : '—'}</div>
+                      </div>
+                      <div className="monitoring-med-card-row">
+                        <label className="form-label">Volume à administrer</label>
+                        <div className="form-input" style={{ background: 'var(--bg)', color: 'var(--primary)', fontWeight: 700, fontSize: 15 }}>{volume != null ? volume.toFixed(2) + ' mL' : '—'}</div>
+                      </div>
+                      <div className="monitoring-med-card-row">
+                        <label className="form-label">Voie</label>
+                        <input type="text" className="form-input" value={m.voie} onChange={e => modifierMedication(m.id, 'voie', e.target.value)} placeholder="IV, IM, SC..." />
+                      </div>
+                    </>
+                  )}
                 </div>
               )
             })}
@@ -1382,7 +1409,13 @@ export default function ChirurgieMonitoring() {
                             <button type="button" className={`toggle-btn ${!m.administre ? 'actif' : ''}`} onClick={() => toggleAdministreMedication(m.id, false)}>Non</button>
                           </div>
                         </div>
-                        <span className="monitoring-med-resume-detail">{m.concentration || '—'} mg/mL · {m.doseMgKg || '—'} mg/kg{doseMg != null ? ` (${doseMg.toFixed(2)} mg)` : ''} · {volume != null ? volume.toFixed(2) + ' mL' : '—'}{m.voie ? ' · ' + m.voie : ''}</span>
+                        <span className="monitoring-med-resume-detail">
+                          {m.concentration || '—'} mg/mL · {m.doseMgKg || '—'} mg/kg{doseMg != null ? ` (${doseMg.toFixed(2)} mg)` : ''} ·{' '}
+                          {volume != null
+                            ? <strong style={{ fontSize: 15, color: 'var(--primary)', fontWeight: 700 }}>{volume.toFixed(2)} mL</strong>
+                            : '—'}
+                          {m.voie ? ' · ' + m.voie : ''}
+                        </span>
                         {m.administre && (
                           <div className="form-groupe" style={{ marginTop: 6 }}>
                             <label className="form-label">Administré à</label>

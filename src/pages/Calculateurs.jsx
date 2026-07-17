@@ -182,15 +182,7 @@ export default function Calculateurs() {
             </div>
             Résultats
           </h2>
-          <div className="resultat-ligne">
-            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div className="champ-icone-wrapper">
-                <img src="/icone-poids.svg" alt="poids" />
-              </div>
-              Poids utilisé
-            </span>
-            <strong>{resultat ? `${resultat.poidsKg} kg ${resultat.unitePoids}` : '—'}</strong>
-          </div>
+          
           <div className="resultat-ligne">
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div className="champ-icone-wrapper">
