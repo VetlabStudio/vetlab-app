@@ -2,10 +2,10 @@ const SECTIONS = [
   {
     titre: 'Aliment et friandises',
     principes: [
-      'Diètes dentaires à texture spéciale et friandises certifiées VOHC (vohc.org) — seuls produits à efficacité prouvée sur la plaque.',
+      'Diètes dentaires à texture spéciale et friandises certifiées VOHC (vohc.org).',
       'Éviter les aliments mous — augmentent la plaque et le tartre.',
       'Friandises dentaires certifiées VOHC ≤ 10 % de l\'apport énergétique total.',
-      'Éviter les os durs (os de bœuf, andouiller, pierre à mâcher) — risque de fractures dentaires.',
+      'Éviter les os durs (os de bœuf, bois de cervidé) — risque de fractures dentaires.',
     ],
   },
   {
@@ -31,6 +31,10 @@ const SECTIONS = [
 export default function NutritionDentaire() {
   return (
     <div className="labo-detail-page">
+      <div className="nutrition-note-ms">
+  <i className="ti ti-info-circle"></i>
+  <span><strong>MS</strong> = matière sèche, soit le % du nutriment calculé une fois l'eau retirée de l'aliment ; ne pas confondre avec aliment sec vs humide. Une conserve contient ~75–80 % d'eau alors qu'une croquette en contient ~10 %.</span>
+</div>
       {SECTIONS.map((s, i) => (
         <div key={i} className="postop-section">
           <div className="postop-section-header">

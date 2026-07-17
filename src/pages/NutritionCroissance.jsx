@@ -3,7 +3,7 @@ const SECTIONS = [
     titre: 'Énergie et densité',
     principes: [
       'BEQ : environ 3 × BEE en début de croissance, diminuant vers 1,8–2 × BEE à l\'approche de la taille adulte.',
-      'Densité énergétique cible : 3,5 à 4,5 kcal/g MS (matière sèche).',
+      'Densité énergétique cible : 3,5 à 4,5 kcal/g MS.',
       'Repas mesurés et fractionnés — éviter l\'alimentation ad libitum.',
       'Objectif de condition corporelle : score 4–5/9.',
     ],
@@ -38,6 +38,10 @@ const SECTIONS = [
 export default function NutritionCroissance() {
   return (
     <div className="labo-detail-page">
+      <div className="nutrition-note-ms">
+  <i className="ti ti-info-circle"></i>
+  <span><strong>MS</strong> = matière sèche, soit le % du nutriment calculé une fois l'eau retirée de l'aliment ; ne pas confondre avec aliment sec vs humide. Une conserve contient ~75–80 % d'eau alors qu'une croquette en contient ~10 %.</span>
+</div>
       {SECTIONS.map((s, i) => (
         <div key={i} className="postop-section">
           <div className="postop-section-header">

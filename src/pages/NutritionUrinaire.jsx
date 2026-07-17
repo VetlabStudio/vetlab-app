@@ -23,7 +23,7 @@ const SECTIONS = [
     principes: [
       'Non dissolubles par l\'alimentation — retrait chirurgical ou par lithotritie requis.',
       'Après retrait : aliment humide thérapeutique et hydratation maximale.',
-      'Sel (NaCl) pour augmenter la dilution urinaire — prudence si IRC ou hypertension.',
+      'Sel (NaCl) pour augmenter la dilution urinaire — prudence si insuffisance rénale chronique ou hypertension.',
     ],
   },
 ]
@@ -31,6 +31,7 @@ const SECTIONS = [
 export default function NutritionUrinaire() {
   return (
     <div className="labo-detail-page">
+      
       {SECTIONS.map((s, i) => (
         <div key={i} className="postop-section">
           <div className="postop-section-header">

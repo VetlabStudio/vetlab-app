@@ -19,9 +19,9 @@ const SECTIONS = [
   {
     titre: 'Taurine et L-carnitine',
     principes: [
-      'Vérifier les taux de taurine plasmatique chez tout chien avec cardiomyopathie dilatée (DCM), particulièrement si nourri avec un aliment grain-free.',
+      'Vérifier les taux de taurine plasmatique chez tout chien avec cardiomyopathie dilatée (CMD), particulièrement si nourri avec un aliment sans grains.',
       'Supplémenter en taurine si carence confirmée.',
-      'L-carnitine à considérer dans les formes de DCM à carnitine-responsive.',
+      'L-carnitine à considérer dans les formes de CMD à carnitine-responsive.',
     ],
   },
   {
@@ -37,6 +37,10 @@ const SECTIONS = [
 export default function NutritionCardiaque() {
   return (
     <div className="labo-detail-page">
+      <div className="nutrition-note-ms">
+  <i className="ti ti-info-circle"></i>
+  <span><strong>MS</strong> = matière sèche, soit le % du nutriment calculé une fois l'eau retirée de l'aliment ; ne pas confondre avec aliment sec vs humide. Une conserve contient ~75–80 % d'eau alors qu'une croquette en contient ~10 %.</span>
+</div>
       {SECTIONS.map((s, i) => (
         <div key={i} className="postop-section">
           <div className="postop-section-header">

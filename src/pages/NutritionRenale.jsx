@@ -10,9 +10,9 @@ const SECTIONS = [
   {
     titre: 'Phosphore et protéines',
     principes: [
-      'Restreindre le phosphore — intervention nutritionnelle la plus importante en IRC.',
+      'Restreindre le phosphore — intervention nutritionnelle la plus importante en insuffisance rénale chronique.',
       'Si restriction alimentaire insuffisante, ajouter un chélateur de phosphore intestinal (carbonate de calcium, sevelamer).',
-      'Protéines : 14–20 % MS (chien), 28–35 % MS (chat); très digestibles, haute valeur biologique.',
+      'Protéines : 14–20 % MS (matière sèche) (chien), 28–35 % MS (chat); très digestibles, haute valeur biologique.',
       'Éviter la restriction protéique trop agressive chez le chat — surveiller l\'albumine sérique.',
     ],
   },
@@ -38,6 +38,10 @@ const SECTIONS = [
 export default function NutritionRenale() {
   return (
     <div className="labo-detail-page">
+      <div className="nutrition-note-ms">
+  <i className="ti ti-info-circle"></i>
+  <span><strong>MS</strong> = matière sèche, soit le % du nutriment calculé une fois l'eau retirée de l'aliment ; ne pas confondre avec aliment sec vs humide. Une conserve contient ~75–80 % d'eau alors qu'une croquette en contient ~10 %.</span>
+</div>
       {SECTIONS.map((s, i) => (
         <div key={i} className="postop-section">
           <div className="postop-section-header">
