@@ -43,6 +43,9 @@ export default function Profil() {
 
   // Forfait clinique
   const [interetEnvoye, setInteretEnvoye] = useState(false)
+  const [modalUpgrade, setModalUpgrade] = useState(false)
+  const [forfaitUpgrade, setForfaitUpgrade] = useState(FORFAITS_EQUIPE[0])
+  const [upgradeLoading, setUpgradeLoading] = useState(false)
 
   useEffect(() => {
     if (searchParams.get('paiement') === 'succes') {
@@ -161,6 +164,33 @@ export default function Profil() {
   async function deconnecter() {
     await supabase.auth.signOut()
     navigate('/connexion')
+  }
+
+  // ─── UPGRADE PRO → ÉQUIPE ─────────────────────
+  async function upgraderAbonnement() {
+    setUpgradeLoading(true)
+    setErreur('')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const response = await fetch(
+        `https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/upgrade-subscription`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ newPriceId: forfaitUpgrade.id }),
+        }
+      )
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Erreur')
+      setModalUpgrade(false)
+      await attendrePlanActif('equipe')
+    } catch (err) {
+      setErreur(err.message || 'Erreur lors de la mise à niveau.')
+    }
+    setUpgradeLoading(false)
   }
 
   // ─── STRIPE PORTAL ────────────────────────────
@@ -382,6 +412,20 @@ async function ouvrirPortail() {
               {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
             </button>
           </div>
+        ) : estPro ? (
+          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
+            <div className="profil-forfait-header">
+              <span className="profil-forfait-nom">Équipe</span>
+              <span className="profil-forfait-badge" style={{ color: 'var(--primary)', background: 'rgba(37,77,86,0.1)' }}>Upgrade</span>
+            </div>
+            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
+              Passe au forfait Équipe — ton crédit Pro non utilisé est automatiquement déduit. Tu ne perds pas ce que tu as déjà payé.
+            </p>
+            <button className="profil-portal-btn" onClick={() => setModalUpgrade(true)}>
+              <i className="ti ti-arrow-up-circle"></i>
+              Mettre à niveau vers Équipe
+            </button>
+          </div>
         ) : (
           <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
             <div className="profil-forfait-header">
@@ -421,6 +465,51 @@ async function ouvrirPortail() {
           Supprimer le compte
         </button>
       </div>
+
+      {/* ─── MODAL UPGRADE PRO → ÉQUIPE ───────── */}
+      {modalUpgrade && (
+        <div className="popup-overlay" onClick={() => setModalUpgrade(false)}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <span>Mettre à niveau vers Équipe</span>
+              <button className="popup-close" onClick={() => setModalUpgrade(false)}>✕</button>
+            </div>
+            <div style={{ padding: '12px 0 4px' }}>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
+                Ton crédit Pro non utilisé sera automatiquement déduit du montant à payer. Tu ne perds rien.
+              </p>
+              {FORFAITS_EQUIPE.length > 1 && (
+                <>
+                  <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
+                  <div className="profil-stripe-choix" style={{ marginBottom: 16 }}>
+                    {FORFAITS_EQUIPE.map(f => (
+                      <button
+                        key={f.id}
+                        className={`profil-stripe-btn${forfaitUpgrade.id === f.id ? ' profil-stripe-btn--selected' : ''}`}
+                        onClick={() => setForfaitUpgrade(f)}
+                        style={{ flex: 1 }}
+                      >
+                        <span className="profil-stripe-prix">{f.prix} $</span>
+                        <span className="profil-stripe-periode">{f.periode}</span>
+                        <span style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 2 }}>{f.sieges} membres</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+              {FORFAITS_EQUIPE.length === 1 && (
+                <div style={{ background: 'var(--surface-2)', borderRadius: 12, padding: '12px 16px', marginBottom: 16 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600 }}>{FORFAITS_EQUIPE[0].sieges} membres · {FORFAITS_EQUIPE[0].prix} $ {FORFAITS_EQUIPE[0].periode}</p>
+                </div>
+              )}
+              {erreur && <div className="form-erreur" style={{ marginBottom: 12 }}>{erreur}</div>}
+              <button className="btn-sauvegarder" onClick={upgraderAbonnement} disabled={upgradeLoading}>
+                {upgradeLoading ? 'Mise à niveau en cours...' : 'Confirmer la mise à niveau'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ─── MODAL CHECKOUT STRIPE ─────────────── */}
       {modalCheckout && clientSecret && (
