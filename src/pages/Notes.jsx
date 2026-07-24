@@ -9,6 +9,72 @@ const inputStyle = {
   outline: 'none', width: '100%', boxSizing: 'border-box',
 }
 
+function PopupForm({ titrePop, valeurs, setValeurs, onSauvegarder, onAnnuler, onSupprimer, labelBtn, categories, saving }) {
+  return (
+    <div className="popup-overlay" onClick={onAnnuler}>
+      <div className="popup-card" onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{titrePop}</p>
+          {onSupprimer && (
+            <button onClick={onSupprimer} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent-red)', fontSize: 18 }}>
+              <i className="ti ti-trash"></i>
+            </button>
+          )}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <input
+            placeholder="Titre (optionnel)"
+            value={valeurs.titre}
+            onChange={e => setValeurs(v => ({ ...v, titre: e.target.value }))}
+            style={inputStyle}
+          />
+          <textarea
+            placeholder="Contenu…"
+            value={valeurs.contenu}
+            onChange={e => setValeurs(v => ({ ...v, contenu: e.target.value }))}
+            rows={6}
+            style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
+          />
+          <input
+            placeholder="Catégorie (optionnel, ex: Chirurgie, Urgence…)"
+            value={valeurs.categorie}
+            onChange={e => setValeurs(v => ({ ...v, categorie: e.target.value }))}
+            style={inputStyle}
+            list="notes-cats-list"
+          />
+          <datalist id="notes-cats-list">
+            {categories.filter(c => c !== 'Toutes').map(c => <option key={c} value={c} />)}
+          </datalist>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>Couleur :</span>
+            {COULEURS.map(c => (
+              <button key={c} onClick={() => setValeurs(v => ({ ...v, couleur: c }))} style={{
+                width: 24, height: 24, borderRadius: '50%', background: c, border: 'none', cursor: 'pointer',
+                outline: valeurs.couleur === c ? '2px solid var(--primary)' : 'none', outlineOffset: 2,
+              }} />
+            ))}
+          </div>
+        </div>
+        <div className="popup-actions-centrees" style={{ marginTop: 16 }}>
+          <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={onAnnuler}>Annuler</button>
+          <button
+            style={{
+              flex: 1, background: 'var(--primary)', color: '#fff', border: 'none',
+              borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 700,
+              cursor: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 'pointer' : 'not-allowed',
+              opacity: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 1 : 0.5,
+            }}
+            onClick={onSauvegarder}
+            disabled={(!valeurs.contenu.trim() && !valeurs.titre.trim()) || saving}
+          >
+            {saving ? '...' : labelBtn}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Notes() {
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -84,72 +150,6 @@ export default function Notes() {
   const categories = ['Toutes', ...new Set(notes.map(n => n.categorie).filter(Boolean)).values()]
   const notesFiltrees = filtreCategorie === 'Toutes' ? notes : notes.filter(n => n.categorie === filtreCategorie)
 
-  function PopupForm({ titrePop, valeurs, setValeurs, onSauvegarder, onAnnuler, onSupprimer, labelBtn }) {
-    return (
-      <div className="popup-overlay" onClick={onAnnuler}>
-        <div className="popup-card" onClick={e => e.stopPropagation()}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{titrePop}</p>
-            {onSupprimer && (
-              <button onClick={onSupprimer} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent-red)', fontSize: 18 }}>
-                <i className="ti ti-trash"></i>
-              </button>
-            )}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <input
-              placeholder="Titre (optionnel)"
-              value={valeurs.titre}
-              onChange={e => setValeurs(v => ({ ...v, titre: e.target.value }))}
-              style={inputStyle}
-            />
-            <textarea
-              placeholder="Contenu…"
-              value={valeurs.contenu}
-              onChange={e => setValeurs(v => ({ ...v, contenu: e.target.value }))}
-              rows={6}
-              style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
-            />
-            <input
-              placeholder="Catégorie (optionnel, ex: Chirurgie, Urgence…)"
-              value={valeurs.categorie}
-              onChange={e => setValeurs(v => ({ ...v, categorie: e.target.value }))}
-              style={inputStyle}
-              list="notes-cats-list"
-            />
-            <datalist id="notes-cats-list">
-              {categories.filter(c => c !== 'Toutes').map(c => <option key={c} value={c} />)}
-            </datalist>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>Couleur :</span>
-              {COULEURS.map(c => (
-                <button key={c} onClick={() => setValeurs(v => ({ ...v, couleur: c }))} style={{
-                  width: 24, height: 24, borderRadius: '50%', background: c, border: 'none', cursor: 'pointer',
-                  outline: valeurs.couleur === c ? '2px solid var(--primary)' : 'none', outlineOffset: 2,
-                }} />
-              ))}
-            </div>
-          </div>
-          <div className="popup-actions-centrees" style={{ marginTop: 16 }}>
-            <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={onAnnuler}>Annuler</button>
-            <button
-              style={{
-                flex: 1, background: 'var(--primary)', color: '#fff', border: 'none',
-                borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 700,
-                cursor: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 'pointer' : 'not-allowed',
-                opacity: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 1 : 0.5,
-              }}
-              onClick={onSauvegarder}
-              disabled={(!valeurs.contenu.trim() && !valeurs.titre.trim()) || saving}
-            >
-              {saving ? '...' : labelBtn}
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="notes-page">
 
@@ -206,6 +206,8 @@ export default function Notes() {
           onSauvegarder={creerNote}
           onAnnuler={() => setShowForm(false)}
           labelBtn="Créer"
+          categories={categories}
+          saving={saving}
         />
       )}
 
@@ -218,6 +220,8 @@ export default function Notes() {
           onAnnuler={() => { setNoteActive(null); setEditForm(null) }}
           onSupprimer={() => setConfirmSupprimer(noteActive.id)}
           labelBtn="Sauvegarder"
+          categories={categories}
+          saving={saving}
         />
       )}
 
