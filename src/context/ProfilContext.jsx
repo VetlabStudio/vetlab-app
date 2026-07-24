@@ -48,10 +48,13 @@ export function ProfilProvider({ children }) {
     if (!profilData) {
       const { data: nouveauProfil } = await supabase
         .from('profiles')
-        .upsert({ id: user.id, plan: 'free' }, { onConflict: 'id' })
+        .upsert({ id: user.id, plan: 'free', email: user.email }, { onConflict: 'id' })
         .select('*')
         .single()
       profilData = nouveauProfil
+    } else if (!profilData.email && user.email) {
+      await supabase.from('profiles').update({ email: user.email }).eq('id', user.id)
+      profilData = { ...profilData, email: user.email }
     }
 
     setProfil(profilData)
