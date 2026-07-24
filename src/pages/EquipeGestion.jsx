@@ -10,16 +10,13 @@ export default function EquipeGestion() {
   const [invitations, setInvitations] = useState([])
   const [equipe, setEquipe] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [emailsInput, setEmailsInput] = useState('')
+  const [emailInvit, setEmailInvit] = useState('')
   const [roleInvit, setRoleInvit] = useState('membre')
   const [envoi, setEnvoi] = useState(false)
-  const [envoiProgress, setEnvoiProgress] = useState(null)
   const [msgSucces, setMsgSucces] = useState('')
   const [confirmRevoquer, setConfirmRevoquer] = useState(null)
   const [userId, setUserId] = useState(null)
   const [erreurInvit, setErreurInvit] = useState('')
-  const [editNomClinique, setEditNomClinique] = useState(false)
-  const [nouveauNomClinique, setNouveauNomClinique] = useState('')
 
   useEffect(() => {
     if (!teamId) return
@@ -55,106 +52,65 @@ export default function EquipeGestion() {
     setLoading(false)
   }
 
-  function parseEmails(text) {
-    return [...new Set(
-      text.split(/[\s,;]+/)
-        .map(e => e.trim().toLowerCase())
-        .filter(e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))
-    )]
-  }
+  async function inviter() {
+    if (!emailInvit.trim() || envoi) return
+    setErreurInvit('')
 
-  const emailsParsed = parseEmails(emailsInput)
-  const sigesRestants = equipe?.max_membres ? equipe.max_membres - membres.length : Infinity
+    if (equipe && membres.length >= equipe.max_membres) {
+      setErreurInvit(`Limite de ${equipe.max_membres} sièges atteinte. Mettez à niveau votre forfait pour ajouter des membres.`)
+      return
+    }
 
-  async function inviterUn(email) {
-    await supabase.from('team_invitations')
-      .delete()
-      .eq('team_id', teamId)
-      .eq('email', email)
-      .neq('status', 'pending')
-
+    setEnvoi(true)
     const token = crypto.randomUUID()
     const { error } = await supabase.from('team_invitations').insert({
       team_id: teamId,
-      email,
+      email: emailInvit.trim().toLowerCase(),
       role: roleInvit,
       invited_by: userId,
       token,
       status: 'pending',
     })
-    if (error) return false
 
-    const baseUrl = import.meta.env.VITE_APP_URL || 'https://adjuvet.app'
-    const { error: fnError } = await supabase.functions.invoke('send-invitation', {
-      body: { email, nomClinique: equipe?.nom || 'notre équipe', lien: `${baseUrl}/rejoindre?token=${token}`, emailInvite: email },
-    })
-    return !fnError
-  }
+    if (!error) {
+      const lien = `${window.location.origin}/rejoindre?token=${token}`
+      const nomClinique = equipe?.nom || 'notre équipe'
+      const sujet = encodeURIComponent(`Invitation à rejoindre ${nomClinique} sur Adjuvet`)
+      const corps = encodeURIComponent(
+        `Bonjour,\n\nVous avez été invité(e) à rejoindre ${nomClinique} sur l'application Adjuvet.\n\nCliquez sur le lien ci-dessous pour accepter l'invitation :\n${lien}\n\nÀ bientôt!`
+      )
+      window.open(`mailto:${emailInvit.trim()}?subject=${sujet}&body=${corps}`)
 
-  async function inviter() {
-    if (emailsParsed.length === 0 || envoi) return
-    setErreurInvit('')
-
-    if (equipe?.max_membres && emailsParsed.length > sigesRestants) {
-      setErreurInvit(`Seulement ${sigesRestants} siège(s) disponible(s) pour ${emailsParsed.length} invitations.`)
-      return
+      setMsgSucces(`Invitation créée — votre app courriel devrait s'ouvrir.`)
+      setEmailInvit('')
+      setRoleInvit('membre')
+      charger()
+      setTimeout(() => setMsgSucces(''), 6000)
     }
-
-    setEnvoi(true)
-    let envoyes = 0
-    let erreurs = 0
-    setEnvoiProgress({ total: emailsParsed.length, envoyes: 0, erreurs: 0 })
-
-    for (const email of emailsParsed) {
-      const ok = await inviterUn(email)
-      if (ok) envoyes++
-      else erreurs++
-      setEnvoiProgress({ total: emailsParsed.length, envoyes, erreurs })
-    }
-
-    setEmailsInput('')
-    charger()
-    if (erreurs === 0) {
-      setMsgSucces(`${envoyes} invitation${envoyes > 1 ? 's' : ''} envoyée${envoyes > 1 ? 's' : ''} avec succès.`)
-    } else {
-      setErreurInvit(`${envoyes} envoyée${envoyes > 1 ? 's' : ''}, ${erreurs} échouée${erreurs > 1 ? 's' : ''}.`)
-    }
-    setEnvoiProgress(null)
     setEnvoi(false)
-    setTimeout(() => { setMsgSucces(''); setErreurInvit('') }, 6000)
   }
 
   async function annulerInvitation(id) {
-    await supabase.from('team_invitations').delete().eq('id', id)
+    await supabase.from('team_invitations').update({ status: 'expired' }).eq('id', id)
     setInvitations(prev => prev.filter(i => i.id !== id))
   }
 
   async function revoquerMembre(memberId) {
+    await supabase.from('membres_equipe').delete().eq('id', memberId)
     const membre = membres.find(m => m.id === memberId)
-    if (!membre) return
-    await supabase.rpc('revoquer_membre', {
-      membre_user_id: membre.user_id,
-      equipe_id_param: teamId,
-    })
+    if (membre) {
+      await supabase.from('profiles').update({ plan: 'free', equipe_id: null, role: null }).eq('id', membre.user_id)
+    }
     setMembres(prev => prev.filter(m => m.id !== memberId))
     setConfirmRevoquer(null)
   }
 
-  async function sauvegarderNomClinique() {
-    if (!nouveauNomClinique.trim()) return
-    await supabase.from('equipes').update({ nom: nouveauNomClinique.trim() }).eq('id', teamId)
-    setEquipe(prev => ({ ...prev, nom: nouveauNomClinique.trim() }))
-    setEditNomClinique(false)
-  }
-
   async function changerRole(memberId, nouveauRole) {
+    await supabase.from('membres_equipe').update({ role: nouveauRole }).eq('id', memberId)
     const membre = membres.find(m => m.id === memberId)
-    if (!membre) return
-    await supabase.rpc('changer_role_membre', {
-      membre_user_id: membre.user_id,
-      equipe_id_param: teamId,
-      nouveau_role: nouveauRole,
-    })
+    if (membre) {
+      await supabase.from('profiles').update({ role: nouveauRole }).eq('id', membre.user_id)
+    }
     setMembres(prev => prev.map(m => m.id === memberId ? { ...m, role: nouveauRole } : m))
   }
 
@@ -175,29 +131,7 @@ export default function EquipeGestion() {
         {equipe && (
           <div style={{ marginBottom: 24, width: '100%' }}>
             <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Clinique</p>
-            {editNomClinique ? (
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
-                <input
-                  value={nouveauNomClinique}
-                  onChange={e => setNouveauNomClinique(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') sauvegarderNomClinique(); if (e.key === 'Escape') setEditNomClinique(false) }}
-                  autoFocus
-                  style={{
-                    flex: 1, border: '1px solid var(--border)', borderRadius: 8, padding: '6px 10px',
-                    fontSize: 16, fontWeight: 700, background: 'var(--bg-secondary)', color: 'var(--text-primary)', outline: 'none',
-                  }}
-                />
-                <button onClick={sauvegarderNomClinique} style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>Sauvegarder</button>
-                <button onClick={() => setEditNomClinique(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)', fontSize: 18 }}>✕</button>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{equipe.nom}</p>
-                <button onClick={() => { setNouveauNomClinique(equipe.nom); setEditNomClinique(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)', fontSize: 15, padding: 0 }}>
-                  <i className="ti ti-pencil"></i>
-                </button>
-              </div>
-            )}
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>{equipe.nom}</p>
             <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{membres.length} / {equipe.max_membres || '∞'} membres</p>
           </div>
         )}
@@ -214,35 +148,35 @@ export default function EquipeGestion() {
               <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
                 Limite de <strong>{equipe.max_membres} sièges</strong> atteinte.
               </p>
-              <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: '4px 0 0' }}>
-                Mettez à niveau votre forfait pour ajouter des membres.
+              <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: '4px 0 8px' }}>
+                Pour ajouter des membres, augmentez le nombre de sièges dans votre forfait.
               </p>
+              {roleEquipe === 'proprietaire' && (
+                <button
+                  onClick={() => navigate('/profil')}
+                  style={{
+                    background: 'var(--primary)', color: '#fff', border: 'none',
+                    borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <i className="ti ti-arrow-up-circle" style={{ marginRight: 5 }}></i>
+                  Augmenter les sièges
+                </button>
+              )}
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <textarea
-                placeholder={'Un ou plusieurs courriels, séparés par virgule, espace ou retour de ligne :\njean@clinique.com, marie@clinique.com'}
-                value={emailsInput}
-                onChange={e => { setEmailsInput(e.target.value); setErreurInvit('') }}
-                rows={3}
+              <input
+                type="email"
+                placeholder="Adresse courriel"
+                value={emailInvit}
+                onChange={e => { setEmailInvit(e.target.value); setErreurInvit('') }}
                 style={{
                   border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
-                  fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-                  outline: 'none', resize: 'vertical', fontFamily: 'var(--font)',
+                  fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)', outline: 'none',
                 }}
               />
-              {emailsParsed.length > 1 && (
-                <div style={{ padding: '8px 12px', borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                    {emailsParsed.length} courriels détectés
-                  </p>
-                  {emailsParsed.map(e => (
-                    <p key={e} style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '2px 0' }}>
-                      <i className="ti ti-mail" style={{ marginRight: 6, color: 'var(--primary)' }}></i>{e}
-                    </p>
-                  ))}
-                </div>
-              )}
               <select
                 value={roleInvit}
                 onChange={e => setRoleInvit(e.target.value)}
@@ -254,23 +188,17 @@ export default function EquipeGestion() {
                 <option value="membre">Membre</option>
                 <option value="admin">Admin</option>
               </select>
-              {envoiProgress && (
-                <div style={{ padding: '10px 14px', borderRadius: 10, background: 'var(--bg-secondary)', border: '1px solid var(--border)', fontSize: 13, color: 'var(--text-secondary)' }}>
-                  <i className="ti ti-loader-2" style={{ marginRight: 6 }}></i>
-                  Envoi en cours… {envoiProgress.envoyes + envoiProgress.erreurs} / {envoiProgress.total}
-                </div>
-              )}
               <button
                 onClick={inviter}
-                disabled={emailsParsed.length === 0 || envoi}
+                disabled={!emailInvit.trim() || envoi}
                 style={{
                   background: 'var(--primary)', color: '#fff', border: 'none',
                   borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 700,
-                  cursor: emailsParsed.length > 0 ? 'pointer' : 'not-allowed',
-                  opacity: emailsParsed.length > 0 ? 1 : 0.5,
+                  cursor: emailInvit.trim() ? 'pointer' : 'not-allowed',
+                  opacity: emailInvit.trim() ? 1 : 0.5,
                 }}
               >
-                {envoi ? `Envoi en cours…` : emailsParsed.length > 1 ? `Envoyer ${emailsParsed.length} invitations` : "Envoyer l'invitation"}
+                {envoi ? 'Envoi...' : "Envoyer l'invitation"}
               </button>
             </div>
           )}

@@ -35,9 +35,9 @@ Deno.serve(async (req) => {
     )
   }
 
-  if (profil.plan !== 'pro') {
+  if (!['pro', 'equipe'].includes(profil.plan)) {
     return new Response(
-      JSON.stringify({ error: 'L\'upgrade est disponible seulement depuis le forfait Pro.' }),
+      JSON.stringify({ error: 'Un abonnement actif est requis pour modifier le forfait.' }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }

@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { useProfil } from '../context/ProfilContext'
 
 export default function RejoindreEquipe() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { chargerProfil } = useProfil()
   const token = searchParams.get('token')
 
   const [statut, setStatut] = useState('chargement')
@@ -21,20 +19,13 @@ export default function RejoindreEquipe() {
   async function verifierToken() {
     const { data, error } = await supabase
       .from('team_invitations')
-      .select('*')
+      .select('*, equipes(nom)')
       .eq('token', token)
       .eq('status', 'pending')
       .single()
 
     if (error || !data) { setStatut('invalide'); return }
-
-    const { data: equipeData } = await supabase
-      .from('equipes')
-      .select('nom')
-      .eq('id', data.team_id)
-      .single()
-
-    setInvitation({ ...data, equipes: equipeData })
+    setInvitation(data)
     setStatut('valide')
   }
 
@@ -49,6 +40,23 @@ export default function RejoindreEquipe() {
 
     if (user.email !== invitation.email) {
       setStatut('erreur')
+      setLoading(false)
+      return
+    }
+
+    const { data: equipe } = await supabase
+      .from('equipes')
+      .select('max_membres')
+      .eq('id', invitation.team_id)
+      .single()
+
+    const { count: membresCount } = await supabase
+      .from('membres_equipe')
+      .select('*', { count: 'exact', head: true })
+      .eq('equipe_id', invitation.team_id)
+
+    if (equipe?.max_membres && membresCount !== null && membresCount >= equipe.max_membres) {
+      setStatut('plein')
       setLoading(false)
       return
     }
@@ -69,10 +77,9 @@ export default function RejoindreEquipe() {
       .update({ plan: 'equipe', equipe_id: invitation.team_id, role: invitation.role })
       .eq('id', user.id)
 
-    await chargerProfil()
     setStatut('accepte')
     setLoading(false)
-    setTimeout(() => navigate('/accueil'), 2000)
+    setTimeout(() => navigate('/equipe'), 2000)
   }
 
   return (
@@ -115,6 +122,14 @@ export default function RejoindreEquipe() {
             >
               {loading ? 'Connexion...' : "Accepter l'invitation"}
             </button>
+          </>
+        )}
+
+        {statut === 'plein' && (
+          <>
+            <i className="ti ti-users-group" style={{ fontSize: 40, color: 'var(--accent-red)', display: 'block', marginBottom: 16 }}></i>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Équipe complète</p>
+            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Cette équipe a atteint sa limite de membres. Le propriétaire doit ajouter des sièges supplémentaires avant de pouvoir vous inviter.</p>
           </>
         )}
 

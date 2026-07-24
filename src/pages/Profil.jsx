@@ -51,6 +51,7 @@ export default function Profil() {
   // Forfait clinique
   const [interetEnvoye, setInteretEnvoye] = useState(false)
   const [modalUpgrade, setModalUpgrade] = useState(false)
+  const [modalSieges, setModalSieges] = useState(false)
   const [nombreMembres, setNombreMembres] = useState(2)
   const [upgradeLoading, setUpgradeLoading] = useState(false)
 
@@ -73,7 +74,8 @@ export default function Profil() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) break
       const { data } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
-      if (data?.plan && data.plan !== 'free') {
+      const planAtteint = planAttendu === 'equipe' ? data?.plan === 'equipe' : (data?.plan && data.plan !== 'free')
+      if (planAtteint) {
         await chargerProfil()
         if (planAttendu === 'equipe') {
           afficherSucces('Abonnement Équipe activé ! Bienvenue dans le forfait Équipe.')
@@ -95,7 +97,12 @@ export default function Profil() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-    setProfil({ ...data, email: user.email })
+    let maxMembres = null
+    if (data?.equipe_id) {
+      const { data: eq } = await supabase.from('equipes').select('max_membres').eq('id', data.equipe_id).single()
+      maxMembres = eq?.max_membres || null
+    }
+    setProfil({ ...data, email: user.email, max_membres: maxMembres })
     setAvatarUrl(data?.avatar_url || null)
     setLoading(false)
   }
@@ -173,8 +180,8 @@ export default function Profil() {
     navigate('/connexion')
   }
 
-  // ─── UPGRADE PRO → ÉQUIPE ─────────────────────
-  async function upgraderAbonnement() {
+  // ─── UPGRADE PRO → ÉQUIPE ou modifier sièges ──
+  async function upgraderAbonnement(ajusterSieges = false) {
     setUpgradeLoading(true)
     setErreur('')
     try {
@@ -193,7 +200,13 @@ export default function Profil() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Erreur')
       setModalUpgrade(false)
-      await attendrePlanActif('equipe')
+      setModalSieges(false)
+      if (ajusterSieges) {
+        await chargerProfil()
+        afficherSucces(`Forfait mis à jour — ${nombreMembres} sièges actifs.`)
+      } else {
+        await attendrePlanActif('equipe')
+      }
     } catch (err) {
       setErreur(err.message || 'Erreur lors de la mise à niveau.')
     }
@@ -411,13 +424,26 @@ async function ouvrirPortail() {
               <span className="profil-forfait-nom">Équipe</span>
               <span className="profil-forfait-badge" style={{ color: 'var(--primary)', background: 'rgba(37,77,86,0.1)' }}>Actif</span>
             </div>
-            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
+            <p className="profil-forfait-desc" style={{ marginBottom: 10 }}>
               Accès complet pour toute la clinique — fonctionnalités Pro incluses, babillard d'équipe, panneau de tâches et gestion des membres.
             </p>
-            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
-              <i className="ti ti-settings"></i>
-              {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
-            </button>
+            {profil?.max_membres && (
+              <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 14 }}>
+                <i className="ti ti-users" style={{ marginRight: 5 }}></i>
+                {profil.max_membres} siège{profil.max_membres > 1 ? 's' : ''} inclus — {calculerPrixEquipe(profil.max_membres)} $ / année
+              </p>
+            )}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <button className="profil-portal-btn" style={{ flex: 1 }}
+                onClick={() => { setNombreMembres(profil?.max_membres || 2); setModalSieges(true) }}>
+                <i className="ti ti-users-plus"></i>
+                Modifier les sièges
+              </button>
+              <button className="profil-portal-btn" style={{ flex: 1 }} onClick={ouvrirPortail} disabled={checkoutLoading}>
+                <i className="ti ti-settings"></i>
+                {checkoutLoading ? 'Chargement...' : 'Gérer l\'abonnement'}
+              </button>
+            </div>
           </div>
         ) : estPro ? (
           <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
@@ -502,6 +528,36 @@ async function ouvrirPortail() {
               {erreur && <div className="form-erreur" style={{ marginBottom: 12 }}>{erreur}</div>}
               <button className="btn-sauvegarder" onClick={upgraderAbonnement} disabled={upgradeLoading}>
                 {upgradeLoading ? 'Mise à niveau en cours...' : `Confirmer — ${calculerPrixEquipe(nombreMembres)} $ / année`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL MODIFIER SIÈGES ÉQUIPE ─────── */}
+      {modalSieges && (
+        <div className="popup-overlay" onClick={() => setModalSieges(false)}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <span>Modifier les sièges</span>
+              <button className="popup-close" onClick={() => setModalSieges(false)}>✕</button>
+            </div>
+            <div style={{ padding: '12px 0 4px' }}>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
+                La différence de prix sera calculée au prorata — tu ne paies que ce qu'il reste de ta période en cours.
+              </p>
+              <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                <button className="radio-btn" onClick={() => setNombreMembres(n => Math.max(2, n - 1))} style={{ width: 32, height: 32, borderRadius: 8 }}>−</button>
+                <span style={{ fontSize: 18, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>{nombreMembres}</span>
+                <button className="radio-btn" onClick={() => setNombreMembres(n => n + 1)} style={{ width: 32, height: 32, borderRadius: 8 }}>+</button>
+              </div>
+              <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 16 }}>
+                {calculerPrixEquipe(nombreMembres)} $ / année · {TIERS_EQUIPE.find(t => nombreMembres >= t.min && (t.max === null || nombreMembres <= t.max))?.prix} $/siège
+              </p>
+              {erreur && <div className="form-erreur" style={{ marginBottom: 12 }}>{erreur}</div>}
+              <button className="btn-sauvegarder" onClick={() => upgraderAbonnement(true)} disabled={upgradeLoading}>
+                {upgradeLoading ? 'Mise à jour en cours...' : `Confirmer — ${calculerPrixEquipe(nombreMembres)} $ / année`}
               </button>
             </div>
           </div>
