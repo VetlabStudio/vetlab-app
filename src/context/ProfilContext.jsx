@@ -39,11 +39,20 @@ export function ProfilProvider({ children }) {
       return
     }
 
-    const { data: profilData } = await supabase
+    let { data: profilData } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
       .single()
+
+    if (!profilData) {
+      const { data: nouveauProfil } = await supabase
+        .from('profiles')
+        .upsert({ id: user.id, plan: 'free' }, { onConflict: 'id' })
+        .select('*')
+        .single()
+      profilData = nouveauProfil
+    }
 
     setProfil(profilData)
     setChargement(false)

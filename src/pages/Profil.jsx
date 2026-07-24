@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { useProfil } from '../context/ProfilContext'
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
 
@@ -9,7 +8,9 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 const PRICE_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_MONTHLY
 const PRICE_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_ANNUAL
 
-const PRICE_EQUIPE = 'price_1TqBCwGqH2jbhVzIiUeTmlSW'
+const FORFAITS_EQUIPE = [
+  { id: 'price_1TpY3sGqH2jbhVzIxpxGTHPD', sieges: '6 à 10', prix: '449', periode: 'par année' },
+]
 
 export default function Profil() {
   const navigate = useNavigate()
@@ -36,30 +37,49 @@ export default function Profil() {
   const [succes, setSucces] = useState('')
   const [saving, setSaving] = useState(false)
 
-  const { roleEquipe } = useProfil()
-  const peutGererAbonnement = !roleEquipe || roleEquipe === 'proprietaire' || roleEquipe === 'admin'
-
   // Stripe
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [clientSecret, setClientSecret] = useState(null)
-  const [qteEquipe, setQteEquipe] = useState(1)
 
   // Forfait clinique
   const [interetEnvoye, setInteretEnvoye] = useState(false)
 
   useEffect(() => {
-    chargerProfil()
     if (searchParams.get('paiement') === 'succes') {
       const plan = sessionStorage.getItem('checkout_plan') || 'pro'
       sessionStorage.removeItem('checkout_plan')
-      if (plan === 'equipe') {
-        afficherSucces('Abonnement Équipe activé ! Bienvenue dans le forfait Équipe.')
-      } else {
-        afficherSucces('Abonnement Pro activé ! Bienvenue dans la famille Pro.')
-      }
       navigate('/profil', { replace: true })
+      attendrePlanActif(plan)
+    } else {
+      chargerProfil()
     }
   }, [])
+
+  async function attendrePlanActif(planAttendu) {
+    const maxTentatives = 10
+    const delai = 2000
+    for (let i = 0; i < maxTentatives; i++) {
+      await new Promise(r => setTimeout(r, delai))
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) break
+      const { data } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
+      if (data?.plan && data.plan !== 'free') {
+        await chargerProfil()
+        if (planAttendu === 'equipe') {
+          afficherSucces('Abonnement Équipe activé ! Bienvenue dans le forfait Équipe.')
+        } else {
+          afficherSucces('Abonnement Pro activé ! Bienvenue dans la famille Pro.')
+        }
+        return
+      }
+    }
+    await chargerProfil()
+    if (planAttendu === 'equipe') {
+      afficherSucces('Abonnement Équipe activé ! Bienvenue dans le forfait Équipe.')
+    } else {
+      afficherSucces('Abonnement Pro activé ! Bienvenue dans la famille Pro.')
+    }
+  }
 
   async function chargerProfil() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -140,7 +160,7 @@ export default function Profil() {
   // ─── DÉCONNEXION ──────────────────────────────
   async function deconnecter() {
     await supabase.auth.signOut()
-    window.location.href = '/connexion'
+    navigate('/connexion')
   }
 
   // ─── STRIPE PORTAL ────────────────────────────
@@ -169,7 +189,7 @@ async function ouvrirPortail() {
 }
 
   // ─── STRIPE CHECKOUT ──────────────────────────
-  async function ouvrirCheckout(priceId, quantity = 1) {
+  async function ouvrirCheckout(priceId) {
     setCheckoutLoading(true)
     setErreur('')
     try {
@@ -182,7 +202,7 @@ async function ouvrirPortail() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ priceId, quantity }),
+          body: JSON.stringify({ priceId }),
         }
       )
       const data = await response.json()
@@ -295,150 +315,103 @@ async function ouvrirPortail() {
       </div>
 
       {/* FORFAITS */}
-      <div className="forfaits-wrapper">
-
-        <div className="forfaits-en-tete">
-          <div className="forfaits-en-tete-icone"><i className="ti ti-diamond"></i></div>
-          <div>
-            <p className="forfaits-en-tete-titre">Choisissez le forfait qui vous convient</p>
-            <p className="forfaits-en-tete-sous">Des outils essentiels à la gestion complète de votre clinique.</p>
-          </div>
-        </div>
+      <div className="profil-section">
+        <div className="profil-forfaits-titre">Forfaits disponibles</div>
 
         {/* GRATUIT */}
-        <div className="forfait-card">
-          <div className="forfait-card-haut">
-            <div className="forfait-card-icone"><i className="ti ti-gift"></i></div>
-            <div className="forfait-card-info">
-              <span className="forfait-card-nom">Gratuit</span>
-              <span className="forfait-card-desc">Accès aux fiches médicaments et calculateurs de base.</span>
-            </div>
-            <div className="forfait-card-prix-fixe">
-              <span className="forfait-prix-num">0 $</span>
-              <span className="forfait-prix-note">Toujours gratuit</span>
-            </div>
+        <div className="profil-forfait-item">
+          <div className="profil-forfait-header">
+            <span className="profil-forfait-nom">Gratuit</span>
+            <span className="profil-forfait-prix">0 $</span>
           </div>
+          <p className="profil-forfait-desc">Accès aux fiches médicaments et calculateurs de base.</p>
         </div>
 
         {/* PRO */}
-        <div className={`forfait-card forfait-card--pro${estPro && !estEquipe ? ' forfait-card--actif' : ''}`}>
-          <div className="forfait-card-badge-pop">Le plus populaire</div>
-          <div className="forfait-card-haut">
-            <div className="forfait-card-icone forfait-card-icone--pro"><i className="ti ti-star"></i></div>
-            <div className="forfait-card-info">
-              <span className="forfait-card-nom">
-                Pro
-                {estPro && !estEquipe && <span className="forfait-actif-chip">Actif</span>}
-              </span>
-              <span className="forfait-card-desc">
-                {estPro && !estEquipe
-                  ? 'Tu bénéficies de toutes les fonctionnalités Pro.'
-                  : 'Accès complet : personnalisation des médicaments et protocoles de labo, outil d\'examen, monitoring anesthésique, toxicologie et plus.'}
-              </span>
+        {estPro && !estEquipe ? (
+          <div className="profil-forfait-item">
+            <div className="profil-forfait-header">
+              <span className="profil-forfait-nom">Pro</span>
+              <span className="profil-forfait-badge" style={{ color: 'var(--accent-gold)', background: 'rgba(215,163,92,0.15)' }}>Actif</span>
             </div>
+            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>Tu bénéficies de toutes les fonctionnalités Pro.</p>
+            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
+              <i className="ti ti-settings"></i>
+              {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
+            </button>
           </div>
-          {estPro && !estEquipe ? (
-            peutGererAbonnement && (
-              <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
-                <i className="ti ti-settings"></i>
-                {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
+        ) : !estEquipe ? (
+          <div className="profil-forfait-item">
+            <div className="profil-forfait-header">
+              <span className="profil-forfait-nom">Pro</span>
+            </div>
+            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
+              Accès complet : personnalisation des médicaments et protocoles de labo, outil d'examen, monitoring anesthésique, toxicologie et plus.
+            </p>
+            <div className="profil-stripe-choix">
+              <button className="profil-stripe-btn" onClick={() => { sessionStorage.setItem('checkout_plan', 'pro'); ouvrirCheckout(PRICE_MONTHLY) }} disabled={checkoutLoading}>
+                <span className="profil-stripe-prix">7,99 $</span>
+                <span className="profil-stripe-periode">par mois</span>
               </button>
-            )
-          ) : !estEquipe && (
-            <>
-              <div className="forfait-prix-choix">
-                <button className="forfait-prix-btn" onClick={() => { sessionStorage.setItem('checkout_plan', 'pro'); ouvrirCheckout(PRICE_MONTHLY) }} disabled={checkoutLoading}>
-                  <span className="forfait-prix-num">7,99 $</span>
-                  <span className="forfait-prix-periode">par mois</span>
-                </button>
-                <button className="forfait-prix-btn forfait-prix-btn--annuel" onClick={() => { sessionStorage.setItem('checkout_plan', 'pro'); ouvrirCheckout(PRICE_ANNUAL) }} disabled={checkoutLoading}>
-                  <span className="forfait-economie-chip">Économisez 37 %</span>
-                  <span className="forfait-prix-num">59 $</span>
-                  <span className="forfait-prix-periode">par année</span>
-                </button>
-              </div>
-              {checkoutLoading && <p className="forfait-chargement">Chargement du formulaire...</p>}
-            </>
-          )}
-        </div>
+              <button className="profil-stripe-btn profil-stripe-btn--annuel" onClick={() => { sessionStorage.setItem('checkout_plan', 'pro'); ouvrirCheckout(PRICE_ANNUAL) }} disabled={checkoutLoading}>
+                <span className="profil-stripe-economie">Économise 37 %</span>
+                <span className="profil-stripe-prix">59 $</span>
+                <span className="profil-stripe-periode">par année</span>
+              </button>
+            </div>
+            {checkoutLoading && (
+              <p style={{ fontSize: 12, color: 'var(--text-hint)', textAlign: 'center', marginTop: 8 }}>
+                Chargement du formulaire...
+              </p>
+            )}
+          </div>
+        ) : null}
 
         {/* ÉQUIPE */}
-        <div className={`forfait-card${estEquipe ? ' forfait-card--actif' : ''}`}>
-          <div className="forfait-card-haut">
-            <div className="forfait-card-icone forfait-card-icone--equipe"><i className="ti ti-users"></i></div>
-            <div className="forfait-card-info">
-              <span className="forfait-card-nom">
-                Équipe
-                {estEquipe && <span className="forfait-actif-chip forfait-actif-chip--equipe">Actif</span>}
-              </span>
-              <span className="forfait-card-desc">
-                Accès partagé pour toute votre clinique — fonctionnalités Pro incluses pour tous les membres, base de données partagée, babillard et attribution de tâches.
-              </span>
+        {estEquipe ? (
+          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
+            <div className="profil-forfait-header">
+              <span className="profil-forfait-nom">Équipe</span>
+              <span className="profil-forfait-badge" style={{ color: 'var(--primary)', background: 'rgba(37,77,86,0.1)' }}>Actif</span>
             </div>
-          </div>
-
-          {estEquipe ? (
-            peutGererAbonnement && (
-              <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
-                <i className="ti ti-settings"></i>
-                {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
-              </button>
-            )
-          ) : (
-            <>
-              <div className="forfait-equipe-tarifs">
-                <div className="forfait-equipe-tarif-ligne">
-                  <span>Jusqu'à 5 membres</span>
-                  <span className="forfait-equipe-tarif-prix">49 $/membre</span>
-                </div>
-                <div className="forfait-equipe-tarif-ligne">
-                  <span>6 – 10 membres</span>
-                  <span className="forfait-equipe-tarif-prix">44 $/membre</span>
-                </div>
-                <div className="forfait-equipe-tarif-ligne">
-                  <span>11 – 20 membres</span>
-                  <span className="forfait-equipe-tarif-prix">39 $/membre</span>
-                </div>
-              </div>
-              <div className="forfait-qte-wrapper">
-                <span className="forfait-qte-label">Nombre de membres</span>
-                <div className="forfait-qte-stepper">
-                  <button className="forfait-qte-btn" onClick={() => setQteEquipe(q => Math.max(1, q - 1))}>−</button>
-                  <span className="forfait-qte-valeur">{qteEquipe}</span>
-                  <button className="forfait-qte-btn" onClick={() => setQteEquipe(q => Math.min(20, q + 1))}>+</button>
-                </div>
-                <span className="forfait-qte-total">
-                  Total : {qteEquipe * (qteEquipe <= 5 ? 49 : qteEquipe <= 10 ? 44 : 39)} $/an
-                </span>
-              </div>
-              <button
-                className="forfait-prix-btn forfait-equipe-cta"
-                onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(PRICE_EQUIPE, qteEquipe) }}
-                disabled={checkoutLoading}
-              >
-                S'abonner — Forfait Équipe
-              </button>
-              {checkoutLoading && <p className="forfait-chargement">Chargement du formulaire...</p>}
-            </>
-          )}
-
-          {!estEquipe && (
-            <p className="forfait-equipe-contact">
-              Plus de 20 employés ?{' '}
-              <a href="mailto:info@vetlabstudio.ca" className="forfait-sur-mesure-lien">Contactez-nous</a>,
-              on s'occupe de vous personnellement.
+            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
+              Accès complet pour toute la clinique — fonctionnalités Pro incluses, babillard d'équipe, panneau de tâches et gestion des membres.
             </p>
-          )}
-        </div>
-
-        <div className="forfait-securite">
-          <i className="ti ti-shield-check"></i>
-          <div>
-            <span className="forfait-securite-titre">Sécurisé et fiable</span>
-            <span className="forfait-securite-sous">Paiements gérés par la plateforme Stripe.</span>
+            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
+              <i className="ti ti-settings"></i>
+              {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
+            </button>
           </div>
-        </div>
-
+        ) : (
+          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
+            <div className="profil-forfait-header">
+              <span className="profil-forfait-nom">Équipe</span>
+            </div>
+            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
+              Accès partagé pour toute la clinique — fonctionnalités Pro incluses pour tous les membres, babillard d'équipe, tâches partagées et gestion des membres.
+            </p>
+            <div className="profil-stripe-choix">
+              {FORFAITS_EQUIPE.map(f => (
+                <button
+                  key={f.id}
+                  className="profil-stripe-btn"
+                  onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(f.id) }}
+                  disabled={checkoutLoading}
+                  style={{ flex: 1 }}
+                >
+                  <span className="profil-stripe-prix">{f.prix} $</span>
+                  <span className="profil-stripe-periode">{f.periode}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 2 }}>{f.sieges} membres</span>
+                </button>
+              ))}
+            </div>
+            {checkoutLoading && (
+              <p style={{ fontSize: 12, color: 'var(--text-hint)', textAlign: 'center', marginTop: 8 }}>
+                Chargement du formulaire...
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ACTIONS */}
