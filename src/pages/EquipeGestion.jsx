@@ -71,7 +71,6 @@ export default function EquipeGestion() {
       .delete()
       .eq('team_id', teamId)
       .eq('email', email)
-      .neq('status', 'pending')
 
     const token = crypto.randomUUID()
     const { error } = await supabase.from('team_invitations').insert({
@@ -83,7 +82,8 @@ export default function EquipeGestion() {
     const { error: fnError } = await supabase.functions.invoke('send-invitation', {
       body: { email, nomClinique: equipe?.nom || 'notre équipe', lien: `${baseUrl}/rejoindre?token=${token}`, emailInvite: email },
     })
-    return !fnError
+    if (fnError) console.error('send-invitation error:', fnError)
+    return true
   }
 
   async function inviter() {
