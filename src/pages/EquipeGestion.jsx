@@ -12,6 +12,7 @@ export default function EquipeGestion() {
   const [loading, setLoading] = useState(true)
   const [emailInvit, setEmailInvit] = useState('')
   const [roleInvit, setRoleInvit] = useState('membre')
+  const [invitEnCours, setInvitEnCours] = useState([])
   const [envoi, setEnvoi] = useState(false)
   const [msgSucces, setMsgSucces] = useState('')
   const [confirmRevoquer, setConfirmRevoquer] = useState(null)
@@ -56,37 +57,44 @@ export default function EquipeGestion() {
     if (!emailInvit.trim() || envoi) return
     setErreurInvit('')
 
-    if (equipe && membres.length >= equipe.max_membres) {
-      setErreurInvit(`Limite de ${equipe.max_membres} sièges atteinte. Mettez à niveau votre forfait pour ajouter des membres.`)
+    const emails = emailInvit.split(/[,;\s]+/).map(e => e.trim().toLowerCase()).filter(e => e.includes('@'))
+    if (!emails.length) { setErreurInvit('Adresse courriel invalide.'); return }
+
+    const siegesRestants = equipe?.max_membres ? equipe.max_membres - membres.length : Infinity
+    if (emails.length > siegesRestants) {
+      setErreurInvit(`Seulement ${siegesRestants} siège${siegesRestants > 1 ? 's' : ''} disponible${siegesRestants > 1 ? 's' : ''}. Réduisez le nombre d'invitations ou augmentez les sièges.`)
       return
     }
 
     setEnvoi(true)
-    const token = crypto.randomUUID()
-    const { error } = await supabase.from('team_invitations').insert({
-      team_id: teamId,
-      email: emailInvit.trim().toLowerCase(),
-      role: roleInvit,
-      invited_by: userId,
-      token,
-      status: 'pending',
-    })
+    setInvitEnCours(emails)
+    const nomClinique = equipe?.nom || 'notre équipe'
+    const sujet = encodeURIComponent(`Invitation à rejoindre ${nomClinique} sur Adjuvet`)
+    let envoyes = 0
 
-    if (!error) {
-      const lien = `${window.location.origin}/rejoindre?token=${token}`
-      const nomClinique = equipe?.nom || 'notre équipe'
-      const sujet = encodeURIComponent(`Invitation à rejoindre ${nomClinique} sur Adjuvet`)
-      const corps = encodeURIComponent(
-        `Bonjour,\n\nVous avez été invité(e) à rejoindre ${nomClinique} sur l'application Adjuvet.\n\nCliquez sur le lien ci-dessous pour accepter l'invitation :\n${lien}\n\nÀ bientôt!`
-      )
-      window.open(`mailto:${emailInvit.trim()}?subject=${sujet}&body=${corps}`)
+    for (const email of emails) {
+      const token = crypto.randomUUID()
+      const { error } = await supabase.from('team_invitations').insert({
+        team_id: teamId, email, role: roleInvit, invited_by: userId, token, status: 'pending',
+      })
+      if (!error) {
+        const lien = `${window.location.origin}/rejoindre?token=${token}`
+        const corps = encodeURIComponent(
+          `Bonjour,\n\nVous avez été invité(e) à rejoindre ${nomClinique} sur l'application Adjuvet.\n\nCliquez sur le lien ci-dessous pour accepter l'invitation :\n${lien}\n\nÀ bientôt!`
+        )
+        window.open(`mailto:${email}?subject=${sujet}&body=${corps}`)
+        envoyes++
+      }
+    }
 
-      setMsgSucces(`Invitation créée — votre app courriel devrait s'ouvrir.`)
+    if (envoyes > 0) {
+      setMsgSucces(`${envoyes} invitation${envoyes > 1 ? 's' : ''} créée${envoyes > 1 ? 's' : ''} — votre app courriel devrait s'ouvrir.`)
       setEmailInvit('')
       setRoleInvit('membre')
       charger()
       setTimeout(() => setMsgSucces(''), 6000)
     }
+    setInvitEnCours([])
     setEnvoi(false)
   }
 
@@ -226,8 +234,8 @@ export default function EquipeGestion() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <input
-                type="email"
-                placeholder="Adresse courriel"
+                type="text"
+                placeholder="Courriel(s) — séparez par une virgule"
                 value={emailInvit}
                 onChange={e => { setEmailInvit(e.target.value); setErreurInvit('') }}
                 style={{
@@ -256,7 +264,7 @@ export default function EquipeGestion() {
                   opacity: emailInvit.trim() ? 1 : 0.5,
                 }}
               >
-                {envoi ? 'Envoi...' : "Envoyer l'invitation"}
+                {envoi ? `Envoi${invitEnCours.length > 1 ? ` (0/${invitEnCours.length})` : '...'}` : "Envoyer l'invitation"}
               </button>
             </div>
           )}
