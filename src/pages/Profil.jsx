@@ -157,7 +157,7 @@ export default function Profil() {
     const file = e.target.files[0]
     if (!file) return
     const ext = file.name.split('.').pop()
-    const path = `avatars/${profil.id}.${ext}`
+    const path = `${profil.id}.${ext}`
     const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
     if (uploadError) return
     const { data } = supabase.storage.from('avatars').getPublicUrl(path)
