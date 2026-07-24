@@ -131,8 +131,66 @@ export default function EquipeGestion() {
         {equipe && (
           <div style={{ marginBottom: 24, width: '100%' }}>
             <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Clinique</p>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>{equipe.nom}</p>
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{membres.length} / {equipe.max_membres || '∞'} membres</p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>{equipe.nom}</p>
+
+            {/* Compteur de sièges */}
+            {equipe.max_membres && (
+              <div style={{
+                background: membres.length >= equipe.max_membres ? 'rgba(244,67,54,0.07)' : 'var(--bg-secondary)',
+                border: `1px solid ${membres.length >= equipe.max_membres ? 'var(--accent-red)' : 'var(--border)'}`,
+                borderRadius: 12, padding: '14px 16px', marginBottom: 12,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+                    <i className="ti ti-users" style={{ marginRight: 6 }}></i>
+                    Sièges utilisés
+                  </span>
+                  <span style={{
+                    fontSize: 13, fontWeight: 700,
+                    color: membres.length >= equipe.max_membres ? 'var(--accent-red)' : 'var(--primary)',
+                  }}>
+                    {membres.length} / {equipe.max_membres}
+                  </span>
+                </div>
+                <div style={{ background: 'var(--border)', borderRadius: 99, height: 6, overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%', borderRadius: 99,
+                    width: `${Math.min(100, (membres.length / equipe.max_membres) * 100)}%`,
+                    background: membres.length >= equipe.max_membres ? 'var(--accent-red)' : 'var(--primary)',
+                    transition: 'width 0.3s',
+                  }} />
+                </div>
+                {membres.length < equipe.max_membres && (
+                  <p style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 6, margin: '6px 0 0' }}>
+                    {equipe.max_membres - membres.length} siège{equipe.max_membres - membres.length > 1 ? 's' : ''} disponible{equipe.max_membres - membres.length > 1 ? 's' : ''}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Instructions */}
+            {roleEquipe === 'proprietaire' && (
+              <div style={{
+                background: 'var(--bg-secondary)', borderRadius: 12,
+                padding: '12px 14px', fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.7,
+              }}>
+                <p style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4, fontSize: 13 }}>
+                  <i className="ti ti-info-circle" style={{ marginRight: 5 }}></i>Gestion des membres
+                </p>
+                <p style={{ margin: 0 }}>
+                  • <strong>Ajouter un membre</strong> — envoyez une invitation par courriel ci-dessous.<br />
+                  • <strong>Retirer un membre</strong> — cliquez sur <em>Révoquer</em> à côté de son nom.<br />
+                  • <strong>Changer un rôle</strong> — utilisez le menu déroulant à côté du membre.<br />
+                  • <strong>Ajouter des sièges</strong> — rendez-vous dans{' '}
+                  <span
+                    onClick={() => navigate('/profil')}
+                    style={{ color: 'var(--primary)', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+                  >
+                    Mon profil → Modifier les sièges
+                  </span>.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
