@@ -30,6 +30,15 @@ Deno.serve(async (req) => {
 
   let customerId = profil?.stripe_customer_id
 
+  if (customerId) {
+    try {
+      const existing = await stripe.customers.retrieve(customerId)
+      if ((existing as any).deleted) customerId = null
+    } catch {
+      customerId = null
+    }
+  }
+
   if (!customerId) {
     const customer = await stripe.customers.create({
       email: profil?.email || user.email,
