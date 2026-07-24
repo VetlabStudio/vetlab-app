@@ -4,13 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2023-10-16' })
 const WEBHOOK_SECRET = Deno.env.get('STRIPE_WEBHOOK_SECRET')!
 
-// Format dans Supabase env vars: "price_abc:5,price_def:10,price_ghi:20"
-const PRIX_EQUIPE: Record<string, number> = {}
-const envPrix = Deno.env.get('STRIPE_PRIX_EQUIPE') || ''
-envPrix.split(',').filter(Boolean).forEach(p => {
-  const [id, seats] = p.split(':')
-  if (id && seats) PRIX_EQUIPE[id.trim()] = parseInt(seats.trim())
-})
+const PRICE_EQUIPE = Deno.env.get('STRIPE_PRICE_EQUIPE') || ''
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -51,22 +45,22 @@ async function mettreAJourEquipe(userId: string, maxMembres: number) {
   }
 }
 
-async function traiterAbonnement(customerId: string, priceId: string | undefined, actif: boolean) {
+async function traiterAbonnement(customerId: string, priceId: string | undefined, actif: boolean, quantity = 1) {
   if (!actif) {
     await supabase.from('profiles').update({ plan: 'free' }).eq('stripe_customer_id', customerId)
     console.log('Plan résilié:', customerId)
     return
   }
 
-  const maxMembres = priceId ? PRIX_EQUIPE[priceId] : undefined
-  const plan = maxMembres ? 'equipe' : 'pro'
+  const isEquipe = PRICE_EQUIPE && priceId === PRICE_EQUIPE
+  const plan = isEquipe ? 'equipe' : 'pro'
 
   await supabase.from('profiles').update({ plan }).eq('stripe_customer_id', customerId)
-  console.log('Plan mis à jour:', customerId, plan, maxMembres ? `(${maxMembres} sièges)` : '')
+  console.log('Plan mis à jour:', customerId, plan, isEquipe ? `(${quantity} sièges)` : '')
 
-  if (plan === 'equipe' && maxMembres) {
+  if (isEquipe) {
     const userId = await getUserIdFromCustomer(customerId)
-    if (userId) await mettreAJourEquipe(userId, maxMembres)
+    if (userId) await mettreAJourEquipe(userId, quantity)
   }
 }
 
@@ -91,7 +85,8 @@ Deno.serve(async (req) => {
       if (session.mode === 'subscription') {
         const items = await stripe.checkout.sessions.listLineItems(session.id)
         const priceId = items.data[0]?.price?.id
-        await traiterAbonnement(session.customer as string, priceId, true)
+        const quantity = items.data[0]?.quantity || 1
+        await traiterAbonnement(session.customer as string, priceId, true, quantity)
       }
       break
     }
@@ -99,7 +94,8 @@ Deno.serve(async (req) => {
       const sub = event.data.object as Stripe.Subscription
       const actif = ['active', 'trialing'].includes(sub.status)
       const priceId = sub.items.data[0]?.price?.id
-      await traiterAbonnement(sub.customer as string, priceId, actif)
+      const quantity = sub.items.data[0]?.quantity || 1
+      await traiterAbonnement(sub.customer as string, priceId, actif, quantity)
       break
     }
     case 'customer.subscription.deleted': {

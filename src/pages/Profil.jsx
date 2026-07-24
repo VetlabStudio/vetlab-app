@@ -8,9 +8,16 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 const PRICE_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_MONTHLY
 const PRICE_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_ANNUAL
 
-const FORFAITS_EQUIPE = [
-  { id: 'price_1TpY3sGqH2jbhVzIxpxGTHPD', sieges: '6 à 10', prix: '449', periode: 'par année' },
+const PRICE_EQUIPE = 'price_1TqBCwGqH2jbhVzIiUeTmlSW'
+const TIERS_EQUIPE = [
+  { min: 1,  max: 5,    prix: 49 },
+  { min: 6,  max: 10,   prix: 44 },
+  { min: 11, max: null, prix: 39 },
 ]
+function calculerPrixEquipe(n) {
+  const tier = TIERS_EQUIPE.find(t => n >= t.min && (t.max === null || n <= t.max))
+  return tier ? n * tier.prix : n * 39
+}
 
 export default function Profil() {
   const navigate = useNavigate()
@@ -44,7 +51,7 @@ export default function Profil() {
   // Forfait clinique
   const [interetEnvoye, setInteretEnvoye] = useState(false)
   const [modalUpgrade, setModalUpgrade] = useState(false)
-  const [forfaitUpgrade, setForfaitUpgrade] = useState(FORFAITS_EQUIPE[0])
+  const [nombreMembres, setNombreMembres] = useState(2)
   const [upgradeLoading, setUpgradeLoading] = useState(false)
 
   useEffect(() => {
@@ -180,7 +187,7 @@ export default function Profil() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ newPriceId: forfaitUpgrade.id }),
+          body: JSON.stringify({ newPriceId: PRICE_EQUIPE, quantity: nombreMembres }),
         }
       )
       const data = await response.json()
@@ -219,7 +226,7 @@ async function ouvrirPortail() {
 }
 
   // ─── STRIPE CHECKOUT ──────────────────────────
-  async function ouvrirCheckout(priceId) {
+  async function ouvrirCheckout(priceId, quantity = 1) {
     setCheckoutLoading(true)
     setErreur('')
     try {
@@ -232,7 +239,7 @@ async function ouvrirPortail() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ priceId }),
+          body: JSON.stringify({ priceId, quantity }),
         }
       )
       const data = await response.json()
@@ -434,21 +441,26 @@ async function ouvrirPortail() {
             <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
               Accès partagé pour toute la clinique — fonctionnalités Pro incluses pour tous les membres, babillard d'équipe, tâches partagées et gestion des membres.
             </p>
-            <div className="profil-stripe-choix">
-              {FORFAITS_EQUIPE.map(f => (
-                <button
-                  key={f.id}
-                  className="profil-stripe-btn"
-                  onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(f.id) }}
-                  disabled={checkoutLoading}
-                  style={{ flex: 1 }}
-                >
-                  <span className="profil-stripe-prix">{f.prix} $</span>
-                  <span className="profil-stripe-periode">{f.periode}</span>
-                  <span style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 2 }}>{f.sieges} membres</span>
-                </button>
-              ))}
+            <div style={{ marginBottom: 14 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                <button className="radio-btn" onClick={() => setNombreMembres(n => Math.max(2, n - 1))} style={{ width: 32, height: 32, borderRadius: 8 }}>−</button>
+                <span style={{ fontSize: 18, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>{nombreMembres}</span>
+                <button className="radio-btn" onClick={() => setNombreMembres(n => n + 1)} style={{ width: 32, height: 32, borderRadius: 8 }}>+</button>
+              </div>
+              <p style={{ fontSize: 12, color: 'var(--text-hint)' }}>
+                {calculerPrixEquipe(nombreMembres)} $ / année · {TIERS_EQUIPE.find(t => nombreMembres >= t.min && (t.max === null || nombreMembres <= t.max))?.prix} $/siège
+              </p>
             </div>
+            <button
+              className="profil-stripe-btn"
+              onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(PRICE_EQUIPE, nombreMembres) }}
+              disabled={checkoutLoading}
+              style={{ width: '100%' }}
+            >
+              <span className="profil-stripe-prix">{calculerPrixEquipe(nombreMembres)} $</span>
+              <span className="profil-stripe-periode">par année · {nombreMembres} membres</span>
+            </button>
             {checkoutLoading && (
               <p style={{ fontSize: 12, color: 'var(--text-hint)', textAlign: 'center', marginTop: 8 }}>
                 Chargement du formulaire...
@@ -478,33 +490,18 @@ async function ouvrirPortail() {
               <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
                 Ton crédit Pro non utilisé sera automatiquement déduit du montant à payer. Tu ne perds rien.
               </p>
-              {FORFAITS_EQUIPE.length > 1 && (
-                <>
-                  <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
-                  <div className="profil-stripe-choix" style={{ marginBottom: 16 }}>
-                    {FORFAITS_EQUIPE.map(f => (
-                      <button
-                        key={f.id}
-                        className={`profil-stripe-btn${forfaitUpgrade.id === f.id ? ' profil-stripe-btn--selected' : ''}`}
-                        onClick={() => setForfaitUpgrade(f)}
-                        style={{ flex: 1 }}
-                      >
-                        <span className="profil-stripe-prix">{f.prix} $</span>
-                        <span className="profil-stripe-periode">{f.periode}</span>
-                        <span style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 2 }}>{f.sieges} membres</span>
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-              {FORFAITS_EQUIPE.length === 1 && (
-                <div style={{ background: 'var(--surface-2)', borderRadius: 12, padding: '12px 16px', marginBottom: 16 }}>
-                  <p style={{ fontSize: 13, fontWeight: 600 }}>{FORFAITS_EQUIPE[0].sieges} membres · {FORFAITS_EQUIPE[0].prix} $ {FORFAITS_EQUIPE[0].periode}</p>
-                </div>
-              )}
+              <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                <button className="radio-btn" onClick={() => setNombreMembres(n => Math.max(2, n - 1))} style={{ width: 32, height: 32, borderRadius: 8 }}>−</button>
+                <span style={{ fontSize: 18, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>{nombreMembres}</span>
+                <button className="radio-btn" onClick={() => setNombreMembres(n => n + 1)} style={{ width: 32, height: 32, borderRadius: 8 }}>+</button>
+              </div>
+              <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 16 }}>
+                {calculerPrixEquipe(nombreMembres)} $ / année · {TIERS_EQUIPE.find(t => nombreMembres >= t.min && (t.max === null || nombreMembres <= t.max))?.prix} $/siège
+              </p>
               {erreur && <div className="form-erreur" style={{ marginBottom: 12 }}>{erreur}</div>}
               <button className="btn-sauvegarder" onClick={upgraderAbonnement} disabled={upgradeLoading}>
-                {upgradeLoading ? 'Mise à niveau en cours...' : 'Confirmer la mise à niveau'}
+                {upgradeLoading ? 'Mise à niveau en cours...' : `Confirmer — ${calculerPrixEquipe(nombreMembres)} $ / année`}
               </button>
             </div>
           </div>

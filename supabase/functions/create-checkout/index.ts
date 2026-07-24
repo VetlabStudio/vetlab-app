@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
   const { data: { user } } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''))
   if (!user) return new Response('Non autorisé', { status: 401 })
 
-  const { priceId } = await req.json()
+  const { priceId, quantity = 1 } = await req.json()
 
   const { data: profil } = await supabase
     .from('profiles')
@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
   const session = await stripe.checkout.sessions.create({
   customer: customerId,
   mode: 'subscription',
-  line_items: [{ price: priceId, quantity: 1 }],
+  line_items: [{ price: priceId, quantity }],
   allow_promotion_codes: true,
   payment_method_collection: 'if_required', // <-- la ligne a ajouter
   locale: 'fr',

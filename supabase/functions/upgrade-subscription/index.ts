@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
   const { data: { user } } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''))
   if (!user) return new Response('Non autorisé', { status: 401 })
 
-  const { newPriceId } = await req.json()
+  const { newPriceId, quantity = 1 } = await req.json()
 
   const { data: profil } = await supabase
     .from('profiles')
@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
   const currentItem = subscription.items.data[0]
 
   await stripe.subscriptions.update(subscription.id, {
-    items: [{ id: currentItem.id, price: newPriceId }],
+    items: [{ id: currentItem.id, price: newPriceId, quantity }],
     proration_behavior: 'create_prorations',
   })
 
