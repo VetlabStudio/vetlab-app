@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
 
   await stripe.subscriptions.update(subscription.id, {
     items: [{ id: currentItem.id, price: newPriceId, quantity }],
-    proration_behavior: 'create_prorations',
+    proration_behavior: 'always_invoice',
   })
 
   return new Response(
