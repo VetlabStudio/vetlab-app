@@ -13,29 +13,22 @@ export default function LaboProtocoles() {
   const [loading, setLoading] = useState(true)
   const { setTitreCustom } = useContext(TitreContext)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro, estEquipe, roleEquipe, teamId } = useProfil()
-  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
+  const { estPro } = useProfil()
+  console.log('estPro labo:', estPro)
 
   useEffect(() => {
   chargerDonnees()
   return () => setTitreCustom('')
-  }, [categorieId, estEquipe, teamId])
+  }, [categorieId])
 
   async function chargerDonnees() {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
 
-    const protosUserQuery = estEquipe && teamId
-      ? supabase.from('labo_protocoles_user').select('*')
-          .or(`user_id.eq.${user.id},equipe_id.eq.${teamId}`)
-          .eq('categorie_id', categorieId).order('ordre')
-      : supabase.from('labo_protocoles_user').select('*')
-          .eq('user_id', user.id).eq('categorie_id', categorieId).order('ordre')
-
     const [{ data: cat }, { data: protos }, { data: protosUser }] = await Promise.all([
       supabase.from('labo_categories').select('*').eq('id', categorieId).single(),
       supabase.from('labo_protocoles').select('*').eq('categorie_id', categorieId).order('ordre'),
-      protosUserQuery,
+      supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', categorieId).order('ordre'),
     ])
 
     setCategorie(cat)
@@ -69,17 +62,18 @@ export default function LaboProtocoles() {
       </div>
 
       {/* Bouton ajouter */}
-      {peutModifier && (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <button
-            className="labo-btn-ajouter"
-            style={{ width: '100%' }}
-            onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${categorieId}`) : setShowProMsg(true)}
-          >
-            <i className="ti ti-plus"></i> Ajouter un protocole
-          </button>
-        </div>
-      )}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+  <button
+    className="labo-btn-ajouter"
+    style={{ width: '100%' }}
+    onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${categorieId}`) : setShowProMsg(true)}
+  >
+    {!estPro
+      ? <><i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> Ajouter un protocole</>
+      : <><i className="ti ti-plus"></i> Ajouter un protocole</>
+    }
+  </button>
+</div>
       {showProMsg && (
   <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
     <div className="popup-card" onClick={e => e.stopPropagation()}>

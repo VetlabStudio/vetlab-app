@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import BadgePro from '../components/BadgePro'
+import PopupPro from '../components/PopupPro'
 import { useProfil } from '../context/ProfilContext'
 
 function ClocheMiniAccueil() {
@@ -148,7 +149,8 @@ export default function Accueil() {
   const navigate = useNavigate()
   const [prenom, setPrenom] = useState('')
   const [nomClinique, setNomClinique] = useState('')
-  const { estEquipe, teamId } = useProfil()
+  const [showProMsg, setShowProMsg] = useState(false)
+  const { estEquipe, teamId, estPro } = useProfil()
 
   useEffect(() => {
     async function chargerProfil() {
@@ -188,7 +190,7 @@ export default function Accueil() {
       {/* SECTION CALCULATEURS */}
       <section className="accueil-v2-section">
         {/* BOUTON PRÉCONSULTATION */}
-        <button className="accueil-v2-preconsult-btn" onClick={() => navigate('/soins-generaux/examen-physique')}>
+        <button className="accueil-v2-preconsult-btn" onClick={() => estPro ? navigate('/soins-generaux/examen-physique') : setShowProMsg(true)}>
           <i className="ti ti-clipboard-heart"></i>
           <span>Démarrer un examen</span>
           <BadgePro />
@@ -200,7 +202,7 @@ export default function Accueil() {
             <button
               key={c.id}
               className="accueil-v2-calc-tuile"
-              onClick={() => navigate(c.route)}
+              onClick={() => c.pro && !estPro ? setShowProMsg(true) : navigate(c.route)}
               style={{ position: 'relative' }}
             >
               <img src={c.icone} alt={c.label} className="accueil-v2-calc-icone" />
@@ -219,7 +221,7 @@ export default function Accueil() {
             <button
               key={r.id}
               className="accueil-v2-calc-tuile"
-              onClick={() => navigate(r.route)}
+              onClick={() => r.pro && !estPro ? setShowProMsg(true) : navigate(r.route)}
               style={{ position: 'relative' }}
             >
               <img src={r.icone} alt={r.label} className="accueil-v2-calc-icone accueil-v2-calc-icone--ref" />
@@ -231,6 +233,7 @@ export default function Accueil() {
       </section>
 
       <div style={{ height: 32 }} />
+      {showProMsg && <PopupPro onClose={() => setShowProMsg(false)} />}
     </div>
   )
 }

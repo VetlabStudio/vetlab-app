@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BadgePro from '../components/BadgePro'
+import PopupPro from '../components/PopupPro'
+import { useProfil } from '../context/ProfilContext'
 
 const SOINS_GENERAUX = [
   { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg', pro: true },
@@ -10,6 +13,8 @@ const SOINS_GENERAUX = [
 
 export default function SoinsGeneraux() {
   const navigate = useNavigate()
+  const { estPro } = useProfil()
+  const [showProMsg, setShowProMsg] = useState(false)
 
   return (
     <div className="page-calculateurs">
@@ -18,7 +23,7 @@ export default function SoinsGeneraux() {
           <button
             key={s.id}
             className="labo-categorie-btn"
-            onClick={() => navigate(s.route)}
+            onClick={() => s.pro && !estPro ? setShowProMsg(true) : navigate(s.route)}
             style={{ position: 'relative' }}
           >
             <span>{s.label}</span>
@@ -26,6 +31,7 @@ export default function SoinsGeneraux() {
           </button>
         ))}
       </div>
+      {showProMsg && <PopupPro onClose={() => setShowProMsg(false)} />}
     </div>
   )
 }

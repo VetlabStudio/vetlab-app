@@ -1,11 +1,10 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BadgePro from '../components/BadgePro'
+import PopupPro from '../components/PopupPro'
+import { useProfil } from '../context/ProfilContext'
 
 const CHIRURGIE = [
-  { id: 'checklists', label: 'Checklists anesthésiques', route: '/chirurgie/checklists' },
-  { id: 'jeune', label: 'Recommandations de jeûne', route: '/chirurgie/jeune' },
-  { id: 'oxygene', label: 'Débit d\'oxygène', route: '/chirurgie/oxygene' },
-  { id: 'asa', label: 'Classification ASA', route: '/chirurgie/asa' },
   { id: 'instruments', label: 'Instruments de chirurgie', route: '/chirurgie/instruments', pro: true },
   { id: 'tubes', label: 'Tubes endotrachéaux', route: '/chirurgie/tubes', pro: true },
   { id: 'capnographie', label: 'Interprétation de la capnographie', route: '/chirurgie/capnographie', pro: true },
@@ -15,6 +14,8 @@ const CHIRURGIE = [
 
 export default function ChirurgieListe() {
   const navigate = useNavigate()
+  const { estPro } = useProfil()
+  const [showProMsg, setShowProMsg] = useState(false)
 
   return (
     <div className="page-calculateurs">
@@ -23,15 +24,15 @@ export default function ChirurgieListe() {
           <button
             key={c.id}
             className="labo-categorie-btn"
-            onClick={() => navigate(c.route)}
+            onClick={() => c.pro && !estPro ? setShowProMsg(true) : navigate(c.route)}
             style={{ position: 'relative' }}
           >
             <span>{c.label}</span>
-            
             {c.pro && <BadgePro />}
           </button>
         ))}
       </div>
+      {showProMsg && <PopupPro onClose={() => setShowProMsg(false)} />}
     </div>
   )
 }

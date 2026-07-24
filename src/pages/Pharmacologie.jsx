@@ -20,18 +20,13 @@ const DROGUES = [
 
 export default function Pharmacologie() {
   const navigate = useNavigate()
-  const { estPro, estEquipe, roleEquipe } = useProfil()
-  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
+  const { estPro } = useProfil()
   const [showProMsg, setShowProMsg] = useState(false)
 
   return (
     <div className="page-calculateurs">
       <div className="accueil-v2-drogues-grid">
-        {[...DROGUES].sort((a, b) => {
-          if (a.favori) return 1
-          if (b.favori) return -1
-          return a.label.localeCompare(b.label, 'fr')
-        }).map(d => (
+        {DROGUES.map(d => (
           <button
             key={d.id}
             className={`accueil-v2-drogue-item ${d.accent ? 'accent' : ''} ${d.favori ? 'favori' : ''}`}
@@ -48,7 +43,9 @@ export default function Pharmacologie() {
         ))}
       </div>
 
-      {peutModifier && <button className="btn-fab" onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}>+</button>}
+      <button className="btn-fab" onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}>
+        {estPro ? '+' : <i className="ti ti-lock" style={{ fontSize: 20 }}></i>}
+      </button>
 
       {showProMsg && (
         <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
