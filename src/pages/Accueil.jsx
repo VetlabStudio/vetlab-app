@@ -63,14 +63,14 @@ function ClocheMiniAccueil() {
         onClick={() => { setOpen(o => !o); if (!open && count > 0) marquerLues() }}
         style={{
           background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px',
-          color: 'var(--primary)', fontSize: 26, position: 'relative', display: 'flex',
+          color: '#fff', fontSize: 22, position: 'relative', display: 'flex',
         }}
       >
         <i className="ti ti-bell"></i>
         {count > 0 && (
           <span style={{
             position: 'absolute', top: 0, right: 0, background: 'var(--accent-red)',
-            color: 'var(--primary)', borderRadius: '50%', width: 16, height: 16,
+            color: '#fff', borderRadius: '50%', width: 16, height: 16,
             fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             {count > 9 ? '9+' : count}
@@ -122,7 +122,7 @@ function ClocheMiniAccueil() {
 
 const CALCULATEURS = [
   { id: 'fluido',      label: 'Fluido',              icone: '/icone-fluido.svg',      route: '/calculateurs/fluido' },
-  { id: 'dextrose',    label: 'Dextrose',            icone: '/icone-dilution.svg',    route: '/calculateurs/dextrose' },
+  { id: 'cri',         label: 'CRI',                 icone: '/icone-cri.svg',         route: '/calculateurs/cri' },
   { id: 'conversion',  label: 'Conversion',          icone: '/icone-conversion.svg',  route: '/calculateurs/conversion' },
   { id: 'dilution',    label: 'Dilution\nC1V1-C2V2', icone: '/icone-dilution.svg',    route: '/calculateurs/dilution' },
   { id: 'rcr',         label: 'RCR\nUrgence',        icone: '/icone-ecg.svg',         route: '/calculateurs/rcr' },
@@ -142,7 +142,6 @@ const REFERENCES = [
   { id: 'chirurgie', label: 'Chirurgie', icone: '/icone-chirurgie-ref.svg', route: '/chirurgie' },
   { id: 'soins-generaux', label: 'Soins\ngénéraux', icone: '/icone-soins-generaux.svg', route: '/soins-generaux' },
   { id: 'toxicologie', label: 'Toxicologie', icone: '/toxico.svg', route: '/drogues/toxicologie', pro: true },
-  { id: 'nutrition', label: 'Nutrition', icone: '/icone-nutrition.png', route: '/nutrition' },
 ]
 
 export default function Accueil() {
@@ -172,34 +171,32 @@ export default function Accueil() {
 
       {/* HEADER */}
       <div className="accueil-v2-header">
-        <div className="accueil-v2-header-top">
-          <img src="/logo-adjuvet.png" alt="Adjuvet" className="accueil-v2-logo-header" />
-          <ClocheMiniAccueil />
-        </div>
-        <div className="accueil-v2-header-texte">
-          {estEquipe && nomClinique && (
-            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6, marginTop: 0 }}>{nomClinique}</p>
-          )}
-          
-          <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
-          <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
-              {/* BOUTON PRÉCONSULTATION */}
+        <div>
+    <h1 className="accueil-v2-accueil">Accueil</h1>
+    {estEquipe && nomClinique && (
+      <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4, marginTop: 0 }}>{nomClinique}</p>
+    )}
+    <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
+    <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
+  </div>
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+    <ClocheMiniAccueil />
+    <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
+  </div>
+</div>
+
+      {/* SECTION CALCULATEURS */}
+      <section className="accueil-v2-section">
+        {/* BOUTON PRÉCONSULTATION */}
         <button className="accueil-v2-preconsult-btn" onClick={() => navigate('/soins-generaux/examen-physique')}>
           <i className="ti ti-clipboard-heart"></i>
           <span>Démarrer un examen</span>
           <BadgePro />
         </button>
-        </div>
-        
-      </div>
 
-      {/* SECTION CALCULATEURS */}
-      <section className="accueil-v2-section">
-        
         <h2 className="accueil-v2-titre-section">Boîte à outils</h2>
-      
         <div className="accueil-v2-calc-grid">
-          {CALCULATEURS.map(c => (
+        {CALCULATEURS.map(c => (
             <button
               key={c.id}
               className="accueil-v2-calc-tuile"
@@ -212,8 +209,6 @@ export default function Accueil() {
             </button>
           ))}
         </div>
-
-        
       </section>
 
       {/* SECTION RÉFÉRENCES */}

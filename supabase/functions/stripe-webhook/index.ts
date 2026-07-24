@@ -5,6 +5,8 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '202
 const WEBHOOK_SECRET = Deno.env.get('STRIPE_WEBHOOK_SECRET')!
 
 const PRICE_EQUIPE = Deno.env.get('STRIPE_PRICE_EQUIPE') || ''
+const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || ''
+const FROM = 'Adjuvet <noreply@adjuvet.app>'
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -29,7 +31,11 @@ async function mettreAJourEquipe(userId: string, maxMembres: number) {
 
   if (equipe) {
     await supabase.from('equipes').update({ max_membres: maxMembres }).eq('id', equipe.id)
-    await supabase.from('profiles').update({ equipe_id: equipe.id }).eq('id', userId)
+    await supabase.from('profiles').update({ equipe_id: equipe.id, role: 'proprietaire' }).eq('id', userId)
+    await supabase.from('membres_equipe').upsert(
+      { equipe_id: equipe.id, user_id: userId, role: 'proprietaire' },
+      { onConflict: 'equipe_id,user_id' }
+    )
   } else {
     const { data: nouvelleEquipe } = await supabase
       .from('equipes')
@@ -45,11 +51,55 @@ async function mettreAJourEquipe(userId: string, maxMembres: number) {
   }
 }
 
-async function traiterAbonnement(customerId: string, priceId: string | undefined, actif: boolean, quantity = 1) {
+async function envoyerConfirmationAbonnement(customerId: string, plan: string, quantity: number) {
+  if (!RESEND_API_KEY) return
+  const { data: profil } = await supabase
+    .from('profiles')
+    .select('email, nom')
+    .eq('stripe_customer_id', customerId)
+    .single()
+  if (!profil?.email) return
+
+  const nomPlan = plan === 'equipe' ? `Équipe (${quantity} sièges)` : 'Pro'
+  const prenom = profil.nom ? profil.nom.split(' ')[0] : ''
+  const salutation = prenom ? `Bonjour ${prenom},` : 'Bonjour,'
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #f9f9f9;">
+      <div style="background: #ffffff; border-radius: 12px; padding: 32px; border: 1px solid #e5e7eb;">
+        <h2 style="color: #254D56; margin: 0 0 8px;">Abonnement Adjuvet ${nomPlan} activé</h2>
+        <p style="color: #555; font-size: 15px; line-height: 1.6; margin: 0 0 24px;">
+          ${salutation}<br /><br />
+          Votre abonnement <strong>Adjuvet ${nomPlan}</strong> est maintenant actif.
+          Vous avez accès à toutes les fonctionnalités incluses dans votre forfait.
+        </p>
+        <a href="https://adjuvet.app" style="display: inline-block; background: #254D56; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 700; font-size: 15px;">
+          Ouvrir Adjuvet
+        </a>
+        <p style="color: #999; font-size: 12px; margin: 24px 0 0; line-height: 1.5;">
+          Vous pouvez gérer votre abonnement depuis votre profil dans l'application.
+        </p>
+      </div>
+    </div>
+  `
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: FROM,
+      to: [profil.email],
+      subject: `Bienvenue sur Adjuvet ${nomPlan} !`,
+      html,
+    }),
+  }).catch(e => console.error('Resend confirmation error:', e))
+}
+
+async function traiterAbonnement(customerId: string, priceId: string | undefined, actif: boolean, quantity = 1): Promise<string | null> {
   if (!actif) {
     await supabase.from('profiles').update({ plan: 'free' }).eq('stripe_customer_id', customerId)
     console.log('Plan résilié:', customerId)
-    return
+    return null
   }
 
   const isEquipe = PRICE_EQUIPE && priceId === PRICE_EQUIPE
@@ -62,6 +112,8 @@ async function traiterAbonnement(customerId: string, priceId: string | undefined
     const userId = await getUserIdFromCustomer(customerId)
     if (userId) await mettreAJourEquipe(userId, quantity)
   }
+
+  return plan
 }
 
 Deno.serve(async (req) => {
@@ -86,7 +138,8 @@ Deno.serve(async (req) => {
         const items = await stripe.checkout.sessions.listLineItems(session.id)
         const priceId = items.data[0]?.price?.id
         const quantity = items.data[0]?.quantity || 1
-        await traiterAbonnement(session.customer as string, priceId, true, quantity)
+        const plan = await traiterAbonnement(session.customer as string, priceId, true, quantity)
+        if (plan) await envoyerConfirmationAbonnement(session.customer as string, plan, quantity)
       }
       break
     }
