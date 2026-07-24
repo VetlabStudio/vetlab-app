@@ -13,21 +13,16 @@ export default function DroguesCategorie({ categorie }) {
   const [dropdownOuvert, setDropdownOuvert] = useState(false)
   const [sousCategorieFiltree, setSousCategorieFiltree] = useState('Tous')
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro, estEquipe, roleEquipe, teamId } = useProfil()
-  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
+  const { estPro } = useProfil()
 
   useEffect(() => {
     chargerDonnees()
-  }, [categorie, estEquipe, teamId])
+  }, [categorie])
 
   async function chargerDonnees() {
     setLoading(true)
     try {
       const { data: { user } } = await supabase.auth.getUser()
-
-      const customOrFilter = estEquipe && teamId
-        ? `user_id.eq.${user.id},equipe_id.eq.${teamId}`
-        : `user_id.eq.${user.id}`
 
       const [{ data: meds }, { data: medsCustom }, { data: favs }] = await Promise.all([
   supabase
@@ -38,7 +33,7 @@ export default function DroguesCategorie({ categorie }) {
   supabase
     .from('medicaments_custom')
     .select('*')
-    .or(customOrFilter)
+    .eq('user_id', user.id)
     .eq('categorie', categorie)
     .is('medicament_id', null),
  supabase
@@ -53,7 +48,7 @@ export default function DroguesCategorie({ categorie }) {
       const medsCustomBase = await supabase
   .from('medicaments_custom')
   .select('*')
-  .or(customOrFilter)
+  .eq('user_id', user.id)
   .eq('categorie', categorie)
   .not('medicament_id', 'is', null)
 
@@ -228,7 +223,9 @@ const tries = [...medsAvecCustom, ...(medsCustom || []).map(m => ({ ...m, estCus
           )}
         </div>
       )}
-      {peutModifier && <button className="btn-fab" onClick={() => estPro ? navigate(`/drogues/ajouter?categorie=${encodeURIComponent(categorie)}`) : setShowProMsg(true)}>+</button>}
+      <button className="btn-fab" onClick={() => estPro ? navigate(`/drogues/ajouter?categorie=${encodeURIComponent(categorie)}`) : setShowProMsg(true)}>
+        {estPro ? '+' : <i className="ti ti-lock" style={{ fontSize: 20 }}></i>}
+      </button>
 
       {showProMsg && (
         <div className="popup-overlay" onClick={() => setShowProMsg(false)}>

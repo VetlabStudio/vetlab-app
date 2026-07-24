@@ -19,8 +19,7 @@ export default function LaboProtocoleDetail() {
   const [showReorganiser, setShowReorganiser] = useState(false)
   const { setTitreCustom } = useContext(TitreContext)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro, estEquipe, roleEquipe } = useProfil()
-  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
+  const { estPro } = useProfil()
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(false)
 
   useEffect(() => {
@@ -220,17 +219,19 @@ async function supprimerProtocole() {
               Enregistrer
             </button>
           </>
-        ) : peutModifier ? (
+        ) : (
           <button className="labo-btn-secondary" onClick={() => {
-            if (type === 'base' && !estPro) {
-              setShowProMsg(true)
-            } else {
-              setModeEdit(true)
-            }
-          }}>
-            {type === 'base' ? 'Personnaliser ce protocole' : 'Modifier le protocole'}
-          </button>
-        ) : null}
+  if (type === 'base' && !estPro) {
+    setShowProMsg(true)
+  } else {
+    setModeEdit(true)
+  }
+}}>
+  {type === 'base'
+    ? <>{!estPro && <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i>}Personnaliser ce protocole</>
+    : 'Modifier le protocole'}
+</button>
+        )}
       </div>
 
       {/* ─── TITRE ──────────────────────────── */}

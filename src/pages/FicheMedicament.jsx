@@ -98,14 +98,9 @@ const { setTitreCustom } = useContext(TitreContext)
   const [resultat, setResultat] = useState(null)
   const [horsPlage, setHorsPlage] = useState(false)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro, estEquipe, roleEquipe, teamId } = useProfil()
-  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
+  const { estPro } = useProfil()
 const estProRef = useRef(estPro)
 estProRef.current = estPro
-const estEquipeRef = useRef(estEquipe)
-estEquipeRef.current = estEquipe
-const teamIdRef = useRef(teamId)
-teamIdRef.current = teamId
 
 useEffect(() => {
   chargerDonnees()
@@ -175,15 +170,10 @@ useEffect(() => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
-      const isEquipe = estEquipeRef.current
-      const equipeId = teamIdRef.current
-
       const [{ data: medBase }, { data: medCustomParId }, { data: medCustomDirect }, { data: fav }, { data: profil }] = await Promise.all([
   supabase.from('medicaments').select('*').eq('id', id).maybeSingle(),
-  isEquipe && equipeId
-    ? supabase.from('medicaments_custom').select('*').eq('equipe_id', equipeId).eq('medicament_id', id).maybeSingle()
-    : supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
-  supabase.from('medicaments_custom').select('*').eq('id', id).maybeSingle(),
+  supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
+  supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('id', id).maybeSingle(),
   supabase.from('favoris').select('id').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
   supabase.from('profiles').select('role').eq('id', user.id).single(),
 ])
@@ -255,9 +245,9 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
       }).join(', ')
     : ''}
 </span></div>
-        {peutModifier && <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => estPro ? navigate(`/drogues/fiche/${id}/personnaliser`) : setShowProMsg(true)}>
-          <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Modifier
-        </button>}
+        <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => estPro ? navigate(`/drogues/fiche/${id}/personnaliser`) : setShowProMsg(true)}>
+  {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-edit" style={{ marginRight: 4 }}></i>}Modifier
+</button>
       </div>
 
       <div className="fiche-scroll">
