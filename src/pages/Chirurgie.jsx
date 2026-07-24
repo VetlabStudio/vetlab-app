@@ -4,17 +4,14 @@ import { supabase } from '../lib/supabase'
 import BadgePro from '../components/BadgePro'
 import { useProfil } from '../context/ProfilContext'
 
-const CATEGORIE_ID = 'e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5'
+const CATEGORIE_ID = '72ffd9e2-c495-44d7-b6ea-97669eb2f69b'
 
 const REFERENCES = [
-  { id: 'prelevement', label: 'Guide de prélèvement', icone: 'ti-test-pipe', route: '/labo/microbiologie/prelevement', pro: true },
-  { id: 'cultures', label: 'Interprétation des cultures', icone: 'ti-flask', route: '/labo/microbiologie/cultures', pro: true },
-  { id: 'antibiogramme', label: 'Antibiogramme', icone: 'ti-circle-check', route: '/labo/microbiologie/antibiogramme', pro: true },
-  { id: 'bacteries', label: 'Bactéries courantes', icone: 'ti-bug', route: '/labo/microbiologie/bacteries', pro: true },
-  { id: 'levures', label: 'Caractéristiques des levures', icone: 'ti-circle-dotted', route: '/labo/microbiologie/levures', pro: true },
+  { id: 'instruments', label: 'Catalogue d\'instruments', icone: 'ti-scalpel', route: '/chirurgie/instruments', pro: true },
+  { id: 'post-op', label: 'Soins post-opératoires', icone: 'ti-heart-rate-monitor', route: '/chirurgie/post-op', pro: true },
 ]
 
-export default function LaMicrobiologie() {
+export default function Chirurgie() {
   const navigate = useNavigate()
   const [protocoles, setProtocoles] = useState([])
   const [loading, setLoading] = useState(true)
@@ -28,30 +25,42 @@ export default function LaMicrobiologie() {
   async function chargerProtocoles() {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
+
     const [{ data: protos }, { data: protosUser }] = await Promise.all([
       supabase.from('labo_protocoles').select('*').eq('categorie_id', CATEGORIE_ID).order('ordre'),
       supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', CATEGORIE_ID).order('ordre'),
     ])
+
     const protosBaseIds = (protosUser || []).map(p => p.protocole_base_id).filter(Boolean)
-setProtocoles([
-  ...(protos || []).filter(p => !protosBaseIds.includes(p.id)).map(p => ({ ...p, type: 'base' })),
-  ...(protosUser || []).map(p => ({ ...p, type: 'user' })),
-])
+    setProtocoles([
+      ...(protos || []).filter(p => !protosBaseIds.includes(p.id)).map(p => ({ ...p, type: 'base' })),
+      ...(protosUser || []).map(p => ({ ...p, type: 'user' })),
+    ])
     setLoading(false)
   }
 
   return (
     <div className="drogues-page">
 
-      <div className="labo-section-titre">Procédures d'analyse</div>
+      {/* ─── PROTOCOLES ─────────────────────── */}
+      <div className="labo-section-titre">Procédures chirurgicales</div>
+
       <div className="labo-protocoles-grid">
-        {loading ? <div className="admin-loading">Chargement...</div>
-          : protocoles.length === 0 ? <p className="admin-vide">Aucun protocole dans cette catégorie.</p>
-          : protocoles.map(p => (
-            <button key={p.id} className="labo-protocole-btn" onClick={() => navigate(`/labo/protocole/${p.id}?type=${p.type}`)}>
+        {loading ? (
+          <div className="admin-loading">Chargement...</div>
+        ) : protocoles.length === 0 ? (
+          <p className="admin-vide">Aucun protocole dans cette catégorie.</p>
+        ) : (
+          protocoles.map(p => (
+            <button
+              key={p.id}
+              className="labo-protocole-btn"
+              onClick={() => navigate(`/labo/protocole/${p.id}?type=${p.type}`)}
+            >
               {p.titre}
             </button>
-          ))}
+          ))
+        )}
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -60,7 +69,9 @@ setProtocoles([
         </button>
       </div>
 
-      <div className="labo-section-titre" style={{ marginTop: 8 }}>Références & Interprétation</div>
+      {/* ─── RÉFÉRENCES ─────────────────────── */}
+      <div className="labo-section-titre" style={{ marginTop: 8 }}>Références</div>
+
       <div className="labo-protocoles-grid">
         {REFERENCES.map(r => (
           <button
@@ -69,13 +80,14 @@ setProtocoles([
             onClick={() => navigate(r.route)}
             style={{ position: 'relative' }}
           >
-            {r.pro && <BadgePro />}
             <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
             {r.label}
+            {r.pro && <BadgePro />}
           </button>
         ))}
       </div>
 
+      {/* ─── MODAL PRO ──────────────────────── */}
       {showProMsg && (
         <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
@@ -92,10 +104,13 @@ setProtocoles([
                 Passe au forfait Pro dans ton profil pour accéder à cette fonctionnalité.
               </p>
             </div>
-            <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>Compris</button>
+            <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
+              Compris
+            </button>
           </div>
         </div>
       )}
+
     </div>
   )
 }

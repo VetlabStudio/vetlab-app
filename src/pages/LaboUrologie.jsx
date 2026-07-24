@@ -16,24 +16,19 @@ export default function LaboUrologie() {
   const [protocoles, setProtocoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro, estEquipe, roleEquipe, teamId } = useProfil()
-  const peutModifier = !estEquipe || roleEquipe === 'admin' || roleEquipe === 'proprietaire'
+  const { estPro } = useProfil()
 
   useEffect(() => {
     chargerProtocoles()
-  }, [estEquipe, teamId])
+  }, [])
 
   async function chargerProtocoles() {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
 
-    const protosUserQuery = estEquipe && teamId
-      ? supabase.from('labo_protocoles_user').select('*').or(`user_id.eq.${user.id},equipe_id.eq.${teamId}`).eq('categorie_id', CATEGORIE_ID).order('ordre')
-      : supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', CATEGORIE_ID).order('ordre')
-
     const [{ data: protos }, { data: protosUser }] = await Promise.all([
       supabase.from('labo_protocoles').select('*').eq('categorie_id', CATEGORIE_ID).order('ordre'),
-      protosUserQuery,
+      supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', CATEGORIE_ID).order('ordre'),
     ])
 
     const protosBaseIds = (protosUser || []).map(p => p.protocole_base_id).filter(Boolean)
@@ -68,13 +63,11 @@ setProtocoles([
         )}
       </div>
 
-      {peutModifier && (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <button className="labo-btn-ajouter" style={{ width: '80%' }} onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
-            <i className="ti ti-plus"></i> Ajouter un protocole
-          </button>
-        </div>
-      )}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <button className="labo-btn-ajouter" style={{ width: '80%' }}onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
+          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} Ajouter un protocole
+        </button>
+      </div>
 
       {/* ─── RÉFÉRENCES ─────────────────────── */}
       <div className="labo-section-titre" style={{ marginTop: 8 }}>Références & Interprétation</div>
