@@ -35,7 +35,10 @@ export default function Menu() {
     <div className="menu-page">
       <div className="menu-page-profil-banner">
         <div className="menu-page-avatar">
-          <i className="ti ti-user" style={{ fontSize: 28, color: 'var(--primary)' }}></i>
+          {profil?.avatar_url
+            ? <img src={profil.avatar_url} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            : <i className="ti ti-user" style={{ fontSize: 28, color: 'var(--primary)' }}></i>
+          }
         </div>
         <div>
           <p className="menu-page-profil-nom">{profil?.nom || profil?.email || 'Mon compte'}</p>

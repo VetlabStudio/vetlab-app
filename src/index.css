@@ -430,7 +430,6 @@ input  { font-family: var(--font); }
   align-items: center;
   gap: 14px;
   background: var(--bg-card);
-  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
 }
@@ -482,17 +481,15 @@ input  { font-family: var(--font); }
 }
 
 .menu-page-section-titre {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-hint);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin: 0 0 2px 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.8px;
+    margin: 0 0 2px 4px;
 }
 
 .menu-page-section-liste {
   background: var(--bg-card);
-  border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
 }
@@ -5347,17 +5344,16 @@ input[type="number"] {
 }
 
 .postop-num {
-  min-width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: white;
-  flex-shrink: 0;
-  margin-top: 1px;
+    min-width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    flex-shrink: 0;
+    margin-top: 1px;
 }
 
 .postop-texte {

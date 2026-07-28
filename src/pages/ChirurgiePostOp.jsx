@@ -104,7 +104,7 @@ export default function ChirurgiePostOp() {
           <ol className="postop-liste">
             {section.items.map((item, i) => (
               <li key={i} className="postop-liste-item">
-                <span className="postop-num" style={{ background: section.couleur }}>{i + 1}</span>
+                <span className="postop-num">{i + 1}</span>
                 <span className="postop-texte">{item}</span>
               </li>
             ))}
