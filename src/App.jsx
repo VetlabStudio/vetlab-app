@@ -100,6 +100,7 @@ const ChirurgieECGElectrodes = lazy(() => import('./pages/ChirurgieECGElectrodes
 const ChirurgieECGAnomalies = lazy(() => import('./pages/ChirurgieECGAnomalies'))
 const SoinsGenerauxExamenPhysique = lazy(() => import('./pages/SoinsGenerauxExamenPhysique'))
 const Menu = lazy(() => import('./pages/Menu'))
+const Notifications = lazy(() => import('./pages/Notifications'))
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -362,6 +363,7 @@ export default function App() {
 
         {/* MENU */}
         <Route path="/menu" element={<RouteProtegee session={session}><Menu /></RouteProtegee>} />
+        <Route path="/notifications" element={<RouteProtegee session={session}><Notifications /></RouteProtegee>} />
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />

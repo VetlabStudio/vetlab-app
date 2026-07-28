@@ -1,4 +1,13 @@
+import { useNavigate } from 'react-router-dom'
+
 export default function PopupPro({ onClose }) {
+  const navigate = useNavigate()
+
+  function allerAuProfil() {
+    onClose()
+    navigate('/profil')
+  }
+
   return (
     <div className="popup-overlay" onClick={onClose}>
       <div className="popup-card" onClick={e => e.stopPropagation()}>
@@ -11,12 +20,9 @@ export default function PopupPro({ onClose }) {
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 4 }}>
             Cette fonctionnalité est réservée au forfait <strong>Pro</strong>.
           </p>
-          <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-            Passe au forfait Pro dans ton profil pour y accéder.
-          </p>
         </div>
-        <button className="labo-btn-primary" style={{ width: '100%' }} onClick={onClose}>
-          Compris
+        <button className="labo-btn-primary" style={{ width: '100%' }} onClick={allerAuProfil}>
+          Abonne-toi au forfait Pro maintenant !
         </button>
       </div>
     </div>

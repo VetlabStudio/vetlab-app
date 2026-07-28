@@ -7,16 +7,8 @@ import { useProfil } from '../context/ProfilContext'
 
 function ClocheMiniAccueil() {
   const [count, setCount] = useState(0)
-  const [open, setOpen] = useState(false)
-  const [notifs, setNotifs] = useState([])
   const { estEquipe } = useProfil()
   const navigate = useNavigate()
-
-  function naviguerNotif(notif) {
-    setOpen(false)
-    if (notif.reference_type === 'babillard') navigate('/equipe?tab=babillard')
-    else if (notif.reference_type === 'tache') navigate('/equipe?tab=taches')
-  }
 
   useEffect(() => {
     if (!estEquipe) return
@@ -41,83 +33,33 @@ function ClocheMiniAccueil() {
     const { data: { user } } = await supabase.auth.getUser()
     const { data } = await supabase
       .from('notifications')
-      .select('*')
+      .select('id, lu')
       .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(20)
-    setNotifs(data || [])
-    setCount((data || []).filter(n => !n.lu).length)
-  }
-
-  async function marquerLues() {
-    const { data: { user } } = await supabase.auth.getUser()
-    await supabase.from('notifications').update({ lu: true }).eq('user_id', user.id).eq('lu', false)
-    setCount(0)
-    setNotifs(prev => prev.map(n => ({ ...n, lu: true })))
+      .eq('lu', false)
+    setCount((data || []).length)
   }
 
   if (!estEquipe) return null
 
   return (
-    <div style={{ position: 'relative', alignSelf: 'flex-start' }}>
-      <button
-        onClick={() => { setOpen(o => !o); if (!open && count > 0) marquerLues() }}
-        style={{
-          background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px',
-          color: '#fff', fontSize: 22, position: 'relative', display: 'flex',
-        }}
-      >
-        <i className="ti ti-bell"></i>
-        {count > 0 && (
-          <span style={{
-            position: 'absolute', top: 0, right: 0, background: 'var(--accent-red)',
-            color: '#fff', borderRadius: '50%', width: 16, height: 16,
-            fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            {count > 9 ? '9+' : count}
-          </span>
-        )}
-      </button>
-
-      {open && (
-        <>
-          <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setOpen(false)} />
-          <div style={{
-            position: 'absolute', top: 36, right: 0, zIndex: 100, width: 280,
-            background: 'var(--bg-card)', border: '1px solid var(--border)',
-            borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
-            overflow: 'hidden',
-          }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Notifications</p>
-            </div>
-            {notifs.length === 0 ? (
-              <div style={{ padding: '24px 16px', textAlign: 'center' }}>
-                <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>Aucune notification</p>
-              </div>
-            ) : (
-              <div style={{ maxHeight: 320, overflow: 'auto' }}>
-                {notifs.map(n => (
-                  <div key={n.id}
-                    onClick={() => naviguerNotif(n)}
-                    style={{
-                      padding: '12px 16px', borderBottom: '1px solid var(--border)',
-                      background: n.lu ? 'transparent' : 'var(--bg-secondary)',
-                      cursor: n.reference_type ? 'pointer' : 'default',
-                    }}
-                  >
-                    <p style={{ fontSize: 13, color: 'var(--text-primary)', margin: 0, lineHeight: 1.4 }}>{n.message}</p>
-                    <p style={{ fontSize: 11, color: 'var(--text-hint)', margin: '4px 0 0' }}>
-                      {new Date(n.created_at).toLocaleString('fr-CA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </>
+    <button
+      onClick={() => navigate('/notifications')}
+      style={{
+        background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px',
+        color: '#fff', fontSize: 22, position: 'relative', display: 'flex',
+      }}
+    >
+      <i className="ti ti-bell"></i>
+      {count > 0 && (
+        <span style={{
+          position: 'absolute', top: 0, right: 0, background: 'var(--accent-red)',
+          color: '#fff', borderRadius: '50%', width: 16, height: 16,
+          fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {count > 9 ? '9+' : count}
+        </span>
       )}
-    </div>
+    </button>
   )
 }
 

@@ -29,6 +29,7 @@ const titres = {
   '/drogues/respiratoires': 'Respiratoires',
   '/drogues/urgence': 'Urgence',
   '/admin/medicaments': 'Admin — Médicaments',
+  '/notifications': 'Notifications',
   '/profil': 'Profil',
   '/sources-references': 'Sources et références',
   '/disclaimer': 'Avertissement',
