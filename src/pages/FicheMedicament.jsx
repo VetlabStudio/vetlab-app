@@ -228,8 +228,7 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
         >
           {estFavori ? '★' : '☆'}
         </button>
-        <h1 className="fiche-nom">{medicament.nom}</h1>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
            <IconesEspeces especes={medicament.especes} taille={40} />
      <span className="fiche-espece-label">
   {medicament.especes?.length > 0

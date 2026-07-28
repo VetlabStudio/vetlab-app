@@ -1,7 +1,6 @@
-import { useState, useContext } from 'react'
+import { useContext } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import MenuOverlay from './MenuOverlay'
-import { NavGuardContext } from '../App'
+import { NavGuardContext, NavDirectionContext } from '../App'
 import { useProfil } from '../context/ProfilContext'
 
 const ONGLETS_BASE = [
@@ -21,13 +20,14 @@ const ONGLETS_EQUIPE = [
 export default function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [menuOuvert, setMenuOuvert] = useState(false)
   const { demanderConfirmation } = useContext(NavGuardContext)
+  const { skipNextRef } = useContext(NavDirectionContext)
   const { estEquipe } = useProfil()
 
   const ONGLETS = estEquipe ? ONGLETS_EQUIPE : ONGLETS_BASE
 
   function allerVers(action) {
+    skipNextRef.current = true
     demanderConfirmation(action)
   }
 
@@ -41,27 +41,24 @@ export default function BottomNav() {
   }
 
   return (
-    <>
-      <nav className="bottom-nav-v2">
-        {ONGLETS.map(o => (
-          <button
-            key={o.id}
-            className={`bottom-nav-v2-btn ${estActif(o.route) ? 'active' : ''}`}
-            onClick={() => allerVers(() => { navigate('/accueil', { replace: true }); navigate(o.route) })}
-          >
-            <i className={`ti ${o.icone}`}></i>
-            <span>{o.label}</span>
-          </button>
-        ))}
+    <nav className="bottom-nav-v2">
+      {ONGLETS.map(o => (
         <button
-          className={`bottom-nav-v2-btn ${menuOuvert ? 'active' : ''}`}
-          onClick={() => allerVers(() => setMenuOuvert(true))}
+          key={o.id}
+          className={`bottom-nav-v2-btn ${estActif(o.route) ? 'active' : ''}`}
+          onClick={() => allerVers(() => { navigate('/accueil', { replace: true }); navigate(o.route) })}
         >
-          <i className="ti ti-menu-2"></i>
-          <span>Menu</span>
+          <i className={`ti ${o.icone}`}></i>
+          <span>{o.label}</span>
         </button>
-      </nav>
-      {menuOuvert && <MenuOverlay onClose={() => setMenuOuvert(false)} />}
-    </>
+      ))}
+      <button
+        className={`bottom-nav-v2-btn ${location.pathname === '/menu' ? 'active' : ''}`}
+        onClick={() => allerVers(() => navigate('/menu'))}
+      >
+        <i className="ti ti-menu-2"></i>
+        <span>Plus</span>
+      </button>
+    </nav>
   )
 }

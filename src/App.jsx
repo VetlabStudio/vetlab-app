@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { useEffect, useState, createContext, lazy, Suspense } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from 'react-router-dom'
+import { useEffect, useState, useRef, useLayoutEffect, createContext, useContext, lazy, Suspense } from 'react'
 import { supabase } from './lib/supabase'
 import { ProfilProvider } from './context/ProfilContext'
 
@@ -31,7 +31,6 @@ const AdminLaboProtocoles = lazy(() => import('./pages/AdminLaboProtocoles'))
 const FicheMedicament = lazy(() => import('./pages/FicheMedicament'))
 const Fluidotherapie = lazy(() => import('./pages/Fluidotherapie'))
 const CRI = lazy(() => import('./pages/CRI'))
-const Dextrose = lazy(() => import('./pages/Dextrose'))
 const Conversion = lazy(() => import('./pages/Conversion'))
 const BesoinEnergetique = lazy(() => import('./pages/BesoinEnergetique'))
 const Dilution = lazy(() => import('./pages/Dilution'))
@@ -80,6 +79,7 @@ const AjouterMedicament = lazy(() => import('./pages/AjouterMedicament'))
 const LaMicrobiologieLevures = lazy(() => import('./pages/LaMicrobiologieLevures'))
 const LaRadiologie = lazy(() => import('./pages/LaRadiologie'))
 const LaRadiologieBases = lazy(() => import('./pages/LaRadiologieBases'))
+const LaRadiologieDepannage = lazy(() => import('./pages/LaRadiologieDepannage'))
 const LaRadiologieCharte = lazy(() => import('./pages/LaRadiologieCharte'))
 const LaRadiologieCharteForm = lazy(() => import('./pages/LaRadiologieCharteForm'))
 const Toxicologie = lazy(() => import('./pages/Toxicologie'))
@@ -88,35 +88,18 @@ const NoteDetail = lazy(() => import('./pages/NoteDetail'))
 const Equipe = lazy(() => import('./pages/Equipe'))
 const EquipeGestion = lazy(() => import('./pages/EquipeGestion'))
 const RejoindreEquipe = lazy(() => import('./pages/RejoindreEquipe'))
-const ChirurgieChecklists = lazy(() => import('./pages/ChirurgieChecklists'))
-const ChirurgieJeune = lazy(() => import('./pages/ChirurgieJeune'))
-const ChirurgieOxygene = lazy(() => import('./pages/ChirurgieOxygene'))
+const Chirurgie = lazy(() => import('./pages/Chirurgie'))
 const ChirurgieInstruments = lazy(() => import('./pages/ChirurgieInstruments'))
 const ChirurgieTubes = lazy(() => import('./pages/ChirurgieTubes'))
 const ChirurgieMonitoring = lazy(() => import('./pages/ChirurgieMonitoring'))
 const ChirurgieCapnographie = lazy(() => import('./pages/ChirurgieCapnographie'))
 const ChirurgiePostOp = lazy(() => import('./pages/ChirurgiePostOp'))
-const ChirurgieASA = lazy(() => import('./pages/ChirurgieASA'))
 const ChirurgieDouleur = lazy(() => import('./pages/ChirurgieDouleur'))
 const ChirurgieECG = lazy(() => import('./pages/ChirurgieECG'))
 const ChirurgieECGElectrodes = lazy(() => import('./pages/ChirurgieECGElectrodes'))
 const ChirurgieECGAnomalies = lazy(() => import('./pages/ChirurgieECGAnomalies'))
 const SoinsGenerauxExamenPhysique = lazy(() => import('./pages/SoinsGenerauxExamenPhysique'))
-const NutritionListe = lazy(() => import('./pages/NutritionListe'))
-const NutritionGestationLactation = lazy(() => import('./pages/NutritionGestationLactation'))
-const NutritionCroissance = lazy(() => import('./pages/NutritionCroissance'))
-const NutritionGeriatrique = lazy(() => import('./pages/NutritionGeriatrique'))
-const NutritionGastroIntestinal = lazy(() => import('./pages/NutritionGastroIntestinal'))
-const NutritionPeau = lazy(() => import('./pages/NutritionPeau'))
-const NutritionDiabete = lazy(() => import('./pages/NutritionDiabete'))
-const NutritionHyperthyroidisme = lazy(() => import('./pages/NutritionHyperthyroidisme'))
-const NutritionCancer = lazy(() => import('./pages/NutritionCancer'))
-const NutritionCardiaque = lazy(() => import('./pages/NutritionCardiaque'))
-const NutritionPertePoids = lazy(() => import('./pages/NutritionPertePoids'))
-const NutritionDentaire = lazy(() => import('./pages/NutritionDentaire'))
-const NutritionRenale = lazy(() => import('./pages/NutritionRenale'))
-const NutritionUrinaire = lazy(() => import('./pages/NutritionUrinaire'))
-const NutritionNeonatologie = lazy(() => import('./pages/NutritionNeonatologie'))
+const Menu = lazy(() => import('./pages/Menu'))
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -125,6 +108,7 @@ import ProGate from './components/ProGate'
 
 export const TitreContext = createContext({ titreCustom: '', setTitreCustom: () => {} })
 export const NavGuardContext = createContext({ navGuardActif: false, setNavGuardActif: () => {}, navGuardMessage: '', setNavGuardMessage: () => {}, demanderConfirmation: (action) => action() })
+export const NavDirectionContext = createContext({ skipNextRef: { current: false } })
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -136,11 +120,30 @@ function ScrollToTop() {
 
 function LayoutPrincipal({ children }) {
   const location = useLocation()
+  const navType = useNavigationType()
   const estAccueil = location.pathname === '/accueil'
   const [titreCustom, setTitreCustom] = useState('')
   const [navGuardActif, setNavGuardActif] = useState(false)
   const [actionEnAttente, setActionEnAttente] = useState(null)
   const [navGuardMessage, setNavGuardMessage] = useState('Voulez-vous vraiment quitter ? Toutes les informations non enregistrées seront perdues.')
+
+  const skipNextRef = useRef(false)
+  const [transition, setTransition] = useState(null)
+  const prevLocationKeyRef = useRef(location.key)
+  const prevChildrenRef = useRef(children)
+
+  useLayoutEffect(() => {
+    if (location.key !== prevLocationKeyRef.current) {
+      if (!skipNextRef.current) {
+        const dir = navType === 'POP' ? 'back' : 'forward'
+        setTransition({ prevChildren: prevChildrenRef.current, direction: dir })
+      } else {
+        skipNextRef.current = false
+      }
+      prevLocationKeyRef.current = location.key
+    }
+    prevChildrenRef.current = children
+  })
 
   function demanderConfirmation(action) {
     if (navGuardActif) {
@@ -153,12 +156,32 @@ function LayoutPrincipal({ children }) {
   return (
     <TitreContext.Provider value={{ titreCustom, setTitreCustom }}>
       <NavGuardContext.Provider value={{ navGuardActif, setNavGuardActif, navGuardMessage, setNavGuardMessage, demanderConfirmation }}>
+        <NavDirectionContext.Provider value={{ skipNextRef }}>
         <div className={`app-layout ${estAccueil ? 'app-layout-accueil' : ''}`}>
           <Header />
-          <main className="contenu-principal">
-            <Suspense fallback={<div className="admin-loading">Chargement...</div>}>
-              {children}
-            </Suspense>
+          <main className="contenu-principal" style={{ position: 'relative', overflow: 'hidden' }}>
+            {transition ? (
+              <>
+                <div
+                  className={`page-exit-${transition.direction}`}
+                  style={{ position: 'absolute', inset: 0 }}
+                  aria-hidden="true"
+                >
+                  <Suspense fallback={null}>{transition.prevChildren}</Suspense>
+                </div>
+                <div
+                  className={`page-enter-${transition.direction}`}
+                  style={{ position: 'absolute', inset: 0, background: 'var(--bg)' }}
+                  onAnimationEnd={() => setTransition(null)}
+                >
+                  <Suspense fallback={<div className="admin-loading">Chargement...</div>}>{children}</Suspense>
+                </div>
+              </>
+            ) : (
+              <div style={{ height: '100%' }}>
+                <Suspense fallback={<div className="admin-loading">Chargement...</div>}>{children}</Suspense>
+              </div>
+            )}
           </main>
           <BottomNav />
         </div>
@@ -185,6 +208,7 @@ function LayoutPrincipal({ children }) {
             </div>
           </div>
         )}
+      </NavDirectionContext.Provider>
       </NavGuardContext.Provider>
     </TitreContext.Provider>
   )
@@ -254,7 +278,6 @@ export default function App() {
         <Route path="/calculateurs" element={<RouteProtegee session={session}><Calculateurs /></RouteProtegee>} />
         <Route path="/calculateurs/fluido" element={<RouteProtegee session={session}><Fluidotherapie /></RouteProtegee>} />
         <Route path="/calculateurs/cri" element={<RouteProtegee session={session}><CRI /></RouteProtegee>} />
-        <Route path="/calculateurs/dextrose" element={<RouteProtegee session={session}><Dextrose /></RouteProtegee>} />
         <Route path="/calculateurs/conversion" element={<RouteProtegee session={session}><Conversion /></RouteProtegee>} />
         <Route path="/calculateurs/besoin" element={<RouteProtegee session={session}><BesoinEnergetique /></RouteProtegee>} />
         <Route path="/calculateurs/dilution" element={<RouteProtegee session={session}><Dilution /></RouteProtegee>} />
@@ -319,6 +342,7 @@ export default function App() {
         <Route path="/labo/microbiologie/levures" element={<RouteProtegee session={session}><ProGate><LaMicrobiologieLevures /></ProGate></RouteProtegee>} />
         <Route path="/labo/af3ffd7b-ac2f-4e43-adf0-7108bf79099c" element={<RouteProtegee session={session}><LaRadiologie /></RouteProtegee>} />
         <Route path="/labo/radiologie/notions-base" element={<RouteProtegee session={session}><ProGate><LaRadiologieBases /></ProGate></RouteProtegee>} />
+        <Route path="/labo/radiologie/depannage" element={<RouteProtegee session={session}><LaRadiologieDepannage /></RouteProtegee>} />
         <Route path="/labo/radiologie/charte" element={<RouteProtegee session={session}><ProGate><LaRadiologieCharte /></ProGate></RouteProtegee>} />
         <Route path="/labo/radiologie/charte/nouvelle" element={<RouteProtegee session={session}><ProGate><LaRadiologieCharteForm /></ProGate></RouteProtegee>} />
         <Route path="/labo/radiologie/charte/:id/modifier" element={<RouteProtegee session={session}><ProGate><LaRadiologieCharteForm /></ProGate></RouteProtegee>} />
@@ -330,32 +354,14 @@ export default function App() {
         <Route path="/chirurgie/monitoring" element={<RouteProtegee session={session}><ProGate><ChirurgieMonitoring /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/capnographie" element={<RouteProtegee session={session}><ProGate><ChirurgieCapnographie /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/post-op" element={<RouteProtegee session={session}><ProGate><ChirurgiePostOp /></ProGate></RouteProtegee>} />
-        <Route path="/chirurgie/asa" element={<RouteProtegee session={session}><ProGate><ChirurgieASA /></ProGate></RouteProtegee>} />
-        <Route path="/chirurgie/checklists" element={<RouteProtegee session={session}><ChirurgieChecklists /></RouteProtegee>} />
-        <Route path="/chirurgie/jeune" element={<RouteProtegee session={session}><ChirurgieJeune /></RouteProtegee>} />
-        <Route path="/chirurgie/oxygene" element={<RouteProtegee session={session}><ChirurgieOxygene /></RouteProtegee>} />
         <Route path="/chirurgie/douleur" element={<RouteProtegee session={session}><ChirurgieDouleur /></RouteProtegee>} />
         <Route path="/chirurgie/ecg" element={<RouteProtegee session={session}><ProGate><ChirurgieECG /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/anomalies" element={<RouteProtegee session={session}><ProGate><ChirurgieECGAnomalies /></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/examen-physique" element={<RouteProtegee session={session}><ProGate><SoinsGenerauxExamenPhysique /></ProGate></RouteProtegee>} />
 
-        {/* NUTRITION */}
-        <Route path="/nutrition" element={<RouteProtegee session={session}><NutritionListe /></RouteProtegee>} />
-        <Route path="/nutrition/gestation-lactation" element={<RouteProtegee session={session}><NutritionGestationLactation /></RouteProtegee>} />
-        <Route path="/nutrition/croissance" element={<RouteProtegee session={session}><NutritionCroissance /></RouteProtegee>} />
-        <Route path="/nutrition/geriatrique" element={<RouteProtegee session={session}><NutritionGeriatrique /></RouteProtegee>} />
-        <Route path="/nutrition/gastro-intestinal" element={<RouteProtegee session={session}><NutritionGastroIntestinal /></RouteProtegee>} />
-        <Route path="/nutrition/peau" element={<RouteProtegee session={session}><NutritionPeau /></RouteProtegee>} />
-        <Route path="/nutrition/diabete" element={<RouteProtegee session={session}><NutritionDiabete /></RouteProtegee>} />
-        <Route path="/nutrition/hyperthyroidisme" element={<RouteProtegee session={session}><NutritionHyperthyroidisme /></RouteProtegee>} />
-        <Route path="/nutrition/cancer" element={<RouteProtegee session={session}><NutritionCancer /></RouteProtegee>} />
-        <Route path="/nutrition/cardiaque" element={<RouteProtegee session={session}><NutritionCardiaque /></RouteProtegee>} />
-        <Route path="/nutrition/perte-poids" element={<RouteProtegee session={session}><NutritionPertePoids /></RouteProtegee>} />
-        <Route path="/nutrition/dentaire" element={<RouteProtegee session={session}><NutritionDentaire /></RouteProtegee>} />
-        <Route path="/nutrition/renale" element={<RouteProtegee session={session}><NutritionRenale /></RouteProtegee>} />
-        <Route path="/nutrition/urinaire" element={<RouteProtegee session={session}><NutritionUrinaire /></RouteProtegee>} />
-        <Route path="/nutrition/neonatologie" element={<RouteProtegee session={session}><NutritionNeonatologie /></RouteProtegee>} />
+        {/* MENU */}
+        <Route path="/menu" element={<RouteProtegee session={session}><Menu /></RouteProtegee>} />
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />

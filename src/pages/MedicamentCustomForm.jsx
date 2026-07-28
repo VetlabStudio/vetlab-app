@@ -1,8 +1,7 @@
-import { useState, useEffect, useContext, useRef } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { TitreContext } from '../App'
-import { useProfil } from '../context/ProfilContext'
 
 const VOIES = [
   'Intraveineux (IV)',
@@ -28,11 +27,6 @@ export default function MedicamentCustomForm() {
   const [customId, setCustomId] = useState(null)
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(false)
   const { setTitreCustom } = useContext(TitreContext)
-  const { estEquipe, teamId } = useProfil()
-  const estEquipeRef = useRef(estEquipe)
-  estEquipeRef.current = estEquipe
-  const teamIdRef = useRef(teamId)
-  teamIdRef.current = teamId
 
   useEffect(() => {
     chargerDonnees()
@@ -42,15 +36,12 @@ export default function MedicamentCustomForm() {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
 
-    const isEquipe = estEquipeRef.current
-    const equipeId = teamIdRef.current
-
     // Vérifier si un custom existe déjà
     // Chercher par medicament_id (copie d'un médicament de base)
 const { data: customParMedId } = await supabase
   .from('medicaments_custom')
   .select('*')
-  .eq(isEquipe && equipeId ? 'equipe_id' : 'user_id', isEquipe && equipeId ? equipeId : user.id)
+  .eq('user_id', user.id)
   .eq('medicament_id', id)
   .maybeSingle()
 
@@ -58,6 +49,7 @@ const { data: customParMedId } = await supabase
 const { data: customDirect } = await supabase
   .from('medicaments_custom')
   .select('*')
+  .eq('user_id', user.id)
   .eq('id', id)
   .maybeSingle()
 console.log('id URL:', id)
@@ -149,7 +141,6 @@ if (custom) {
       especes:             form.especes,
       updated_at:          new Date().toISOString(),
     }
-    if (estEquipe && teamId) payload.equipe_id = teamId
 console.log('customId:', customId)
     if (customId) {
       const { error } = await supabase
@@ -189,8 +180,6 @@ console.log('customId:', customId)
   return (
     <div className="admin-page">
       <div className="form-scroll">
-
-        <h1 className="fiche-nom">Personnaliser — {form.nom}</h1>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 0 }}>
           <button className="btn-enregistrer-header" onClick={sauvegarder} disabled={sauvegarde}>

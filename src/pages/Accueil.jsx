@@ -174,18 +174,17 @@ export default function Accueil() {
       {/* HEADER */}
       <div className="accueil-v2-header">
         <div>
-    <h1 className="accueil-v2-accueil">Accueil</h1>
-    {estEquipe && nomClinique && (
-      <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4, marginTop: 0 }}>{nomClinique}</p>
-    )}
-    <p className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</p>
-    <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
-  </div>
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-    <ClocheMiniAccueil />
-    <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
-  </div>
-</div>
+          {estEquipe && nomClinique && (
+            <p style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4, marginTop: 0 }}>{nomClinique}</p>
+          )}
+          <h1 className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</h1>
+          <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          <ClocheMiniAccueil />
+          <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
+        </div>
+      </div>
 
       {/* SECTION CALCULATEURS */}
       <section className="accueil-v2-section">

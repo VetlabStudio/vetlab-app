@@ -13,7 +13,6 @@ const titres = {
   '/calculateurs/mise-bas': 'Date de mise bas',
   '/calculateurs/toxicite': 'Toxicité chocolat',
   '/calculateurs/rcr': 'RCR Urgence',
-  '/calculateurs/dextrose': 'Dextrose',
   '/calculateurs/tempo': 'Tap BPM',
   '/calculateurs/douleur-aigue': 'Évaluation de la douleur aiguë',
   '/calculateurs/douleur-aigue/chien': 'Douleur aiguë — Chien',
@@ -70,10 +69,6 @@ const titres = {
   '/labo/microbiologie/levures': 'Caractéristiques des levures',
   '/drogues/toxicologie': 'Toxicologie',
   '/notes': 'Notes',
-  '/chirurgie/asa': 'Classification du risque anesthésique (ASA)',
-  '/chirurgie/checklists': 'Checklists anesthésiques',
-  '/chirurgie/jeune': 'Recommandations de jeûne',
-  '/chirurgie/oxygene': 'Débit d\'oxygène',
   '/chirurgie/instruments': 'Catalogue d\'instruments',
   '/chirurgie/tubes': 'Tubes endotrachéaux',
   '/chirurgie/monitoring': 'Monitoring anesthésique',
@@ -93,24 +88,11 @@ const titres = {
   '/soins-generaux/abreviations': 'Abréviations courantes',
   '/soins-generaux/termes-directionnels': 'Termes directionnels',
   '/labo/radiologie/notions-base': 'Notions de base : mA, kVp et distance',
-  '/labo/radiologie/charte': 'Charte radiographique personnalisée',
+  '/labo/radiologie/depannage': 'Dépannage',
+  '/labo/radiologie/charte': 'Charte radiographique personnelle',
   '/equipe': 'Équipe',
   '/equipe/gestion': 'Gestion de l\'équipe',
-  '/nutrition': 'Nutrition',
-  '/nutrition/gestation-lactation': 'Gestation et lactation',
-  '/nutrition/croissance': 'Croissance',
-  '/nutrition/geriatrique': 'Animaux gériatriques',
-  '/nutrition/gastro-intestinal': 'Maladies gastro-intestinales',
-  '/nutrition/peau': 'Maladies de peau',
-  '/nutrition/diabete': 'Diabète',
-  '/nutrition/hyperthyroidisme': 'Hyperthyroïdisme',
-  '/nutrition/cancer': 'Cancer',
-  '/nutrition/cardiaque': 'Maladies cardiaques',
-  '/nutrition/perte-poids': 'Perte de poids / Obésité',
-  '/nutrition/dentaire': 'Santé dentaire',
-  '/nutrition/renale': 'Maladies rénales',
-  '/nutrition/urinaire': 'Système urinaire',
-  '/nutrition/neonatologie': 'Néonatologie',
+  '/menu': 'Plus',
   }
 
 export default function Header() {
@@ -131,7 +113,7 @@ export default function Header() {
   const pagesMenu = ['/sources-references', '/disclaimer', '/politique-confidentialite', '/termes-services', '/aide']
   const retour = () => {
     demanderConfirmation(() => {
-      pagesMenu.includes(location.pathname) ? navigate('/accueil') : navigate(-1)
+      pagesMenu.includes(location.pathname) ? navigate('/menu') : navigate(-1)
     })
   }
 
@@ -140,7 +122,7 @@ export default function Header() {
       <button className="header-back" onClick={retour}>
         <i className="ti ti-arrow-left"></i>
       </button>
-      <span style={{ textAlign: 'center', maxWidth: 'calc(100% - 80px)', lineHeight: 1.3 }}>{titre}</span>
+      <h1 style={{ textAlign: 'center', maxWidth: 'calc(100% - 80px)', lineHeight: 1.3, margin: 0, fontSize: 18 }}>{titre}</h1>
       <div style={{ width: 40 }} />
     </div>
   )
