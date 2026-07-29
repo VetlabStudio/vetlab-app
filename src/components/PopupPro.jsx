@@ -18,11 +18,11 @@ export default function PopupPro({ onClose }) {
         <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
           <i className="ti ti-lock" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 4 }}>
-            Cette fonctionnalité est réservée au forfait <strong>Pro</strong>.
+            Cette fonctionnalité est réservée <br /> au forfait <strong>Pro</strong>.
           </p>
         </div>
         <button className="labo-btn-primary" style={{ width: '100%' }} onClick={allerAuProfil}>
-          Abonne-toi au forfait Pro maintenant !
+          Abonne-toi au forfait Pro maintenant!
         </button>
       </div>
     </div>
