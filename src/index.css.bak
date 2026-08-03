@@ -13,7 +13,7 @@
   --accent-red:     #702F3A;
   --accent-gold:    #D7A35C;
   --accent-yellow:  #D2CA5F;
-  --bg:             #efefef;
+  --bg:             #FFFFFF;
   --bg-card:        #FFFFFF;
   --bg-secondary:   #EEF3F3;
   --border:         rgba(37, 77, 86, 0.15);
@@ -25,7 +25,7 @@
   --radius-md:      6px;
   --radius-lg:      6px;
   --radius-pill:    999px;
-  --champ-bg:       rgba(134, 202, 183, 0.08);
+  --champ-bg:       white;
   --champ-border:   rgba(134, 202, 183, 0.2);
 }
 
@@ -42,7 +42,7 @@ body {
 }
 
 h1 { font-size: 22px; font-weight: 700; color: var(--text-primary); font-family: 'Fraunces', Georgia, serif; }
-h2 { font-size: 16px; font-weight: 600; color: var(--primary); }
+h2 { font-size: 16px; font-weight: 600; color: var(--primary); font-family: 'Fraunces', Georgia, serif; }
 h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 
 button { font-family: var(--font); cursor: pointer; }
@@ -325,7 +325,7 @@ input  { font-family: var(--font); }
 /* ─── GRILLE DROGUES ─────────────────────────── */
 .accueil-v2-drogues-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   overflow:visible;
   gap: 4px;
 }
@@ -342,7 +342,7 @@ input  { font-family: var(--font); }
   border: 2px solid white;
   border-radius: 12px;
   font-family: var(--font);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;
@@ -430,7 +430,6 @@ input  { font-family: var(--font); }
   align-items: center;
   gap: 14px;
   background: var(--bg-card);
-  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
 }
@@ -482,17 +481,15 @@ input  { font-family: var(--font); }
 }
 
 .menu-page-section-titre {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-hint);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin: 0 0 2px 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.8px;
+    margin: 0 0 2px 4px;
 }
 
 .menu-page-section-liste {
   background: var(--bg-card);
-  border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
 }
@@ -538,6 +535,133 @@ input  { font-family: var(--font); }
   font-size: 12px;
   color: var(--text-hint);
   margin: 0;
+}
+
+/* ─── NOTIFICATIONS PAGE ──────────────────────────────────── */
+.notifs-page {
+  padding: 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.notifs-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 12px;
+}
+
+.notifs-vide-icone {
+  font-size: 64px;
+  color: #d0d5db;
+}
+
+.notifs-vide-titre {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.notifs-vide-sous {
+  font-size: 14px;
+  color: var(--text-hint);
+  margin: 0;
+}
+
+.notifs-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.notifs-count {
+  font-size: 13px;
+  color: var(--text-hint);
+}
+
+.notifs-tout-supprimer {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--accent-red);
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.notifs-liste {
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.notif-item.non-lue {
+  background: var(--bg-secondary);
+}
+
+.notif-item-contenu {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+  padding: 14px 16px;
+}
+
+.notif-item-icone {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(37, 77, 86, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+  font-size: 17px;
+}
+
+.notif-item-texte {
+  flex: 1;
+}
+
+.notif-item-message {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+  line-height: 1.4;
+}
+
+.notif-item-date {
+  font-size: 12px;
+  color: var(--text-hint);
+  margin: 0;
+}
+
+.notif-item-suppr {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-hint);
+  font-size: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.notif-item-suppr:active {
+  color: var(--accent-red);
 }
 
 /* ===========================
@@ -889,8 +1013,9 @@ input  { font-family: var(--font); }
   width: 100%;
   justify-content: center;
   background: var(--champ-bg);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   overflow: hidden;
+  border: 1px solid var(--border);
 }
 
 .input-avec-unite input {
@@ -993,7 +1118,46 @@ input  { font-family: var(--font); }
   text-align: left;
 }
 
-/* ─── TOGGLE ESPÈCE ───────────────────────────── */
+/* ─── SÉLECTEUR ESPÈCE — 2 cartes carrées ────── */
+.espece-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.espece-card-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 12px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.15s, border-width 0.15s;
+  font-family: var(--font);
+}
+
+.espece-card-btn img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.espece-card-btn span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.espece-card-btn.actif {
+  border-color: var(--primary);
+  border-width: 2px;
+}
+
+/* ─── TOGGLE ESPÈCE (ancien — gardé pour compatibilité) ── */
 .espece-toggle {
   display: flex;
   align-items: center;
@@ -1103,7 +1267,7 @@ input  { font-family: var(--font); }
 /* ─── RÉSULTATS CALCULATEUR ───────────────────── */
 .resultat-card {
   background: var(--bg-card);
-  border: 1.5px solid var(--primary-light);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   display: flex;
@@ -2545,14 +2709,14 @@ input[type="number"] {
 
 /* ─── SECTIONS ───────────────────────────────── */
 .fluido-section-titre {
-  font-size: 14px;
-  font-weight: 700;
-  color: white;
-  background: var(--primary);
-  padding: 10px 16px;
-  border-radius: var(--radius-md);
-  width: 100%;
-  margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: white;
+    padding: 0;
+    border-radius: var(--radius-md);
+    width: 100%;
+    margin: 0;
 }
 
 /* ─── INSTRUCTION CRI ────────────────────────── */
@@ -5307,17 +5471,16 @@ input[type="number"] {
 }
 
 .postop-num {
-  min-width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: white;
-  flex-shrink: 0;
-  margin-top: 1px;
+    min-width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    flex-shrink: 0;
+    margin-top: 1px;
 }
 
 .postop-texte {

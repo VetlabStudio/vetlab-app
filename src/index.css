@@ -1703,6 +1703,15 @@ input  { font-family: var(--font); }
 }
 
 
+select.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7F7A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
 .form-input:focus {
   outline: none;
   border-color: var(--primary);
@@ -6330,4 +6339,19 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+/* ─── DESKTOP ─────────────────────────────────── */
+@media (min-width: 601px) {
+  html {
+    background: #EEF3F3;
+    min-height: 100vh;
+  }
+  body {
+    box-shadow: 0 0 48px rgba(37, 77, 86, 0.10);
+    min-height: 100vh;
+  }
+  .btn-fab {
+    right: calc(50% - 276px);
+  }
 }

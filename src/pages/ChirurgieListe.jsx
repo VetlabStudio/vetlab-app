@@ -19,15 +19,16 @@ export default function ChirurgieListe() {
 
   return (
     <div className="page-calculateurs">
-      <div className="accueil-v2-drogues-grid accueil-v2-drogues-grid--1col">
-        {CHIRURGIE.map(c => (
+      <div className="menu-page-section-liste">
+        {CHIRURGIE.map((c, idx) => (
           <button
             key={c.id}
-            className="labo-categorie-btn"
+            className="menu-page-item"
             onClick={() => c.pro && !estPro ? setShowProMsg(true) : navigate(c.route)}
-            style={{ position: 'relative' }}
+            style={{ borderBottom: idx < CHIRURGIE.length - 1 ? '1px solid var(--border)' : 'none', position: 'relative' }}
           >
-            <span>{c.label}</span>
+            <span className="menu-page-item-label">{c.label}</span>
+            <i className="ti ti-chevron-right menu-page-item-chevron"></i>
             {c.pro && <BadgePro />}
           </button>
         ))}
