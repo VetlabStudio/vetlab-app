@@ -350,7 +350,7 @@ async function supprimerProtocole() {
           <ol className="postop-liste">
             {etapesVisibles.map((etape, index) => (
               <li key={etape.id} className="postop-liste-item">
-                <span className="postop-num" style={{ background: '#254D56' }}>{index + 1}</span>
+                <span className="postop-num">{index + 1}</span>
                 <span className="postop-texte">
                   <strong>{etape.titre}</strong>
                   {etape.description && <><br />{etape.description}</>}
