@@ -188,20 +188,18 @@ export default function BesoinEnergetique() {
 
         {/* ─── RÉSULTAT BEQ ────────────────────── */}
         {bee > 0 && (
-          <div className="bee-beq-card">
-            <div className="bee-beq-top">
-              <div>
-                <p className="bee-beq-label">BEQ estimé</p>
-                <p className="bee-beq-valeur">
-                  {beqMin
-                    ? beqMax ? `${beqMin} – ${beqMax}` : `${beqMin}`
-                    : '—'}
-                  <span className="bee-beq-unit"> kcal/jour</span>
-                </p>
-              </div>
-              <div className="bee-beq-facteur-badge">
-                {utilisantCustom ? `× ${parseFloat(facteurCustom)}` : labelFacteur(conditionSelectionnee)}
-              </div>
+          <div className="resultat-card">
+            <div className="resultat-ligne" style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <span>BEQ estimé</span>
+              <strong>
+                {beqMin
+                  ? beqMax ? `${beqMin} – ${beqMax} kcal/jour` : `${beqMin} kcal/jour`
+                  : '—'}
+              </strong>
+            </div>
+            <div className="resultat-ligne" style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <span>Facteur appliqué</span>
+              <strong>{utilisantCustom ? `× ${parseFloat(facteurCustom)}` : labelFacteur(conditionSelectionnee)}</strong>
             </div>
           </div>
         )}

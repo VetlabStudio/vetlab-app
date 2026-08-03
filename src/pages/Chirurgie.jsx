@@ -45,19 +45,21 @@ export default function Chirurgie() {
       {/* ─── PROTOCOLES ─────────────────────── */}
       <div className="labo-section-titre">Procédures chirurgicales</div>
 
-      <div className="labo-protocoles-grid">
+      <div className="menu-page-section-liste">
         {loading ? (
           <div className="admin-loading">Chargement...</div>
         ) : protocoles.length === 0 ? (
           <p className="admin-vide">Aucun protocole dans cette catégorie.</p>
         ) : (
-          protocoles.map(p => (
+          protocoles.map((p, idx) => (
             <button
               key={p.id}
-              className="labo-protocole-btn"
+              className="menu-page-item"
               onClick={() => navigate(`/labo/protocole/${p.id}?type=${p.type}`)}
+              style={{ borderBottom: idx < protocoles.length - 1 ? '1px solid var(--border)' : 'none' }}
             >
-              {p.titre}
+              <span className="menu-page-item-label">{p.titre}</span>
+              <i className="ti ti-chevron-right menu-page-item-chevron"></i>
             </button>
           ))
         )}
@@ -72,16 +74,16 @@ export default function Chirurgie() {
       {/* ─── RÉFÉRENCES ─────────────────────── */}
       <div className="labo-section-titre" style={{ marginTop: 8 }}>Références</div>
 
-      <div className="labo-protocoles-grid">
-        {REFERENCES.map(r => (
+      <div className="menu-page-section-liste">
+        {REFERENCES.map((r, idx) => (
           <button
             key={r.id}
-            className="labo-protocole-btn"
+            className="menu-page-item"
             onClick={() => navigate(r.route)}
-            style={{ position: 'relative' }}
+            style={{ borderBottom: idx < REFERENCES.length - 1 ? '1px solid var(--border)' : 'none', position: 'relative' }}
           >
-            <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
-            {r.label}
+            <span className="menu-page-item-label">{r.label}</span>
+            <i className="ti ti-chevron-right menu-page-item-chevron"></i>
             {r.pro && <BadgePro />}
           </button>
         ))}

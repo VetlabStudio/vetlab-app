@@ -24,14 +24,16 @@ export default function LaboAccueil() {
 
   return (
     <div className="page-calculateurs">
-      <div className="labo-categories-grid">
-        {categories.map(cat => (
+      <div className="menu-page-section-liste">
+        {categories.map((cat, idx) => (
           <button
             key={cat.id}
-            className="labo-categorie-btn"
+            className="menu-page-item"
             onClick={() => navigate(`/labo/${cat.id}`)}
+            style={{ borderBottom: idx < categories.length - 1 ? '1px solid var(--border)' : 'none' }}
           >
-            {cat.nom}
+            <span className="menu-page-item-label">{cat.nom}</span>
+            <i className="ti ti-chevron-right menu-page-item-chevron"></i>
           </button>
         ))}
       </div>

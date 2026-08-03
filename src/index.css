@@ -325,7 +325,7 @@ input  { font-family: var(--font); }
 /* ─── GRILLE DROGUES ─────────────────────────── */
 .accueil-v2-drogues-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   overflow:visible;
   gap: 4px;
 }
@@ -342,7 +342,7 @@ input  { font-family: var(--font); }
   border: 2px solid white;
   border-radius: 12px;
   font-family: var(--font);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;

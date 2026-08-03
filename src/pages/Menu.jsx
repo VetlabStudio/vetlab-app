@@ -46,12 +46,6 @@ export default function Menu() {
             {estEquipe ? 'Équipe' : estPro ? 'Pro' : 'Gratuit'}
           </span>
         </div>
-        <button
-          className="menu-page-profil-btn"
-          onClick={() => navigate('/profil')}
-        >
-          <i className="ti ti-chevron-right"></i>
-        </button>
       </div>
 
       {SECTIONS.map(section => (

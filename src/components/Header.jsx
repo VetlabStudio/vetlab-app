@@ -114,7 +114,9 @@ export default function Header() {
   const pagesMenu = ['/sources-references', '/disclaimer', '/politique-confidentialite', '/termes-services', '/aide']
   const retour = () => {
     demanderConfirmation(() => {
-      pagesMenu.includes(location.pathname) ? navigate('/menu') : navigate(-1)
+      if (location.pathname === '/menu') navigate('/accueil')
+      else if (pagesMenu.includes(location.pathname)) navigate('/menu')
+      else navigate(-1)
     })
   }
 
