@@ -116,6 +116,7 @@ export default function Accueil() {
       {/* HEADER */}
       <div className="accueil-v2-header">
         <div>
+          <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
           {estEquipe && nomClinique && (
             <p style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4, marginTop: 0 }}>{nomClinique}</p>
           )}
@@ -124,7 +125,6 @@ export default function Accueil() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
           <ClocheMiniAccueil />
-          <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
         </div>
       </div>
 

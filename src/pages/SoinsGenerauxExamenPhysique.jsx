@@ -606,7 +606,7 @@ export default function SoinsGenerauxExamenPhysique() {
                     <div style={{ padding: '8px 12px 10px', background: 'var(--bg-card)', maxHeight: 220, overflowY: 'auto' }}>
                       {[...itemConsulte.historique_modifs].reverse().map((m, i) => (
                         <p key={i} style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
-                          Mis à jour par <strong>{m.nom}</strong> · {new Date(m.timestamp).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })} à {new Date(m.timestamp).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })}
+                          <strong>{m.nom}</strong> · {new Date(m.timestamp).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })} à {new Date(m.timestamp).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       ))}
                     </div>
