@@ -1202,7 +1202,7 @@ export default function ChirurgieMonitoring() {
           </div>
           <div style={{ padding: '0 16px 16px' }}>
             {!form.poids && (
-              <p style={{ fontSize: 13, color: 'var(--accent-gold)', marginBottom: 8 }}>
+              <p style={{ fontSize: 13, color: 'var(--accent-gold)', marginBottom: 8, marginTop: 8 }}>
                 <i className="ti ti-alert-triangle"></i> Indique le poids de l'animal pour calculer les volumes automatiquement.
               </p>
             )}
@@ -1385,13 +1385,19 @@ export default function ChirurgieMonitoring() {
 
       {form.medications.length > 0 && (
         <div className="postop-section">
-          <div className="postop-section-header">
-            <div className="postop-section-icone" style={{ background: 'rgba(37,77,86,0.1)', color: 'var(--primary)' }}>
-              <i className="ti ti-pill"></i>
-            </div>
-            <h2 className="postop-section-titre">Médications préparées</h2>
-          </div>
-          <div style={{ padding: '0 16px 16px' }}>
+          <div className="postop-section-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+    <div className="postop-section-icone" style={{ background: 'rgba(37,77,86,0.1)', color: 'var(--primary)' }}>
+      <i className="ti ti-pill"></i>
+    </div>
+    <h2 className="postop-section-titre">Médications préparées</h2>
+  </div>
+  <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>
+    Indiquez si chaque médicament a été administré ou non durant la procédure.
+  </p>
+</div>
+        
+          <div style={{ padding: '16px 16px 16px' }}>
             {CATEGORIES_MED.map(cat => {
               const meds = form.medications.filter(m => m.categorie === cat)
               if (!meds.length) return null

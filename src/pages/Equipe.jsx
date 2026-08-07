@@ -336,7 +336,7 @@ function Babillard() {
     charger()
 
     const channel = supabase
-      .channel('babillard-' + teamId)
+      .channel('babillard-' + teamId + '-' + Date.now())
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'babillard_messages',
         filter: `team_id=eq.${teamId}`
@@ -959,7 +959,7 @@ function Taches() {
     charger()
 
     const channel = supabase
-      .channel('taches-' + teamId)
+      .channel('taches-' + teamId + '-' + Date.now())
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'taches',
         filter: `team_id=eq.${teamId}`
