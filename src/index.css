@@ -2067,7 +2067,7 @@ select.form-input {
   background: none;
   border: none;
   font-size: 35px;
-  color: var(--text-hint);
+  color: var(--primary-light);
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
@@ -2076,7 +2076,7 @@ select.form-input {
 }
 
 .favori-btn.actif {
-  color: var(--text-hint);
+  color: var(--primary-light);
 }
 
 .favori-btn:active {
@@ -2167,8 +2167,8 @@ select.form-input {
   left: 1rem;          /* ← ajoute ça */
   background: none;
   border: none;
-  font-size: 28px;
-  color: var(--text-hint);
+  font-size: 38px;
+  color: var(--primary-light);
   cursor: pointer;
   padding: 0;
   line-height: 1;
@@ -2176,7 +2176,7 @@ select.form-input {
 }
 
 .favori-btn-fiche.actif {
-  color: var(--accent-gold);
+  color: var(--primary-light);
 }
 
 .favori-btn-fiche:active {
@@ -5439,7 +5439,7 @@ input[type="number"] {
 .postop-section {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -5454,7 +5454,7 @@ input[type="number"] {
 .postop-section-icone {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;

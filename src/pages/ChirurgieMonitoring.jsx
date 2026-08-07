@@ -42,7 +42,7 @@ const MESURE_PARAMS = [
   { key: 'co2', label: 'ETCO₂ (mmHg)' },
   { key: 'syst', label: 'PA systolique' },
   { key: 'diast', label: 'PA diastolique' },
-  { key: 'map', label: 'MAP (mmHg)' },
+  { key: 'map', label: 'PAM (mmHg)' },
   { key: 'isoSevo', label: 'Iso/Sevo (%)' },
   { key: 'o2', label: 'O₂ (L/min)' },
   { key: 'fluideIv', label: 'Fluide IV (mL/h)' },
@@ -172,6 +172,7 @@ export default function ChirurgieMonitoring() {
   const [medsOuverts, setMedsOuverts] = useState(() => new Set())
 
   const [popupMesure, setPopupMesure] = useState(null) // {heure, ...valeurs}
+  const [editMesureIndex, setEditMesureIndex] = useState(null)
   const [popupFin, setPopupFin] = useState(false)
   const [rechercheMed, setRechercheMed] = useState('')
   const [resultatsMed, setResultatsMed] = useState([])
@@ -334,12 +335,24 @@ export default function ChirurgieMonitoring() {
   }
 
   function ajouterMesure() {
-    setForm(prev => ({ ...prev, mesures: [...prev.mesures, popupMesure] }))
+    if (editMesureIndex !== null) {
+      setForm(prev => ({ ...prev, mesures: prev.mesures.map((m, i) => i === editMesureIndex ? popupMesure : m) }))
+      setEditMesureIndex(null)
+    } else {
+      setForm(prev => ({ ...prev, mesures: [...prev.mesures, popupMesure] }))
+    }
     setPopupMesure(null)
+  }
+
+  function ouvrirEditionMesure(index) {
+    setEditMesureIndex(index)
+    setPopupMesure({ ...form.mesures[index] })
   }
 
   function supprimerMesure(index) {
     setForm(prev => ({ ...prev, mesures: prev.mesures.filter((_, i) => i !== index) }))
+    setEditMesureIndex(null)
+    setPopupMesure(null)
   }
 
   // ─── FIN ──────────────────────
@@ -860,7 +873,7 @@ export default function ChirurgieMonitoring() {
                     <div style={{ padding: '8px 12px 10px', background: 'var(--bg-card)', maxHeight: 220, overflowY: 'auto' }}>
                       {[...itemConsulte.historique_modifs].reverse().map((m, i) => (
                         <p key={i} style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
-                          Mis à jour par <strong>{m.nom}</strong> · {new Date(m.timestamp).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })} à {new Date(m.timestamp).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })}
+                          <strong>{m.nom}</strong> · {new Date(m.timestamp).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })} à {new Date(m.timestamp).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       ))}
                     </div>
@@ -1459,8 +1472,8 @@ export default function ChirurgieMonitoring() {
                       {chunk.map((m, j) => (
                         <th key={j}>
                           {m.heure}
-                          <button className="examen-historique-supprimer" style={{ marginLeft: 4 }} onClick={() => supprimerMesure(ci * COLONNES_PAR_TABLEAU + j)}>
-                            <i className="ti ti-x"></i>
+                          <button className="examen-historique-supprimer" style={{ marginLeft: 4 }} onClick={() => ouvrirEditionMesure(ci * COLONNES_PAR_TABLEAU + j)}>
+                            <i className="ti ti-pencil"></i>
                           </button>
                         </th>
                       ))}
@@ -1491,13 +1504,13 @@ export default function ChirurgieMonitoring() {
         </button>
       </div>
 
-      {/* Popup ajouter mesure */}
+      {/* Popup ajouter / modifier mesure */}
       {popupMesure && (
-        <div className="popup-overlay" onClick={() => setPopupMesure(null)}>
+        <div className="popup-overlay" onClick={() => { setPopupMesure(null); setEditMesureIndex(null) }}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Nouvelle mesure</span>
-              <button className="popup-close" onClick={() => setPopupMesure(null)}>✕</button>
+              <span>{editMesureIndex !== null ? 'Modifier la mesure' : 'Nouvelle mesure'}</span>
+              <button className="popup-close" onClick={() => { setPopupMesure(null); setEditMesureIndex(null) }}>✕</button>
             </div>
             <div className="form-scroll" style={{ gap: 12 }}>
               <div className="form-groupe">
@@ -1515,9 +1528,16 @@ export default function ChirurgieMonitoring() {
                 <input type="checkbox" checked={popupMesure.lubrifiantOculaire || false} onChange={e => setPopupMesure(prev => ({ ...prev, lubrifiantOculaire: e.target.checked }))} />
               </label>
             </div>
-            <button className="labo-btn-primary" style={{ width: '100%', marginTop: 12 }} onClick={ajouterMesure}>
-              Terminé
-            </button>
+            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+  {editMesureIndex !== null && (
+    <button className="btn-supprimer-medicament" style={{ flex: 1, marginTop: 0 }} onClick={() => supprimerMesure(editMesureIndex)}>
+      Supprimer
+    </button>
+  )}
+  <button className="btn-supprimer-medicament" style={{ flex: 1, marginTop: 0, background: 'var(--primary)' }} onClick={ajouterMesure}>
+    {editMesureIndex !== null ? 'Enregistrer' : 'Terminé'}
+  </button>
+</div>
           </div>
         </div>
       )}

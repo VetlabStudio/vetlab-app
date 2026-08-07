@@ -88,6 +88,7 @@ export default function FicheMedicament() {
   const [medicament, setMedicament] = useState(null)
   const [loading, setLoading] = useState(true)
   const [estFavori, setEstFavori] = useState(false)
+  const [estMedCustom, setEstMedCustom] = useState(false)
   const [estAdmin, setEstAdmin] = useState(false)
 const { setTitreCustom } = useContext(TitreContext)
   // Calculateur
@@ -170,11 +171,11 @@ useEffect(() => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
-      const [{ data: medBase }, { data: medCustomParId }, { data: medCustomDirect }, { data: fav }, { data: profil }] = await Promise.all([
+      const [{ data: medBase }, { data: medCustomParId }, { data: medCustomDirect }, { data: favData }, { data: profil }] = await Promise.all([
   supabase.from('medicaments').select('*').eq('id', id).maybeSingle(),
   supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
   supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('id', id).maybeSingle(),
-  supabase.from('favoris').select('id').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
+  supabase.from('favoris').select('id').eq('user_id', user.id).or(`medicament_id.eq.${id},custom_medicament_id.eq.${id}`).limit(1),
   supabase.from('profiles').select('role').eq('id', user.id).single(),
 ])
 
@@ -187,7 +188,8 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
         setPosologie(med.dose_min?.toString() || '')
         setConcentration(med.concentration?.toString() || '')
       }
-      setEstFavori(!!fav)
+      setEstFavori(!!(favData && favData.length > 0))
+      setEstMedCustom(!!medCustomDirect)
       setEstAdmin(profil?.role === 'admin')
     } catch (err) {
       console.error('Erreur:', err)
@@ -200,10 +202,14 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
     const { data: { user } } = await supabase.auth.getUser()
     if (estFavori) {
       await supabase.from('favoris').delete()
-        .eq('user_id', user.id).eq('medicament_id', id)
+        .eq('user_id', user.id)
+        .eq(estMedCustom ? 'custom_medicament_id' : 'medicament_id', id)
       setEstFavori(false)
     } else {
-      await supabase.from('favoris').insert({ user_id: user.id, medicament_id: id })
+      await supabase.from('favoris').insert({
+        user_id: user.id,
+        ...(estMedCustom ? { custom_medicament_id: id } : { medicament_id: id }),
+      })
       setEstFavori(true)
     }
   }
