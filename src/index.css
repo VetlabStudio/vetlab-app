@@ -6352,6 +6352,123 @@ input[type="number"] {
   flex-direction: column;
   justify-content: center;
 }
+/* ─── PAGE ABONNEMENT ───────────────────────── */
+.abonnement-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  padding-bottom: 32px;
+}
+
+.abonnement-plan-actuel {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border);
+}
+
+.abonnement-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.abonnement-toggle-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-hint);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.abonnement-toggle-btn.actif-gold {
+  background: var(--bg-card);
+  color: var(--accent-gold);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.abonnement-toggle-btn.actif-equipe {
+  background: var(--bg-card);
+  color: var(--primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.abonnement-cartes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.abonnement-carte {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  border: 1.5px solid var(--border);
+}
+
+.abonnement-carte-entete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.abonnement-carte-titre {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.abonnement-carte-sous-titre {
+  font-size: 12px;
+  color: var(--text-hint);
+}
+
+.abonnement-carte-prix {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.abonnement-btn-abonner {
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.15s;
+}
+
+.abonnement-btn-abonner:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.abonnement-btn-abonner:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
 
 /* ─── DESKTOP ─────────────────────────────────── */
 @media (min-width: 601px) {
