@@ -31,6 +31,7 @@ const titres = {
   '/admin/medicaments': 'Admin — Médicaments',
   '/notifications': 'Notifications',
   '/profil': 'Profil',
+  '/abonnement': 'Abonnement',
   '/sources-references': 'Sources et références',
   '/disclaimer': 'Avertissement',
   '/politique-confidentialite': 'Politique de confidentialité',
@@ -111,7 +112,7 @@ export default function Header() {
       .find(([key]) => location.pathname.startsWith(key))?.[1] ||
     null
 
-  const pagesMenu = ['/sources-references', '/disclaimer', '/politique-confidentialite', '/termes-services', '/aide']
+  const pagesMenu = ['/sources-references', '/disclaimer', '/politique-confidentialite', '/termes-services', '/aide', '/profil', '/abonnement']
   const retour = () => {
     demanderConfirmation(() => {
       if (location.pathname === '/menu') navigate('/accueil')

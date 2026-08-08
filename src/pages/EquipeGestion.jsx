@@ -224,7 +224,7 @@ export default function EquipeGestion() {
                   </p>
                 ) : roleEquipe === 'proprietaire' && (
                   <button
-                    onClick={() => navigate('/profil')}
+                    onClick={() => navigate('/abonnement')}
                     style={{
                       marginTop: 8, background: 'var(--primary)', color: '#fff', border: 'none',
                       borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer',
@@ -247,8 +247,8 @@ export default function EquipeGestion() {
                   • <strong>Retirer</strong> — cliquez sur <em>Révoquer</em> à côté du membre.<br />
                   • <strong>Changer un rôle</strong> — menu déroulant à côté du membre.<br />
                   • <strong>Plus de sièges</strong> —{' '}
-                  <span onClick={() => navigate('/profil')} style={{ color: 'var(--primary)', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}>
-                    Mon profil → Modifier les sièges
+                  <span onClick={() => navigate('/abonnement')} style={{ color: 'var(--primary)', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}>
+                    Abonnement → Modifier les sièges
                   </span>.
                 </p>
               </div>
@@ -269,7 +269,7 @@ export default function EquipeGestion() {
                 Pour ajouter des membres, augmentez le nombre de sièges dans votre forfait.
               </p>
               {roleEquipe === 'proprietaire' && (
-                <button onClick={() => navigate('/profil')} style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                <button onClick={() => navigate('/abonnement')} style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
                   <i className="ti ti-arrow-up-circle" style={{ marginRight: 5 }}></i>Augmenter les sièges
                 </button>
               )}

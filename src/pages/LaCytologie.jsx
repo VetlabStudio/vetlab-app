@@ -104,9 +104,7 @@ setProtocoles([
                 Passe au forfait Pro dans ton profil pour accéder à cette fonctionnalité.
               </p>
             </div>
-            <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
-              Compris
-            </button>
+            <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => { setShowProMsg(false); navigate('/abonnement') }}>Voir les forfaits</button>
           </div>
         </div>
       )}

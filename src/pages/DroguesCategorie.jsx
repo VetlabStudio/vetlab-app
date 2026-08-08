@@ -243,9 +243,7 @@ const tries = [...medsAvecCustom, ...(medsCustom || []).map(m => ({ ...m, estCus
                 Passe au forfait Pro pour accéder à cette fonctionnalité.
               </p>
             </div>
-            <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
-              Compris
-            </button>
+            <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => { setShowProMsg(false); navigate('/abonnement') }}>Voir les forfaits</button>
           </div>
         </div>
       )}

@@ -6,6 +6,7 @@ const SECTIONS = [
     titre: 'Mon compte',
     items: [
       { id: 'profil', label: 'Profil', icone: 'ti-user', route: '/profil' },
+      { id: 'abonnement', label: 'Abonnement', icone: 'ti-crown', route: '/abonnement' },
     ],
   },
   {

@@ -8,6 +8,7 @@ const Inscription = lazy(() => import('./pages/Inscription'))
 const Accueil = lazy(() => import('./pages/Accueil'))
 const Calculateurs = lazy(() => import('./pages/Calculateurs'))
 const Profil = lazy(() => import('./pages/Profil'))
+const Abonnement = lazy(() => import('./pages/Abonnement'))
 const SourcesReferences = lazy(() => import('./pages/SourcesReferences'))
 const Disclaimer = lazy(() => import('./pages/Disclaimer'))
 const PolitiqueConfidentialite = lazy(() => import('./pages/PolitiqueConfidentialite'))
@@ -366,6 +367,7 @@ export default function App() {
 
         {/* PROFIL */}
         <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />
+        <Route path="/abonnement" element={<RouteProtegee session={session}><Abonnement /></RouteProtegee>} />
         <Route path="/sources-references" element={<RouteProtegee session={session}><SourcesReferences /></RouteProtegee>} />
         <Route path="/disclaimer" element={<RouteProtegee session={session}><Disclaimer /></RouteProtegee>} />
         <Route path="/politique-confidentialite" element={<RouteProtegee session={session}><PolitiqueConfidentialite /></RouteProtegee>} />

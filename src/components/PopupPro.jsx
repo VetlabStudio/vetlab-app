@@ -5,7 +5,7 @@ export default function PopupPro({ onClose }) {
 
   function allerAuProfil() {
     onClose()
-    navigate('/profil')
+    navigate('/abonnement')
   }
 
   return (

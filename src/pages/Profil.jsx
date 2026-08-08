@@ -1,23 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { loadStripe } from '@stripe/stripe-js'
-import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
-const PRICE_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_MONTHLY
-const PRICE_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_ANNUAL
-
-const PRICE_EQUIPE = 'price_1TqBCwGqH2jbhVzIiUeTmlSW'
-const TIERS_EQUIPE = [
-  { min: 1,  max: 5,    prix: 49 },
-  { min: 6,  max: 10,   prix: 44 },
-  { min: 11, max: null, prix: 39 },
-]
-function calculerPrixEquipe(n) {
-  const tier = TIERS_EQUIPE.find(t => n >= t.min && (t.max === null || n <= t.max))
-  return tier ? n * tier.prix : n * 39
-}
 
 export default function Profil() {
   const navigate = useNavigate()
@@ -28,14 +11,11 @@ export default function Profil() {
   const [loading, setLoading] = useState(true)
   const [avatarUrl, setAvatarUrl] = useState(null)
 
-  // Modals
   const [modalNom, setModalNom] = useState(false)
   const [modalEmail, setModalEmail] = useState(false)
   const [modalMdp, setModalMdp] = useState(false)
   const [modalSupprimer, setModalSupprimer] = useState(false)
-  const [modalCheckout, setModalCheckout] = useState(false)
 
-  // Champs édition
   const [nouveauNom, setNouveauNom] = useState('')
   const [nouveauEmail, setNouveauEmail] = useState('')
   const [nouveauMdp, setNouveauMdp] = useState('')
@@ -44,65 +24,21 @@ export default function Profil() {
   const [succes, setSucces] = useState('')
   const [saving, setSaving] = useState(false)
 
-  // Stripe
-  const [checkoutLoading, setCheckoutLoading] = useState(false)
-  const [clientSecret, setClientSecret] = useState(null)
-
-  // Forfait clinique
-  const [interetEnvoye, setInteretEnvoye] = useState(false)
-  const [modalUpgrade, setModalUpgrade] = useState(false)
-  const [modalSieges, setModalSieges] = useState(false)
-  const [nombreMembres, setNombreMembres] = useState(2)
-  const [upgradeLoading, setUpgradeLoading] = useState(false)
-
   useEffect(() => {
+    // Stripe redirige vers /profil?paiement=succes sur certaines configs — on relaie vers /abonnement
     if (searchParams.get('paiement') === 'succes') {
       const plan = sessionStorage.getItem('checkout_plan') || 'pro'
-      sessionStorage.removeItem('checkout_plan')
-      navigate('/profil', { replace: true })
-      attendrePlanActif(plan)
-    } else {
-      chargerProfil()
+      navigate(`/abonnement?paiement=succes`, { replace: true })
+      return
     }
+    chargerProfil()
   }, [])
-
-  async function attendrePlanActif(planAttendu) {
-    const maxTentatives = 10
-    const delai = 2000
-    for (let i = 0; i < maxTentatives; i++) {
-      await new Promise(r => setTimeout(r, delai))
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) break
-      const { data } = await supabase.from('profiles').select('plan').eq('id', user.id).single()
-      const planAtteint = planAttendu === 'equipe' ? data?.plan === 'equipe' : (data?.plan && data.plan !== 'free')
-      if (planAtteint) {
-        await chargerProfil()
-        if (planAttendu === 'equipe') {
-          afficherSucces('Abonnement Équipe activé ! Bienvenue dans le forfait Équipe.')
-        } else {
-          afficherSucces('Abonnement Pro activé ! Bienvenue dans la famille Pro.')
-        }
-        return
-      }
-    }
-    await chargerProfil()
-    if (planAttendu === 'equipe') {
-      afficherSucces('Abonnement Équipe activé ! Bienvenue dans le forfait Équipe.')
-    } else {
-      afficherSucces('Abonnement Pro activé ! Bienvenue dans la famille Pro.')
-    }
-  }
 
   async function chargerProfil() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-    let maxMembres = null
-    if (data?.equipe_id) {
-      const { data: eq } = await supabase.from('equipes').select('max_membres').eq('id', data.equipe_id).single()
-      maxMembres = eq?.max_membres || null
-    }
-    setProfil({ ...data, email: user.email, max_membres: maxMembres })
+    setProfil({ ...data, email: user.email })
     setAvatarUrl(data?.avatar_url || null)
     setLoading(false)
   }
@@ -113,7 +49,6 @@ export default function Profil() {
     setTimeout(() => setSucces(''), 4000)
   }
 
-  // ─── MODIFIER NOM ─────────────────────────────
   async function sauvegarderNom() {
     if (!nouveauNom.trim()) return setErreur('Le nom ne peut pas être vide.')
     setSaving(true)
@@ -125,7 +60,6 @@ export default function Profil() {
     afficherSucces('Nom mis à jour !')
   }
 
-  // ─── MODIFIER EMAIL ───────────────────────────
   async function sauvegarderEmail() {
     if (!nouveauEmail.trim()) return setErreur('Le courriel ne peut pas être vide.')
     setSaving(true)
@@ -137,7 +71,6 @@ export default function Profil() {
     afficherSucces('Un courriel de confirmation a été envoyé.')
   }
 
-  // ─── MODIFIER MOT DE PASSE ────────────────────
   async function sauvegarderMdp() {
     if (!nouveauMdp) return setErreur('Le mot de passe ne peut pas être vide.')
     if (nouveauMdp.length < 6) return setErreur('Minimum 6 caractères.')
@@ -152,7 +85,6 @@ export default function Profil() {
     afficherSucces('Mot de passe mis à jour !')
   }
 
-  // ─── PHOTO DE PROFIL ──────────────────────────
   async function changerAvatar(e) {
     const file = e.target.files[0]
     if (!file) return
@@ -166,7 +98,6 @@ export default function Profil() {
     setAvatarUrl(url)
   }
 
-  // ─── SUPPRIMER LE COMPTE ──────────────────────
   async function supprimerCompte() {
     const { error } = await supabase.rpc('delete_user')
     if (error) return setErreur('Erreur : ' + error.message)
@@ -174,98 +105,10 @@ export default function Profil() {
     navigate('/connexion')
   }
 
-  // ─── DÉCONNEXION ──────────────────────────────
   async function deconnecter() {
     await supabase.auth.signOut()
     navigate('/connexion')
   }
-
-  // ─── UPGRADE PRO → ÉQUIPE ou modifier sièges ──
-  async function upgraderAbonnement(ajusterSieges = false) {
-    setUpgradeLoading(true)
-    setErreur('')
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const response = await fetch(
-        `https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/upgrade-subscription`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ newPriceId: PRICE_EQUIPE, quantity: nombreMembres }),
-        }
-      )
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Erreur')
-      setModalUpgrade(false)
-      setModalSieges(false)
-      if (ajusterSieges) {
-        await chargerProfil()
-        afficherSucces(`Forfait mis à jour — ${nombreMembres} sièges actifs.`)
-      } else {
-        await attendrePlanActif('equipe')
-      }
-    } catch (err) {
-      setErreur(err.message || 'Erreur lors de la mise à niveau.')
-    }
-    setUpgradeLoading(false)
-  }
-
-  // ─── STRIPE PORTAL ────────────────────────────
-async function ouvrirPortail() {
-  setCheckoutLoading(true)
-  setErreur('')
-  try {
-    const { data: { session } } = await supabase.auth.getSession()
-    const response = await fetch(
-      `https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/create-portal-session`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-      }
-    )
-    const data = await response.json()
-    if (!response.ok) throw new Error(data.error || 'Erreur')
-    window.location.href = data.url
-  } catch (err) {
-    setErreur('Impossible d\'ouvrir le portail. Réessaie.')
-  }
-  setCheckoutLoading(false)
-}
-
-  // ─── STRIPE CHECKOUT ──────────────────────────
-  async function ouvrirCheckout(priceId, quantity = 1) {
-    setCheckoutLoading(true)
-    setErreur('')
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const response = await fetch(
-        `https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/create-checkout`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ priceId, quantity }),
-        }
-      )
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Erreur de connexion')
-      setClientSecret(data.clientSecret)
-      setModalCheckout(true)
-    } catch (err) {
-      setErreur('Impossible d\'ouvrir le formulaire de paiement. Réessaie.')
-    }
-    setCheckoutLoading(false)
-  }
-
-  const fetchClientSecret = useCallback(() => Promise.resolve(clientSecret), [clientSecret])
 
   function ouvrirModal(modal) {
     setErreur('')
@@ -300,7 +143,6 @@ async function ouvrirPortail() {
         <p className="profil-email">{profil?.email}</p>
       </div>
 
-      {/* MESSAGE SUCCÈS */}
       {succes && <div className="profil-succes">{succes}</div>}
       {erreur && <div className="form-erreur">{erreur}</div>}
 
@@ -339,163 +181,6 @@ async function ouvrirPortail() {
         </div>
       )}
 
-      {/* FORFAIT ACTUEL */}
-      <div className="profil-section">
-        <div className="profil-item">
-          <div>
-            <p className="profil-item-label">Forfait actuel</p>
-            <p className="profil-item-valeur">
-              {estEquipe
-                ? <span style={{ color: 'var(--primary)', fontWeight: 700 }}>Équipe</span>
-                : estPro
-                  ? <span style={{ color: 'var(--accent-gold)', fontWeight: 700 }}>Pro</span>
-                  : 'Gratuit'
-              }
-            </p>
-          </div>
-          {estPro && (
-            <span style={{
-              fontSize: 11, fontWeight: 700,
-              color: estEquipe ? 'var(--primary)' : 'var(--accent-gold)',
-              background: estEquipe ? 'rgba(37,77,86,0.1)' : 'rgba(215,163,92,0.15)',
-              padding: '3px 10px', borderRadius: 999
-            }}>Actif</span>
-          )}
-        </div>
-      </div>
-
-      {/* FORFAITS */}
-      <div className="profil-section">
-        <div className="profil-forfaits-titre">Forfaits disponibles</div>
-
-        {/* GRATUIT */}
-        <div className="profil-forfait-item">
-          <div className="profil-forfait-header">
-            <span className="profil-forfait-nom">Gratuit</span>
-            <span className="profil-forfait-prix">0 $</span>
-          </div>
-          <p className="profil-forfait-desc">Accès aux fiches médicaments et calculateurs de base.</p>
-        </div>
-
-        {/* PRO */}
-        {estPro && !estEquipe ? (
-          <div className="profil-forfait-item">
-            <div className="profil-forfait-header">
-              <span className="profil-forfait-nom">Pro</span>
-              <span className="profil-forfait-badge" style={{ color: 'var(--accent-gold)', background: 'rgba(215,163,92,0.15)' }}>Actif</span>
-            </div>
-            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>Tu bénéficies de toutes les fonctionnalités Pro.</p>
-            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}>
-              <i className="ti ti-settings"></i>
-              {checkoutLoading ? 'Chargement...' : 'Gérer mon abonnement'}
-            </button>
-          </div>
-        ) : !estEquipe ? (
-          <div className="profil-forfait-item">
-            <div className="profil-forfait-header">
-              <span className="profil-forfait-nom">Pro</span>
-            </div>
-            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
-              Accès complet : personnalisation des médicaments et protocoles de labo, outil d'examen, monitoring anesthésique, toxicologie et plus.
-            </p>
-            <div className="profil-stripe-choix">
-              <button className="profil-stripe-btn" onClick={() => { sessionStorage.setItem('checkout_plan', 'pro'); ouvrirCheckout(PRICE_MONTHLY) }} disabled={checkoutLoading}>
-                <span className="profil-stripe-prix">7,99 $</span>
-                <span className="profil-stripe-periode">par mois</span>
-              </button>
-              <button className="profil-stripe-btn profil-stripe-btn--annuel" onClick={() => { sessionStorage.setItem('checkout_plan', 'pro'); ouvrirCheckout(PRICE_ANNUAL) }} disabled={checkoutLoading}>
-                <span className="profil-stripe-economie">Économise 37 %</span>
-                <span className="profil-stripe-prix">59 $</span>
-                <span className="profil-stripe-periode">par année</span>
-              </button>
-            </div>
-            {checkoutLoading && (
-              <p style={{ fontSize: 12, color: 'var(--text-hint)', textAlign: 'center', marginTop: 8 }}>
-                Chargement du formulaire...
-              </p>
-            )}
-          </div>
-        ) : null}
-
-        {/* ÉQUIPE */}
-        {estEquipe ? (
-          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
-            <div className="profil-forfait-header">
-              <span className="profil-forfait-nom">Équipe</span>
-              <span className="profil-forfait-badge" style={{ color: 'var(--primary)', background: 'rgba(37,77,86,0.1)' }}>Actif</span>
-            </div>
-            <p className="profil-forfait-desc" style={{ marginBottom: 10 }}>
-              Accès complet pour toute la clinique — fonctionnalités Pro incluses, babillard d'équipe, panneau de tâches et gestion des membres.
-            </p>
-            {profil?.max_membres && (
-              <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 14 }}>
-                <i className="ti ti-users" style={{ marginRight: 5 }}></i>
-                {profil.max_membres} siège{profil.max_membres > 1 ? 's' : ''} inclus — {calculerPrixEquipe(profil.max_membres)} $ / année
-              </p>
-            )}
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <button className="profil-portal-btn" style={{ flex: 1 }}
-                onClick={() => { setNombreMembres(profil?.max_membres || 2); setModalSieges(true) }}>
-                <i className="ti ti-users-plus"></i>
-                Modifier les sièges
-              </button>
-              <button className="profil-portal-btn" style={{ flex: 1 }} onClick={ouvrirPortail} disabled={checkoutLoading}>
-                <i className="ti ti-settings"></i>
-                {checkoutLoading ? 'Chargement...' : 'Gérer l\'abonnement'}
-              </button>
-            </div>
-          </div>
-        ) : estPro ? (
-          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
-            <div className="profil-forfait-header">
-              <span className="profil-forfait-nom">Équipe</span>
-              <span className="profil-forfait-badge" style={{ color: 'var(--primary)', background: 'rgba(37,77,86,0.1)' }}>Upgrade</span>
-            </div>
-            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
-              Passe au forfait Équipe — ton crédit Pro non utilisé est automatiquement déduit. Tu ne perds pas ce que tu as déjà payé.
-            </p>
-            <button className="profil-portal-btn" onClick={() => setModalUpgrade(true)}>
-              <i className="ti ti-arrow-up-circle"></i>
-              Mettre à niveau vers Équipe
-            </button>
-          </div>
-        ) : (
-          <div className="profil-forfait-item" style={{ borderBottom: 'none' }}>
-            <div className="profil-forfait-header">
-              <span className="profil-forfait-nom">Équipe</span>
-            </div>
-            <p className="profil-forfait-desc" style={{ marginBottom: 14 }}>
-              Accès partagé pour toute la clinique — fonctionnalités Pro incluses pour tous les membres, babillard d'équipe, tâches partagées et gestion des membres.
-            </p>
-            <div style={{ marginBottom: 14 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                <button className="radio-btn" onClick={() => setNombreMembres(n => Math.max(2, n - 1))} style={{ width: 32, height: 32, borderRadius: 8 }}>−</button>
-                <span style={{ fontSize: 18, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>{nombreMembres}</span>
-                <button className="radio-btn" onClick={() => setNombreMembres(n => n + 1)} style={{ width: 32, height: 32, borderRadius: 8 }}>+</button>
-              </div>
-              <p style={{ fontSize: 12, color: 'var(--text-hint)' }}>
-                {calculerPrixEquipe(nombreMembres)} $ / année · {TIERS_EQUIPE.find(t => nombreMembres >= t.min && (t.max === null || nombreMembres <= t.max))?.prix} $/siège
-              </p>
-            </div>
-            <button
-              className="profil-stripe-btn"
-              onClick={() => { sessionStorage.setItem('checkout_plan', 'equipe'); ouvrirCheckout(PRICE_EQUIPE, nombreMembres) }}
-              disabled={checkoutLoading}
-              style={{ width: '100%' }}
-            >
-              <span className="profil-stripe-prix">{calculerPrixEquipe(nombreMembres)} $</span>
-              <span className="profil-stripe-periode">par année · {nombreMembres} membres</span>
-            </button>
-            {checkoutLoading && (
-              <p style={{ fontSize: 12, color: 'var(--text-hint)', textAlign: 'center', marginTop: 8 }}>
-                Chargement du formulaire...
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-
       {/* ACTIONS */}
       <div className="profil-actions">
         <button className="btn-deconnexion" onClick={deconnecter}>DÉCONNEXION</button>
@@ -503,81 +188,6 @@ async function ouvrirPortail() {
           Supprimer le compte
         </button>
       </div>
-
-      {/* ─── MODAL UPGRADE PRO → ÉQUIPE ───────── */}
-      {modalUpgrade && (
-        <div className="popup-overlay" onClick={() => setModalUpgrade(false)}>
-          <div className="popup-card" onClick={e => e.stopPropagation()}>
-            <div className="popup-header">
-              <span>Mettre à niveau vers Équipe</span>
-              <button className="popup-close" onClick={() => setModalUpgrade(false)}>✕</button>
-            </div>
-            <div style={{ padding: '12px 0 4px' }}>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
-                Ton crédit Pro non utilisé sera automatiquement déduit du montant à payer. Tu ne perds rien.
-              </p>
-              <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                <button className="radio-btn" onClick={() => setNombreMembres(n => Math.max(2, n - 1))} style={{ width: 32, height: 32, borderRadius: 8 }}>−</button>
-                <span style={{ fontSize: 18, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>{nombreMembres}</span>
-                <button className="radio-btn" onClick={() => setNombreMembres(n => n + 1)} style={{ width: 32, height: 32, borderRadius: 8 }}>+</button>
-              </div>
-              <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 16 }}>
-                {calculerPrixEquipe(nombreMembres)} $ / année · {TIERS_EQUIPE.find(t => nombreMembres >= t.min && (t.max === null || nombreMembres <= t.max))?.prix} $/siège
-              </p>
-              {erreur && <div className="form-erreur" style={{ marginBottom: 12 }}>{erreur}</div>}
-              <button className="btn-sauvegarder" onClick={upgraderAbonnement} disabled={upgradeLoading}>
-                {upgradeLoading ? 'Mise à niveau en cours...' : `Confirmer — ${calculerPrixEquipe(nombreMembres)} $ / année`}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── MODAL MODIFIER SIÈGES ÉQUIPE ─────── */}
-      {modalSieges && (
-        <div className="popup-overlay" onClick={() => setModalSieges(false)}>
-          <div className="popup-card" onClick={e => e.stopPropagation()}>
-            <div className="popup-header">
-              <span>Modifier les sièges</span>
-              <button className="popup-close" onClick={() => setModalSieges(false)}>✕</button>
-            </div>
-            <div style={{ padding: '12px 0 4px' }}>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
-                La différence de prix sera calculée au prorata — tu ne paies que ce qu'il reste de ta période en cours.
-              </p>
-              <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                <button className="radio-btn" onClick={() => setNombreMembres(n => Math.max(2, n - 1))} style={{ width: 32, height: 32, borderRadius: 8 }}>−</button>
-                <span style={{ fontSize: 18, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>{nombreMembres}</span>
-                <button className="radio-btn" onClick={() => setNombreMembres(n => n + 1)} style={{ width: 32, height: 32, borderRadius: 8 }}>+</button>
-              </div>
-              <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 16 }}>
-                {calculerPrixEquipe(nombreMembres)} $ / année · {TIERS_EQUIPE.find(t => nombreMembres >= t.min && (t.max === null || nombreMembres <= t.max))?.prix} $/siège
-              </p>
-              {erreur && <div className="form-erreur" style={{ marginBottom: 12 }}>{erreur}</div>}
-              <button className="btn-sauvegarder" onClick={() => upgraderAbonnement(true)} disabled={upgradeLoading}>
-                {upgradeLoading ? 'Mise à jour en cours...' : `Confirmer — ${calculerPrixEquipe(nombreMembres)} $ / année`}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ─── MODAL CHECKOUT STRIPE ─────────────── */}
-      {modalCheckout && clientSecret && (
-        <div className="popup-overlay" onClick={() => setModalCheckout(false)}>
-          <div className="profil-checkout-card" onClick={e => e.stopPropagation()}>
-            <div className="popup-header">
-              <span>Passer au forfait Pro</span>
-              <button className="popup-close" onClick={() => setModalCheckout(false)}>✕</button>
-            </div>
-            <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret }}>
-              <EmbeddedCheckout />
-            </EmbeddedCheckoutProvider>
-          </div>
-        </div>
-      )}
 
       {/* ─── MODAL NOM ─────────────────────────── */}
       {modalNom && (
