@@ -13,8 +13,7 @@ export default function LaboProtocoles() {
   const [loading, setLoading] = useState(true)
   const { setTitreCustom } = useContext(TitreContext)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro } = useProfil()
-  console.log('estPro labo:', estPro)
+  const { estPro, estEquipe } = useProfil()
 
   useEffect(() => {
   chargerDonnees()
@@ -28,7 +27,9 @@ export default function LaboProtocoles() {
     const [{ data: cat }, { data: protos }, { data: protosUser }] = await Promise.all([
       supabase.from('labo_categories').select('*').eq('id', categorieId).single(),
       supabase.from('labo_protocoles').select('*').eq('categorie_id', categorieId).order('ordre'),
-      supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', categorieId).order('ordre'),
+      estEquipe
+        ? supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', categorieId).order('ordre')
+        : supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', categorieId).is('equipe_id', null).order('ordre'),
     ])
 
     setCategorie(cat)
@@ -90,7 +91,9 @@ export default function LaboProtocoles() {
           Passe au forfait Pro dans ton profil pour accéder à cette fonctionnalité.
         </p>
       </div>
-      <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => { setShowProMsg(false); navigate('/abonnement') }}>Voir les forfaits</button>
+      <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
+        Compris
+      </button>
     </div>
   </div>
 )}
