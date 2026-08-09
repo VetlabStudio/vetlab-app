@@ -45,16 +45,18 @@ function ClocheMiniAccueil() {
     <button
       onClick={() => navigate('/notifications')}
       style={{
-        background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px',
-        color: '#fff', fontSize: 22, position: 'relative', display: 'flex',
+        background: 'var(--primary)', border: 'none', cursor: 'pointer',
+        width: 40, height: 40, borderRadius: '50%',
+        color: '#fff', fontSize: 20, position: 'relative',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
       }}
     >
       <i className="ti ti-bell"></i>
       {count > 0 && (
         <span style={{
-          position: 'absolute', top: 0, right: 0, background: 'var(--accent-red)',
-          color: '#fff', borderRadius: '50%', width: 16, height: 16,
-          fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'absolute', top: 2, right: 2, background: 'var(--accent-red)',
+          color: '#fff', borderRadius: '50%', width: 14, height: 14,
+          fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           {count > 9 ? '9+' : count}
         </span>
@@ -90,6 +92,7 @@ const REFERENCES = [
 export default function Accueil() {
   const navigate = useNavigate()
   const [prenom, setPrenom] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState(null)
   const [nomClinique, setNomClinique] = useState('')
   const [showProMsg, setShowProMsg] = useState(false)
   const { estEquipe, teamId, estPro } = useProfil()
@@ -98,8 +101,9 @@ export default function Accueil() {
     async function chargerProfil() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
-      const { data } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
+      const { data } = await supabase.from('profiles').select('nom, avatar_url').eq('id', user.id).single()
       if (data?.nom) setPrenom(data.nom.split(' ')[0])
+      if (data?.avatar_url) setAvatarUrl(data.avatar_url)
     }
     chargerProfil()
   }, [])
@@ -115,17 +119,22 @@ export default function Accueil() {
 
       {/* HEADER */}
       <div className="accueil-v2-header">
-        <div>
-          <img src="/logoadjuvet-blanc.png" alt="Vetlab Studio" className="accueil-v2-logo" />
-          {estEquipe && nomClinique && (
-            <p style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4, marginTop: 0 }}>{nomClinique}</p>
-          )}
-          <h1 className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</h1>
-          <p className="accueil-v2-subtitle">Accès rapide à vos outils cliniques.</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="accueil-v2-avatar">
+            {avatarUrl
+              ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : <i className="ti ti-user" style={{ fontSize: 22, color: 'var(--text-hint)' }}></i>
+            }
+          </div>
+          <div>
+            {estEquipe && nomClinique && (
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 2px 0' }}>{nomClinique}</p>
+            )}
+            <p style={{ fontSize: 13, color: 'var(--text-hint)', margin: 0 }}>Bonjour 👋</p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{prenom || 'Bienvenue'}</p>
+          </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-          <ClocheMiniAccueil />
-        </div>
+        <ClocheMiniAccueil />
       </div>
 
       {/* SECTION CALCULATEURS */}
