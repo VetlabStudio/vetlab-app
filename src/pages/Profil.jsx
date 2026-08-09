@@ -9,12 +9,15 @@ export default function Profil() {
   const [profil, setProfil] = useState(null)
   const [loading, setLoading] = useState(true)
   const [avatarUrl, setAvatarUrl] = useState(null)
+  const [equipeProprietaire, setEquipeProprietaire] = useState(null)
 
   // Modals
   const [modalNom, setModalNom] = useState(false)
   const [modalEmail, setModalEmail] = useState(false)
   const [modalMdp, setModalMdp] = useState(false)
   const [modalSupprimer, setModalSupprimer] = useState(false)
+  const [modalSupprimerProprietaire, setModalSupprimerProprietaire] = useState(false)
+  const [confirmerSuppressionEquipe, setConfirmerSuppressionEquipe] = useState(false)
 
   // Champs édition
   const [nouveauNom, setNouveauNom] = useState('')
@@ -33,6 +36,16 @@ export default function Profil() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+    if (data?.equipe_id) {
+      const { data: eq } = await supabase
+        .from('equipes')
+        .select('id, nom, proprietaire_id')
+        .eq('id', data.equipe_id)
+        .single()
+      if (eq?.proprietaire_id === user.id) {
+        setEquipeProprietaire({ id: eq.id, nom: eq.nom })
+      }
+    }
     setProfil({ ...data, email: user.email })
     setAvatarUrl(data?.avatar_url || null)
     setLoading(false)
@@ -97,12 +110,40 @@ export default function Profil() {
     setAvatarUrl(url)
   }
 
-  // ─── SUPPRIMER LE COMPTE ──────────────────────
+  // ─── SUPPRIMER COMPTE SIMPLE ──────────────────
   async function supprimerCompte() {
+    setSaving(true)
     const { error } = await supabase.rpc('delete_user')
+    setSaving(false)
     if (error) return setErreur('Erreur : ' + error.message)
     await supabase.auth.signOut()
     navigate('/connexion')
+  }
+
+  // ─── SUPPRIMER ÉQUIPE + COMPTE PROPRIÉTAIRE ───
+  async function supprimerEquipeEtCompte() {
+    setSaving(true)
+    setErreur('')
+    try {
+      // Retirer l'equipe_id de tous les membres
+      await supabase
+        .from('profiles')
+        .update({ equipe_id: null, plan: 'free' })
+        .eq('equipe_id', equipeProprietaire.id)
+        .neq('id', profil.id)
+      // Supprimer les entrées membres_equipe
+      await supabase.from('membres_equipe').delete().eq('equipe_id', equipeProprietaire.id)
+      // Supprimer l'équipe
+      await supabase.from('equipes').delete().eq('id', equipeProprietaire.id)
+      // Supprimer le compte
+      const { error } = await supabase.rpc('delete_user')
+      if (error) throw error
+      await supabase.auth.signOut()
+      navigate('/connexion')
+    } catch (err) {
+      setSaving(false)
+      setErreur('Erreur lors de la suppression : ' + err.message)
+    }
   }
 
   // ─── DÉCONNEXION ──────────────────────────────
@@ -117,7 +158,14 @@ export default function Profil() {
     if (modal === 'nom') { setNouveauNom(profil?.nom || ''); setModalNom(true) }
     if (modal === 'email') { setNouveauEmail(profil?.email || ''); setModalEmail(true) }
     if (modal === 'mdp') { setNouveauMdp(''); setConfirmMdp(''); setModalMdp(true) }
-    if (modal === 'supprimer') setModalSupprimer(true)
+    if (modal === 'supprimer') {
+      if (equipeProprietaire) {
+        setConfirmerSuppressionEquipe(false)
+        setModalSupprimerProprietaire(true)
+      } else {
+        setModalSupprimer(true)
+      }
+    }
   }
 
   if (loading) return <div className="admin-loading">Chargement...</div>
@@ -246,7 +294,7 @@ export default function Profil() {
         </div>
       )}
 
-      {/* ─── MODAL SUPPRIMER ───────────────────── */}
+      {/* ─── MODAL SUPPRIMER (compte simple) ───── */}
       {modalSupprimer && (
         <div className="popup-overlay" onClick={() => setModalSupprimer(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
@@ -258,9 +306,79 @@ export default function Profil() {
               Cette action est irréversible. Toutes vos données seront supprimées définitivement.
             </p>
             {erreur && <div className="form-erreur">{erreur}</div>}
-            <button className="btn-supprimer-medicament" onClick={supprimerCompte}>
-              Confirmer la suppression
+            <button className="btn-supprimer-medicament" onClick={supprimerCompte} disabled={saving}>
+              {saving ? 'Suppression...' : 'Confirmer la suppression'}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL SUPPRIMER — PROPRIÉTAIRE ÉQUIPE */}
+      {modalSupprimerProprietaire && (
+        <div className="popup-overlay" onClick={() => { setModalSupprimerProprietaire(false); setConfirmerSuppressionEquipe(false) }}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <span>Supprimer le compte</span>
+              <button className="popup-close" onClick={() => { setModalSupprimerProprietaire(false); setConfirmerSuppressionEquipe(false) }}>✕</button>
+            </div>
+
+            {!confirmerSuppressionEquipe ? (
+              <>
+                <div style={{ textAlign: 'center', padding: '4px 0 16px' }}>
+                  <i className="ti ti-users" style={{ fontSize: 36, color: 'var(--accent-red)', display: 'block', marginBottom: 12 }}></i>
+                  <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                    Votre compte est propriétaire de l'équipe <strong>{equipeProprietaire?.nom}</strong>.
+                    Que souhaitez-vous faire ?
+                  </p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <button
+                    className="profil-portal-btn"
+                    onClick={() => { setModalSupprimerProprietaire(false); navigate('/equipe') }}
+                  >
+                    <i className="ti ti-arrow-right-circle"></i>
+                    Transférer la propriété d'abord
+                  </button>
+                  <button
+                    className="btn-supprimer-medicament"
+                    onClick={() => setConfirmerSuppressionEquipe(true)}
+                  >
+                    Supprimer le compte et toutes les données d'équipe
+                  </button>
+                  <button
+                    style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 16px', fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer' }}
+                    onClick={() => setModalSupprimerProprietaire(false)}
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ textAlign: 'center', padding: '4px 0 16px' }}>
+                  <i className="ti ti-alert-triangle" style={{ fontSize: 36, color: 'var(--accent-red)', display: 'block', marginBottom: 12 }}></i>
+                  <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                    Cette action est <strong>irréversible</strong>. Le compte propriétaire sera supprimé ainsi que toutes les données partagées de la clinique (médicaments personnalisés, protocoles, charte radiographique). Les membres perdront immédiatement leur accès à l'équipe.
+                  </p>
+                </div>
+                {erreur && <div className="form-erreur" style={{ marginBottom: 12 }}>{erreur}</div>}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <button
+                    className="btn-supprimer-medicament"
+                    onClick={supprimerEquipeEtCompte}
+                    disabled={saving}
+                  >
+                    {saving ? 'Suppression en cours...' : 'Confirmer la suppression définitive'}
+                  </button>
+                  <button
+                    style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 16px', fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer' }}
+                    onClick={() => setConfirmerSuppressionEquipe(false)}
+                  >
+                    Retour
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

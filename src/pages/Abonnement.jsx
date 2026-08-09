@@ -371,7 +371,13 @@ export default function Abonnement() {
                   <span className="profil-stripe-periode">par année</span>
                 </button>
               </div>
-            ) : null}
+            ) : (
+              <span style={{
+                display: 'inline-block', fontSize: 11, fontWeight: 700, marginBottom: 4,
+                color: 'var(--primary)', background: 'rgba(37,77,86,0.1)',
+                padding: '3px 10px', borderRadius: 999,
+              }}>Inclus dans votre forfait Équipe</span>
+            )}
 
             <DividerFeatures />
             <ListeFonctionnalites tout={true} />
