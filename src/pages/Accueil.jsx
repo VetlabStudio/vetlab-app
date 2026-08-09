@@ -121,7 +121,7 @@ export default function Accueil() {
             <p style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4, marginTop: 0 }}>{nomClinique}</p>
           )}
           <h1 className="accueil-v2-bonjour">Bonjour{prenom ? ` ${prenom}` : ''},</h1>
-          <p className="accueil-v2-subtitle">Accès rapide à tes outils cliniques.</p>
+          <p className="accueil-v2-subtitle">Accès rapide à vos outils cliniques.</p>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
           <ClocheMiniAccueil />

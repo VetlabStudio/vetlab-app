@@ -201,7 +201,7 @@ export default function CRI() {
         {/* ─── AVERTISSEMENT ──────────────────── */}
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
-          Valide toujours le dosage avec un vétérinaire responsable avant d'administrer. Ce calculateur est un outil d'aide, ton jugement clinique prime en tout temps.
+          Valide toujours le dosage avec un vétérinaire responsable avant d'administrer. Ce calculateur est un outil d'aide, votre jugement clinique prime en tout temps.
         </div>
 
       </div>

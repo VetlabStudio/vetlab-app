@@ -35,7 +35,7 @@ const SECTIONS = [
     paragraphes: [
       'ADJUVET, Vetlab Studio et toute personne ayant contribué à la préparation, à la publication ou à la distribution de l\'application déclinent toute responsabilité quant aux dommages directs, indirects, accessoires ou consécutifs résultant de l\'utilisation ou de l\'impossibilité d\'utiliser l\'information contenue dans l\'application, y compris ceux liés à une défectuosité du système.',
       'ADJUVET est fourni "tel quel", sans garantie d\'aucune sorte, expresse ou implicite, quant à sa qualité, son exactitude ou son adéquation à un usage particulier.',
-      'En utilisant cette application, tu reconnais comprendre et accepter ces limites.',
+      'En utilisant cette application, vous reconnaissez comprendre et accepter ces limites.',
     ],
   },
 ]

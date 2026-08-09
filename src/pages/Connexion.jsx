@@ -50,7 +50,7 @@ export default function Connexion() {
           }}>
             <i className="ti ti-circle-check" style={{ fontSize: 20, color: '#4CAF50', flexShrink: 0 }}></i>
             <p style={{ fontSize: 14, color: '#4CAF50', margin: 0, fontWeight: 600 }}>
-              Adresse courriel confirmée ! Tu peux maintenant te connecter.
+              Adresse courriel confirmée ! Vous pouvez maintenant vous connecter.
             </p>
           </div>
         )}
@@ -62,7 +62,7 @@ export default function Connexion() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="ton@courriel.com"
+              placeholder="votre@courriel.com"
               required
             />
           </div>

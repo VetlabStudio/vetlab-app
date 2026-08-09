@@ -171,7 +171,7 @@ export default function Notes() {
         <div className="mes-drogues-vide">
           <i className="ti ti-notes" style={{ fontSize: 40, color: 'var(--text-hint)' }}></i>
           <p>Aucune note</p>
-          <p className="mes-drogues-vide-hint">Appuie sur + pour créer ta première note.</p>
+          <p className="mes-drogues-vide-hint">Appuyez sur + pour créer votre première note.</p>
         </div>
       ) : notesFiltrees.length === 0 ? (
         <p className="admin-vide">Aucune note dans cette catégorie.</p>

@@ -13,7 +13,8 @@ export default function LaboProtocoles() {
   const [loading, setLoading] = useState(true)
   const { setTitreCustom } = useContext(TitreContext)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro, estEquipe } = useProfil()
+  const { estPro } = useProfil()
+  console.log('estPro labo:', estPro)
 
   useEffect(() => {
   chargerDonnees()
@@ -27,9 +28,7 @@ export default function LaboProtocoles() {
     const [{ data: cat }, { data: protos }, { data: protosUser }] = await Promise.all([
       supabase.from('labo_categories').select('*').eq('id', categorieId).single(),
       supabase.from('labo_protocoles').select('*').eq('categorie_id', categorieId).order('ordre'),
-      estEquipe
-        ? supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', categorieId).order('ordre')
-        : supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', categorieId).is('equipe_id', null).order('ordre'),
+      supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', categorieId).order('ordre'),
     ])
 
     setCategorie(cat)
@@ -88,7 +87,7 @@ export default function LaboProtocoles() {
           L'ajout de protocoles personnalisés est réservé au forfait <strong>Pro</strong>.
         </p>
         <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-          Passe au forfait Pro dans ton profil pour accéder à cette fonctionnalité.
+          Passez au forfait Pro dans votre profil pour accéder à cette fonctionnalité.
         </p>
       </div>
       <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>

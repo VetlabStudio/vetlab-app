@@ -269,7 +269,7 @@ export default function Dilution() {
         {/* ─── AVERTISSEMENT ──────────────────── */}
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
-          Valide toujours tes calculs avec le vétérinaire responsable avant de préparer une solution.
+          Validez toujours vos calculs avec le vétérinaire responsable avant de préparer une solution.
         </div>
 
       </div>

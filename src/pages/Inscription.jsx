@@ -42,7 +42,7 @@ export default function Inscription() {
     })
 
     if (error) {
-      setErreur("Erreur lors de l'inscription. Vérifie ton courriel.")
+      setErreur("Erreur lors de l'inscription. Vérifiez votre courriel.")
     } else {
       setSucces(true)
     }
@@ -56,9 +56,9 @@ export default function Inscription() {
           <div className="succes-icone">
             <i className="ti ti-circle-check"></i>
           </div>
-          <h1 className="auth-titre">Vérifie ton courriel</h1>
+          <h1 className="auth-titre">Vérifiez votre courriel</h1>
           <p className="auth-description">
-            Un lien de confirmation t'a été envoyé. Clique dessus pour activer ton compte.
+            Un lien de confirmation vous a été envoyé. Cliquez dessus pour activer votre compte.
           </p>
           <Link to="/connexion" className="btn-primary" style={{display:'block', textAlign:'center'}}>
             Retour à la connexion
@@ -92,7 +92,7 @@ export default function Inscription() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="ton@courriel.com"
+              placeholder="votre@courriel.com"
               required
             />
           </div>
@@ -140,9 +140,9 @@ export default function Inscription() {
             <div className="avertissement-texte" onScroll={handleScrollAvertissement}>
               <p>Avant de continuer, merci de lire et d'accepter ce qui suit :</p>
               <p>Le contenu d'ADJUVET (calculateurs, fiches médicaments, protocoles, checklists, guides de référence, etc.) est fourni <strong>à titre informatif et éducatif seulement</strong>. Il ne constitue pas un avis médical, un diagnostic ou une recommandation de traitement, et ne remplace jamais le jugement professionnel d'un médecin vétérinaire.</p>
-              <p>Toute décision clinique doit être validée par un professionnel qualifié, selon l'état particulier de chaque patient. Les calculateurs sont des outils d'aide au calcul — vérifie toujours les valeurs obtenues avant administration.</p>
+              <p>Toute décision clinique doit être validée par un professionnel qualifié, selon l'état particulier de chaque patient. Les calculateurs sont des outils d'aide au calcul — vérifiez toujours les valeurs obtenues avant administration.</p>
               <p>Nous ne pouvons garantir l'exactitude, l'exhaustivité ou l'actualité complète du contenu. <strong>L'utilisateur assume l'entière responsabilité des décisions ou actions prises à partir des informations contenues dans ADJUVET.</strong> ADJUVET, Vetlab Studio et ses contributeurs déclinent toute responsabilité quant aux dommages résultant de l'utilisation de l'application, fournie « telle quelle », sans garantie d'aucune sorte.</p>
-              <p>En cliquant sur « J'ai compris et j'accepte », tu confirmes avoir lu cet avertissement et tu consens à utiliser ADJUVET en toute connaissance de ces limites.</p>
+              <p>En cliquant sur « J'ai compris et j'accepte », vous confirmez avoir lu cet avertissement et vous consentez à utiliser ADJUVET en toute connaissance de ces limites.</p>
             </div>
             <button className="btn-primary" disabled={!avertissementLu} onClick={confirmerInscription}>
               J'ai compris et j'accepte

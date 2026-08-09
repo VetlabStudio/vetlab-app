@@ -454,7 +454,7 @@ export default function SoinsGenerauxExamenPhysique() {
         <div className="postop-intro">
           <i className="ti ti-clipboard-check postop-intro-icone"></i>
           <p className="postop-intro-texte">
-            Checklist d'examen physique. Consulte tes anciens examens ou commence-en un nouveau.
+            Checklist d'examen physique. Consultez vos anciens examens ou commencez-en un nouveau.
           </p>
         </div>
 
@@ -639,7 +639,7 @@ export default function SoinsGenerauxExamenPhysique() {
               <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
                 <i className="ti ti-alert-triangle" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
                 <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  As-tu bien noté ces informations dans le dossier de <strong>{showConfirmSupprimer.animal_nom}</strong> avant de supprimer ?
+                  Avez-vous bien noté ces informations dans le dossier de <strong>{showConfirmSupprimer.animal_nom}</strong> avant de supprimer ?
                 </p>
               </div>
               <div className="popup-actions-centrees">
@@ -960,7 +960,7 @@ export default function SoinsGenerauxExamenPhysique() {
             <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
               <i className="ti ti-alert-triangle" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
               <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                Certaines sections n'ont pas été remplies. Veux-tu revenir compléter le formulaire ou poursuivre quand même ?
+                Certaines sections n'ont pas été remplies. Voulez-vous revenir compléter le formulaire ou poursuivre quand même ?
               </p>
             </div>
             <div className="popup-actions-centrees">

@@ -370,7 +370,7 @@ console.log('customId:', customId)
         <i className="ti ti-trash" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
         <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
           {form.medicament_id
-            ? 'Réinitialiser aux valeurs de base ? Tes modifications seront perdues.'
+            ? 'Réinitialiser aux valeurs de base ? Vos modifications seront perdues.'
             : `Supprimer ${form.nom} ? Cette action est irréversible.`}
         </p>
       </div>

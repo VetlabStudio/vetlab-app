@@ -56,7 +56,7 @@ export default function LaRadiologieCharte() {
           {entreesFiltrees.length === 0 ? (
             <div className="admin-vide">
               {entrees.length === 0
-                ? 'Crée ta propre charte radiographique selon les spécifications de la machine à ta clinique.'
+                ? 'Créez votre propre charte radiographique selon les spécifications de la machine à votre clinique.'
                 : 'Aucune entrée ne correspond à ce filtre.'}
             </div>
           ) : (

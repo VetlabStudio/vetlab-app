@@ -5,7 +5,7 @@ const SECTIONS = [
     titre: 'Acceptation des termes',
     icone: 'ti-file-text',
     paragraphes: [
-      'En créant un compte et en utilisant ADJUVET, tu acceptes les présentes conditions d\'utilisation.',
+      'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation.',
     ],
   },
   {
@@ -16,7 +16,7 @@ const SECTIONS = [
     ],
     liste: [
       'Le contenu est fourni "tel quel", sans garantie d\'exactitude complète ou d\'absence d\'erreur.',
-      'Tu es responsable de l\'usage que tu fais des informations et outils fournis.',
+      'Vous êtes responsable de l\'usage que vous faites des informations et outils fournis.',
       'Il est interdit de redistribuer, copier ou revendre le contenu de l\'application sans autorisation.',
     ],
   },
@@ -24,21 +24,21 @@ const SECTIONS = [
     titre: 'Abonnement et facturation',
     icone: 'ti-credit-card',
     paragraphes: [
-      'Le forfait Pro est un abonnement payant (mensuel ou annuel) géré via Stripe. Tu peux gérer ou annuler ton abonnement à tout moment depuis la page Profil.',
+      'Le forfait Pro est un abonnement payant (mensuel ou annuel) géré via Stripe. Vous pouvez gérer ou annuler votre abonnement à tout moment depuis la page Profil.',
     ],
   },
   {
     titre: 'Modifications',
     icone: 'ti-edit',
     paragraphes: [
-      'Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants te seront communiqués via l\'application.',
+      'Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants vous seront communiqués via l\'application.',
     ],
   },
   {
     titre: 'Contact',
     icone: 'ti-mail',
     paragraphes: [
-      'Pour toute question concernant ces conditions, écris-nous à info@vetlabstudio.ca.',
+      'Pour toute question concernant ces conditions, écrivez-nous à info@vetlabstudio.ca.',
     ],
   },
 ]

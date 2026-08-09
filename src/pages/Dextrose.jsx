@@ -51,7 +51,7 @@ export default function Dextrose() {
           />
           <span className="unite-fixe">%</span>
         </div>
-        <p className="champ-aide">Concentration de ta solution de dextrose (ex : D50 = 50 %)</p>
+        <p className="champ-aide">Concentration de votre solution de dextrose (ex : D50 = 50 %)</p>
       </div>
 
       <div className="champ">
@@ -115,7 +115,7 @@ export default function Dextrose() {
       )}
 
       <p className="calc-disclaimer">
-        Valide toujours tes calculs avec le vétérinaire responsable avant de préparer une solution.
+        Validez toujours vos calculs avec le vétérinaire responsable avant de préparer une solution.
       </p>
     </div>
   )

@@ -357,7 +357,7 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
 </div>
           <div className="calc-avertissement">
   <i className="ti ti-alert-circle"></i>
-  Valide toujours le dosage avec un vétérinaire avant d'administrer un médicament. Ce calculateur est un outil d'aide, ton jugement clinique prime en tout temps.
+  Valide toujours le dosage avec un vétérinaire avant d'administrer un médicament. Ce calculateur est un outil d'aide, votre jugement clinique prime en tout temps.
 </div>
 
           {/* Démarche */}
@@ -412,10 +412,12 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
           La personnalisation des fiches médicaments est réservée au forfait <strong>Pro</strong>.
         </p>
         <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-          Passe au forfait Pro dans ton profil pour accéder à cette fonctionnalité.
+          Passez au forfait Pro dans votre profil pour accéder à cette fonctionnalité.
         </p>
       </div>
-      <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => { setShowProMsg(false); navigate('/abonnement') }}>Voir les forfaits</button>
+      <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>
+        Compris
+      </button>
     </div>
   </div>
 )}

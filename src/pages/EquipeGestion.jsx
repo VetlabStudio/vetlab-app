@@ -292,7 +292,8 @@ export default function EquipeGestion() {
                           changerRole(m.id, e.target.value)
                         }
                       }}
-                      style={{ border: '1px solid var(--border)', borderRadius: 8, padding: '5px 8px', fontSize: 12, background: 'var(--bg-secondary)', color: 'var(--text)' }}
+                      className="form-input"
+                      style={{ borderRadius: 8, fontSize: 12, backgroundColor: 'var(--bg-secondary)', color: 'var(--text)', padding: '5px 8px' }}
                     >
                       <option value="membre">Membre</option>
                       <option value="admin">Admin</option>
@@ -383,7 +384,8 @@ export default function EquipeGestion() {
               <select
                 value={roleInvit}
                 onChange={e => setRoleInvit(e.target.value)}
-                style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px', fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text)' }}
+                className="form-input"
+                style={{ borderRadius: 10, fontSize: 14, backgroundColor: 'var(--bg-secondary)', color: 'var(--text)' }}
               >
                 <option value="membre">Membre</option>
                 <option value="admin">Admin</option>
@@ -447,7 +449,7 @@ export default function EquipeGestion() {
                   <i className="ti ti-credit-card" style={{ marginRight: 6, color: 'var(--accent-gold)' }}></i>Attention — Facturation
                 </p>
                 <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                  Le renouvellement sera chargé sur la <strong>carte de crédit actuellement enregistrée</strong> jusqu'à ce que <strong>{cibleTransfert.profiles?.nom}</strong> mette à jour ses informations de paiement dans <strong>Abonnement → Gérer</strong>.
+                  Le renouvellement sera chargé sur la <strong>carte de crédit actuellement enregistrée</strong> jusqu'à ce que <strong>{cibleTransfert.profiles?.nom}</strong> mette à jour ses informations de paiement dans <strong>Abonnement → Gérer ma facturation</strong>.
                 </p>
               </div>
 

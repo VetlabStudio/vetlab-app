@@ -86,10 +86,10 @@ export default function LaRadiologie() {
                 L'ajout de protocoles personnalisés est réservé au forfait <strong>Pro</strong>.
               </p>
               <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-                Passe au forfait Pro dans ton profil pour accéder à cette fonctionnalité.
+                Passez au forfait Pro dans votre profil pour accéder à cette fonctionnalité.
               </p>
             </div>
-            <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => { setShowProMsg(false); navigate('/abonnement') }}>Voir les forfaits</button>
+            <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>Compris</button>
           </div>
         </div>
       )}

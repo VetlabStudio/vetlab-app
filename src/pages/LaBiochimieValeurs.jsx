@@ -57,7 +57,7 @@ export default function LaBiochimieValeurs() {
   return (
     <div className="labo-detail-page">
       <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: '0 0 8px 0', lineHeight: 1.5 }}>
-        Valeurs indicatives; toujours se référer aux intervalles de référence de ton laboratoire.
+        Valeurs indicatives; toujours se référer aux intervalles de référence de votre laboratoire.
       </p>
 
       {SECTIONS.map((section, i) => (

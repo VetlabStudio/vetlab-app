@@ -729,7 +729,7 @@ export default function ChirurgieMonitoring() {
         <div className="postop-intro">
           <i className="ti ti-activity postop-intro-icone"></i>
           <p className="postop-intro-texte">
-            Outil de suivi des paramètres vitaux durant une anesthésie. Démarre une nouvelle anesthésie ou consulte ton historique.
+            Outil de suivi des paramètres vitaux durant une anesthésie. Démarrez une nouvelle anesthésie ou consultez votre historique.
           </p>
         </div>
 
@@ -906,7 +906,7 @@ export default function ChirurgieMonitoring() {
               <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
                 <i className="ti ti-alert-triangle" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
                 <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  As-tu bien noté ces informations dans le dossier de <strong>{showConfirmSupprimer.animal_nom}</strong> avant de supprimer ?
+                  Avez-vous bien noté ces informations dans le dossier de <strong>{showConfirmSupprimer.animal_nom}</strong> avant de supprimer ?
                 </p>
               </div>
               <div className="popup-actions-centrees">

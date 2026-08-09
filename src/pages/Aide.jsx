@@ -5,11 +5,11 @@ const SECTIONS = [
     titre: 'Comment ça fonctionne',
     icone: 'ti-help-circle',
     paragraphes: [
-      'ADJUVET regroupe des calculateurs, des fiches médicaments, des protocoles de laboratoire et des guides de référence pour t\'accompagner au quotidien.',
+      'ADJUVET regroupe des calculateurs, des fiches médicaments, des protocoles de laboratoire et des guides de référence pour vous accompagner au quotidien.',
     ],
     liste: [
-      'Calcul rapide : calcule une dose à partir du poids, de la posologie et de la concentration.',
-      'Pharmacologie : consulte les fiches médicaments par catégorie, ajoute tes favoris.',
+      'Calcul rapide : calculez une dose à partir du poids, de la posologie et de la concentration.',
+      'Pharmacologie : consultez les fiches médicaments par catégorie, ajoutez vos favoris.',
       'Laboratoire et Chirurgie : protocoles, guides et valeurs de référence.',
       'Le forfait Pro donne accès aux contenus avancés (médicaments personnalisés, protocoles, toxicologie, examens, etc.).',
     ],
@@ -20,12 +20,12 @@ const SECTIONS = [
     paragraphes: [],
     faq: [
       {
-        q: 'Comment m\'abonner au forfait Pro ?',
-        a: 'Va dans Profil, puis choisis le forfait mensuel ou annuel et complète le paiement directement dans l\'application (paiement sécurisé via Stripe).',
+        q: 'Comment s\'abonner au forfait Pro ?',
+        a: 'Allez dans Profil, puis choisissez le forfait mensuel ou annuel et complétez le paiement directement dans l\'application (paiement sécurisé via Stripe).',
       },
       {
         q: 'Comment annuler mon abonnement Pro ?',
-        a: 'Dans Profil, appuie sur "Gérer mon abonnement" — tu seras redirigé vers le portail Stripe où tu peux annuler ou modifier ton abonnement. L\'accès Pro reste actif jusqu\'à la fin de la période déjà payée.',
+        a: 'Dans Profil, appuyez sur "Gérer mon abonnement" — vous serez redirigé vers le portail Stripe où vous pouvez annuler ou modifier votre abonnement. L\'accès Pro reste actif jusqu\'à la fin de la période déjà payée.',
       },
       {
         q: 'Qu\'est-ce qui est inclus dans le forfait Pro ?',
@@ -33,19 +33,19 @@ const SECTIONS = [
       },
       {
         q: 'Si je me désabonne, est-ce que je perds mes données Pro ?',
-        a: 'Non. Tes médicaments personnalisés, protocoles et examens restent enregistrés. Ils redeviennent simplement accessibles si tu te réabonnes avec le même compte.',
+        a: 'Non. Vos médicaments personnalisés, protocoles et examens restent enregistrés. Ils redeviennent simplement accessibles si vous vous réabonnez avec le même compte.',
       },
       {
         q: 'Comment ajouter un médicament à mes favoris ?',
-        a: 'Sur la fiche d\'un médicament, appuie sur l\'icône en forme d\'étoile. Tes favoris sont accessibles rapidement dans l\'onglet "Médicaments favoris" de la barre de navigation.',
+        a: 'Sur la fiche d\'un médicament, appuyez sur l\'icône en forme d\'étoile. Vos favoris sont accessibles rapidement dans l\'onglet "Médicaments favoris" de la barre de navigation.',
       },
       {
         q: 'Comment supprimer mon compte ?',
-        a: 'Dans Profil, utilise l\'option de suppression de compte. Cette action est définitive et supprime toutes tes données.',
+        a: 'Dans Profil, utilisez l\'option de suppression de compte. Cette action est définitive et supprime toutes vos données.',
       },
       {
         q: 'Mes informations sont-elles privées ?',
-        a: 'Oui. Tes données sont liées uniquement à ton compte et ne sont jamais vendues. Consulte la Politique de confidentialité pour plus de détails.',
+        a: 'Oui. Vos données sont liées uniquement à votre compte et ne sont jamais vendues. Consultez la Politique de confidentialité pour plus de détails.',
       },
     ],
   },
@@ -53,7 +53,7 @@ const SECTIONS = [
     titre: 'Problème ou suggestion',
     icone: 'ti-message-2',
     paragraphes: [
-      'Tu as trouvé une erreur, une information à corriger ou une idée d\'amélioration ? Écris-nous, on est à l\'écoute !',
+      'Vous avez trouvé une erreur, une information à corriger ou une idée d\'amélioration ? Écrivez-nous, on est à l\'écoute !',
     ],
   },
   {
