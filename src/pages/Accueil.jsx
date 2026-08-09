@@ -102,7 +102,7 @@ export default function Accueil() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       const { data } = await supabase.from('profiles').select('nom, avatar_url').eq('id', user.id).single()
-      if (data?.nom) setPrenom(data.nom.split(' ')[0])
+      if (data?.nom) setPrenom(data.nom)
       if (data?.avatar_url) setAvatarUrl(data.avatar_url)
     }
     chargerProfil()
