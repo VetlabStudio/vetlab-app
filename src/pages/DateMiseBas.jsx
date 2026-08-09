@@ -10,10 +10,10 @@ const ESPECES = [
   { id: 'chevre',  label: 'Chèvre',  icone: '/icone-chevre.png' },
   { id: 'lama',    label: 'Lama',    icone: '/icone-lama.png' },
   { id: 'cochon',  label: 'Cochon',  icone: '/icone-cochon.png' },
-  { id: 'furet',   label: 'Furet',   icone: '/icone-furet.png' },
+  { id: 'furet',   label: 'Furet',   icone: '/furet.svg' },
   { id: 'rat',     label: 'Rat',     icone: '/icone-rongeurs.png' },
   { id: 'souris',  label: 'Souris',  icone: '/icone-rongeurs.png' },
-  { id: 'hamster', label: 'Hamster', icone: '/icone-rongeurs.png' },
+  { id: 'hamster', label: 'Hamster', icone: '/hamster.svg' },
 ]
 
 const INFO_GESTATION = {

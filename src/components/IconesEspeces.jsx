@@ -8,7 +8,7 @@ export const ESPECES_CONFIG = {
   chevre:     { icone: '/icone-chevre.png', label: 'Chèvre' },
   cochon:     { icone: '/icone-cochon.png', label: 'Cochon' },
   lapin:      { icone: '/icone-lapin.png', label: 'Lapin' },
-  furet:      { icone: '/icone-furet.png', label: 'Furet', ratio: 38 / 30 },
+  furet:      { icone: '/furet.svg', label: 'Furet', ratio: 38 / 30 },
   oiseau:     { icone: '/icone-oiseau.png', label: 'Oiseau' },
   serpent:    { icone: '/icone-serpent.png', label: 'Serpent' },
   lezard:     { icone: '/icone-lezard.png', label: 'Lézard' },
