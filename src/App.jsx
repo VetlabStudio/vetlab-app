@@ -239,6 +239,7 @@ function RouteProtegee({ session, children }) {
 
 function RouteProtegeeAdmin({ session, children }) {
   if (!session) return <Navigate to="/connexion" replace />
+  if (session.user.email !== 'info@vetlabstudio.ca') return <Navigate to="/accueil" replace />
   return <LayoutAdmin>{children}</LayoutAdmin>
 }
 

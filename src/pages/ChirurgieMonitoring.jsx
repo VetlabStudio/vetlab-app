@@ -745,7 +745,7 @@ export default function ChirurgieMonitoring() {
             <h2 className="postop-section-titre">Historique ({historique.length}/{MAX_HISTORIQUE})</h2>
           </div>
           {historique.length === 0 ? (
-            <p style={{ fontSize: 14, color: 'var(--text-hint)', padding: '0 16px 16px' }}>
+            <p style={{ fontSize: 14, color: 'var(--text-hint)', padding: '16px 16px 16px' }}>
               Aucun monitoring enregistré pour le moment.
             </p>
           ) : (
@@ -1216,7 +1216,7 @@ export default function ChirurgieMonitoring() {
           <div style={{ padding: '0 16px 16px' }}>
             {!form.poids && (
               <p style={{ fontSize: 13, color: 'var(--accent-gold)', marginBottom: 8, marginTop: 8 }}>
-                <i className="ti ti-alert-triangle"></i> Indique le poids de l'animal pour calculer les volumes automatiquement.
+                <i className="ti ti-alert-triangle"></i> Indiquez le poids de l'animal pour calculer les volumes automatiquement.
               </p>
             )}
             <div className="recherche-wrapper" style={{ marginBottom: 12, position: 'relative' }}>
@@ -1458,7 +1458,7 @@ export default function ChirurgieMonitoring() {
           </div>
           <h2 className="postop-section-titre">Suivi des paramètres</h2>
         </div>
-        <div style={{ padding: '0 16px 16px' }}>
+        <div style={{ padding: '16px 16px 16px' }}>
           {chunks.length === 0 ? (
             <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune mesure ajoutée pour le moment.</p>
           ) : chunks.map((chunk, ci) => (
