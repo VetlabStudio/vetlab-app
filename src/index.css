@@ -232,8 +232,6 @@ input  { font-family: var(--font); }
   flex-direction: column;
   gap: 12px;
 }
-.accueil-v2-section:first-of-type {
-}
 
 .accueil-v2-titre-section {
   font-size: 17px;
