@@ -127,7 +127,6 @@ export default function Header() {
         <i className="ti ti-arrow-left"></i>
       </button>
       <h1 style={{ textAlign: 'center', maxWidth: 'calc(100% - 80px)', lineHeight: 1.3, margin: 0, fontSize: 18 }}>{titre}</h1>
-      <div style={{ width: 40 }} />
     </div>
   )
 }
