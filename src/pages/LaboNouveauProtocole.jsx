@@ -17,7 +17,7 @@ export default function LaboNouveauProtocole() {
   const [titre, setTitre] = useState('')
   const [materiel, setMateriel] = useState([''])
   const [etapes, setEtapes] = useState([
-    { id: Date.now(), titre: 'Étape 1', description: '' },
+    { id: Date.now(), titre: '', description: '' },
   ])
   const [sauvegarde, setSauvegarde] = useState(false)
 
@@ -38,7 +38,7 @@ export default function LaboNouveauProtocole() {
   function ajouterEtape() {
     setEtapes(prev => [...prev, {
       id: Date.now(),
-      titre: `Étape ${prev.length + 1}`,
+      titre: '',
       description: '',
     }])
   }

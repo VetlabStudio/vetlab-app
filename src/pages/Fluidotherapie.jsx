@@ -151,6 +151,9 @@ const debitHoraire = useMemo(() => {
       <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
     </div>
   </div>
+  {poids !== '' && poidsKg <= 0 && (
+    <p className="range-hint" style={{ color: 'var(--accent-red)', fontWeight: 600 }}>Poids invalide — entrez une valeur supérieure à 0.</p>
+  )}
 </div>
 
         {/* ─── FORMULES MAINTENANCE ───────────── */}

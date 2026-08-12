@@ -82,7 +82,7 @@ export default function Abonnement() {
 
   const [onglet, setOnglet] = useState('personnel')
   const [periode, setPeriode] = useState('annuel')
-  const [nombreMembres, setNombreMembres] = useState(3)
+  const [nombreMembres, setNombreMembres] = useState(2)
   const [upgradeLoading, setUpgradeLoading] = useState(false)
   const [modalUpgrade, setModalUpgrade] = useState(false)
   const [modalSieges, setModalSieges] = useState(false)
@@ -438,7 +438,8 @@ export default function Abonnement() {
               <div style={{ marginBottom: 16 }}>
                 <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-                  <button className="radio-btn" onClick={() => setNombreMembres(n => Math.max(2, n - 1))}
+                  <button className="radio-btn" onClick={() => setNombreMembres(n => n > 2 ? n - 1 : 2)}
+                    disabled={nombreMembres <= 2}
                     style={{ width: 32, height: 32, borderRadius: 8 }}>−</button>
                   <span style={{ fontSize: 18, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>{nombreMembres}</span>
                   <button className="radio-btn" onClick={() => setNombreMembres(n => n + 1)}
@@ -462,7 +463,8 @@ export default function Abonnement() {
               <div style={{ marginBottom: 16 }}>
                 <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-                  <button className="radio-btn" onClick={() => setNombreMembres(n => Math.max(2, n - 1))}
+                  <button className="radio-btn" onClick={() => setNombreMembres(n => n > 2 ? n - 1 : 2)}
+                    disabled={nombreMembres <= 2}
                     style={{ width: 32, height: 32, borderRadius: 8 }}>−</button>
                   <span style={{ fontSize: 18, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>{nombreMembres}</span>
                   <button className="radio-btn" onClick={() => setNombreMembres(n => n + 1)}

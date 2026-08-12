@@ -81,14 +81,14 @@ export default function EquipeGestion() {
     const { error } = await supabase.from('team_invitations').insert({
       team_id: teamId, email, role: roleInvit, invited_by: userId, token, status: 'pending',
     })
-    if (error) return false
+    if (error) return { ok: false, message: error.message || 'Erreur inconnue' }
 
     const baseUrl = import.meta.env.VITE_APP_URL || 'https://adjuvet.app'
     const { error: fnError } = await supabase.functions.invoke('send-invitation', {
       body: { email, nomClinique: equipe?.nom || 'notre équipe', lien: `${baseUrl}/rejoindre?token=${token}`, emailInvite: email },
     })
     if (fnError) console.error('send-invitation error:', fnError)
-    return true
+    return { ok: true }
   }
 
   async function inviter() {
@@ -102,23 +102,25 @@ export default function EquipeGestion() {
 
     setEnvoi(true)
     let envoyes = 0
-    let erreurs = 0
+    const messagesErreur = []
     setEnvoiProgress({ total: emailsParsed.length, envoyes: 0, erreurs: 0 })
 
     for (const email of emailsParsed) {
-      const ok = await inviterUn(email)
-      if (ok) envoyes++
-      else erreurs++
-      setEnvoiProgress({ total: emailsParsed.length, envoyes, erreurs })
+      const result = await inviterUn(email)
+      if (result.ok) envoyes++
+      else messagesErreur.push(`${email} : ${result.message}`)
+      setEnvoiProgress({ total: emailsParsed.length, envoyes, erreurs: messagesErreur.length })
     }
 
     setEmailsInput('')
     charger()
-    if (erreurs === 0) {
+    if (messagesErreur.length === 0) {
       setMsgSucces(`${envoyes} invitation${envoyes > 1 ? 's' : ''} envoyée${envoyes > 1 ? 's' : ''} avec succès.`)
       setTimeout(() => { setShowInviteModal(false); setMsgSucces('') }, 2000)
+    } else if (envoyes === 0) {
+      setErreurInvit(messagesErreur.join('\n'))
     } else {
-      setErreurInvit(`${envoyes} envoyée${envoyes > 1 ? 's' : ''}, ${erreurs} échouée${erreurs > 1 ? 's' : ''}.`)
+      setErreurInvit(`${envoyes} envoyée${envoyes > 1 ? 's' : ''}. Échec :\n${messagesErreur.join('\n')}`)
     }
     setEnvoiProgress(null)
     setEnvoi(false)

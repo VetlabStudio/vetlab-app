@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
   payment_method_collection: 'if_required', // <-- la ligne a ajouter
   locale: 'fr',
   ui_mode: 'embedded',
-  return_url: `${req.headers.get('origin')}/profil?paiement=succes`,
+  return_url: `${req.headers.get('origin')}/abonnement?paiement=succes`,
 })
 
   return new Response(

@@ -180,6 +180,12 @@ export default function CRI() {
         </div>
 
         {/* ─── RÉSULTATS ──────────────────────── */}
+        {mlDansSac <= 0 && (dosageCRIVal > 0 || concentrationVal > 0) && !debitMlH && (
+          <p className="range-hint" style={{ color: 'var(--accent-red)', fontWeight: 600 }}>
+            <i className="ti ti-alert-circle" style={{ marginRight: 4 }}></i>
+            Le champ Débit est requis pour afficher les résultats.
+          </p>
+        )}
         {mlDansSac > 0 && (
           <div className="resultat-card">
             {mlDoseCharge > 0 && (

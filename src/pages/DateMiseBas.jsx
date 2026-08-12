@@ -97,8 +97,14 @@ export default function DateMiseBas() {
   const info = INFO_GESTATION[espece]
   const especeChoisie = ESPECES.find(e => e.id === espece)
 
+  const dateValide = useMemo(() => {
+    if (!dateAccouplement) return true
+    const [a] = dateAccouplement.split('-').map(Number)
+    return a >= 2000 && a <= 2100
+  }, [dateAccouplement])
+
   const dates = useMemo(() => {
-    if (!dateAccouplement) return null
+    if (!dateAccouplement || !dateValide) return null
     const [a, m, j] = dateAccouplement.split('-').map(Number)
     const base = new Date(a, m - 1, j)
     return {
@@ -106,7 +112,7 @@ export default function DateMiseBas() {
       moyenne: ajouterJours(base, info.dureeMoyenne),
       tard:    ajouterJours(base, info.dureeMax),
     }
-  }, [dateAccouplement, espece, info])
+  }, [dateAccouplement, espece, info, dateValide])
 
   return (
     <div className="page-calculateurs">
@@ -143,6 +149,9 @@ export default function DateMiseBas() {
               style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'var(--font)', fontSize: '1rem', color: 'var(--text-primary)', padding: '8px 0' }}
             />
           </div>
+          {dateAccouplement && !dateValide && (
+            <p className="range-hint" style={{ color: 'var(--accent-red)', fontWeight: 600 }}>Date invalide — vérifiez l'année saisie.</p>
+          )}
         </div>
 
         {/* ─── RÉSULTATS ───────────────────────── */}
