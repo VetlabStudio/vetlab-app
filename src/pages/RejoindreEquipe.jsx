@@ -19,16 +19,15 @@ export default function RejoindreEquipe() {
   }, [token])
 
   async function verifierToken() {
-    const { data, error } = await supabase
-      .from('team_invitations')
-      .select('*, equipes(nom)')
-      .eq('token', token)
-      .eq('status', 'pending')
-      .single()
+    // Appel Edge Function — service role côté serveur, aucune RLS anon nécessaire
+    const { data, error } = await supabase.functions.invoke('verify-invitation', {
+      body: { token },
+    })
 
-    if (error || !data) { setStatut('invalide'); return }
-    setInvitation(data)
+    if (error || !data?.invitation) { setStatut('invalide'); return }
+    setInvitation(data.invitation)
 
+    // Vérifier si l'utilisateur est connecté et a un abonnement Pro
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       const { data: profil } = await supabase
@@ -51,30 +50,7 @@ export default function RejoindreEquipe() {
       return
     }
 
-    if (user.email !== invitation.email) {
-      setStatut('erreur')
-      setLoading(false)
-      return
-    }
-
-    const { data: equipe } = await supabase
-      .from('equipes')
-      .select('max_membres')
-      .eq('id', invitation.team_id)
-      .single()
-
-    const { count: membresCount } = await supabase
-      .from('membres_equipe')
-      .select('*', { count: 'exact', head: true })
-      .eq('equipe_id', invitation.team_id)
-
-    if (equipe?.max_membres && membresCount !== null && membresCount >= equipe.max_membres) {
-      setStatut('plein')
-      setLoading(false)
-      return
-    }
-
-    // Si plan Pro actif, annuler l'abonnement Stripe avant de rejoindre
+    // Annuler l'abonnement Pro avant de rejoindre l'équipe
     if (planActuel === 'pro') {
       const { error: cancelErr } = await supabase.functions.invoke('cancel-pro-subscription')
       if (cancelErr) {
@@ -84,21 +60,21 @@ export default function RejoindreEquipe() {
       }
     }
 
-    const { error: membreErr } = await supabase
-      .from('membres_equipe')
-      .upsert({ equipe_id: invitation.team_id, user_id: user.id, role: invitation.role }, { onConflict: 'equipe_id,user_id' })
+    // Accepter l'invitation via Edge Function (toute la logique côté serveur)
+    const { data, error } = await supabase.functions.invoke('accept-invitation', {
+      body: { token },
+    })
 
-    if (membreErr) { setStatut('erreur'); setLoading(false); return }
+    if (error || !data) { setStatut('erreur'); setLoading(false); return }
 
-    await supabase
-      .from('team_invitations')
-      .update({ status: 'accepted' })
-      .eq('token', token)
-
-    await supabase
-      .from('profiles')
-      .update({ plan: 'equipe', equipe_id: invitation.team_id, role: invitation.role })
-      .eq('id', user.id)
+    if (!data.ok) {
+      const code = data.error
+      if (code === 'plein') { setStatut('plein'); setLoading(false); return }
+      if (code === 'email_mismatch') { setStatut('erreur'); setLoading(false); return }
+      setStatut('erreur')
+      setLoading(false)
+      return
+    }
 
     setStatut('accepte')
     setLoading(false)

@@ -454,17 +454,17 @@ function Babillard() {
     if (taggedIds.length > 0) {
       const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
       const auteurNom = monProfil?.nom || user.email
-      await supabase.from('notifications').insert(
-        taggedIds.map(uid => ({
-          user_id: uid,
+      await supabase.functions.invoke('send-notification', {
+        body: {
+          recipients: taggedIds,
           type: 'tag_babillard',
           message: tagEquipe
             ? `${auteurNom} a tagué toute l'équipe dans le babillard`
             : `${auteurNom} vous a tagué dans le babillard`,
           reference_type: 'babillard',
           reference_id: newMsg?.id || null,
-        }))
-      )
+        },
+      })
     }
 
     setForm({ titre: '', contenu: '', couleur: COULEURS[0], categorie: '' })
@@ -1019,12 +1019,14 @@ function Taches() {
     }).select('id').single()
     if (form.assignee_id && form.assignee_id !== user.id) {
       const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
-      await supabase.from('notifications').insert({
-        user_id: form.assignee_id,
-        type: 'tache_assignee',
-        message: `${monProfil?.nom || user.email} vous a assigné une tâche : ${form.titre.trim()}`,
-        reference_type: 'tache',
-        reference_id: newTache?.id || null,
+      await supabase.functions.invoke('send-notification', {
+        body: {
+          recipients: [form.assignee_id],
+          type: 'tache_assignee',
+          message: `${monProfil?.nom || user.email} vous a assigné une tâche : ${form.titre.trim()}`,
+          reference_type: 'tache',
+          reference_id: newTache?.id || null,
+        },
       })
     }
     setForm({ titre: '', description: '', assignee_id: '', date_echeance: '' })
@@ -1048,12 +1050,14 @@ function Taches() {
     }).eq('id', tacheActive.id)
     if (editForm.assignee_id && editForm.assignee_id !== tacheActive.assignee_id && editForm.assignee_id !== user.id) {
       const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
-      await supabase.from('notifications').insert({
-        user_id: editForm.assignee_id,
-        type: 'tache_assignee',
-        message: `${monProfil?.nom || user.email} vous a assigné une tâche : ${editForm.titre.trim()}`,
-        reference_type: 'tache',
-        reference_id: tacheActive.id,
+      await supabase.functions.invoke('send-notification', {
+        body: {
+          recipients: [editForm.assignee_id],
+          type: 'tache_assignee',
+          message: `${monProfil?.nom || user.email} vous a assigné une tâche : ${editForm.titre.trim()}`,
+          reference_type: 'tache',
+          reference_id: tacheActive.id,
+        },
       })
     }
     setTaches(prev => prev.map(t => t.id === tacheActive.id ? { ...t, ...editForm } : t))
