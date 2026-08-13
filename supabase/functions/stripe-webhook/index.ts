@@ -62,14 +62,23 @@ async function mettreAJourMembresEquipe(proprietaireId: string, plan: 'equipe' |
 
   const { data: membres } = await supabase
     .from('membres_equipe')
-    .select('user_id')
+    .select('user_id, role')
     .eq('equipe_id', equipe.id)
     .neq('user_id', proprietaireId)
   if (!membres?.length) return
 
-  const memberIds = membres.map(m => m.user_id)
-  await supabase.from('profiles').update({ plan }).in('id', memberIds)
-  console.log(`mettreAJourMembresEquipe: ${memberIds.length} membre(s) → plan ${plan}`)
+  if (plan === 'free') {
+    const memberIds = membres.map(m => m.user_id)
+    await supabase.from('profiles').update({ plan: 'free', equipe_id: null, role: null }).in('id', memberIds)
+  } else {
+    // Réactivation : restaurer equipe_id et role depuis membres_equipe
+    for (const membre of membres) {
+      await supabase.from('profiles')
+        .update({ plan: 'equipe', equipe_id: equipe.id, role: membre.role })
+        .eq('id', membre.user_id)
+    }
+  }
+  console.log(`mettreAJourMembresEquipe: ${membres.length} membre(s) → plan ${plan}`)
 }
 
 async function envoyerConfirmationAbonnement(customerId: string, plan: string, quantity: number) {
@@ -118,8 +127,8 @@ async function envoyerConfirmationAbonnement(customerId: string, plan: string, q
 
 async function traiterAbonnement(customerId: string, priceId: string | undefined, actif: boolean, quantity = 1): Promise<string | null> {
   if (!actif) {
-    // Rétrograder le propriétaire
-    await supabase.from('profiles').update({ plan: 'free' }).eq('stripe_customer_id', customerId)
+    // Rétrograder le propriétaire et effacer les liens d'équipe
+    await supabase.from('profiles').update({ plan: 'free', equipe_id: null, role: null }).eq('stripe_customer_id', customerId)
     console.log('Plan résilié:', customerId)
 
     // Rétrograder tous les membres de son équipe
