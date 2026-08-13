@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 
 export default function Connexion() {
   const [email, setEmail] = useState('')
@@ -9,6 +9,8 @@ export default function Connexion() {
   const [chargement, setChargement] = useState(false)
   const [confirmé, setConfirmé] = useState(false)
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectUrl = searchParams.get('redirect')
 
   useEffect(() => {
     const hash = window.location.hash
@@ -31,7 +33,7 @@ export default function Connexion() {
     if (error) {
       setErreur('Courriel ou mot de passe incorrect.')
     } else {
-      navigate('/accueil')
+      navigate(redirectUrl || '/accueil')
     }
     setChargement(false)
   }
@@ -87,7 +89,9 @@ export default function Connexion() {
 
         <p className="auth-lien">
           Pas encore de compte ?{' '}
-          <Link to="/inscription">Créer un compte</Link>
+          <Link to={redirectUrl ? `/inscription?redirect=${encodeURIComponent(redirectUrl)}` : '/inscription'}>
+            Créer un compte
+          </Link>
         </p>
       </div>
     </div>

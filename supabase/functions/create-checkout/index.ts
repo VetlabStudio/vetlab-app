@@ -49,16 +49,26 @@ Deno.serve(async (req) => {
     await supabase.from('profiles').update({ stripe_customer_id: customerId }).eq('id', user.id)
   }
 
+  // Annuler les abonnements actifs ou en essai existants pour éviter la double facturation
+  const [activeList, trialingList] = await Promise.all([
+    stripe.subscriptions.list({ customer: customerId, status: 'active' }),
+    stripe.subscriptions.list({ customer: customerId, status: 'trialing' }),
+  ])
+  for (const sub of [...activeList.data, ...trialingList.data]) {
+    await stripe.subscriptions.cancel(sub.id)
+    console.log('Ancien abonnement annulé avant nouveau checkout:', sub.id)
+  }
+
   const session = await stripe.checkout.sessions.create({
-  customer: customerId,
-  mode: 'subscription',
-  line_items: [{ price: priceId, quantity }],
-  allow_promotion_codes: true,
-  payment_method_collection: 'if_required', // <-- la ligne a ajouter
-  locale: 'fr',
-  ui_mode: 'embedded',
-  return_url: `${req.headers.get('origin')}/abonnement?paiement=succes`,
-})
+    customer: customerId,
+    mode: 'subscription',
+    line_items: [{ price: priceId, quantity }],
+    allow_promotion_codes: true,
+    payment_method_collection: 'if_required',
+    locale: 'fr',
+    ui_mode: 'embedded',
+    return_url: `${req.headers.get('origin')}/abonnement?paiement=succes`,
+  })
 
   return new Response(
     JSON.stringify({ clientSecret: session.client_secret }),

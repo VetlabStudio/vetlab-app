@@ -51,6 +51,27 @@ async function mettreAJourEquipe(userId: string, maxMembres: number) {
   }
 }
 
+// Rétrograde ou réactive tous les membres d'une équipe (excl. propriétaire)
+async function mettreAJourMembresEquipe(proprietaireId: string, plan: 'equipe' | 'free') {
+  const { data: equipe } = await supabase
+    .from('equipes')
+    .select('id')
+    .eq('proprietaire_id', proprietaireId)
+    .single()
+  if (!equipe) return
+
+  const { data: membres } = await supabase
+    .from('membres_equipe')
+    .select('user_id')
+    .eq('equipe_id', equipe.id)
+    .neq('user_id', proprietaireId)
+  if (!membres?.length) return
+
+  const memberIds = membres.map(m => m.user_id)
+  await supabase.from('profiles').update({ plan }).in('id', memberIds)
+  console.log(`mettreAJourMembresEquipe: ${memberIds.length} membre(s) → plan ${plan}`)
+}
+
 async function envoyerConfirmationAbonnement(customerId: string, plan: string, quantity: number) {
   if (!RESEND_API_KEY) return
   const { data: profil } = await supabase
@@ -97,8 +118,14 @@ async function envoyerConfirmationAbonnement(customerId: string, plan: string, q
 
 async function traiterAbonnement(customerId: string, priceId: string | undefined, actif: boolean, quantity = 1): Promise<string | null> {
   if (!actif) {
+    // Rétrograder le propriétaire
     await supabase.from('profiles').update({ plan: 'free' }).eq('stripe_customer_id', customerId)
     console.log('Plan résilié:', customerId)
+
+    // Rétrograder tous les membres de son équipe
+    const userId = await getUserIdFromCustomer(customerId)
+    if (userId) await mettreAJourMembresEquipe(userId, 'free')
+
     return null
   }
 
@@ -110,7 +137,11 @@ async function traiterAbonnement(customerId: string, priceId: string | undefined
 
   if (isEquipe) {
     const userId = await getUserIdFromCustomer(customerId)
-    if (userId) await mettreAJourEquipe(userId, quantity)
+    if (userId) {
+      await mettreAJourEquipe(userId, quantity)
+      // Réactiver tous les membres existants de l'équipe
+      await mettreAJourMembresEquipe(userId, 'equipe')
+    }
   }
 
   return plan

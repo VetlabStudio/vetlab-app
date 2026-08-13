@@ -138,6 +138,10 @@ export default function EquipeGestion() {
       membre_user_id: membre.user_id,
       equipe_id_param: teamId,
     })
+    // Rétrograder le plan du membre révoqué
+    await supabase.from('profiles')
+      .update({ plan: 'free', equipe_id: null, role: null })
+      .eq('id', membre.user_id)
     setMembres(prev => prev.filter(m => m.id !== memberId))
     setConfirmRevoquer(null)
   }

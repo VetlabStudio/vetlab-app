@@ -78,7 +78,7 @@ function DividerFeatures() {
 export default function Abonnement() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { profil, estPro, estEquipe, chargerProfil } = useProfil()
+  const { profil, estPro, estEquipe, teamId, chargerProfil } = useProfil()
 
   const [onglet, setOnglet] = useState('personnel')
   const [periode, setPeriode] = useState('annuel')
@@ -92,6 +92,7 @@ export default function Abonnement() {
   const [erreur, setErreur] = useState('')
   const [succes, setSucces] = useState('')
   const [subDetails, setSubDetails] = useState(null)
+  const [nombreMembresActifs, setNombreMembresActifs] = useState(0)
 
   useEffect(() => {
     if (searchParams.get('paiement') === 'succes') {
@@ -113,6 +114,18 @@ export default function Abonnement() {
   useEffect(() => {
     if (subDetails?.quantity) setNombreMembres(subDetails.quantity)
   }, [subDetails])
+
+  useEffect(() => {
+    if (estEquipe && teamId) chargerNombreMembres()
+  }, [estEquipe, teamId])
+
+  async function chargerNombreMembres() {
+    const { count } = await supabase
+      .from('membres_equipe')
+      .select('*', { count: 'exact', head: true })
+      .eq('equipe_id', teamId)
+    setNombreMembresActifs(count || 0)
+  }
 
   function afficherSucces(msg) {
     setSucces(msg)
@@ -537,16 +550,35 @@ export default function Abonnement() {
               <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Nombre de membres</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                 <button className="radio-btn" onClick={() => setNombreMembres(n => Math.max(2, n - 1))}
+                  disabled={nombreMembres <= 2}
                   style={{ width: 32, height: 32, borderRadius: 8 }}>−</button>
                 <span style={{ fontSize: 18, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>{nombreMembres}</span>
                 <button className="radio-btn" onClick={() => setNombreMembres(n => n + 1)}
                   style={{ width: 32, height: 32, borderRadius: 8 }}>+</button>
               </div>
-              <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 16 }}>
+              <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: nombreMembres < nombreMembresActifs ? 12 : 16 }}>
                 {calculerPrixEquipe(nombreMembres)} $ / année · {prixParSiege(nombreMembres)} $/siège
               </p>
+              {nombreMembres < nombreMembresActifs && (
+                <div style={{
+                  background: 'rgba(234,179,8,0.08)', border: '1px solid rgba(234,179,8,0.35)',
+                  borderRadius: 10, padding: '12px 14px', marginBottom: 16,
+                }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#92700a', margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <i className="ti ti-alert-triangle"></i>
+                    Trop de membres actifs
+                  </p>
+                  <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                    Votre équipe compte actuellement <strong>{nombreMembresActifs} membres</strong>. Vous devez retirer <strong>{nombreMembresActifs - nombreMembres} membre{nombreMembresActifs - nombreMembres > 1 ? 's' : ''}</strong> dans la gestion d'équipe avant de réduire à {nombreMembres} sièges.
+                  </p>
+                </div>
+              )}
               {erreur && <div className="form-erreur" style={{ marginBottom: 12 }}>{erreur}</div>}
-              <button className="btn-sauvegarder" onClick={() => upgraderAbonnement(true)} disabled={upgradeLoading}>
+              <button
+                className="btn-sauvegarder"
+                onClick={() => upgraderAbonnement(true)}
+                disabled={upgradeLoading || nombreMembres < nombreMembresActifs}
+              >
                 {upgradeLoading ? 'Mise à jour en cours...' : `Confirmer — ${calculerPrixEquipe(nombreMembres)} $ / année`}
               </button>
             </div>

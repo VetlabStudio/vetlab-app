@@ -13,7 +13,7 @@ export default function DroguesCategorie({ categorie }) {
   const [dropdownOuvert, setDropdownOuvert] = useState(false)
   const [sousCategorieFiltree, setSousCategorieFiltree] = useState('Tous')
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro } = useProfil()
+  const { estPro, estEquipe, teamId, roleEquipe } = useProfil()
 
   useEffect(() => {
     chargerDonnees()
@@ -24,40 +24,44 @@ export default function DroguesCategorie({ categorie }) {
     try {
       const { data: { user } } = await supabase.auth.getUser()
 
-      const [{ data: meds }, { data: medsCustom }, { data: favs }] = await Promise.all([
-  supabase
-    .from('medicaments')
-    .select('*')
-    .eq('categorie', categorie)
-    .order('nom', { ascending: true }),
-  supabase
-    .from('medicaments_custom')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('categorie', categorie)
-    .is('medicament_id', null),
- supabase
-  .from('favoris')
-  .select('medicament_id, custom_medicament_id')
-  .eq('user_id', user.id),
-])
+      const [{ data: meds }, { data: favs }, { data: customBasePersonnel }, { data: newMedsPersonnel }] = await Promise.all([
+        supabase.from('medicaments').select('*').eq('categorie', categorie).order('nom', { ascending: true }),
+        supabase.from('favoris').select('medicament_id, custom_medicament_id').eq('user_id', user.id),
+        // Overrides personnels de médicaments de base
+        supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('categorie', categorie).not('medicament_id', 'is', null).is('equipe_id', null),
+        // Nouveaux médicaments personnels
+        supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('categorie', categorie).is('medicament_id', null).is('equipe_id', null),
+      ])
+
+      // Médicaments d'équipe (visibles par tous les membres)
+      let customBaseEquipe = []
+      let newMedsEquipe = []
+      if (estEquipe && teamId) {
+        const [{ data: cbe }, { data: nme }] = await Promise.all([
+          supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).eq('categorie', categorie).not('medicament_id', 'is', null),
+          supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).eq('categorie', categorie).is('medicament_id', null),
+        ])
+        customBaseEquipe = cbe || []
+        newMedsEquipe = nme || []
+      }
 
       const ids = new Set((favs || []).map(f => f.custom_medicament_id || f.medicament_id).filter(Boolean))
       setFavorisIds(ids)
 
-      const medsCustomBase = await supabase
-  .from('medicaments_custom')
-  .select('*')
-  .eq('user_id', user.id)
-  .eq('categorie', categorie)
-  .not('medicament_id', 'is', null)
+      // Override équipe prioritaire sur personnel pour un même médicament de base
+      const medsAvecCustom = (meds || []).map(m => {
+        const customEq = customBaseEquipe.find(c => c.medicament_id === m.id)
+        if (customEq) return { ...customEq, estCustom: true, badge: 'equipe' }
+        const customPers = (customBasePersonnel || []).find(c => c.medicament_id === m.id)
+        if (customPers) return { ...customPers, estCustom: true, badge: 'personnel' }
+        return m
+      })
 
-const medsAvecCustom = (meds || []).map(m => {
-  const custom = (medsCustomBase.data || []).find(c => c.medicament_id === m.id)
-  return custom ? { ...custom, estCustom: true } : m
-})
-
-const tries = [...medsAvecCustom, ...(medsCustom || []).map(m => ({ ...m, estCustom: true }))].sort((a, b) => {
+      const tries = [
+        ...medsAvecCustom,
+        ...(newMedsPersonnel || []).map(m => ({ ...m, estCustom: true, badge: 'personnel' })),
+        ...newMedsEquipe.map(m => ({ ...m, estCustom: true, badge: 'equipe' })),
+      ].sort((a, b) => {
         const aFav = ids.has(a.id)
         const bFav = ids.has(b.id)
         if (aFav && !bFav) return -1
@@ -215,6 +219,12 @@ const tries = [...medsAvecCustom, ...(medsCustom || []).map(m => ({ ...m, estCus
                   {m.sous_categories?.length > 0 && (
                     <span className="drogue-sous-cat">{m.sous_categories.join(', ')}</span>
                   )}
+                  {m.badge === 'equipe' && (
+                    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--primary)', background: 'rgba(37,77,86,0.1)', padding: '2px 8px', borderRadius: 999, display: 'inline-block', marginTop: 2 }}>Équipe</span>
+                  )}
+                  {m.badge === 'personnel' && (
+                    <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-hint)', background: 'var(--bg-secondary)', padding: '2px 8px', borderRadius: 999, display: 'inline-block', marginTop: 2 }}>Personnel</span>
+                  )}
                 </div>
 
                 <IconesEspeces especes={m.especes} taille={36} />
@@ -223,9 +233,16 @@ const tries = [...medsAvecCustom, ...(medsCustom || []).map(m => ({ ...m, estCus
           )}
         </div>
       )}
-      <button className="btn-fab" onClick={() => estPro ? navigate(`/drogues/ajouter?categorie=${encodeURIComponent(categorie)}`) : setShowProMsg(true)}>
-        {estPro ? '+' : <i className="ti ti-lock" style={{ fontSize: 20 }}></i>}
-      </button>
+      {(() => {
+        const peutAjouter = estEquipe
+          ? (roleEquipe === 'admin' || roleEquipe === 'proprietaire')
+          : estPro
+        return (
+          <button className="btn-fab" onClick={() => peutAjouter ? navigate(`/drogues/ajouter?categorie=${encodeURIComponent(categorie)}`) : setShowProMsg(true)}>
+            {peutAjouter ? '+' : <i className="ti ti-lock" style={{ fontSize: 20 }}></i>}
+          </button>
+        )
+      })()}
 
       {showProMsg && (
         <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
