@@ -10,8 +10,6 @@ export default function RejoindreEquipe() {
   const [statut, setStatut] = useState('chargement')
   const [invitation, setInvitation] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [planActuel, setPlanActuel] = useState(null)
-  const [confirmCompris, setConfirmCompris] = useState(false)
 
   useEffect(() => {
     if (!token) { setStatut('invalide'); return }
@@ -19,25 +17,15 @@ export default function RejoindreEquipe() {
   }, [token])
 
   async function verifierToken() {
-    // Appel Edge Function — service role côté serveur, aucune RLS anon nécessaire
-    const { data, error } = await supabase.functions.invoke('verify-invitation', {
-      body: { token },
-    })
+    const { data, error } = await supabase
+      .from('team_invitations')
+      .select('*, equipes(nom)')
+      .eq('token', token)
+      .eq('status', 'pending')
+      .single()
 
-    if (error || !data?.invitation) { setStatut('invalide'); return }
-    setInvitation(data.invitation)
-
-    // Vérifier si l'utilisateur est connecté et a un abonnement Pro
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      const { data: profil } = await supabase
-        .from('profiles')
-        .select('plan')
-        .eq('id', user.id)
-        .single()
-      setPlanActuel(profil?.plan || null)
-    }
-
+    if (error || !data) { setStatut('invalide'); return }
+    setInvitation(data)
     setStatut('valide')
   }
 
@@ -50,38 +38,48 @@ export default function RejoindreEquipe() {
       return
     }
 
-    // Annuler l'abonnement Pro avant de rejoindre l'équipe
-    if (planActuel === 'pro') {
-      const { error: cancelErr } = await supabase.functions.invoke('cancel-pro-subscription')
-      if (cancelErr) {
-        setStatut('erreur-annulation')
-        setLoading(false)
-        return
-      }
-    }
-
-    // Accepter l'invitation via Edge Function (toute la logique côté serveur)
-    const { data, error } = await supabase.functions.invoke('accept-invitation', {
-      body: { token },
-    })
-
-    if (error || !data) { setStatut('erreur'); setLoading(false); return }
-
-    if (!data.ok) {
-      const code = data.error
-      if (code === 'plein') { setStatut('plein'); setLoading(false); return }
-      if (code === 'email_mismatch') { setStatut('erreur'); setLoading(false); return }
+    if (user.email !== invitation.email) {
       setStatut('erreur')
       setLoading(false)
       return
     }
 
+    const { data: equipe } = await supabase
+      .from('equipes')
+      .select('max_membres')
+      .eq('id', invitation.team_id)
+      .single()
+
+    const { count: membresCount } = await supabase
+      .from('membres_equipe')
+      .select('*', { count: 'exact', head: true })
+      .eq('equipe_id', invitation.team_id)
+
+    if (equipe?.max_membres && membresCount !== null && membresCount >= equipe.max_membres) {
+      setStatut('plein')
+      setLoading(false)
+      return
+    }
+
+    const { error: membreErr } = await supabase
+      .from('membres_equipe')
+      .upsert({ equipe_id: invitation.team_id, user_id: user.id, role: invitation.role }, { onConflict: 'equipe_id,user_id' })
+
+    if (membreErr) { setStatut('erreur'); setLoading(false); return }
+
+    await supabase
+      .from('team_invitations')
+      .update({ status: 'accepted' })
+      .eq('token', token)
+
+    await supabase
+      .from('profiles')
+      .update({ plan: 'equipe', equipe_id: invitation.team_id, role: invitation.role })
+      .eq('id', user.id)
+
     setStatut('accepte')
     setLoading(false)
-    setTimeout(() => navigate('/equipe'), 2000)
   }
-
-  const avertissementPro = planActuel === 'pro'
 
   return (
     <div style={{
@@ -90,7 +88,7 @@ export default function RejoindreEquipe() {
     }}>
       <div style={{
         background: 'var(--bg-card)', borderRadius: 16, padding: 32,
-        maxWidth: 420, width: '100%', boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+        maxWidth: 400, width: '100%', boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
         textAlign: 'center',
       }}>
         {statut === 'chargement' && (
@@ -112,48 +110,16 @@ export default function RejoindreEquipe() {
             <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--primary)', marginBottom: 24 }}>
               {invitation.equipes?.nom}
             </p>
-
-            {avertissementPro && (
-              <div style={{
-                background: 'rgba(234,179,8,0.08)', border: '1px solid rgba(234,179,8,0.35)',
-                borderRadius: 10, padding: '14px 16px', marginBottom: 20, textAlign: 'left',
-              }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: '#92700a', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <i className="ti ti-alert-triangle"></i>
-                  Vous avez un abonnement Pro actif
-                </p>
-                <ul style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, paddingLeft: 18, lineHeight: 1.8 }}>
-                  <li>Votre abonnement Pro sera <strong>annulé automatiquement</strong></li>
-                  <li>Vos entrées personnalisées existantes restent accessibles à <strong>vous seul(e)</strong> — elles ne sont pas partagées avec l'équipe</li>
-                  <li>Les nouvelles entrées partagées sont gérées par les <strong>administrateurs de l'équipe</strong></li>
-                  <li>Si vous quittez l'équipe, vous retrouverez vos données personnelles intactes</li>
-                </ul>
-                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginTop: 14, cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={confirmCompris}
-                    onChange={e => setConfirmCompris(e.target.checked)}
-                    style={{ marginTop: 2, accentColor: 'var(--primary)', width: 16, height: 16, flexShrink: 0 }}
-                  />
-                  <span style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 600 }}>
-                    J'ai compris et j'accepte ces conditions
-                  </span>
-                </label>
-              </div>
-            )}
-
             <button
               onClick={accepterInvitation}
-              disabled={loading || (avertissementPro && !confirmCompris)}
+              disabled={loading}
               style={{
                 width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
                 background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
-                cursor: (loading || (avertissementPro && !confirmCompris)) ? 'not-allowed' : 'pointer',
-                opacity: (loading || (avertissementPro && !confirmCompris)) ? 0.5 : 1,
-                transition: 'opacity 0.2s',
+                cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
               }}
             >
-              {loading ? 'Traitement...' : "Accepter l'invitation"}
+              {loading ? 'Connexion...' : "Accepter l'invitation"}
             </button>
           </>
         )}
@@ -174,26 +140,6 @@ export default function RejoindreEquipe() {
           </>
         )}
 
-        {statut === 'erreur-annulation' && (
-          <>
-            <i className="ti ti-credit-card-off" style={{ fontSize: 40, color: 'var(--accent-red)', display: 'block', marginBottom: 16 }}></i>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Impossible d'annuler l'abonnement</p>
-            <p style={{ fontSize: 14, color: 'var(--text-hint)', marginBottom: 20 }}>
-              L'annulation de votre abonnement Pro a échoué. Veuillez réessayer ou contacter le support si le problème persiste.
-            </p>
-            <button
-              onClick={() => { setStatut('valide'); setLoading(false) }}
-              style={{
-                padding: '10px 24px', borderRadius: 10, border: 'none',
-                background: 'var(--primary)', color: '#fff', fontSize: 14, fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              Réessayer
-            </button>
-          </>
-        )}
-
         {statut === 'erreur' && (
           <>
             <i className="ti ti-alert-circle" style={{ fontSize: 40, color: 'var(--accent-red)', display: 'block', marginBottom: 16 }}></i>
@@ -206,7 +152,19 @@ export default function RejoindreEquipe() {
           <>
             <i className="ti ti-circle-check" style={{ fontSize: 40, color: '#4CAF50', display: 'block', marginBottom: 16 }}></i>
             <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Bienvenue dans l'équipe!</p>
-            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Redirection en cours...</p>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 20 }}>
+              Rafraîchissez la page pour activer votre forfait équipe.
+            </p>
+            <button
+              onClick={() => { window.location.href = '/equipe' }}
+              style={{
+                width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
+                background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Rafraîchir et accéder à l'équipe
+            </button>
           </>
         )}
       </div>
