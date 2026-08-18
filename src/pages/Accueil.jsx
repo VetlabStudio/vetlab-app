@@ -87,6 +87,7 @@ const REFERENCES = [
   { id: 'chirurgie', label: 'Chirurgie', icone: '/icone-chirurgie-ref.svg', route: '/chirurgie' },
   { id: 'soins-generaux', label: 'Soins\ngénéraux', icone: '/icone-soins-generaux.svg', route: '/soins-generaux' },
   { id: 'toxicologie', label: 'Toxicologie', icone: '/toxico.svg', route: '/drogues/toxicologie', pro: true },
+  { id: 'nutrition', label: 'Nutrition', icone: '/icone-nutrition.png', route: '/nutrition' },
 ]
 
 export default function Accueil() {

@@ -1,29 +1,36 @@
 const SECTIONS = [
   {
-    titre: 'Aliment et friandises',
-    principes: [
-      'Diètes dentaires à texture spéciale et friandises certifiées VOHC (vohc.org).',
-      'Éviter les aliments mous — augmentent la plaque et le tartre.',
-      'Friandises dentaires certifiées VOHC ≤ 10 % de l\'apport énergétique total.',
-      'Éviter les os durs (os de bœuf, bois de cervidé) — risque de fractures dentaires.',
+    titre: 'Nourriture et gâteries',
+    items: [
+      {
+        avis: "Une nourriture ou des gâteries dentaires avec le sceau VOHC (vohc.org) ont été testées pour vraiment réduire la plaque et le tartre, contrairement à beaucoup de produits qui le prétendent sans preuve.",
+        food: {
+          examples: ["Royal Canin Veterinary Diet Canine Dental", "Hill's Prescription Diet t/d"],
+          why: "Croquettes plus grosses avec une texture qui nettoie la dent par frottement mécanique en mâchant, plutôt que de s'émietter comme une croquette régulière.",
+        },
+      },
+      {
+        avis: "Éviter les aliments trop mous exclusivement : ils collent davantage aux dents et favorisent l'accumulation de plaque.",
+      },
+      {
+        avis: "Les gâteries dentaires ne devraient pas dépasser environ le dixième de l'apport total de la journée, même si elles sont bonnes pour les dents.",
+        tech: 'Friandises certifiées VOHC <= 10 % de l\'apport énergétique total',
+      },
+      {
+        avis: "Éviter les os durs (os de bœuf, bois de cervidé, sabots) : ils sont une cause fréquente de dents cassées, surtout les prémolaires et molaires.",
+        alerte: true,
+      },
     ],
   },
   {
-    titre: 'Nutriments clés',
-    principes: [
-      'Vitamine E : ≥ 400 UI/kg MS (chien), ≥ 500 UI/kg MS (chat).',
-      'Vitamine C : ≥ 100 mg/kg MS (chien), 100–200 mg/kg MS (chat).',
-      'Sélénium : 0,5 à 1,3 mg/kg MS.',
-      'Calcium 0,5–1,5 % MS; phosphore 0,4–1,3 % MS.',
-      'Polyphosphates (HMP) — réduisent la reminéralisation du tartre.',
-      'Zinc — effet antimicrobien sur le biofilm buccal.',
-    ],
-  },
-  {
-    titre: 'Soins à domicile',
-    principes: [
-      'Brossage dentaire quotidien — technique de Bass modifiée, brosse à 45° sur la gencive.',
-      'Chlorhexidine 0,1–0,2 % en gel ou rinçage buccal comme adjuvant antimicrobien.',
+    titre: 'Ce qui aide en plus de la nourriture',
+    items: [
+      {
+        avis: "Le brossage des dents à la maison reste le geste le plus efficace, même fait 2 à 3 fois par semaine : brosser en angle vers la gencive, pas juste sur le bout des dents.",
+      },
+      {
+        avis: "Un gel ou rinçage à la chlorhexidine peut être utilisé en complément du brossage, sur les conseils du vétérinaire, pour aider à contrôler les bactéries en bouche.",
+      },
     ],
   },
 ]
@@ -32,9 +39,9 @@ export default function NutritionDentaire() {
   return (
     <div className="labo-detail-page">
       <div className="nutrition-note-ms">
-  <i className="ti ti-info-circle"></i>
-  <span><strong>MS</strong> = matière sèche, soit le % du nutriment calculé une fois l'eau retirée de l'aliment ; ne pas confondre avec aliment sec vs humide. Une conserve contient ~75–80 % d'eau alors qu'une croquette en contient ~10 %.</span>
-</div>
+        <i className="ti ti-info-circle"></i>
+        <span>Conseils concrets à donner à la clientèle en premier ; les repères techniques sont indiqués en plus petit pour les cas qui demandent plus de précision.</span>
+      </div>
       {SECTIONS.map((s, i) => (
         <div key={i} className="postop-section">
           <div className="postop-section-header">
@@ -43,11 +50,30 @@ export default function NutritionDentaire() {
             </div>
             <h2 className="postop-section-titre">{s.titre}</h2>
           </div>
-          <ul className="nutrition-principes">
-            {s.principes.map((p, j) => (
-              <li key={j} className="nutrition-principe-item">{p}</li>
+          <div className="nutrition-tip-list">
+            {s.items.map((it, j) => (
+              <div key={j} className={`nutrition-tip${it.alerte ? ' nutrition-tip--alerte' : ''}`}>
+                <p className="nutrition-tip-advice">{it.avis}</p>
+                {it.food && (
+                  <div className="nutrition-food-examples">
+                    <p className="nutrition-food-examples-label">Exemples à proposer</p>
+                    <div className="nutrition-food-chip-row">
+                      {it.food.examples.map((f, k) => (
+                        <span key={k} className="nutrition-food-chip">{f}</span>
+                      ))}
+                    </div>
+                    <p className="nutrition-food-why">Pourquoi : {it.food.why}</p>
+                  </div>
+                )}
+                {it.tech && (
+                  <div className="nutrition-tip-tech">
+                    <span className="nutrition-tip-tech-label">Repère :</span>
+                    <span>{it.tech}</span>
+                  </div>
+                )}
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       ))}
     </div>

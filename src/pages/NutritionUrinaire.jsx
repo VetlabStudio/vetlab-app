@@ -1,29 +1,54 @@
 const SECTIONS = [
   {
-    titre: 'Cystite idiopathique féline (CIF)',
-    principes: [
-      'Aliment humide (> 60 % d\'humidité); viser une densité urinaire de 1,032 à 1,041.',
-      'Augmenter l\'apport en eau : bouillon faible en sodium, glaçons, fontaines à eau.',
-      'Aliment urinaire thérapeutique pour réduire la fréquence des épisodes.',
-      'Nutriments anti-stress : L-tryptophane et alpha-casozépine ou caséine hydrolysée.',
-      'Oméga-3 (EPA/DHA), vitamine E et bêta-carotène.',
+    titre: 'Cystite idiopathique féline (chat qui urine souvent/avec douleur, sans cause claire)',
+    items: [
+      {
+        avis: "Le changement le plus efficace est souvent d'augmenter l'apport en eau : nourriture humide, bouillon faible en sodium, glaçons dans le bol, ou même une fontaine à eau si le chat préfère l'eau qui bouge.",
+        tech: 'Nourriture humide > 60 % d\'humidité ; densité urinaire cible 1,032 à 1,041',
+      },
+      {
+        avis: "Une nourriture urinaire thérapeutique aide à réduire la fréquence des épisodes, surtout combinée à plus d'eau.",
+        food: {
+          examples: ["Royal Canin Veterinary Diet Urinary SO", "Hill's Prescription Diet c/d", "Purina Pro Plan Veterinary Diets UR Urinary"],
+          why: "Favorisent une urine plus diluée et moins concentrée en minéraux, ce qui réduit l'irritation de la vessie.",
+        },
+      },
+      {
+        avis: "Le stress est un déclencheur important chez ces chats : réduire les sources de stress à la maison (accès aux bacs, conflits avec d'autres chats) fait souvent une vraie différence, en plus de la nourriture.",
+      },
     ],
   },
   {
-    titre: 'Urolithes de struvite',
-    principes: [
-      'Aliment calculolytique dissout les struvites en ~1 mois — poursuivre 1 mois après résolution à l\'imagerie.',
-      'Cibles : pH urinaire < 6,1 et densité urinaire < 1,040.',
-      'Après dissolution : passer à un aliment préventif pour struvites.',
-      'Chez le chien : traiter l\'infection urinaire en priorité avant la diète calculolytique.',
+    titre: 'Calculs de struvite',
+    items: [
+      {
+        avis: "Ce type de calcul peut se dissoudre avec la bonne nourriture, sans chirurgie, en environ 1 mois. Il faut continuer la même nourriture encore 1 mois après que l'imagerie confirme que le calcul est disparu.",
+        food: {
+          examples: ["Royal Canin Veterinary Diet Urinary SO", "Hill's Prescription Diet c/d", "Purina Pro Plan Veterinary Diets UR Urinary"],
+          why: "Conçues pour créer une urine qui dissout activement les cristaux de struvite, contrairement à une nourriture urinaire d'entretien qui ne fait que prévenir.",
+        },
+      },
+      {
+        avis: "Chez le chien, s'il y a une infection urinaire en même temps, elle doit être traitée avant ou en même temps que la diète, sinon la dissolution ne fonctionne pas bien.",
+      },
+      {
+        avis: "Une fois le calcul dissous, on change pour une nourriture urinaire préventive à plus long terme plutôt que de continuer la diète de dissolution indéfiniment.",
+      },
     ],
   },
   {
-    titre: 'Urolithes d\'oxalate de calcium',
-    principes: [
-      'Non dissolubles par l\'alimentation — retrait chirurgical ou par lithotritie requis.',
-      'Après retrait : aliment humide thérapeutique et hydratation maximale.',
-      'Sel (NaCl) pour augmenter la dilution urinaire — prudence si insuffisance rénale chronique ou hypertension.',
+    titre: 'Calculs d\'oxalate de calcium',
+    items: [
+      {
+        avis: "Contrairement aux struvites, ce type de calcul ne se dissout pas avec la nourriture : un retrait chirurgical ou par une autre technique est nécessaire.",
+        alerte: true,
+      },
+      {
+        avis: "Après le retrait, une nourriture urinaire humide et une bonne hydratation restent importantes pour réduire le risque de récidive.",
+      },
+      {
+        avis: "Ajouter un peu de sel à la diète pour encourager l'animal à boire plus est parfois utilisé, mais avec prudence : à éviter si l'animal a une maladie rénale ou de l'hypertension. Cette décision revient au vétérinaire.",
+      },
     ],
   },
 ]
@@ -31,7 +56,6 @@ const SECTIONS = [
 export default function NutritionUrinaire() {
   return (
     <div className="labo-detail-page">
-      
       {SECTIONS.map((s, i) => (
         <div key={i} className="postop-section">
           <div className="postop-section-header">
@@ -40,11 +64,30 @@ export default function NutritionUrinaire() {
             </div>
             <h2 className="postop-section-titre">{s.titre}</h2>
           </div>
-          <ul className="nutrition-principes">
-            {s.principes.map((p, j) => (
-              <li key={j} className="nutrition-principe-item">{p}</li>
+          <div className="nutrition-tip-list">
+            {s.items.map((it, j) => (
+              <div key={j} className={`nutrition-tip${it.alerte ? ' nutrition-tip--alerte' : ''}`}>
+                <p className="nutrition-tip-advice">{it.avis}</p>
+                {it.food && (
+                  <div className="nutrition-food-examples">
+                    <p className="nutrition-food-examples-label">Exemples à proposer</p>
+                    <div className="nutrition-food-chip-row">
+                      {it.food.examples.map((f, k) => (
+                        <span key={k} className="nutrition-food-chip">{f}</span>
+                      ))}
+                    </div>
+                    <p className="nutrition-food-why">Pourquoi : {it.food.why}</p>
+                  </div>
+                )}
+                {it.tech && (
+                  <div className="nutrition-tip-tech">
+                    <span className="nutrition-tip-tech-label">Repère :</span>
+                    <span>{it.tech}</span>
+                  </div>
+                )}
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       ))}
     </div>

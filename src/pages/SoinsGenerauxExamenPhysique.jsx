@@ -454,7 +454,7 @@ export default function SoinsGenerauxExamenPhysique() {
         <div className="postop-intro">
           <i className="ti ti-clipboard-check postop-intro-icone"></i>
           <p className="postop-intro-texte">
-            Checklist d'examen physique. Consultez vos anciens examens ou commencez-en un nouveau.
+            Consultez vos anciens examens ou commencez-en un nouveau.
           </p>
         </div>
 

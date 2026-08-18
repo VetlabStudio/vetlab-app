@@ -101,6 +101,21 @@ const ChirurgieECGAnomalies = lazy(() => import('./pages/ChirurgieECGAnomalies')
 const SoinsGenerauxExamenPhysique = lazy(() => import('./pages/SoinsGenerauxExamenPhysique'))
 const Menu = lazy(() => import('./pages/Menu'))
 const Notifications = lazy(() => import('./pages/Notifications'))
+const NutritionListe = lazy(() => import('./pages/NutritionListe'))
+const NutritionGestationLactation = lazy(() => import('./pages/NutritionGestationLactation'))
+const NutritionCroissance = lazy(() => import('./pages/NutritionCroissance'))
+const NutritionGeriatrique = lazy(() => import('./pages/NutritionGeriatrique'))
+const NutritionGastroIntestinal = lazy(() => import('./pages/NutritionGastroIntestinal'))
+const NutritionPeau = lazy(() => import('./pages/NutritionPeau'))
+const NutritionDiabete = lazy(() => import('./pages/NutritionDiabete'))
+const NutritionHyperthyroidisme = lazy(() => import('./pages/NutritionHyperthyroidisme'))
+const NutritionCancer = lazy(() => import('./pages/NutritionCancer'))
+const NutritionCardiaque = lazy(() => import('./pages/NutritionCardiaque'))
+const NutritionPertePoids = lazy(() => import('./pages/NutritionPertePoids'))
+const NutritionDentaire = lazy(() => import('./pages/NutritionDentaire'))
+const NutritionRenale = lazy(() => import('./pages/NutritionRenale'))
+const NutritionUrinaire = lazy(() => import('./pages/NutritionUrinaire'))
+const NutritionNeonatologie = lazy(() => import('./pages/NutritionNeonatologie'))
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -361,6 +376,23 @@ export default function App() {
         <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/anomalies" element={<RouteProtegee session={session}><ProGate><ChirurgieECGAnomalies /></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/examen-physique" element={<RouteProtegee session={session}><ProGate><SoinsGenerauxExamenPhysique /></ProGate></RouteProtegee>} />
+
+        {/* NUTRITION */}
+        <Route path="/nutrition" element={<RouteProtegee session={session}><NutritionListe /></RouteProtegee>} />
+        <Route path="/nutrition/gestation-lactation" element={<RouteProtegee session={session}><NutritionGestationLactation /></RouteProtegee>} />
+        <Route path="/nutrition/croissance" element={<RouteProtegee session={session}><NutritionCroissance /></RouteProtegee>} />
+        <Route path="/nutrition/neonatologie" element={<RouteProtegee session={session}><NutritionNeonatologie /></RouteProtegee>} />
+        <Route path="/nutrition/geriatrique" element={<RouteProtegee session={session}><NutritionGeriatrique /></RouteProtegee>} />
+        <Route path="/nutrition/gastro-intestinal" element={<RouteProtegee session={session}><NutritionGastroIntestinal /></RouteProtegee>} />
+        <Route path="/nutrition/peau" element={<RouteProtegee session={session}><NutritionPeau /></RouteProtegee>} />
+        <Route path="/nutrition/diabete" element={<RouteProtegee session={session}><NutritionDiabete /></RouteProtegee>} />
+        <Route path="/nutrition/hyperthyroidisme" element={<RouteProtegee session={session}><NutritionHyperthyroidisme /></RouteProtegee>} />
+        <Route path="/nutrition/cancer" element={<RouteProtegee session={session}><NutritionCancer /></RouteProtegee>} />
+        <Route path="/nutrition/cardiaque" element={<RouteProtegee session={session}><NutritionCardiaque /></RouteProtegee>} />
+        <Route path="/nutrition/perte-poids" element={<RouteProtegee session={session}><NutritionPertePoids /></RouteProtegee>} />
+        <Route path="/nutrition/dentaire" element={<RouteProtegee session={session}><NutritionDentaire /></RouteProtegee>} />
+        <Route path="/nutrition/renale" element={<RouteProtegee session={session}><NutritionRenale /></RouteProtegee>} />
+        <Route path="/nutrition/urinaire" element={<RouteProtegee session={session}><NutritionUrinaire /></RouteProtegee>} />
 
         {/* MENU */}
         <Route path="/menu" element={<RouteProtegee session={session}><Menu /></RouteProtegee>} />
