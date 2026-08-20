@@ -424,12 +424,12 @@ function couleurToxicite(toxicite) {
 }
 
 // ─── PHOTO DE LA PLANTE (avec repli si absente) ─────────
-function PhotoPlante({ img, nom }) {
+function PhotoPlante({ img, nom, style, onClick }) {
   const [erreur, setErreur] = useState(false)
 
   if (!img || erreur) {
     return (
-      <div className="toxico-plante-photo toxico-plante-photo--vide">
+      <div className="toxico-plante-photo toxico-plante-photo--vide" style={style}>
         <i className="ti ti-plant"></i>
       </div>
     )
@@ -440,6 +440,8 @@ function PhotoPlante({ img, nom }) {
       src={`/plantes/${img}`}
       alt={nom}
       className="toxico-plante-photo"
+      style={style}
+      onClick={onClick}
       onError={() => setErreur(true)}
     />
   )
@@ -494,6 +496,7 @@ export default function Toxicologie() {
   const [intoxicationSelectionnee, setIntoxicationSelectionnee] = useState(null)
   const [sousOngletDiag, setSousOngletDiag] = useState('demarche')
   const [coches, setCoches] = useState({})
+  const [photoPleine, setPhotoPleine] = useState(null)
 
   const toxiquesActifs = TOXIQUES[onglet] || []
 
@@ -807,6 +810,19 @@ export default function Toxicologie() {
               <button className="popup-close" onClick={() => setSelectionne(null)}>✕</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '8px 0' }}>
+              {selectionne.img && (
+                <div style={{ position: 'relative' }}>
+                  <PhotoPlante
+                    img={selectionne.img}
+                    nom={selectionne.nom}
+                    style={{ width: '100%', height: 190, objectFit: 'cover', objectPosition: 'center center', borderRadius: 10, cursor: 'zoom-in', display: 'block' }}
+                    onClick={() => setPhotoPleine({ img: selectionne.img, nom: selectionne.nom })}
+                  />
+                  <div style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.45)', borderRadius: 6, padding: '3px 6px', pointerEvents: 'none' }}>
+                    <i className="ti ti-zoom-in" style={{ fontSize: 14, color: '#fff' }}></i>
+                  </div>
+                </div>
+              )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <IconesEspeces especes={selectionne.especes} wrap />
                 <span style={{ fontSize: 13, fontWeight: 700, color: couleurToxicite(selectionne.toxicite) }}>
@@ -822,6 +838,21 @@ export default function Toxicologie() {
               Fermer
             </button>
           </div>
+        </div>
+      )}
+
+      {/* ─── PHOTO PLEIN ÉCRAN ───────────────── */}
+      {photoPleine && (
+        <div
+          onClick={() => setPhotoPleine(null)}
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.92)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+        >
+          <img
+            src={`/plantes/${photoPleine.img}`}
+            alt={photoPleine.nom}
+            style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 80px)', objectFit: 'contain', borderRadius: 10 }}
+          />
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginTop: 12, textAlign: 'center' }}>{photoPleine.nom}</p>
         </div>
       )}
 
