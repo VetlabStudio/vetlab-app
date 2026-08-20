@@ -42,20 +42,20 @@ plantes: [
     { nom: 'Tulipe (Tulipa spp.)', img: 'tulipe.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée', effets: 'Tulipaline (bulbe surtout) : hypersalivation, vomissements, diarrhée, dépression; fortes ingestions : tachycardie, dyspnée, tremblements, convulsions.' },
   ],
   aliments: [
-    { nom: 'Alcool', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Élevée', effets: 'Vomissements, diarrhée, incoordination, dépression, difficulté respiratoire, tremblements, changements du pH sanguin, coma et même la mort. Le furet et les oiseaux y sont très sensibles vu leur petite taille; quelques gorgées suffisent.' },
-    { nom: 'Avocat', especes: ['chien', 'chat', 'furet', 'oiseau', 'lapin', 'rongeur'], toxicite: 'Variable selon l\'espèce (très élevée chez oiseaux, lapin, furet)', effets: 'Persine, présente dans tout le fruit, le noyau, l\'écorce et les feuilles. Chez le chien et le chat : risque faible, surtout trouble digestif léger, plus le noyau (obstruction) et le gras (pancréatite). Chez les oiseaux, le lapin, le furet et les petits rongeurs : toxicité élevée à mortelle, nécrose du myocarde, oedème, détresse respiratoire, mort subite parfois en 24 à 48h pour de petites quantités. Chevaux et ruminants aussi touchés (mammite, atteinte cardiaque). Ne jamais en donner aux oiseaux ni aux petits mammifères.' },
-    { nom: 'Chocolat', especes: ['chien', 'chat', 'furet', 'oiseau', 'lapin', 'rongeur'], toxicite: 'Élevée', effets: 'Méthylxanthines (théobromine, caféine des fèves de cacao) : vomissements, diarrhée, halètement, soif et miction excessives, hyperactivité, rythme cardiaque anormal, tremblements, convulsions et même la mort. Toxique pour la plupart des espèces (furet, lapin, oiseaux, rongeurs); le chocolat noir et la poudre de cacao sont les plus concentrés.' },
-    { nom: 'Agrumes', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Les tiges, feuilles, écorces, fruits et graines contiennent de l\'acide citrique et des huiles essentielles pouvant irriter. De petites doses (ex. manger le fruit) ne causent généralement qu\'un léger trouble digestif.' },
-    { nom: 'Noix de coco et huile de coco', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'En petite quantité, peu susceptible de causer un tort sérieux. La chair et le lait de coco frais contiennent des huiles pouvant causer trouble digestif, selles molles et diarrhée.' },
-    { nom: 'Raisins et raisins secs', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'L\'acide tartrique est aujourd\'hui identifié comme le principe toxique probable. La sensibilité varie beaucoup d\'un chien à l\'autre, mais ces fruits peuvent causer une insuffisance rénale chez certains animaux. Des atteintes rénales sont aussi rapportées chez le furet; à éviter.' },
-    { nom: 'Noix de macadamia', especes: ['chien'], toxicite: 'Modérée', effets: 'Faiblesse, dépression, vomissements, tremblements et hyperthermie chez le chien. Signes généralement dans les 12h suivant l\'ingestion, durant environ 12 à 48h. Toxicité documentée uniquement chez le chien (mécanisme inconnu).' },
-    { nom: 'Lait et produits laitiers', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible', effets: 'Les animaux ne possèdent pas suffisamment de lactase (enzyme qui dégrade le lactose) : diarrhée ou autres troubles digestifs. Le furet, carnivore strict, ne tolère pas non plus les produits laitiers.' },
-    { nom: 'Noix (amandes, pacanes, noix de Grenoble, etc.)', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible à modérée', effets: 'Riches en huiles et matières grasses : vomissements, diarrhée et potentiellement une pancréatite. À éviter chez le furet (carnivore strict, risque digestif et d\'obstruction).' },
-    { nom: 'Oignon, ail et ciboulette', especes: ['chien', 'chat', 'furet', 'oiseau', 'rongeur'], toxicite: 'Modérée à élevée', effets: 'Irritation gastro-intestinale et dommages oxydatifs aux globules rouges (corps de Heinz) pouvant mener à une anémie. Le chat est plus sensible, mais le chien est aussi à risque selon la quantité. Le furet y est très sensible (faible réserve de globules rouges); des cas d\'anémie hémolytique sont documentés chez les oiseaux, et le mécanisme s\'applique aux rongeurs.' },
-    { nom: 'Viande, œufs et os crus ou insuffisamment cuits', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'La viande et les œufs crus peuvent contenir des bactéries (Salmonella, E. coli) dangereuses pour l\'animal comme pour l\'humain. Les œufs crus contiennent aussi une protéine (avidine) nuisant à l\'absorption de la biotine (problèmes de peau/pelage). Les os crus présentent un risque de blessure ou d\'obstruction du tube digestif.' },
-    { nom: 'Sel', especes: ['chien', 'chat', 'oiseau', 'furet'], toxicite: 'Modérée à élevée', effets: 'De grandes quantités peuvent causer une soif et miction excessives, voire une intoxication aux ions sodium : vomissements, diarrhée, dépression, tremblements, hyperthermie, convulsions et même la mort. Les oiseaux sont particulièrement sensibles au sel vu leur petite taille.' },
-    { nom: 'Xylitol', especes: ['chien'], toxicite: 'Très élevée', effets: 'Édulcorant présent dans la gomme, les bonbons, les produits de boulangerie et le dentifrice. Libération massive d\'insuline provoquant une hypoglycémie sévère (faiblesse, ataxie, convulsions); à plus forte dose, atteinte hépatique aiguë possible. Sensibilité moindre chez le lapin; données limitées chez le chat.' },
-    { nom: 'Pâte à pain crue (levure)', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'La levure peut fermenter et produire des gaz dans le système digestif, causant un ballonnement douloureux de l\'estomac pouvant évoluer en torsion, une urgence vitale. La fermentation produit aussi de l\'éthanol, donc une intoxication alcoolique en parallèle est possible (hypoglycémie, dépression du SNC, acidose métabolique).' },
+    { nom: 'Alcool', img: 'alcool.jpg', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Élevée', effets: 'Vomissements, diarrhée, incoordination, dépression, difficulté respiratoire, tremblements, changements du pH sanguin, coma et même la mort. Le furet et les oiseaux y sont très sensibles vu leur petite taille; quelques gorgées suffisent.' },
+    { nom: 'Avocat', img: 'avocat.jpg', especes: ['chien', 'chat', 'furet', 'oiseau', 'lapin', 'rongeur'], toxicite: 'Variable selon l\'espèce (très élevée chez oiseaux, lapin, furet)', effets: 'Persine, présente dans tout le fruit, le noyau, l\'écorce et les feuilles. Chez le chien et le chat : risque faible, surtout trouble digestif léger, plus le noyau (obstruction) et le gras (pancréatite). Chez les oiseaux, le lapin, le furet et les petits rongeurs : toxicité élevée à mortelle, nécrose du myocarde, oedème, détresse respiratoire, mort subite parfois en 24 à 48h pour de petites quantités. Chevaux et ruminants aussi touchés (mammite, atteinte cardiaque). Ne jamais en donner aux oiseaux ni aux petits mammifères.' },
+    { nom: 'Chocolat', img: 'chocolat.jpg', especes: ['chien', 'chat', 'furet', 'oiseau', 'lapin', 'rongeur'], toxicite: 'Élevée', effets: 'Méthylxanthines (théobromine, caféine des fèves de cacao) : vomissements, diarrhée, halètement, soif et miction excessives, hyperactivité, rythme cardiaque anormal, tremblements, convulsions et même la mort. Toxique pour la plupart des espèces (furet, lapin, oiseaux, rongeurs); le chocolat noir et la poudre de cacao sont les plus concentrés.' },
+    { nom: 'Agrumes', img: 'agrumes.jpg', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Les tiges, feuilles, écorces, fruits et graines contiennent de l\'acide citrique et des huiles essentielles pouvant irriter. De petites doses (ex. manger le fruit) ne causent généralement qu\'un léger trouble digestif.' },
+    { nom: 'Noix de coco et huile de coco', img: 'coconut.jpg', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'En petite quantité, peu susceptible de causer un tort sérieux. La chair et le lait de coco frais contiennent des huiles pouvant causer trouble digestif, selles molles et diarrhée.' },
+    { nom: 'Raisins et raisins secs', img: 'raisins.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'L\'acide tartrique est aujourd\'hui identifié comme le principe toxique probable. La sensibilité varie beaucoup d\'un chien à l\'autre, mais ces fruits peuvent causer une insuffisance rénale chez certains animaux. Des atteintes rénales sont aussi rapportées chez le furet; à éviter.' },
+    { nom: 'Noix de macadamia', img: 'noix-macadame.jpg', especes: ['chien'], toxicite: 'Modérée', effets: 'Faiblesse, dépression, vomissements, tremblements et hyperthermie chez le chien. Signes généralement dans les 12h suivant l\'ingestion, durant environ 12 à 48h. Toxicité documentée uniquement chez le chien (mécanisme inconnu).' },
+    { nom: 'Lait et produits laitiers', img: 'produit-laitier.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible', effets: 'Les animaux ne possèdent pas suffisamment de lactase (enzyme qui dégrade le lactose) : diarrhée ou autres troubles digestifs. Le furet, carnivore strict, ne tolère pas non plus les produits laitiers.' },
+    { nom: 'Noix (amandes, pacanes, noix de Grenoble, etc.)', img: 'noix.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible à modérée', effets: 'Riches en huiles et matières grasses : vomissements, diarrhée et potentiellement une pancréatite. À éviter chez le furet (carnivore strict, risque digestif et d\'obstruction).' },
+    { nom: 'Oignon, ail et ciboulette', img: 'oignons.jpg', especes: ['chien', 'chat', 'furet', 'oiseau', 'rongeur'], toxicite: 'Modérée à élevée', effets: 'Irritation gastro-intestinale et dommages oxydatifs aux globules rouges (corps de Heinz) pouvant mener à une anémie. Le chat est plus sensible, mais le chien est aussi à risque selon la quantité. Le furet y est très sensible (faible réserve de globules rouges); des cas d\'anémie hémolytique sont documentés chez les oiseaux, et le mécanisme s\'applique aux rongeurs.' },
+    { nom: 'Viande, œufs et os crus ou insuffisamment cuits', img: 'os-cru.jpg', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'La viande et les œufs crus peuvent contenir des bactéries (Salmonella, E. coli) dangereuses pour l\'animal comme pour l\'humain. Les œufs crus contiennent aussi une protéine (avidine) nuisant à l\'absorption de la biotine (problèmes de peau/pelage). Les os crus présentent un risque de blessure ou d\'obstruction du tube digestif.' },
+    { nom: 'Sel', img: 'sel.jpg', especes: ['chien', 'chat', 'oiseau', 'furet'], toxicite: 'Modérée à élevée', effets: 'De grandes quantités peuvent causer une soif et miction excessives, voire une intoxication aux ions sodium : vomissements, diarrhée, dépression, tremblements, hyperthermie, convulsions et même la mort. Les oiseaux sont particulièrement sensibles au sel vu leur petite taille.' },
+    { nom: 'Xylitol', img: 'xylitol.jpg', especes: ['chien'], toxicite: 'Très élevée', effets: 'Édulcorant présent dans la gomme, les bonbons, les produits de boulangerie et le dentifrice. Libération massive d\'insuline provoquant une hypoglycémie sévère (faiblesse, ataxie, convulsions); à plus forte dose, atteinte hépatique aiguë possible. Sensibilité moindre chez le lapin; données limitées chez le chat.' },
+    { nom: 'Pâte à pain crue (levure)', img: 'pate-a-pain.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'La levure peut fermenter et produire des gaz dans le système digestif, causant un ballonnement douloureux de l\'estomac pouvant évoluer en torsion, une urgence vitale. La fermentation produit aussi de l\'éthanol, donc une intoxication alcoolique en parallèle est possible (hypoglycémie, dépression du SNC, acidose métabolique).' },
   ],
   medicaments: [
     { nom: 'AINS (ibuprofène, naproxène, aspirine)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Inhibition des prostaglandines (COX) : vomissements (parfois sanglants), ulcères gastriques et hémorragie digestive, douleur abdominale, puis insuffisance rénale aiguë. À forte dose, signes neurologiques (ataxie, convulsions, coma) et acidose. Le chat y est plus sensible que le chien (glucuronidation limitée). Le naproxène a une longue demi-vie, donc une toxicité prolongée et un risque accru. Pas d\'antidote spécifique : décontamination, protecteurs gastriques, fluidothérapie.' },
@@ -424,20 +424,20 @@ function couleurToxicite(toxicite) {
 }
 
 // ─── PHOTO DE LA PLANTE (avec repli si absente) ─────────
-function PhotoPlante({ img, nom, style, onClick }) {
+function PhotoToxique({ img, nom, dossier = 'plantes', style, onClick }) {
   const [erreur, setErreur] = useState(false)
 
   if (!img || erreur) {
     return (
       <div className="toxico-plante-photo toxico-plante-photo--vide" style={style}>
-        <i className="ti ti-plant"></i>
+        <i className={dossier === 'aliments' ? 'ti ti-apple' : 'ti ti-plant'}></i>
       </div>
     )
   }
 
   return (
     <img
-      src={`/plantes/${img}`}
+      src={`/${dossier}/${img}`}
       alt={nom}
       className="toxico-plante-photo"
       style={style}
@@ -547,8 +547,8 @@ export default function Toxicologie() {
               ))}
             </div>
             {plantesFiltrees.map(t => (
-              <button key={t.nom} className="toxico-plante-card" onClick={() => setSelectionne(t)}>
-                <PhotoPlante img={t.img} nom={t.nom} />
+              <button key={t.nom} className="toxico-plante-card" onClick={() => setSelectionne({ ...t, _dossier: 'plantes' })}>
+                <PhotoToxique img={t.img} nom={t.nom} dossier="plantes" />
                 <div className="toxico-plante-contenu">
                   <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', display: 'block' }}>{t.nom}</span>
                   <span style={{ fontSize: 12, color: couleurToxicite(t.toxicite), fontWeight: 600, marginTop: 4, display: 'block' }}>{t.toxicite}</span>
@@ -562,8 +562,24 @@ export default function Toxicologie() {
           </div>
         )}
 
+        {/* ─── LISTE ALIMENTS (avec photos, même style que plantes) ─ */}
+        {onglet === 'aliments' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+            {toxiquesActifs.map((t, i) => (
+              <button key={i} className="toxico-plante-card" onClick={() => setSelectionne({ ...t, _dossier: 'aliments' })}>
+                <PhotoToxique img={t.img} nom={t.nom} dossier="aliments" />
+                <div className="toxico-plante-contenu">
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', display: 'block' }}>{t.nom}</span>
+                  <span style={{ fontSize: 12, color: couleurToxicite(t.toxicite), fontWeight: 600, marginTop: 4, display: 'block' }}>{t.toxicite}</span>
+                  <div style={{ marginTop: 6 }}><IconesEspeces especes={t.especes} /></div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* ─── LISTE TOXIQUES (autres catégories) ─ */}
-        {['aliments', 'medicaments', 'produits_menagers', 'metaux'].includes(onglet) && (
+        {['medicaments', 'produits_menagers', 'metaux'].includes(onglet) && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
             {toxiquesActifs.map((t, i) => (
               <button
@@ -812,11 +828,12 @@ export default function Toxicologie() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '8px 0' }}>
               {selectionne.img && (
                 <div style={{ position: 'relative' }}>
-                  <PhotoPlante
+                  <PhotoToxique
                     img={selectionne.img}
                     nom={selectionne.nom}
+                    dossier={selectionne._dossier || 'plantes'}
                     style={{ width: '100%', height: 190, objectFit: 'cover', objectPosition: 'center center', borderRadius: 10, cursor: 'zoom-in', display: 'block' }}
-                    onClick={() => setPhotoPleine({ img: selectionne.img, nom: selectionne.nom })}
+                    onClick={() => setPhotoPleine({ img: selectionne.img, nom: selectionne.nom, dossier: selectionne._dossier || 'plantes' })}
                   />
                   <div style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.45)', borderRadius: 6, padding: '3px 6px', pointerEvents: 'none' }}>
                     <i className="ti ti-zoom-in" style={{ fontSize: 14, color: '#fff' }}></i>
@@ -848,7 +865,7 @@ export default function Toxicologie() {
           style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.92)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16 }}
         >
           <img
-            src={`/plantes/${photoPleine.img}`}
+            src={`/${photoPleine.dossier}/${photoPleine.img}`}
             alt={photoPleine.nom}
             style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 80px)', objectFit: 'contain', borderRadius: 10 }}
           />
