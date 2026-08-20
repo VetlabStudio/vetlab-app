@@ -95,6 +95,22 @@ const titres = {
   '/equipe': 'Équipe',
   '/equipe/gestion': 'Gestion de l\'équipe',
   '/menu': 'Plus',
+  '/nutrition': 'Nutrition',
+  '/nutrition/geriatrique': 'Animaux gériatriques',
+  '/nutrition/cancer': 'Cancer',
+  '/nutrition/croissance': 'Croissance',
+  '/nutrition/diabete': 'Diabète',
+  '/nutrition/gestation-lactation': 'Gestation et lactation',
+  '/nutrition/hyperthyroidisme': 'Hyperthyroïdisme',
+  '/nutrition/cardiaque': 'Maladies cardiaques',
+  '/nutrition/peau': 'Maladies de peau',
+  '/nutrition/gastro-intestinal': 'Maladies gastro-intestinales',
+  '/nutrition/renale': 'Maladies rénales',
+  '/nutrition/neonatologie': 'Néonatologie',
+  '/nutrition/perte-poids': 'Perte de poids / Obésité',
+  '/nutrition/dentaire': 'Santé dentaire',
+  '/nutrition/urinaire': 'Système urinaire',
+  '/soins-generaux/glasgow': 'Score de Glasgow modifié (MCGS)',
   }
 
 export default function Header() {

@@ -99,6 +99,7 @@ const ChirurgieECG = lazy(() => import('./pages/ChirurgieECG'))
 const ChirurgieECGElectrodes = lazy(() => import('./pages/ChirurgieECGElectrodes'))
 const ChirurgieECGAnomalies = lazy(() => import('./pages/ChirurgieECGAnomalies'))
 const SoinsGenerauxExamenPhysique = lazy(() => import('./pages/SoinsGenerauxExamenPhysique'))
+const ScoreGlasgow = lazy(() => import('./pages/ScoreGlasgow'))
 const Menu = lazy(() => import('./pages/Menu'))
 const Notifications = lazy(() => import('./pages/Notifications'))
 const NutritionListe = lazy(() => import('./pages/NutritionListe'))
@@ -376,6 +377,7 @@ export default function App() {
         <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/anomalies" element={<RouteProtegee session={session}><ProGate><ChirurgieECGAnomalies /></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/examen-physique" element={<RouteProtegee session={session}><ProGate><SoinsGenerauxExamenPhysique /></ProGate></RouteProtegee>} />
+        <Route path="/soins-generaux/glasgow" element={<RouteProtegee session={session}><ProGate><ScoreGlasgow /></ProGate></RouteProtegee>} />
 
         {/* NUTRITION */}
         <Route path="/nutrition" element={<RouteProtegee session={session}><NutritionListe /></RouteProtegee>} />

@@ -7,6 +7,7 @@ import { useProfil } from '../context/ProfilContext'
 const SOINS_GENERAUX = [
   { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg', pro: true },
   { id: 'dentisterie', label: 'Dentisterie', route: '/soins-generaux/dentisterie', pro: true },
+  { id: 'glasgow', label: 'Score de Glasgow modifié (MCGS)', route: '/soins-generaux/glasgow', pro: true },
   { id: 'abreviations', label: 'Abréviations courantes', route: '/soins-generaux/abreviations', pro: true },
   { id: 'termes-directionnels', label: 'Termes directionnels', route: '/soins-generaux/termes-directionnels', pro: true },
 ]
