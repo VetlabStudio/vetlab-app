@@ -5,57 +5,239 @@ import IconesEspeces from '../components/IconesEspeces'
 
 const TOXIQUES = {
 plantes: [
-    { nom: 'Aloe vera', img: 'aloe-vera.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Faible à modérée', effets: 'Saponines, anthraquinones (latex/sève) : vomissements, léthargie, diarrhée; urine rougeâtre possible. Le gel intérieur est comestible.' },
-    { nom: 'Amanite à acide iboténique (Amanita muscaria / tue-mouches, A. pantherina / panthère)', img: 'amanita-muscaria.jpg', categorie: 'sauvage', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Acide iboténique et muscimol, action sur le SNC (GABAergique et glutamatergique);malgré le nom, le tableau n\'est pas surtout muscarinique : l\'acide iboténique et le muscimol dominent. Début rapide (30 min à 3h) : alternance de dépression et d\'excitation du SNC, ataxie, désorientation, hypersalivation, mydriase, tremblements, parfois convulsions et coma fluctuant. Rarement mortel; récupération habituelle en 24-48h avec soins de support.' },
-    { nom: 'Amanite à amatoxines (Amanita phalloides, virosa, ocreata, verna)', img: 'amanita-phalloides.jpg', categorie: 'sauvage', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)', effets: 'Amatoxines (alpha-amanitine), inhibition de l\'ARN polymérase II. Évolution en trois temps : phase digestive (6-24h : vomissements, diarrhée hémorragique, douleurs abdominales), puis rémission trompeuse (12-48h), puis insuffisance hépatique aiguë (ictère, hypoglycémie, coagulopathie, encéphalopathie, coma); atteinte rénale possible. Pronostic très sombre, peu d\'antidote spécifique.' },
-    { nom: 'Amaryllis (Hippeastrum)', img: 'amaryllis.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée', effets: 'Lycorine et alcaloïdes (bulbe surtout) : hypersalivation, vomissements (parfois sanglants), diarrhée, douleur abdominale, abattement, tremblements. Même famille que le narcisse; plante forcée en pot l\'hiver.' },
-    { nom: 'Asclépiade (Asclepias)', img: 'asclepiade.jpg', categorie: 'sauvage', especes: ['chien', 'chat', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Élevée à très élevée', effets: 'Glycosides cardiotoniques et résinoïdes neurotoxiques selon l\'espèce : vomissements, diarrhée, faiblesse, ataxie, tremblements, convulsions, arythmies, dépression respiratoire. Très répandue au Québec (plante hôte du monarque); toxique pour le bétail et les chevaux.' },
-    { nom: 'Azalée / Rhododendron', img: 'azalee.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Élevée', effets: 'Grayanotoxines (toutes les parties) : hypersalivation, vomissements, diarrhée, faiblesse, bradycardie et arythmies, hypotension, dépression du SNC, convulsions. Toxique aussi pour les chevaux et ruminants au pâturage; une faible quantité de feuilles suffit.' },
-    { nom: 'Canne des muets (Dieffenbachia)', img: 'dieffenbachia.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée', effets: 'Oxalates de calcium insolubles (sève) : irritation buccale immédiate, hypersalivation, oedème de la langue/lèvres, vomissements, difficulté à avaler.' },
-    { nom: 'Cerisier de Virginie / cerisier sauvage (Prunus virginiana)', img: 'cerisier-virginie.jpg', categorie: 'sauvage', especes: ['chien', 'chat', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Très élevée (mortelle)', effets: 'Glycosides cyanogènes, surtout dans les feuilles flétries (gel, bris de branche, sécheresse) : libération de cyanure, muqueuses rouge vif, dyspnée, tachypnée, ataxie, convulsions, mort rapide. Surtout chez les ruminants et les chevaux.' },
-    { nom: 'Cicutaire maculée (carotte à Moreau, Cicuta maculata)', img: 'cicutaire.jpg', categorie: 'sauvage', especes: ['chien', 'chat', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Très élevée (mortelle)', effets: 'Cicutoxine (antagoniste des récepteurs GABA), surtout dans le rhizome : hypersalivation, douleurs abdominales, spasmes musculaires, convulsions violentes, coma et mort par asphyxie, parfois en moins de 15 minutes. Considérée comme la plante la plus toxique d\'Amérique du Nord; milieux humides du Québec. Les animaux de ferme s\'empoisonnent par le feuillage.' },
-    { nom: 'Ciguë maculée (grande ciguë, Conium maculatum)', img: 'cigue.jpg', categorie: 'sauvage', especes: ['chien', 'chat', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Très élevée (mortelle)', effets: 'Coniine et alcaloïdes neurotoxiques : hypersalivation, mydriase, tremblements, ataxie, bradycardie, faiblesse, paralysie progressive et arrêt respiratoire. Effets tératogènes chez le bétail. Confusion possible avec des plantes de la famille de la carotte.' },
-    { nom: 'Colchique (Colchicum autumnale)', img: 'colchique.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval', 'vache'], toxicite: 'Très élevée (mortelle)', effets: 'Colchicine : vomissements et diarrhée hémorragiques, choc, atteinte hépatique/rénale, dépression médullaire, convulsions; signes parfois retardés de plusieurs jours. Toxique pour les chevaux et bovins, notamment via le foin contaminé.' },
-    { nom: 'Cyclamen', img: 'cyclamen.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée à élevée', effets: 'Saponines terpénoïdes, concentrées dans le tubercule : hypersalivation, vomissements, diarrhée. Ingestion importante de tubercule : arythmies, convulsions, voire mort.' },
-    { nom: 'Digitale (Digitalis purpurea)', img: 'digitale.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval', 'vache'], toxicite: 'Très élevée (mortelle)', effets: 'Glycosides cardiotoniques : hypersalivation, vomissements, diarrhée, faiblesse, arythmies, insuffisance cardiaque; toxique même via l\'eau du vase. Les chevaux et bovins y sont aussi sensibles.' },
-    { nom: 'Érable rouge (Acer rubrum)', img: 'erable-rouge.jpg', categorie: 'sauvage', especes: ['cheval'], toxicite: 'Très élevée (mortelle chez le cheval)', effets: 'Toxicité propre aux équidés : les feuilles flétries ou séchées causent une anémie hémolytique sévère (corps de Heinz, méthémoglobinémie). Faiblesse, muqueuses pâles ou ictériques, urine brun-rouge, tachypnée, détresse respiratoire. Risque surtout en fin d\'été et à l\'automne, ou après une chute de branches.' },
-    { nom: 'Fougère-aigle (Pteridium aquilinum)', img: 'fougere-aigle.jpg', categorie: 'sauvage', especes: ['cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Modérée à élevée', effets: 'Thiaminase (carence en vitamine B1) chez le cheval : ataxie, signes neurologiques. Chez les bovins, ingestion chronique : aplasie médullaire, hémorragies, et effet cancérigène (vessie). Intoxication surtout par ingestion répétée.' },
-    { nom: 'Gui (Viscum album / Phoradendron spp.)', img: 'gui.jpg', categorie: 'sauvage', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée', effets: 'Lectines, phoratoxines : vomissements, diarrhée, hypotension, bradycardie, dyspnée (forte ingestion); les feuilles sont plus toxiques que les baies.' },
-    { nom: 'Houblon (Humulus lupulus)', img: 'houblon.jpg', categorie: 'jardin', especes: ['chien'], toxicite: 'Très élevée (mortelle)', effets: 'Hyperthermie maligne (>40,6 °C), tachypnée, tachycardie, tremblements, convulsions; décès possible en moins de 6h sans traitement. Réaction propre au chien (surtout lévriers).' },
-    { nom: 'Houx (Ilex spp.)', img: 'houx.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Faible', effets: 'Saponines : vomissements, diarrhée, abattement, claquement des lèvres, hypersalivation; toxicité généralement légère.' },
-    { nom: 'If (Taxus)', img: 'if.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Très élevée (mortelle)', effets: 'Taxines : vomissements, tremblements, dyspnée, convulsions, arythmies; mort subite par insuffisance cardiaque aiguë possible sans signes prodromiques. Tueur classique des chevaux et ruminants : une très faible quantité de feuilles (fraîches ou sèches) suffit.' },
-    { nom: 'Jonquille / Narcisse (Narcissus spp.)', img: 'jonquille.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée à élevée', effets: 'Lycorine et alcaloïdes (bulbe surtout) : hypersalivation, vomissements, diarrhée; fortes ingestions : hypotension, tremblements, arythmies, convulsions.' },
-    { nom: 'Kalanchoé', img: 'kalanchoe.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée à élevée', effets: 'Bufadiénolides (glycosides cardiotoniques) : vomissements, diarrhée, hypersalivation; à forte ingestion, troubles du rythme cardiaque, faiblesse, voire collapsus. Plante grasse ornementale très vendue.' },
-    { nom: 'Langue de belle-mère (Sansevieria)', img: 'sansevieria.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Faible à modérée', effets: 'Saponines : nausées, vomissements, diarrhée, hypersalivation. Toxicité généralement légère.' },
-    { nom: 'Laurier-rose (Nerium oleander)', img: 'laurier-rose.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Très élevée (mortelle)', effets: 'Glycosides cardiotoniques : hypersalivation, vomissements, diarrhée, ulcérations buccales, arythmies, hypotension, insuffisance cardiaque. Toxique aussi pour les chevaux et ruminants au pâturage; une faible quantité de feuilles peut être mortelle.' },
-    { nom: 'Lis de la paix (Spathiphyllum)', img: 'lis-de-la-paix.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée', effets: 'Malgré son nom, ce n\'est pas un vrai lis : aracée à oxalates de calcium insolubles. Irritation buccale, hypersalivation, oedème de la langue et des lèvres, vomissements, dysphagie. Ne cause PAS l\'insuffisance rénale des vrais Lilium chez le chat; à bien distinguer.' },
-    { nom: 'Lys (toutes espèces de Lilium)', img: 'lys.jpg', categorie: 'jardin', especes: ['chat'], toxicite: 'Très élevée (mortelle)', effets: 'Abattement, hypersalivation, vomissements, perte d\'appétit (0-12h), puis polyurie/déshydratation (12-24h) et insuffisance rénale aiguë avec anurie possible (24-72h); ingestion minime suffisante. Néphrotoxicité propre au chat (le chien ne fait qu\'un trouble digestif léger).' },
-    { nom: 'Monstera (faux philodendron, plante gruyère)', img: 'monstera.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée', effets: 'Oxalates de calcium insolubles : irritation buccale, hypersalivation, oedème buccal, vomissements, difficulté à avaler. Même famille (aracées) que le Dieffenbachia et le philodendron.' },
-    { nom: 'Muguet (Convallaria majalis)', img: 'muguet.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval'], toxicite: 'Très élevée (mortelle)', effets: 'Glycosides cardiotoniques (convallatoxine) : hypersalivation, vomissements, diarrhée, bradycardie, arythmies, hypotension, convulsions. Comme la digitale, toxique même via l\'eau du vase. Plante de plate-bande très commune.' },
-    { nom: 'Palmier de Sago (Cycas revoluta)', img: 'palmier-sago.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Très élevée (mortelle)', effets: 'Cycasine : vomissements (parfois hémorragiques), selles noires, ictère, polydipsie, troubles de la coagulation, insuffisance hépatique aiguë; jusqu\'à 50% de mortalité, 1-2 graines peuvent être fatales.' },
-    { nom: 'Philodendron', img: 'philodendron.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée', effets: 'Oxalates de calcium insolubles (toutes les parties) : irritation buccale immédiate, hypersalivation, oedème de la langue et des lèvres, vomissements, dysphagie. De rares signes neurologiques sont rapportés chez le chat à forte ingestion.' },
-    { nom: 'Plante de jade (Crassula)', img: 'plante-jade.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Faible à modérée', effets: 'Vomissements, diarrhée, dépression, incoordination (ataxie); rarement tremblements. Le chat semble plus sensible que le chien.' },
-    { nom: 'Plante maïs (Dracaena)', img: 'dracaena.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée', effets: 'Saponines : vomissements, dépression, perte d\'appétit, hypersalivation, incoordination; chez le chat, dilatation pupillaire et tachycardie possibles.' },
-    { nom: 'Poinsettia (étoile de Noël)', img: 'poinsettia.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Faible', effets: 'Irritation buccale et gastrique, vomissements, hypersalivation, rarement diarrhée; irritation cutanée possible au contact de la sève. Signes généralement légers et spontanément résolutifs.' },
-    { nom: 'Pothos / lierre du diable (Epipremnum)', img: 'pothos.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée', effets: 'Oxalates de calcium insolubles : irritation buccale immédiate, hypersalivation, oedème de la langue et des lèvres, vomissements, difficulté à avaler. Une des plantes d\'intérieur les plus répandues; signes habituellement locaux et spontanément résolutifs.' },
-    { nom: 'Rhubarbe (feuilles)', img: 'rhubarbe.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Modérée', effets: 'Oxalates SOLUBLES dans les feuilles (les tiges sont comestibles) : hypersalivation, vomissements; à forte dose, hypocalcémie et atteinte rénale par cristaux d\'oxalate de calcium. À distinguer des oxalates insolubles des aracées, qui n\'atteignent pas le rein.' },
-    { nom: 'Tulipe (Tulipa spp.)', img: 'tulipe.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée', effets: 'Tulipaline (bulbe surtout) : hypersalivation, vomissements, diarrhée, dépression; fortes ingestions : tachycardie, dyspnée, tremblements, convulsions.' },
+    { nom: 'Aloe vera', img: 'aloe-vera.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Faible à modérée',
+      identification: 'Plante grasse très connue, souvent gardée sur le rebord d\'une fenêtre. Elle pousse en rosette avec de longues feuilles épaisses, charnues et vertes, légèrement dentées sur les bords. La sève intérieure est transparente et gélatineuse; le latex juste sous la peau est légèrement jaunâtre.',
+      mecanisme: 'Saponines, anthraquinones (latex/sève)',
+      signes: 'Vomissements, léthargie, diarrhée; urine rougeâtre possible.',
+      notes: 'Le gel intérieur est comestible.' },
+    { nom: 'Amanite à acide iboténique (Amanita muscaria / tue-mouches, A. pantherina / panthère)', img: 'amanita-muscaria.jpg', categorie: 'sauvage', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée',
+      identification: 'Champignon reconnaissable à son chapeau rouge vif ou orange parsemé de petits points blancs (tue-mouches), ou brun à gris avec des taches blanches (panthère). Pousse dans les forêts de feuillus et de conifères du Québec, surtout de l\'été à l\'automne.',
+      mecanisme: 'Acide iboténique et muscimol, action sur le SNC. Début rapide (30 min à 3h).',
+      signes: 'Alternance de dépression et d\'excitation du SNC, ataxie, désorientation, hypersalivation, mydriase, tremblements, parfois convulsions et coma fluctuant.',
+      notes: 'Rarement mortel; récupération habituelle en 24-48h avec soins de support.' },
+    { nom: 'Amanite à amatoxines (Amanita phalloides, virosa, ocreata, verna)', img: 'amanita-phalloides.jpg', categorie: 'sauvage', especes: ['chien', 'chat'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Champignon le plus souvent vert-olive à jaune-brun, avec des lamelles blanches, un anneau sous le chapeau et une poche à la base. Toute espèce entièrement blanche est aussi à risque. Pousse dans les forêts de feuillus et mixtes en été et en automne. Ressemble dangereusement à certains champignons comestibles.',
+      mecanisme: 'Amatoxines (alpha-amanitine), inhibition de l\'ARN polymérase II.',
+      signes: 'Évolution en trois temps : phase digestive (6-24h : vomissements, diarrhée hémorragique, douleurs abdominales), puis rémission trompeuse (12-48h), puis insuffisance hépatique aiguë (ictère, hypoglycémie, coma); atteinte rénale possible.',
+      notes: 'Pronostic très sombre, peu d\'antidote spécifique.' },
+    { nom: 'Amaryllis (Hippeastrum)', img: 'amaryllis.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée',
+      identification: 'Plante à bulbe vendue souvent en kit pour fleurir à l\'intérieur en hiver. Elle produit de grandes fleurs en forme de trompette (rouge, rose ou blanc) sur une longue tige creuse. Les feuilles sont larges et plates. Le bulbe, qui ressemble à un gros oignon, est la partie la plus toxique.',
+      mecanisme: 'Lycorine et alcaloïdes, concentrés dans le bulbe.',
+      signes: 'Hypersalivation, vomissements (parfois sanglants), diarrhée, douleur abdominale, abattement, tremblements.',
+      notes: 'Même famille que le narcisse; souvent forcée en pot l\'hiver.' },
+    { nom: 'Asclépiade (Asclepias)', img: 'asclepiade.jpg', categorie: 'sauvage', especes: ['chien', 'chat', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Élevée à très élevée',
+      identification: 'Plante dressée aux petites fleurs rose-pourpre regroupées en petites boules rondes. Quand on casse une tige, elle libère un liquide blanc laiteux. À l\'automne, elle produit de longues gousses qui s\'ouvrent pour libérer des graines portées par de longues fibres soyeuses. Très commune dans les champs, les fossés et les bords de routes du Québec. C\'est la plante hôte du papillon monarque.',
+      mecanisme: 'Glycosides cardiotoniques et résinoïdes neurotoxiques selon l\'espèce.',
+      signes: 'Vomissements, diarrhée, faiblesse, ataxie, tremblements, convulsions, arythmies, dépression respiratoire.',
+      notes: 'Toxique pour le bétail et les chevaux au pâturage.' },
+    { nom: 'Azalée / Rhododendron', img: 'azalee.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Élevée',
+      identification: 'Arbuste décoratif à feuilles vertes coriaces et brillantes. Il produit de grandes fleurs en coupe (rose, rouge, blanc ou violet) au printemps. Le rhododendron a des feuilles persistantes qui s\'enroulent sur elles-mêmes par grand froid; l\'azalée perd ses feuilles en hiver. Souvent utilisé en haie ou dans les plates-bandes.',
+      mecanisme: 'Grayanotoxines, présentes dans toutes les parties.',
+      signes: 'Hypersalivation, vomissements, diarrhée, faiblesse, bradycardie et arythmies, hypotension, dépression du SNC, convulsions.',
+      notes: 'Toxique aussi pour les chevaux et ruminants au pâturage; une faible quantité de feuilles suffit.' },
+    { nom: 'Canne des muets (Dieffenbachia)', img: 'dieffenbachia.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée',
+      identification: 'Plante d\'intérieur populaire avec de grandes feuilles ovales tachetées ou striées de vert foncé et de jaune ou de crème. Tige charnue et dressée. Son nom vient du fait que sa sève provoque un gonflement de la bouche qui empêche de parler.',
+      mecanisme: 'Oxalates de calcium insolubles, présents dans la sève.',
+      signes: 'Irritation buccale immédiate, hypersalivation, oedème de la langue/lèvres, vomissements, difficulté à avaler.',
+      notes: null },
+    { nom: 'Cerisier de Virginie / cerisier sauvage (Prunus virginiana)', img: 'cerisier-virginie.jpg', categorie: 'sauvage', especes: ['chien', 'chat', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Grand arbuste ou petit arbre aux feuilles brillantes et finement dentées. Au printemps, de petites fleurs blanches apparaissent en longues grappes; en été, de petites baies rouge foncé à noires. Quand on froisse l\'écorce, elle sent l\'amande amère. Très répandu en lisière de forêt, au bord des chemins et des clôtures, partout au Québec.',
+      mecanisme: 'Glycosides cyanogènes, surtout concentrés dans les feuilles flétries (gel, bris de branche, sécheresse), libérant du cyanure.',
+      signes: 'Muqueuses rouge vif, dyspnée, tachypnée, ataxie, convulsions, mort rapide.',
+      notes: 'Surtout dangereux pour les ruminants et les chevaux.' },
+    { nom: 'Cicutaire maculée (carotte à Moreau, Cicuta maculata)', img: 'cicutaire.jpg', categorie: 'sauvage', especes: ['chien', 'chat', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Plante à tige creuse et tachetée de violet à la base, avec des feuilles très découpées qui ressemblent à de la carotte sauvage. La racine ressemble à un panais ou à du céleri-rave. Pousse dans les milieux humides : bords de fossés, marécages, berges de rivières et zones inondables du Québec. Considérée comme la plante la plus toxique d\'Amérique du Nord.',
+      mecanisme: 'Cicutoxine (antagoniste des récepteurs GABA), concentrée surtout dans le rhizome.',
+      signes: 'Hypersalivation, douleurs abdominales, spasmes musculaires, convulsions violentes, coma et mort par asphyxie, parfois en moins de 15 minutes.',
+      notes: 'Les animaux de ferme s\'empoisonnent par le feuillage.' },
+    { nom: 'Ciguë maculée (grande ciguë, Conium maculatum)', img: 'cigue.jpg', categorie: 'sauvage', especes: ['chien', 'chat', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Grande plante avec une tige creuse parsemée de taches ou de stries violacées très visibles. Les feuilles ressemblent à du persil ou à de la carotte, très découpées, mais dégagent une odeur désagréable quand on les froisse. Petites fleurs blanches regroupées en parasol. Pousse dans les champs, les terrains vagues et les fossés, souvent dans les sols humides ou en bordure de routes.',
+      mecanisme: 'Coniine et alcaloïdes neurotoxiques.',
+      signes: 'Hypersalivation, mydriase, tremblements, ataxie, bradycardie, faiblesse, paralysie progressive et arrêt respiratoire.',
+      notes: 'Effets tératogènes chez le bétail. Confusion possible avec des plantes de la famille de la carotte.' },
+    { nom: 'Colchique (Colchicum autumnale)', img: 'colchique.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval', 'vache'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Fleurs lilas-rose en forme de coupe qui apparaissent directement dans le gazon en automne, sans feuilles. Les grandes feuilles vert vif et les gousses poussent au printemps. Souvent planté dans les pelouses et les rocailles. Peut être confondu avec le crocus.',
+      mecanisme: 'Colchicine.',
+      signes: 'Vomissements et diarrhée hémorragiques, choc, atteinte hépatique/rénale, convulsions; signes parfois retardés de plusieurs jours.',
+      notes: 'Toxique pour les chevaux et bovins, notamment via le foin contaminé.' },
+    { nom: 'Cyclamen', img: 'cyclamen.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée à élevée',
+      identification: 'Petite plante de pot avec des feuilles en forme de coeur marbrées de vert et d\'argenté. Les fleurs, souvent roses, rouges ou blanches, ont des pétales qui se replient vers l\'arrière. Très populaire en automne et en hiver. Le tubercule brun à la base est la partie la plus toxique.',
+      mecanisme: 'Saponines terpénoïdes, concentrées dans le tubercule.',
+      signes: 'Hypersalivation, vomissements, diarrhée; à forte ingestion du tubercule : arythmies, convulsions, voire mort.',
+      notes: null },
+    { nom: 'Digitale (Digitalis purpurea)', img: 'digitale.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval', 'vache'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Grande plante (60 à 150 cm) portant une longue tige garnie de fleurs tubulaires en forme de doigts de gant, généralement violettes ou roses avec des taches à l\'intérieur. La première année, elle forme seulement une rosette de grandes feuilles douces. Souvent plantée dans les jardins pour son aspect décoratif.',
+      mecanisme: 'Glycosides cardiotoniques.',
+      signes: 'Hypersalivation, vomissements, diarrhée, faiblesse, arythmies, insuffisance cardiaque.',
+      notes: 'Toxique même via l\'eau du vase. Les chevaux et bovins y sont aussi sensibles.' },
+    { nom: 'Érable rouge (Acer rubrum)', img: 'erable-rouge.jpg', categorie: 'sauvage', especes: ['cheval'], toxicite: 'Très élevée (mortelle chez le cheval)',
+      identification: 'Arbre très commun au Québec, reconnaissable à ses feuilles à 3-5 lobes qui virent rouge vif à l\'automne. L\'envers des feuilles est blanc-grisâtre. On le retrouve partout : forêts, parcs, bords de routes. Les feuilles tombées ou flétries sont particulièrement dangereuses pour les chevaux.',
+      mecanisme: 'Mécanisme inconnu; les feuilles flétries ou séchées causent une anémie hémolytique sévère. Toxicité propre aux équidés.',
+      signes: 'Faiblesse, muqueuses pâles ou ictériques, urine brun-rouge, tachypnée, détresse respiratoire.',
+      notes: 'Risque surtout en fin d\'été et à l\'automne, ou après une chute de branches.' },
+    { nom: 'Fougère-aigle (Pteridium aquilinum)', img: 'fougere-aigle.jpg', categorie: 'sauvage', especes: ['cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Modérée à élevée',
+      identification: 'Grande fougère (jusqu\'à 1,5 m) aux frondes larges en forme de triangle, d\'un vert foncé intense. Elle forme souvent de grandes colonies dans les clairières, les lisières de forêt et les terrains abandonnés. On la retrouve partout au Québec, surtout dans les endroits ouverts et les zones sablonneuses.',
+      mecanisme: 'Thiaminase (carence en vitamine B1) chez le cheval; toxines aplasiques et cancérigènes chez les bovins.',
+      signes: 'Cheval : ataxie, signes neurologiques. Bovins (ingestion chronique) : aplasie médullaire, hémorragies.',
+      notes: 'Intoxication surtout par ingestion répétée.' },
+    { nom: 'Gui (Viscum album / Phoradendron spp.)', img: 'gui.jpg', categorie: 'sauvage', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée',
+      identification: 'Petite plante parasite qui pousse accrochée dans les branches des arbres, formant une boule ronde et verte. En hiver, elle porte de petites baies blanches translucides. Connue surtout comme décoration de Noël. On la retrouve sur les pommiers, les peupliers et d\'autres feuillus dans certaines régions du Québec.',
+      mecanisme: 'Lectines et phoratoxines.',
+      signes: 'Vomissements, diarrhée, hypotension, bradycardie, dyspnée (à forte ingestion).',
+      notes: 'Les feuilles sont plus toxiques que les baies.' },
+    { nom: 'Houblon (Humulus lupulus)', img: 'houblon.jpg', categorie: 'jardin', especes: ['chien'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Plante grimpante très vigoureuse (jusqu\'à 6-8 m en une saison) aux tiges rudes et aux feuilles découpées. Elle produit des petits cônes verts à l\'odeur caractéristique de bière. Souvent cultivée en haie ou sur des pergolas.',
+      mecanisme: 'Composés actifs du houblon (mécanisme exact inconnu); cause une hyperthermie maligne.',
+      signes: 'Hyperthermie sévère (>40,6 °C), tachypnée, tachycardie, tremblements, convulsions; décès possible en moins de 6h sans traitement.',
+      notes: 'Réaction propre au chien, surtout les lévriers.' },
+    { nom: 'Houx (Ilex spp.)', img: 'houx.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Faible',
+      identification: 'Arbuste toujours vert avec des feuilles coriaces, brillantes et épineuses sur les bords. Les petites baies rouge vif sont très visibles en hiver. Souvent utilisé comme haie, décoration extérieure ou pour les arrangements de Noël. Les baies attirent les animaux curieux.',
+      mecanisme: 'Saponines.',
+      signes: 'Vomissements, diarrhée, abattement, claquement des lèvres, hypersalivation.',
+      notes: 'Toxicité généralement légère.' },
+    { nom: 'If (Taxus)', img: 'if.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Conifère avec de petites aiguilles plates et brillantes disposées en deux rangées sur les rameaux. En automne, il produit de petites baies charnues rouge vif avec une graine brune à l\'intérieur. Très souvent taillé en haie ou en formes géométriques dans les jardins. Presque toutes les parties (sauf la chair rouge de la baie) sont toxiques.',
+      mecanisme: 'Taxines, agissant sur les canaux calciques et sodiques.',
+      signes: 'Vomissements, tremblements, dyspnée, convulsions, arythmies; mort subite par insuffisance cardiaque aiguë possible sans signes préalables.',
+      notes: 'Une très faible quantité de feuilles (fraîches ou sèches) suffit. Très dangereux pour les chevaux et les ruminants.' },
+    { nom: 'Jonquille / Narcisse (Narcissus spp.)', img: 'jonquille.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée à élevée',
+      identification: 'Fleurs printanières très connues avec 6 pétales et une trompette centrale jaune, blanche ou orange. Les feuilles sont longues, plates et vert-bleuté. Le bulbe, qui ressemble à un oignon, est la partie la plus toxique. Très courantes dans les jardins, parcs et plates-bandes au Québec.',
+      mecanisme: 'Lycorine et alcaloïdes, concentrés dans le bulbe.',
+      signes: 'Hypersalivation, vomissements, diarrhée; fortes ingestions : hypotension, tremblements, arythmies, convulsions.',
+      notes: null },
+    { nom: 'Kalanchoé', img: 'kalanchoe.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée à élevée',
+      identification: 'Petite plante grasse avec des feuilles épaisses et de nombreuses petites fleurs regroupées en bouquet, disponibles dans presque toutes les couleurs. Très répandue dans les jardinieries, les épiceries et les pharmacies; souvent offerte en cadeau.',
+      mecanisme: 'Bufadiénolides (glycosides cardiotoniques).',
+      signes: 'Vomissements, diarrhée, hypersalivation; à forte ingestion : troubles du rythme cardiaque, faiblesse, voire collapsus.',
+      notes: null },
+    { nom: 'Langue de belle-mère (Sansevieria)', img: 'sansevieria.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Faible à modérée',
+      identification: 'Plante à feuilles longues, droites et rigides, vert foncé avec des marges jaunes ou des bandes argentées selon la variété. Très résistante et populaire comme plante décorative dans les maisons et les bureaux. Aussi connue sous le nom de plante serpent.',
+      mecanisme: 'Saponines.',
+      signes: 'Nausées, vomissements, diarrhée, hypersalivation.',
+      notes: 'Toxicité généralement légère.' },
+    { nom: 'Laurier-rose (Nerium oleander)', img: 'laurier-rose.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Arbuste aux longues feuilles coriaces vert foncé, groupées par 3. Il produit des fleurs rose vif, rouges ou blanches en bouquets à l\'extrémité des rameaux. Souvent cultivé en pot ou en haie; peut se retrouver à l\'extérieur en été au Québec. Toutes les parties sont extrêmement toxiques, même l\'eau du vase.',
+      mecanisme: 'Glycosides cardiotoniques, présents dans toutes les parties.',
+      signes: 'Hypersalivation, vomissements, diarrhée, ulcérations buccales, arythmies, hypotension, insuffisance cardiaque.',
+      notes: 'Toxique aussi pour les chevaux et ruminants; une faible quantité de feuilles peut être mortelle.' },
+    { nom: 'Lis de la paix (Spathiphyllum)', img: 'lis-de-la-paix.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée',
+      identification: 'Plante d\'intérieur populaire avec de grandes feuilles ovales vert brillant. Ses fleurs sont blanches avec une grande spathe en forme de voile. Souvent offerte comme plante décorative. Malgré son nom, ce n\'est pas un vrai lis et ne cause pas l\'insuffisance rénale des Lilium.',
+      mecanisme: 'Oxalates de calcium insolubles (aracée, pas un vrai lis).',
+      signes: 'Irritation buccale, hypersalivation, oedème de la langue et des lèvres, vomissements, difficulté à avaler.',
+      notes: 'Ne cause PAS l\'insuffisance rénale des vrais Lilium chez le chat; à bien distinguer.' },
+    { nom: 'Lys (toutes espèces de Lilium)', img: 'lys.jpg', categorie: 'jardin', especes: ['chat'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Grandes fleurs en trompette aux couleurs vives (orange, rouge, rose, blanc) sur une longue tige dressée portant des feuilles lancéolées tout le long. Très populaires dans les jardins et souvent offertes en bouquet. Mortels pour le chat, même en très petite quantité.',
+      mecanisme: 'Mécanisme non entièrement élucidé; néphrotoxicité spécifique au chat.',
+      signes: 'Abattement, hypersalivation, vomissements, perte d\'appétit (0-12h), puis polyurie/déshydratation (12-24h) et insuffisance rénale aiguë avec anurie possible (24-72h).',
+      notes: 'Ingestion minime suffisante. Le chien ne présente qu\'un trouble digestif léger.' },
+    { nom: 'Monstera (faux philodendron, plante gruyère)', img: 'monstera.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée',
+      identification: 'Grande plante d\'intérieur très populaire aux grandes feuilles vert foncé naturellement trouées et découpées, ce qui lui vaut le surnom de plante gruyère. Peut devenir très grande avec le temps. Très répandue dans les maisons et les bureaux.',
+      mecanisme: 'Oxalates de calcium insolubles (même famille que le Dieffenbachia).',
+      signes: 'Irritation buccale, hypersalivation, oedème buccal, vomissements, difficulté à avaler.',
+      notes: null },
+    { nom: 'Muguet (Convallaria majalis)', img: 'muguet.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin', 'cheval'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Petite plante basse avec deux grandes feuilles ovales vert vif et une fine tige portant de petites clochettes blanches au parfum doux et caractéristique. Fleurit au printemps. Très connue et souvent offerte le 1er mai. Toutes les parties, y compris l\'eau du vase, sont toxiques.',
+      mecanisme: 'Glycosides cardiotoniques (convallatoxine), présents dans toutes les parties.',
+      signes: 'Hypersalivation, vomissements, diarrhée, bradycardie, arythmies, hypotension, convulsions.',
+      notes: 'Toxique même via l\'eau du vase, comme la digitale.' },
+    { nom: 'Palmier de Sago (Cycas revoluta)', img: 'palmier-sago.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Très élevée (mortelle)',
+      identification: 'Plante ornementale qui ressemble à un mini-palmier avec de longues feuilles arquées vert foncé partant d\'un tronc court et épais. Souvent vendue comme plante d\'intérieur ou sortie à l\'extérieur l\'été. Toutes les parties sont très toxiques, surtout les graines orangées.',
+      mecanisme: 'Cycasine; 1 à 2 graines peuvent être fatales.',
+      signes: 'Vomissements (parfois hémorragiques), selles noires, ictère, polydipsie, troubles de la coagulation, insuffisance hépatique aiguë.',
+      notes: 'Jusqu\'à 50% de mortalité même avec traitement.' },
+    { nom: 'Philodendron', img: 'philodendron.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée',
+      identification: 'Plante grimpante ou rampante très répandue dans les maisons, avec des feuilles en forme de coeur ou parfois très découpées selon la variété. Très facile d\'entretien; souvent confondue avec le pothos.',
+      mecanisme: 'Oxalates de calcium insolubles (toutes les parties).',
+      signes: 'Irritation buccale immédiate, hypersalivation, oedème de la langue et des lèvres, vomissements, difficulté à avaler.',
+      notes: 'De rares signes neurologiques sont rapportés chez le chat à forte ingestion.' },
+    { nom: 'Plante de jade (Crassula)', img: 'plante-jade.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Faible à modérée',
+      identification: 'Petite plante grasse avec des feuilles rondes, épaisses et brillantes d\'un vert intense, parfois bordées de rouge. Sa tige ligneuse brune ressemble à un petit tronc d\'arbre. Très résistante et souvent considérée comme porte-bonheur.',
+      mecanisme: 'Mécanisme non entièrement élucidé.',
+      signes: 'Vomissements, diarrhée, dépression, incoordination; rarement tremblements.',
+      notes: 'Le chat semble plus sensible que le chien.' },
+    { nom: 'Plante maïs (Dracaena)', img: 'dracaena.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée',
+      identification: 'Plante à longue tige ligneuse portant des touffes de longues feuilles vertes avec souvent des stries jaunes ou blanches, ce qui rappelle le maïs. Très populaire comme plante décorative dans les maisons et les bureaux.',
+      mecanisme: 'Saponines.',
+      signes: 'Vomissements, dépression, perte d\'appétit, hypersalivation, incoordination; chez le chat, dilatation pupillaire et tachycardie possibles.',
+      notes: null },
+    { nom: 'Poinsettia (étoile de Noël)', img: 'poinsettia.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Faible',
+      identification: 'Plante emblématique de Noël avec de grandes bractées rouges, roses ou blanches qui entourent de petites fleurs jaunes au centre. Vendue en grande quantité à l\'approche des fêtes. Souvent perçue comme très toxique, mais les symptômes sont en fait généralement légers.',
+      mecanisme: 'Irritation par la sève (diterpènes).',
+      signes: 'Irritation buccale et gastrique, vomissements, hypersalivation, rarement diarrhée; irritation cutanée possible au contact de la sève.',
+      notes: 'Signes généralement légers et spontanément résolutifs.' },
+    { nom: 'Pothos / lierre du diable (Epipremnum)', img: 'pothos.jpg', categorie: 'interieur', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée',
+      identification: 'Plante grimpante très répandue avec des feuilles en coeur vert vif, souvent mouchetées de jaune ou de blanc. Très facile d\'entretien dans presque toutes les conditions. Souvent placée en hauteur dans les maisons ou les bureaux.',
+      mecanisme: 'Oxalates de calcium insolubles.',
+      signes: 'Irritation buccale immédiate, hypersalivation, oedème de la langue et des lèvres, vomissements, difficulté à avaler.',
+      notes: 'L\'une des plantes d\'intérieur les plus répandues; signes habituellement locaux et spontanément résolutifs.' },
+    { nom: 'Rhubarbe (feuilles)', img: 'rhubarbe.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'cheval', 'vache', 'mouton', 'chevre'], toxicite: 'Modérée',
+      identification: 'Plante de jardin bien connue avec de très grandes feuilles rondes portées par de longues tiges rouges charnues. Les tiges sont comestibles (tartes, confitures), mais les feuilles sont toxiques. Très courante dans les jardins potagers du Québec.',
+      mecanisme: 'Oxalates SOLUBLES dans les feuilles (les tiges sont comestibles); à haute dose : hypocalcémie et atteinte rénale par cristaux d\'oxalate.',
+      signes: 'Hypersalivation, vomissements; à forte dose : atteinte rénale.',
+      notes: 'Seules les feuilles sont toxiques, pas les tiges. À distinguer des oxalates insolubles des aracées.' },
+    { nom: 'Tulipe (Tulipa spp.)', img: 'tulipe.jpg', categorie: 'jardin', especes: ['chien', 'chat', 'oiseau', 'lapin'], toxicite: 'Modérée',
+      identification: 'Fleurs printanières très connues en forme de coupe, disponibles dans presque toutes les couleurs. Les feuilles sont larges et d\'un vert légèrement glauque. Le bulbe, qui ressemble à un oignon, est la partie la plus toxique. Plantées à l\'automne, elles fleurissent au printemps dans les jardins et plates-bandes.',
+      mecanisme: 'Tulipaline, concentrée surtout dans le bulbe.',
+      signes: 'Hypersalivation, vomissements, diarrhée, dépression; fortes ingestions : tachycardie, dyspnée, tremblements, convulsions.',
+      notes: null },
   ],
   aliments: [
-    { nom: 'Alcool', img: 'alcool.jpg', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Élevée', effets: 'Vomissements, diarrhée, incoordination, dépression, difficulté respiratoire, tremblements, changements du pH sanguin, coma et même la mort. Le furet et les oiseaux y sont très sensibles vu leur petite taille; quelques gorgées suffisent.' },
-    { nom: 'Avocat', img: 'avocat.jpg', especes: ['chien', 'chat', 'furet', 'oiseau', 'lapin', 'rongeur'], toxicite: 'Variable selon l\'espèce (très élevée chez oiseaux, lapin, furet)', effets: 'Persine, présente dans tout le fruit, le noyau, l\'écorce et les feuilles. Chez le chien et le chat : risque faible, surtout trouble digestif léger, plus le noyau (obstruction) et le gras (pancréatite). Chez les oiseaux, le lapin, le furet et les petits rongeurs : toxicité élevée à mortelle, nécrose du myocarde, oedème, détresse respiratoire, mort subite parfois en 24 à 48h pour de petites quantités. Chevaux et ruminants aussi touchés (mammite, atteinte cardiaque). Ne jamais en donner aux oiseaux ni aux petits mammifères.' },
-    { nom: 'Chocolat', img: 'chocolat.jpg', especes: ['chien', 'chat', 'furet', 'oiseau', 'lapin', 'rongeur'], toxicite: 'Élevée', effets: 'Méthylxanthines (théobromine, caféine des fèves de cacao) : vomissements, diarrhée, halètement, soif et miction excessives, hyperactivité, rythme cardiaque anormal, tremblements, convulsions et même la mort. Toxique pour la plupart des espèces (furet, lapin, oiseaux, rongeurs); le chocolat noir et la poudre de cacao sont les plus concentrés.' },
-    { nom: 'Agrumes', img: 'agrumes.jpg', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Les tiges, feuilles, écorces, fruits et graines contiennent de l\'acide citrique et des huiles essentielles pouvant irriter. De petites doses (ex. manger le fruit) ne causent généralement qu\'un léger trouble digestif.' },
-    { nom: 'Noix de coco et huile de coco', img: 'coconut.jpg', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'En petite quantité, peu susceptible de causer un tort sérieux. La chair et le lait de coco frais contiennent des huiles pouvant causer trouble digestif, selles molles et diarrhée.' },
-    { nom: 'Raisins et raisins secs', img: 'raisins.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'L\'acide tartrique est aujourd\'hui identifié comme le principe toxique probable. La sensibilité varie beaucoup d\'un chien à l\'autre, mais ces fruits peuvent causer une insuffisance rénale chez certains animaux. Des atteintes rénales sont aussi rapportées chez le furet; à éviter.' },
-    { nom: 'Noix de macadamia', img: 'noix-macadame.jpg', especes: ['chien'], toxicite: 'Modérée', effets: 'Faiblesse, dépression, vomissements, tremblements et hyperthermie chez le chien. Signes généralement dans les 12h suivant l\'ingestion, durant environ 12 à 48h. Toxicité documentée uniquement chez le chien (mécanisme inconnu).' },
-    { nom: 'Lait et produits laitiers', img: 'produit-laitier.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible', effets: 'Les animaux ne possèdent pas suffisamment de lactase (enzyme qui dégrade le lactose) : diarrhée ou autres troubles digestifs. Le furet, carnivore strict, ne tolère pas non plus les produits laitiers.' },
-    { nom: 'Noix (amandes, pacanes, noix de Grenoble, etc.)', img: 'noix.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible à modérée', effets: 'Riches en huiles et matières grasses : vomissements, diarrhée et potentiellement une pancréatite. À éviter chez le furet (carnivore strict, risque digestif et d\'obstruction).' },
-    { nom: 'Oignon, ail et ciboulette', img: 'oignons.jpg', especes: ['chien', 'chat', 'furet', 'oiseau', 'rongeur'], toxicite: 'Modérée à élevée', effets: 'Irritation gastro-intestinale et dommages oxydatifs aux globules rouges (corps de Heinz) pouvant mener à une anémie. Le chat est plus sensible, mais le chien est aussi à risque selon la quantité. Le furet y est très sensible (faible réserve de globules rouges); des cas d\'anémie hémolytique sont documentés chez les oiseaux, et le mécanisme s\'applique aux rongeurs.' },
-    { nom: 'Viande, œufs et os crus ou insuffisamment cuits', img: 'os-cru.jpg', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'La viande et les œufs crus peuvent contenir des bactéries (Salmonella, E. coli) dangereuses pour l\'animal comme pour l\'humain. Les œufs crus contiennent aussi une protéine (avidine) nuisant à l\'absorption de la biotine (problèmes de peau/pelage). Les os crus présentent un risque de blessure ou d\'obstruction du tube digestif.' },
-    { nom: 'Sel', img: 'sel.jpg', especes: ['chien', 'chat', 'oiseau', 'furet'], toxicite: 'Modérée à élevée', effets: 'De grandes quantités peuvent causer une soif et miction excessives, voire une intoxication aux ions sodium : vomissements, diarrhée, dépression, tremblements, hyperthermie, convulsions et même la mort. Les oiseaux sont particulièrement sensibles au sel vu leur petite taille.' },
-    { nom: 'Xylitol', img: 'xylitol.jpg', especes: ['chien'], toxicite: 'Très élevée', effets: 'Édulcorant présent dans la gomme, les bonbons, les produits de boulangerie et le dentifrice. Libération massive d\'insuline provoquant une hypoglycémie sévère (faiblesse, ataxie, convulsions); à plus forte dose, atteinte hépatique aiguë possible. Sensibilité moindre chez le lapin; données limitées chez le chat.' },
-    { nom: 'Pâte à pain crue (levure)', img: 'pate-a-pain.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'La levure peut fermenter et produire des gaz dans le système digestif, causant un ballonnement douloureux de l\'estomac pouvant évoluer en torsion, une urgence vitale. La fermentation produit aussi de l\'éthanol, donc une intoxication alcoolique en parallèle est possible (hypoglycémie, dépression du SNC, acidose métabolique).' },
+    { nom: 'Alcool', img: 'alcool.jpg', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Élevée',
+      mecanisme: 'Ethanol, dépresseur du SNC',
+      signes: 'vomissements, diarrhée, incoordination, dépression, difficulté respiratoire, tremblements, changements du pH sanguin, coma',
+      notes: 'Le furet et les oiseaux y sont très sensibles vu leur petite taille; quelques gorgées suffisent.' },
+    { nom: 'Avocat', img: 'avocat.jpg', especes: ['chien', 'chat', 'furet', 'oiseau', 'lapin', 'rongeur'], toxicite: 'Variable selon l\'espèce (très élevée chez oiseaux, lapin, furet)',
+      mecanisme: 'Persine, présente dans tout le fruit, le noyau, l\'écorce et les feuilles',
+      signes: 'Chien et chat : surtout trouble digestif léger. Oiseaux, lapin, furet et petits rongeurs : nécrose du myocarde, oedème, détresse respiratoire, mort subite possible en 24-48h',
+      notes: 'Ne jamais en donner aux oiseaux ni aux petits mammifères. Chevaux et ruminants aussi touchés.' },
+    { nom: 'Chocolat', img: 'chocolat.jpg', especes: ['chien', 'chat', 'furet', 'oiseau', 'lapin', 'rongeur'], toxicite: 'Élevée',
+      mecanisme: 'Méthylxanthines (théobromine, caféine) des fèves de cacao',
+      signes: 'vomissements, diarrhée, halètement, soif et miction excessives, hyperactivité, rythme cardiaque anormal, tremblements, convulsions',
+      notes: 'Toxique pour la plupart des espèces; le chocolat noir et la poudre de cacao sont les plus concentrés.' },
+    { nom: 'Agrumes', img: 'agrumes.jpg', especes: ['chien', 'chat'], toxicite: 'Faible',
+      mecanisme: 'Acide citrique et huiles essentielles dans les tiges, feuilles, écorces et graines',
+      signes: 'léger trouble digestif',
+      notes: 'De petites doses (manger le fruit) causent généralement seulement un trouble digestif mineur.' },
+    { nom: 'Noix de coco et huile de coco', img: 'coconut.jpg', especes: ['chien', 'chat'], toxicite: 'Faible',
+      mecanisme: 'Huiles de la chair et du lait de coco frais',
+      signes: 'trouble digestif, selles molles et diarrhée',
+      notes: 'En petite quantité, peu susceptible de causer un tort sérieux.' },
+    { nom: 'Raisins et raisins secs', img: 'raisins.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée',
+      mecanisme: 'Acide tartrique (principe toxique probable); sensibilité variable selon les individus',
+      signes: 'insuffisance rénale possible; atteintes rénales aussi rapportées chez le furet',
+      notes: null },
+    { nom: 'Noix de macadamia', img: 'noix-macadame.jpg', especes: ['chien'], toxicite: 'Modérée',
+      mecanisme: 'Mécanisme inconnu',
+      signes: 'faiblesse, dépression, vomissements, tremblements et hyperthermie; signes généralement dans les 12h, durant environ 12 à 48h',
+      notes: 'Toxicité documentée uniquement chez le chien.' },
+    { nom: 'Lait et produits laitiers', img: 'produit-laitier.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible',
+      mecanisme: 'Déficit en lactase (enzyme qui dégrade le lactose)',
+      signes: 'diarrhée ou autres troubles digestifs',
+      notes: 'Le furet, carnivore strict, ne tolère pas non plus les produits laitiers.' },
+    { nom: 'Noix (amandes, pacanes, noix de Grenoble, etc.)', img: 'noix.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible à modérée',
+      mecanisme: 'Richesse en huiles et matières grasses',
+      signes: 'vomissements, diarrhée et potentiellement une pancréatite',
+      notes: 'À éviter chez le furet (carnivore strict, risque digestif et d\'obstruction).' },
+    { nom: 'Oignon, ail et ciboulette', img: 'oignons.jpg', especes: ['chien', 'chat', 'furet', 'oiseau', 'rongeur'], toxicite: 'Modérée à élevée',
+      mecanisme: 'Irritation gastro-intestinale et dommages oxydatifs aux globules rouges (corps de Heinz)',
+      signes: 'anémie hémolytique; le chat est plus sensible, mais le chien est aussi à risque selon la quantité',
+      notes: 'Le furet y est très sensible; des cas d\'anémie hémolytique sont documentés chez les oiseaux.' },
+    { nom: 'Viande, œufs et os crus ou insuffisamment cuits', img: 'os-cru.jpg', especes: ['chien', 'chat'], toxicite: 'Faible à modérée',
+      mecanisme: 'Bactéries pathogènes (Salmonella, E. coli); avidine dans l\'oeuf cru bloque la biotine; os : risque mécanique',
+      signes: 'infections bactériennes, problèmes de peau/pelage (déficit en biotine), blessure ou obstruction du tube digestif',
+      notes: null },
+    { nom: 'Sel', img: 'sel.jpg', especes: ['chien', 'chat', 'oiseau', 'furet'], toxicite: 'Modérée à élevée',
+      mecanisme: 'Intoxication aux ions sodium à grande quantité',
+      signes: 'soif et miction excessives, vomissements, diarrhée, dépression, tremblements, hyperthermie, convulsions',
+      notes: 'Les oiseaux sont particulièrement sensibles au sel vu leur petite taille.' },
+    { nom: 'Xylitol', img: 'xylitol.jpg', especes: ['chien'], toxicite: 'Très élevée',
+      mecanisme: 'Édulcorant artificiel; libération massive d\'insuline provoquant une hypoglycémie sévère',
+      signes: 'faiblesse, ataxie, convulsions; à plus forte dose, atteinte hépatique aiguë possible',
+      notes: 'Présent dans la gomme, les bonbons, les produits de boulangerie et le dentifrice.' },
+    { nom: 'Pâte à pain crue (levure)', img: 'pate-a-pain.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée',
+      mecanisme: 'Fermentation de la levure produisant des gaz et de l\'éthanol dans le tube digestif',
+      signes: 'ballonnement douloureux, risque de torsion gastrique; intoxication alcoolique possible (hypoglycémie, dépression du SNC)',
+      notes: null },
   ],
   medicaments: [
     { nom: 'AINS (ibuprofène, naproxène, aspirine)', especes: ['chien', 'chat'], toxicite: 'Élevée', effets: 'Inhibition des prostaglandines (COX) : vomissements (parfois sanglants), ulcères gastriques et hémorragie digestive, douleur abdominale, puis insuffisance rénale aiguë. À forte dose, signes neurologiques (ataxie, convulsions, coma) et acidose. Le chat y est plus sensible que le chien (glucuronidation limitée). Le naproxène a une longue demi-vie, donc une toxicité prolongée et un risque accru. Pas d\'antidote spécifique : décontamination, protecteurs gastriques, fluidothérapie.' },
@@ -89,7 +271,7 @@ plantes: [
   metaux: [
     { nom: 'Plomb (plombs de pêche, balles, batteries, vieilles peintures, poussières de rénovation, tuyaux anciens)', especes: ['chien', 'chat', 'furet', 'oiseau', 'cheval', 'vache'], toxicite: 'Élevée à très élevée', effets: 'Sources variées : plombs de pêche et de chasse, batteries, jouets, vieilles peintures, poussières de rénovation, soudures, tuyaux anciens. Atteinte digestive (vomissements, douleur abdominale, constipation ou diarrhée), neurologique (ataxie, hyperexcitabilité, convulsions, cécité corticale) et hématologique. À la formule : ponctuations basophiles et nombreux globules rouges nucléés sans anémie sévère, très évocateurs. Les oiseaux y sont particulièrement sensibles (sauvagine avalant des plombs, perroquets qui rongent), de même que les bovins (batteries, peinture, vieux équipements). Antidotes : chélation (CaEDTA, succimer/DMSA, parfois D-pénicillamine).' },
     { nom: 'Zinc (pièces de 1 cent, boulons galvanisés, écrous de cages, crèmes à l\'oxyde de zinc, fermetures éclair)', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Élevée', effets: 'Le chien est le plus touché (ingestion de pièces de monnaie surtout; au Canada, les 1 cent de la fin des années 1990 et du début des années 2000, ont une très forte teneur en zinc. Phase digestive d\'abord (anorexie, vomissements, diarrhée), puis quelques heures à quelques jours plus tard hémolyse intravasculaire : anémie, ictère, hémoglobinurie, parfois insuffisance rénale, pancréatite et CIVD. Peut être confondu avec une anémie hémolytique à médiation immune, d\'où l\'importance de la radiographie (objet métallique). Le furet fait les mêmes signes plus des saignements digestifs; chez l\'oiseau : respiration superficielle, plumes ébouriffées, yeux fermés. Bovins, chevaux et porcs aussi exposés. Traitement : retrait de l\'objet et soins de soutien; la chélation est controversée.' },
-    { nom: 'Mercure (poissons contaminés, thermomètres brisés, désinfectants anciens)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Distinction importante : le mercure organique (méthylmercure, accumulé dans les gros poissons) est très neurotoxique et bien absorbé, alors que le mercure élémentaire d\'un thermomètre brisé est mal absorbé par voie orale et présente un risque bien moindre. Le chat est l\'espèce classique (« maladie du chat fou »). Signes neurologiques surtout : ataxie, tremblements, incoordination, cécité, parfois convulsions; troubles digestifs et atteinte rénale possibles. Exposition chronique surtout.' },
+    { nom: 'Mercure (poissons contaminés, thermomètres brisés, désinfectants anciens)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Distinction importante : le mercure organique (méthylmercure, accumulé dans les gros poissons) est très neurotoxique et bien absorbé, alors que le mercure élémentaire d\'un thermomètre brisé est mal absorbé par voie orale et présente un risque bien moindre. Le chat est l\'espèce classique. Signes neurologiques surtout : ataxie, tremblements, incoordination, cécité, parfois convulsions; troubles digestifs et atteinte rénale possibles. Exposition chronique surtout.' },
     { nom: 'Arsenic (rodenticides anciens, herbicides, bois traité, produits agricoles obsolètes)', especes: ['chien', 'chat', 'cheval', 'vache'], toxicite: 'Très élevée', effets: 'Vieux rodenticides, herbicides, cendres de bois traité (arséniate de cuivre chromaté), produits agricoles périmés. Gastro-entérite hémorragique violente : vomissements sanglants, diarrhée profuse parfois sanglante, douleur abdominale, déshydratation rapide, puis collapsus cardiovasculaire, atteinte hépatique et rénale, coma. Évolution souvent rapide. Antidote : chélation (dimercaprol/BAL, succimer). Le bétail au pâturage est aussi exposé.' },
     { nom: 'Insecticides organophosphorés et carbamates (malathion, diazinon, chlorpyrifos, carbaryl)', especes: ['chien', 'chat', 'oiseau', 'cheval', 'vache'], toxicite: 'Très élevée', effets: 'Inhibition de l\'acétylcholinestérase, donc crise cholinergique : hypersalivation, larmoiement, mictions et défécations (syndrome SLUD), myosis, bradycardie, fasciculations musculaires, bronchospasme et hypersécrétion bronchique, dyspnée, convulsions. La mort survient surtout par défaillance respiratoire. Antidotes : atropine (signes muscariniques) et pralidoxime (2-PAM, surtout pour les organophosphorés, à donner tôt). Le chat et les oiseaux y sont sensibles; intoxications fréquentes en milieu agricole.' },
     { nom: 'Pyréthrinoïdes (perméthrine) : antipuces pour chien appliqués au chat', especes: ['chien', 'chat'], toxicite: 'Élevée à très élevée (chez le chat)', effets: 'Cause classique et évitable : un antipuce concentré pour chien (perméthrine) appliqué sur un chat, ou un chat en contact étroit avec un chien fraîchement traité. Le chien tolère bien la perméthrine, mais le chat y est très sensible. Action sur les canaux sodiques : tremblements, fasciculations, hyperesthésie, hypersalivation, mydriase, hyperthermie, ataxie, cécité temporaire, convulsions; durée des tremblements souvent longue (24 à 79h). Pas d\'antidote : décontamination (bain à l\'eau tiède et savon à vaisselle), méthocarbamol pour les tremblements, anticonvulsivants au besoin. Point clé : l\'atropine n\'est PAS l\'antidote et est contre-indiquée (ce n\'est pas une crise cholinergique), à la différence des organophosphorés.' },
@@ -423,7 +605,7 @@ function couleurToxicite(toxicite) {
   return 'var(--primary)'
 }
 
-// ─── PHOTO DE LA PLANTE (avec repli si absente) ─────────
+// ─── PHOTO TOXIQUE (plantes et aliments) ────────────────
 function PhotoToxique({ img, nom, dossier = 'plantes', style, onClick }) {
   const [erreur, setErreur] = useState(false)
 
@@ -562,7 +744,7 @@ export default function Toxicologie() {
           </div>
         )}
 
-        {/* ─── LISTE ALIMENTS (avec photos, même style que plantes) ─ */}
+        {/* ─── LISTE ALIMENTS (avec photo) ────── */}
         {onglet === 'aliments' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
             {toxiquesActifs.map((t, i) => (
@@ -621,7 +803,6 @@ export default function Toxicologie() {
         {onglet === 'diagnostic' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }}>
 
-            {/* Sous-onglets */}
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {SOUS_ONGLETS_DIAG.map(o => (
                 <button key={o.id} onClick={() => setSousOngletDiag(o.id)} style={chipStyle(sousOngletDiag === o.id)}>
@@ -630,7 +811,6 @@ export default function Toxicologie() {
               ))}
             </div>
 
-            {/* Démarche */}
             {sousOngletDiag === 'demarche' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: '0 0 4px 0' }}>
@@ -649,7 +829,6 @@ export default function Toxicologie() {
               </div>
             )}
 
-            {/* Toxidromes */}
             {sousOngletDiag === 'toxidromes' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {TOXIDROMES.map(t => (
@@ -672,7 +851,6 @@ export default function Toxicologie() {
               </div>
             )}
 
-            {/* Tests de confirmation */}
             {sousOngletDiag === 'tests' && (
               <div className="labo-ref-tableau">
                 <div className="labo-ref-header" style={{ gridTemplateColumns: '1.2fr 1.4fr 1.2fr' }}>
@@ -690,7 +868,6 @@ export default function Toxicologie() {
               </div>
             )}
 
-            {/* Anomalies de labo */}
             {sousOngletDiag === 'labo' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                 <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: '0 0 8px 0' }}>
@@ -711,7 +888,6 @@ export default function Toxicologie() {
               </div>
             )}
 
-            {/* Checklist d'anamnèse */}
             {sousOngletDiag === 'checklist' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
@@ -826,6 +1002,12 @@ export default function Toxicologie() {
               <button className="popup-close" onClick={() => setSelectionne(null)}>✕</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '8px 0' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <IconesEspeces especes={selectionne.especes} wrap />
+                <span style={{ fontSize: 13, fontWeight: 700, color: couleurToxicite(selectionne.toxicite) }}>
+                  {selectionne.toxicite}
+                </span>
+              </div>
               {selectionne.img && (
                 <div style={{ position: 'relative' }}>
                   <PhotoToxique
@@ -840,16 +1022,35 @@ export default function Toxicologie() {
                   </div>
                 </div>
               )}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <IconesEspeces especes={selectionne.especes} wrap />
-                <span style={{ fontSize: 13, fontWeight: 700, color: couleurToxicite(selectionne.toxicite) }}>
-                  {selectionne.toxicite}
-                </span>
-              </div>
-              <div>
-                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: 4 }}>Effets et indications cliniques</p>
-                <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{selectionne.effets}</p>
-              </div>
+              {selectionne.mecanisme ? (
+                <>
+                  {selectionne.identification && (
+                    <div>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: 4 }}>Identification</p>
+                      <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{selectionne.identification}</p>
+                    </div>
+                  )}
+                  <div>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: 4 }}>Mécanisme</p>
+                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{selectionne.mecanisme}</p>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: 4 }}>Signes cliniques</p>
+                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{selectionne.signes}</p>
+                  </div>
+                  {selectionne.notes && (
+                    <div>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: 4 }}>À noter</p>
+                      <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{selectionne.notes}</p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', marginBottom: 4 }}>Effets et indications cliniques</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{selectionne.effets}</p>
+                </div>
+              )}
             </div>
             <button className="labo-btn-primary" style={{ width: '100%', marginTop: 8 }} onClick={() => setSelectionne(null)}>
               Fermer
@@ -858,7 +1059,7 @@ export default function Toxicologie() {
         </div>
       )}
 
-      {/* ─── PHOTO PLEIN ÉCRAN ───────────────── */}
+      {/* ─── PLEIN ÉCRAN PHOTO ───────────────── */}
       {photoPleine && (
         <div
           onClick={() => setPhotoPleine(null)}
