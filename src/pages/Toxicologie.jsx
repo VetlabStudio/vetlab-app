@@ -271,20 +271,59 @@ plantes: [
       notes: 'Privilégier un spectre Gram négatif (ex. fluoroquinolones) et la voie parentérale. Risque plus élevé par voie orale.' },
   ],
   produits_menagers: [
-    { nom: 'Antigel (éthylène glycol)', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Très élevée (mortelle)', effets: 'Goût sucré attirant, très faible dose suffisante (le chat est extrêmement sensible). Évolution en trois temps : phase d\'ébriété neurologique (30 min à 12h : ataxie, dépression, vomissements, polyuro-polydipsie, convulsions), phase cardiopulmonaire (12-24h), puis insuffisance rénale aiguë par cristaux d\'oxalate de calcium (chat 12-24h, chien 36-72h), souvent irréversible. Urgence absolue : antidote (fomépizole ou éthanol) efficace seulement si administré tôt.' },
-    { nom: 'Piles et batteries', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Modérée à élevée', effets: 'Piles alcalines percées : brûlures caustiques de la bouche et du tube digestif. Piles boutons (surtout lithium) : nécrose des tissus par courant électrique en quelques heures si logées dans l\'oesophage, brûlures, perforation possible. Métaux lourds (zinc, plomb) en cas de rétention : intoxication métallique; risque aussi d\'obstruction. Les oiseaux sont particulièrement sensibles aux métaux.' },
-    { nom: 'Huiles essentielles', especes: ['chien', 'chat', 'oiseau', 'furet'], toxicite: 'Élevée', effets: 'Phénols et terpènes (arbre à thé, gaulthérie, pin, agrumes, eucalyptus, cannelle, menthe, etc.). Le chat métabolise mal ces composés (déficit de glucuronidation hépatique). Exposition par ingestion, voie cutanée ou inhalation (diffuseurs). Signes : hypersalivation, vomissements, ataxie, tremblements, dépression du SNC, atteinte hépatique, irritation cutanée. Les oiseaux sont extrêmement sensibles par inhalation (détresse respiratoire).' },
-    { nom: 'Eau de Javel (bleach)', especes: ['chien', 'chat', 'oiseau'], toxicite: 'Faible à modérée', effets: 'Javel non diluée : lésions de la bouche et de l\'oesophage, surtout si concentration ou pH élevé. Diluée, rincée et une fois l\'odeur dissipée, elle peut servir à nettoyer jouets et cages sans danger. Les oiseaux sont extrêmement sensibles aux vapeurs.' },
-    { nom: 'Vinaigre et eau', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Solution acide pouvant causer une irritation et un léger trouble digestif. Sans risque si diluée, rincée et séchée avant le retour de l\'animal.' },
-    { nom: 'Nettoyants enzymatiques', especes: ['chien', 'chat', 'oiseau'], toxicite: 'Faible', effets: 'Léger trouble digestif. Laisser sécher complètement avant de laisser l\'animal accéder à la zone traitée. Prudence avec les oiseaux, sensibles aux vapeurs de nettoyants.' },
-    { nom: 'Cosmétiques (rouge à lèvres, brillant, fond de teint, mascara, fard)', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible', effets: 'Trouble digestif léger. Les produits hydratants (ex. beurre de karité) ont un effet laxatif et peuvent causer de la diarrhée. Le principal risque vient de l\'emballage ingéré : corps étranger et obstruction digestive possibles (urgence).' },
-    { nom: 'Lotions hydratantes', especes: ['chien', 'chat'], toxicite: 'Faible à modérée', effets: 'Petite quantité léchée : trouble digestif léger. Plus grande quantité : trouble plus marqué. En cas de vomissement, risque d\'aspiration et de pneumonie par aspiration.' },
-    { nom: 'Vaseline (gelée de pétrole)', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Effet laxatif : trouble digestif, plus marqué si grande quantité. Risque de pneumonie par aspiration en cas de vomissement.' },
-    { nom: 'Savon en barre', especes: ['chien', 'chat'], toxicite: 'Faible', effets: 'Trouble digestif léger. Les chiens en raffolent, donc à garder hors de portée. Des bulles peuvent sortir du nez au vomissement, sans gravité.' },
-    { nom: 'Dentifrice', especes: ['chien', 'chat', 'furet'], toxicite: 'Variable selon la composition', effets: 'Peut contenir du fluorure ou du xylitol. Fluorure : insuffisant pour des signes dans la plupart des cas, mais une grande quantité cause trouble digestif sévère, arythmies, hypotension et déséquilibres électrolytiques graves. Xylitol : hypoglycémie et atteinte hépatique possibles. La teneur varie beaucoup d\'une marque à l\'autre.' },
-    { nom: 'Capsules et détergent à lessive liquide', especes: ['chien', 'chat', 'furet'], toxicite: 'Modérée à élevée', effets: 'Trouble digestif et irritation de la bouche et de la gorge. Dans certains cas, signes graves voire mortels.' },
-    { nom: 'Feuilles d\'assouplissant (dryer sheets)', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'Détergents cationiques (surtout dans les feuilles neuves) : brûlures chimiques et ulcères sévères de la bouche, de l\'oesophage et de l\'estomac. Risque aussi de corps étranger et d\'obstruction digestive.' },
-    { nom: 'Assouplissant liquide', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée', effets: 'Détergents cationiques : brûlures chimiques et ulcères sévères de la bouche, de l\'oesophage et de l\'estomac.' },
+    { nom: 'Antigel (éthylène glycol)', img: 'ethylene-glycol.jpg', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Très élevée (mortelle)',
+      mecanisme: 'Éthylène glycol métabolisé en acide oxalique; goût sucré très attirant. Le chat est extrêmement sensible - une très faible dose suffit.',
+      signes: 'Évolution en trois temps : phase d\'ébriété neurologique (30 min à 12h : ataxie, dépression, vomissements, polyuro-polydipsie, convulsions), phase cardiopulmonaire (12-24h), puis insuffisance rénale aiguë par cristaux d\'oxalate de calcium (chat : 12-24h, chien : 36-72h), souvent irréversible.',
+      notes: 'Urgence absolue : l\'antidote (fomépizole ou éthanol) n\'est efficace que s\'il est administré tôt, avant l\'atteinte rénale.' },
+    { nom: 'Piles et batteries', img: 'batterie.jpg', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Modérée à élevée',
+      mecanisme: 'Piles alcalines : brûlures caustiques par fuite du contenu alcalin. Piles boutons (lithium surtout) : nécrose des tissus par courant électrique si logées dans l\'oesophage. Rétention prolongée : intoxication aux métaux lourds (zinc, plomb).',
+      signes: 'Brûlures chimiques et ulcères de la bouche et du tube digestif, perforations possibles (piles boutons). Signes métalliques si rétention. Risque d\'obstruction digestive.',
+      notes: 'Les oiseaux sont particulièrement sensibles aux métaux lourds.' },
+    { nom: 'Huiles essentielles', img: 'huiles.jpg', especes: ['chien', 'chat', 'oiseau', 'furet'], toxicite: 'Élevée',
+      mecanisme: 'Phénols et terpènes (arbre à thé, gaulthérie, pin, agrumes, eucalyptus, cannelle, menthe, etc.). Le chat métabolise mal ces composés (déficit de glucuronidation hépatique). Voies d\'exposition : ingestion, cutanée ou inhalation (diffuseurs).',
+      signes: 'Hypersalivation, vomissements, ataxie, tremblements, dépression du SNC, atteinte hépatique, irritation cutanée.',
+      notes: 'Les oiseaux sont extrêmement sensibles par inhalation : détresse respiratoire possible même à faible concentration.' },
+    { nom: 'Eau de Javel (bleach)', img: 'javel.jpg', especes: ['chien', 'chat', 'oiseau'], toxicite: 'Faible à modérée',
+      mecanisme: 'Hypochlorite de sodium, agent oxydant et caustique à concentration élevée',
+      signes: 'Non diluée : brûlures chimiques de la bouche et de l\'oesophage, irritation des muqueuses, vomissements. Diluée, rincée et sans odeur résiduelle, elle est sans danger pour les animaux.',
+      notes: 'Les oiseaux sont extrêmement sensibles aux vapeurs; éviter tout usage dans les pièces où ils se trouvent.' },
+    { nom: 'Vinaigre et eau', img: 'vinaigre.jpg', especes: ['chien', 'chat'], toxicite: 'Faible',
+      mecanisme: 'Acide acétique dilué, irritant léger',
+      signes: 'Irritation légère des muqueuses, léger trouble digestif si ingéré en grande quantité. Sans risque si dilué, rincé et séché avant le retour de l\'animal.' },
+    { nom: 'Nettoyants enzymatiques', img: 'enzyme.jpg', especes: ['chien', 'chat', 'oiseau'], toxicite: 'Faible',
+      mecanisme: 'Enzymes protéolytiques et surfactants à faible concentration',
+      signes: 'Léger trouble digestif si ingéré. Laisser sécher complètement avant de laisser l\'animal accéder à la zone traitée.',
+      notes: 'Prudence avec les oiseaux, sensibles aux vapeurs de nettoyants.' },
+    { nom: 'Cosmétiques (rouge à lèvres, brillant, fond de teint, mascara, fard)', img: 'cosmetic.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Faible',
+      mecanisme: 'Divers composés (pigments, cires, émollients, parfums) selon le produit',
+      signes: 'Trouble digestif léger. Les produits hydratants (ex. beurre de karité) ont un effet laxatif et peuvent causer de la diarrhée.',
+      notes: 'Le principal risque vient de l\'emballage ingéré : corps étranger et obstruction digestive possibles (urgence).' },
+    { nom: 'Lotions hydratantes', img: 'lotion.jpg', especes: ['chien', 'chat'], toxicite: 'Faible à modérée',
+      mecanisme: 'Émollients, propylène glycol et parfums selon la formulation',
+      signes: 'Petite quantité léchée : trouble digestif léger. Grande quantité : trouble plus marqué.',
+      notes: 'En cas de vomissement, risque de pneumonie par aspiration.' },
+    { nom: 'Vaseline (gelée de pétrole)', img: 'vaseline.jpg', especes: ['chien', 'chat'], toxicite: 'Faible',
+      mecanisme: 'Gelée de pétrole, hydrocarbure minéral non absorbé',
+      signes: 'Effet laxatif : trouble digestif et diarrhée, plus marqué si grande quantité absorbée.',
+      notes: 'Risque de pneumonie par aspiration en cas de vomissement.' },
+    { nom: 'Savon en barre', img: 'savon.jpg', especes: ['chien', 'chat'], toxicite: 'Faible',
+      mecanisme: 'Savon anionique, irritant digestif léger',
+      signes: 'Trouble digestif léger, hypersalivation. Les chiens en raffolent souvent; à garder hors de portée.',
+      notes: 'Des bulles peuvent sortir du nez au vomissement, sans gravité.' },
+    { nom: 'Dentifrice', img: 'pate-dent.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Variable selon la composition',
+      mecanisme: 'Peut contenir du fluorure ou du xylitol selon la marque',
+      signes: 'Fluorure en grande quantité : trouble digestif sévère, arythmies, hypotension et déséquilibres électrolytiques graves. Xylitol : hypoglycémie et atteinte hépatique.',
+      notes: 'La teneur en agents actifs varie beaucoup d\'une marque à l\'autre; vérifier la composition.' },
+    { nom: 'Capsules et détergent à lessive liquide', img: 'detergent.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Modérée à élevée',
+      mecanisme: 'Détergents anioniques et non-ioniques concentrés, agents tensioactifs',
+      signes: 'Trouble digestif, irritation de la bouche et de la gorge. Dans certains cas, signes graves voire mortels.' },
+    { nom: 'Feuilles d\'assouplissant (dryer sheets)', img: 'feuille-assouplisseur.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée',
+      mecanisme: 'Détergents cationiques (surtout dans les feuilles neuves), agents tensioactifs très irritants',
+      signes: 'Brûlures chimiques et ulcères sévères de la bouche, de l\'oesophage et de l\'estomac.',
+      notes: 'Risque aussi de corps étranger et d\'obstruction digestive si la feuille est ingérée.' },
+    { nom: 'Assouplissant liquide', img: 'assouplisseur-liquide.jpg', especes: ['chien', 'chat', 'furet'], toxicite: 'Élevée',
+      mecanisme: 'Détergents cationiques concentrés, agents tensioactifs très irritants',
+      signes: 'Brûlures chimiques et ulcères sévères de la bouche, de l\'oesophage et de l\'estomac.' },
   ],
   metaux: [
     { nom: 'Plomb (plombs de pêche, balles, batteries, vieilles peintures, poussières de rénovation, tuyaux anciens)', especes: ['chien', 'chat', 'furet', 'oiseau', 'cheval', 'vache'], toxicite: 'Élevée à très élevée', effets: 'Sources variées : plombs de pêche et de chasse, batteries, jouets, vieilles peintures, poussières de rénovation, soudures, tuyaux anciens. Atteinte digestive (vomissements, douleur abdominale, constipation ou diarrhée), neurologique (ataxie, hyperexcitabilité, convulsions, cécité corticale) et hématologique. À la formule : ponctuations basophiles et nombreux globules rouges nucléés sans anémie sévère, très évocateurs. Les oiseaux y sont particulièrement sensibles (sauvagine avalant des plombs, perroquets qui rongent), de même que les bovins (batteries, peinture, vieux équipements). Antidotes : chélation (CaEDTA, succimer/DMSA, parfois D-pénicillamine).' },
@@ -630,7 +669,7 @@ function PhotoToxique({ img, nom, dossier = 'plantes', style, onClick }) {
   if (!img || erreur) {
     return (
       <div className="toxico-plante-photo toxico-plante-photo--vide" style={style}>
-        <i className={dossier === 'aliments' ? 'ti ti-apple' : 'ti ti-plant'}></i>
+        <i className={dossier === 'aliments' ? 'ti ti-apple' : dossier === 'menagers' ? 'ti ti-home' : 'ti ti-plant'}></i>
       </div>
     )
   }
@@ -762,7 +801,7 @@ export default function Toxicologie() {
           </div>
         )}
 
-        {/* ─── LISTE ALIMENTS (avec photo, comme plantes) ─ */}
+        {/* ─── LISTE ALIMENTS (avec photo) ─── */}
         {onglet === 'aliments' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
             {toxiquesActifs.map((t, i) => (
@@ -778,8 +817,24 @@ export default function Toxicologie() {
           </div>
         )}
 
-        {/* ─── LISTE TOXIQUES (autres catégories) ─ */}
-        {['medicaments', 'produits_menagers', 'metaux'].includes(onglet) && (
+        {/* ─── LISTE PRODUITS MÉNAGERS (avec photo) ─── */}
+        {onglet === 'produits_menagers' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+            {toxiquesActifs.map((t, i) => (
+              <button key={i} className="toxico-plante-card" onClick={() => setSelectionne({ ...t, _dossier: 'menagers' })}>
+                <PhotoToxique img={t.img} nom={t.nom} dossier="menagers" />
+                <div className="toxico-plante-contenu">
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', display: 'block' }}>{t.nom}</span>
+                  <span style={{ fontSize: 12, color: couleurToxicite(t.toxicite), fontWeight: 600, marginTop: 4, display: 'block' }}>{t.toxicite}</span>
+                  <div style={{ marginTop: 6 }}><IconesEspeces especes={t.especes} /></div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ─── LISTE TOXIQUES (médicaments, métaux) ─── */}
+        {['medicaments', 'metaux'].includes(onglet) && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
             {toxiquesActifs.map((t, i) => (
               <button
