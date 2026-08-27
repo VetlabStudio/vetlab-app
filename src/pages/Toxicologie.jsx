@@ -326,19 +326,44 @@ plantes: [
       signes: 'Brûlures chimiques et ulcères sévères de la bouche, de l\'oesophage et de l\'estomac.' },
   ],
   metaux: [
-    { nom: 'Plomb (plombs de pêche, balles, batteries, vieilles peintures, poussières de rénovation, tuyaux anciens)', especes: ['chien', 'chat', 'furet', 'oiseau', 'cheval', 'vache'], toxicite: 'Élevée à très élevée', effets: 'Sources variées : plombs de pêche et de chasse, batteries, jouets, vieilles peintures, poussières de rénovation, soudures, tuyaux anciens. Atteinte digestive (vomissements, douleur abdominale, constipation ou diarrhée), neurologique (ataxie, hyperexcitabilité, convulsions, cécité corticale) et hématologique. À la formule : ponctuations basophiles et nombreux globules rouges nucléés sans anémie sévère, très évocateurs. Les oiseaux y sont particulièrement sensibles (sauvagine avalant des plombs, perroquets qui rongent), de même que les bovins (batteries, peinture, vieux équipements). Antidotes : chélation (CaEDTA, succimer/DMSA, parfois D-pénicillamine).' },
-    { nom: 'Zinc (pièces de 1 cent, boulons galvanisés, écrous de cages, crèmes à l\'oxyde de zinc, fermetures éclair)', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Élevée', effets: 'Le chien est le plus touché (ingestion de pièces de monnaie surtout; au Canada, les 1 cent de la fin des années 1990 et du début des années 2000, ont une très forte teneur en zinc. Phase digestive d\'abord (anorexie, vomissements, diarrhée), puis quelques heures à quelques jours plus tard hémolyse intravasculaire : anémie, ictère, hémoglobinurie, parfois insuffisance rénale, pancréatite et CIVD. Peut être confondu avec une anémie hémolytique à médiation immune, d\'où l\'importance de la radiographie (objet métallique). Le furet fait les mêmes signes plus des saignements digestifs; chez l\'oiseau : respiration superficielle, plumes ébouriffées, yeux fermés. Bovins, chevaux et porcs aussi exposés. Traitement : retrait de l\'objet et soins de soutien; la chélation est controversée.' },
-    { nom: 'Mercure (poissons contaminés, thermomètres brisés, désinfectants anciens)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée', effets: 'Distinction importante : le mercure organique (méthylmercure, accumulé dans les gros poissons) est très neurotoxique et bien absorbé, alors que le mercure élémentaire d\'un thermomètre brisé est mal absorbé par voie orale et présente un risque bien moindre. Le chat est l\'espèce classique ("maladie du chat fou"). Signes neurologiques surtout : ataxie, tremblements, incoordination, cécité, parfois convulsions; troubles digestifs et atteinte rénale possibles. Exposition chronique surtout.' },
-    { nom: 'Arsenic (rodenticides anciens, herbicides, bois traité, produits agricoles obsolètes)', especes: ['chien', 'chat', 'cheval', 'vache'], toxicite: 'Très élevée', effets: 'Vieux rodenticides, herbicides, cendres de bois traité (arséniate de cuivre chromaté), produits agricoles périmés. Gastro-entérite hémorragique violente : vomissements sanglants, diarrhée profuse parfois sanglante, douleur abdominale, déshydratation rapide, puis collapsus cardiovasculaire, atteinte hépatique et rénale, coma. Évolution souvent rapide. Antidote : chélation (dimercaprol/BAL, succimer). Le bétail au pâturage est aussi exposé.' },
-    { nom: 'Insecticides organophosphorés et carbamates (malathion, diazinon, chlorpyrifos, carbaryl)', especes: ['chien', 'chat', 'oiseau', 'cheval', 'vache'], toxicite: 'Très élevée', effets: 'Inhibition de l\'acétylcholinestérase, donc crise cholinergique : hypersalivation, larmoiement, mictions et défécations (syndrome SLUD), myosis, bradycardie, fasciculations musculaires, bronchospasme et hypersécrétion bronchique, dyspnée, convulsions. La mort survient surtout par défaillance respiratoire. Antidotes : atropine (signes muscariniques) et pralidoxime (2-PAM, surtout pour les organophosphorés, à donner tôt). Le chat et les oiseaux y sont sensibles; intoxications fréquentes en milieu agricole.' },
-    { nom: 'Pyréthrinoïdes (perméthrine) : antipuces pour chien appliqués au chat', especes: ['chien', 'chat'], toxicite: 'Élevée à très élevée (chez le chat)', effets: 'Cause classique et évitable : un antipuce concentré pour chien (perméthrine) appliqué sur un chat, ou un chat en contact étroit avec un chien fraîchement traité. Le chien tolère bien la perméthrine, mais le chat y est très sensible. Action sur les canaux sodiques : tremblements, fasciculations, hyperesthésie, hypersalivation, mydriase, hyperthermie, ataxie, cécité temporaire, convulsions; durée des tremblements souvent longue (24 à 79h). Pas d\'antidote : décontamination (bain à l\'eau tiède et savon à vaisselle), méthocarbamol pour les tremblements, anticonvulsivants au besoin. Point clé : l\'atropine n\'est PAS l\'antidote et est contre-indiquée (ce n\'est pas une crise cholinergique), à la différence des organophosphorés.' },
-    { nom: 'Rodenticides anticoagulants (warfarine, bromadiolone, brodifacoum, diphacinone)', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Très élevée', effets: 'Les plus courants. Inhibition de la vitamine K époxyde réductase, donc baisse des facteurs de coagulation II, VII, IX et X. Signes retardés : saignements typiquement 3 à 7 jours après l\'ingestion (le temps d\'épuiser les facteurs en circulation). Abattement, faiblesse, muqueuses pâles, épistaxis, toux, hémoptysie, dyspnée (hémothorax), hématomes, saignements de tout site. Antidote : vitamine K1 (phytoménadione), pendant 2 à 4 semaines (plus longtemps pour les molécules de 2e génération), avec transfusion de plasma ou de sang si saignement grave. La vitamine K1 orale s\'absorbe mieux avec un repas gras. Risque aussi par empoisonnement relais (chat ou rapace mangeant un rongeur intoxiqué).' },
-    { nom: 'Brométhaline (rodenticide neurotoxique)', especes: ['chien', 'chat'], toxicite: 'Très élevée', effets: 'De plus en plus utilisée depuis le resserrement de la réglementation des anticoagulants. Découple la phosphorylation oxydative dans le SNC, provoquant un oedème cérébral. Délai de quelques heures à quelques jours. Faible dose : abattement, parésie ou paralysie des postérieurs, ataxie. Forte dose : tremblements, hyperexcitabilité, hyperesthésie, vomissements, convulsions. Aucun antidote; soins de soutien et contrôle de l\'oedème cérébral. Empoisonnement relais possible chez le chat bon chasseur.' },
-    { nom: 'Métaldéhyde (appâts à limaces et escargots)', especes: ['chien', 'chat'], toxicite: 'Très élevée', effets: 'Granulés de jardin contre limaces et escargots, parfois attirants (souvent à base de son). Début rapide : tremblements intenses et continus, hyperthermie marquée, tachycardie, hypersalivation, ataxie, convulsions (surnommé "shake and bake"). Aucun antidote spécifique : décontamination, myorelaxants (méthocarbamol), contrôle des convulsions et de l\'hyperthermie, soins intensifs.' },
+    { nom: 'Plomb (plombs de pêche, balles, batteries, vieilles peintures, poussières de rénovation, tuyaux anciens)', especes: ['chien', 'chat', 'furet', 'oiseau', 'cheval', 'vache'], toxicite: 'Élevée à très élevée',
+      mecanisme: 'Sources variées : plombs de pêche et de chasse, batteries, jouets, vieilles peintures, poussières de rénovation, soudures, tuyaux anciens. Perturbe de nombreux systèmes enzymatiques par chélation des groupes thiol.',
+      signes: 'Atteinte digestive (vomissements, douleur abdominale, constipation ou diarrhée), neurologique (ataxie, hyperexcitabilité, convulsions, cécité corticale) et hématologique. À la formule : ponctuations basophiles et nombreux globules rouges nucléés sans anémie sévère, très évocateurs.',
+      notes: 'Les oiseaux y sont particulièrement sensibles (sauvagine avalant des plombs, perroquets qui rongent), de même que les bovins (batteries, peinture, vieux équipements). Antidotes : chélation (CaEDTA, succimer/DMSA, parfois D-pénicillamine).' },
+    { nom: 'Zinc (pièces de 1 cent, boulons galvanisés, écrous de cages, crèmes à l\'oxyde de zinc, fermetures éclair)', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Élevée',
+      mecanisme: 'Ingestion de pièces de monnaie, boulons galvanisés ou écrous de cages. Au Canada, les pièces de 1 cent de la fin des années 1990 et du début des années 2000 ont une très forte teneur en zinc.',
+      signes: 'Phase digestive d\'abord (anorexie, vomissements, diarrhée), puis hémolyse intravasculaire : anémie, ictère, hémoglobinurie, parfois insuffisance rénale, pancréatite et CIVD. Peut être confondu avec une anémie hémolytique à médiation immune - la radiographie révèle l\'objet métallique.',
+      notes: 'Le furet présente les mêmes signes plus des saignements digestifs; chez l\'oiseau : respiration superficielle, plumes ébouriffées, yeux fermés. Traitement : retrait de l\'objet et soins de soutien; la chélation est controversée.' },
+    { nom: 'Mercure (poissons contaminés, thermomètres brisés, désinfectants anciens)', especes: ['chien', 'chat'], toxicite: 'Modérée à élevée',
+      mecanisme: 'Le mercure organique (méthylmercure, accumulé dans les gros poissons) est très neurotoxique et bien absorbé. Le mercure élémentaire d\'un thermomètre brisé est mal absorbé par voie orale et présente un risque bien moindre.',
+      signes: 'Signes neurologiques surtout : ataxie, tremblements, incoordination, cécité, parfois convulsions. Troubles digestifs et atteinte rénale possibles. Exposition chronique surtout.',
+      notes: 'Le chat est l\'espèce classique (maladie du chat fou).' },
+    { nom: 'Arsenic (rodenticides anciens, herbicides, bois traité, produits agricoles obsolètes)', especes: ['chien', 'chat', 'cheval', 'vache'], toxicite: 'Très élevée',
+      mecanisme: 'Vieux rodenticides, herbicides, cendres de bois traité (arséniate de cuivre chromaté), produits agricoles périmés. Inhibe les enzymes mitochondriaux et perturbe la phosphorylation oxydative.',
+      signes: 'Gastro-entérite hémorragique violente : vomissements sanglants, diarrhée profuse parfois sanglante, douleur abdominale, déshydratation rapide, puis collapsus cardiovasculaire, atteinte hépatique et rénale, coma. Évolution souvent rapide.',
+      notes: 'Le bétail au pâturage est aussi exposé. Antidote : chélation (dimercaprol/BAL, succimer).' },
+    { nom: 'Insecticides organophosphorés et carbamates (malathion, diazinon, chlorpyrifos, carbaryl)', especes: ['chien', 'chat', 'oiseau', 'cheval', 'vache'], toxicite: 'Très élevée',
+      mecanisme: 'Inhibition de l\'acétylcholinestérase : accumulation d\'acétylcholine aux synapses muscariniques et nicotiniques, provoquant une crise cholinergique.',
+      signes: 'Hypersalivation, larmoiement, mictions et défécations involontaires (syndrome SLUD), myosis, bradycardie, fasciculations musculaires, bronchospasme et hypersécrétion bronchique, dyspnée, convulsions. La mort survient surtout par défaillance respiratoire.',
+      notes: 'Antidotes : atropine (signes muscariniques) et pralidoxime (2-PAM, surtout pour les organophosphorés, à donner tôt). Le chat et les oiseaux y sont très sensibles; intoxications fréquentes en milieu agricole.' },
+    { nom: 'Pyréthrinoïdes (perméthrine) : antipuces pour chien appliqués au chat', especes: ['chien', 'chat'], toxicite: 'Élevée à très élevée (chez le chat)',
+      mecanisme: 'Cause classique et évitable : un antipuce concentré pour chien (perméthrine) appliqué sur un chat, ou un chat en contact étroit avec un chien fraîchement traité. Agit sur les canaux sodiques en les maintenant ouverts, causant une hyperexcitation neuronale prolongée.',
+      signes: 'Tremblements, fasciculations, hyperesthésie, hypersalivation, mydriase, hyperthermie, ataxie, cécité temporaire, convulsions. La durée des tremblements est souvent longue (24 à 79h).',
+      notes: 'Pas d\'antidote : décontamination (bain à l\'eau tiède et savon à vaisselle), méthocarbamol pour les tremblements, anticonvulsivants au besoin. L\'atropine n\'est PAS indiquée et est contre-indiquée - ce n\'est pas une crise cholinergique, contrairement aux organophosphorés.' },
+    { nom: 'Rodenticides anticoagulants (warfarine, bromadiolone, brodifacoum, diphacinone)', especes: ['chien', 'chat', 'furet', 'oiseau'], toxicite: 'Très élevée',
+      mecanisme: 'Inhibition de la vitamine K époxyde réductase, donc baisse des facteurs de coagulation II, VII, IX et X. Les signes sont retardés : saignements typiquement 3 à 7 jours après l\'ingestion, le temps d\'épuiser les facteurs en circulation.',
+      signes: 'Abattement, faiblesse, muqueuses pâles, épistaxis, toux, hémoptysie, dyspnée (hémothorax), hématomes, saignements de tout site.',
+      notes: 'Antidote : vitamine K1 (phytoménadione) pendant 2 à 4 semaines (plus longtemps pour les molécules de 2e génération), avec transfusion de plasma ou de sang si saignement grave. La vitamine K1 orale s\'absorbe mieux avec un repas gras. Risque d\'empoisonnement relais (chat ou rapace mangeant un rongeur intoxiqué).' },
+    { nom: 'Brométhaline (rodenticide neurotoxique)', especes: ['chien', 'chat'], toxicite: 'Très élevée',
+      mecanisme: 'De plus en plus utilisée depuis le resserrement de la réglementation des anticoagulants. Découple la phosphorylation oxydative dans le SNC, provoquant un oedème cérébral. Délai de quelques heures à quelques jours.',
+      signes: 'Faible dose : abattement, parésie ou paralysie des postérieurs, ataxie. Forte dose : tremblements, hyperexcitabilité, hyperesthésie, vomissements, convulsions.',
+      notes: 'Aucun antidote; soins de soutien et contrôle de l\'oedème cérébral. Empoisonnement relais possible chez le chat bon chasseur.' },
+    { nom: 'Métaldéhyde (appâts à limaces et escargots)', especes: ['chien', 'chat'], toxicite: 'Très élevée',
+      mecanisme: 'Granulés de jardin contre limaces et escargots, parfois attirants (souvent à base de son). Diminue le GABA et la sérotonine dans le cerveau et augmente la perméabilité de la barrière hémato-encéphalique.',
+      signes: 'Début rapide : tremblements intenses et continus, hyperthermie marquée, tachycardie, hypersalivation, ataxie, convulsions (surnommé "shake and bake").',
+      notes: 'Aucun antidote spécifique : décontamination, myorelaxants (méthocarbamol), contrôle des convulsions et de l\'hyperthermie, soins intensifs.' },
   ],
 }
-
-// ─── ANTIDOTES PAR INTOXICATION ──────────────────────────
 
 const INTOXICATIONS_ANTIDOTES = [
   {
@@ -359,6 +384,51 @@ const INTOXICATIONS_ANTIDOTES = [
     ],
   },
   {
+    intoxication: 'Arsenic',
+    icone: 'ti-flask',
+    antidotes: [
+      { generique: 'Dimercaprol (BAL)', notes: 'Chélateur de référence pour l\'arsenic aigu - administré IM. Toxicité propre notable.' },
+      { generique: 'Succimer (DMSA)', notes: 'Alternative orale, mieux tolérée, de plus en plus préférée pour les formes moins sévères.' },
+    ],
+  },
+  {
+    intoxication: 'Baclofène / Bloqueurs calciques / Bêta-bloquants',
+    icone: 'ti-heart-rate-monitor',
+    antidotes: [
+      { generique: 'Émulsion lipidique IV (Intralipid)', notes: 'Piège lipidique pour les molécules lipophiles (baclofène, diltiazem, vérapamil, propranolol). Adjuvant aux soins intensifs (fluides, vasopresseurs, gluconate de calcium pour les bloqueurs calciques).' },
+    ],
+  },
+  {
+    intoxication: 'Benzodiazépines / Zolpidem',
+    icone: 'ti-zzz',
+    antidotes: [
+      { generique: 'Flumazénil', notes: 'Antagoniste des récepteurs aux benzodiazépines - réverse la sédation. Effet court (30-60 min), à répéter si la dépression du SNC revient. À éviter si ingestion mixte avec un proconvulsivant (ex. tricycliques), car il peut abaisser le seuil convulsif.' },
+    ],
+  },
+  {
+    intoxication: 'Champignons à amatoxines (Amanita)',
+    icone: 'ti-mushroom',
+    antidotes: [
+      { generique: 'Silibinine / Silymarine', notes: 'Bloque la captation hépatique des amatoxines par les hépatocytes. Antidote le plus reconnu pour ce type d\'empoisonnement - à débuter le plus tôt possible. Traitement de soutien hépatique intensif en parallèle.' },
+    ],
+  },
+  {
+    intoxication: 'Mercure',
+    icone: 'ti-thermometer',
+    antidotes: [
+      { generique: 'Dimercaprol (BAL)', notes: 'Pour le mercure inorganique et les expositions aiguës - administré IM.' },
+      { generique: 'Succimer (DMSA)', notes: 'Option orale pour le mercure organique et les expositions moins sévères. Mieux toléré que le BAL.' },
+    ],
+  },
+  {
+    intoxication: 'Méthémoglobinémie (agents oxydants)',
+    icone: 'ti-droplet-half-2',
+    antidotes: [
+      { generique: 'Bleu de méthylène', notes: 'Antidote de la méthémoglobinémie - réduit la méthémoglobine en hémoglobine fonctionnelle. Prudence chez le chat : peut lui-même causer hémolyse et corps de Heinz à forte dose. Utiliser à 1-1,5 mg/kg IV lent.' },
+      { generique: 'Vitamine C (acide ascorbique)', notes: 'Réducteur adjuvant, moins puissant que le bleu de méthylène mais sans risque hémolytique.' },
+    ],
+  },
+  {
     intoxication: 'Organophosphorés / Carbamates',
     icone: 'ti-bug',
     antidotes: [
@@ -367,10 +437,11 @@ const INTOXICATIONS_ANTIDOTES = [
     ],
   },
   {
-    intoxication: 'Rodenticides anticoagulants',
-    icone: 'ti-mouse',
+    intoxication: 'Palmier de Sago / Xylitol (hépatotoxicité)',
+    icone: 'ti-plant-2',
     antidotes: [
-      { generique: 'Vitamine K1 (phytoménadione)', notes: 'Antidote spécifique. Traitement prolongé : 2 semaines minimum pour les molécules de 1re génération (warfarine), 4 à 6 semaines pour les 2e génération (bromadiolone, brodifacoum, diphacinone). Mieux absorbée PO avec un repas gras. Transfusion de plasma ou de sang complet si saignement actif ou anémie sévère.' },
+      { generique: 'N-Acétylcystéine (NAC)', notes: 'Hépatoprotecteur adjuvant - restaure le glutathion intrahépatique. Pas un antidote spécifique, mais réduit les dommages oxydatifs hépatiques.' },
+      { generique: 'Silibinine / Silymarine', notes: 'Hépatoprotecteur adjuvant - soutient la fonction hépatique. Rôle plus marginal ici que pour les amatoxines.' },
     ],
   },
   {
@@ -383,19 +454,18 @@ const INTOXICATIONS_ANTIDOTES = [
     ],
   },
   {
-    intoxication: 'Arsenic',
-    icone: 'ti-flask',
+    intoxication: 'Pyréthrinoïdes / Perméthrine',
+    icone: 'ti-paw',
     antidotes: [
-      { generique: 'Dimercaprol (BAL)', notes: 'Chélateur de référence pour l\'arsenic aigu - administré IM. Toxicité propre notable.' },
-      { generique: 'Succimer (DMSA)', notes: 'Alternative orale, mieux tolérée, de plus en plus préférée pour les formes moins sévères.' },
+      { generique: 'Méthocarbamol', notes: 'Myorelaxant central pour contrôler les tremblements et fasciculations - traitement symptomatique principal chez le chat intoxiqué. Anticonvulsivants (diazépam, phénobarbital) si convulsions. Décontamination (bain eau tiède + savon vaisselle) en priorité.' },
+      { generique: 'Émulsion lipidique IV (Intralipid)', notes: 'Adjuvant en cas de signes sévères réfractaires - séquestre les molécules lipophiles dans un compartiment lipidique sanguin. Pas un antidote spécifique. NOTE : l\'atropine est CONTRE-INDIQUÉE (ce n\'est pas une crise cholinergique).' },
     ],
   },
   {
-    intoxication: 'Mercure',
-    icone: 'ti-thermometer',
+    intoxication: 'Rodenticides anticoagulants',
+    icone: 'ti-skull',
     antidotes: [
-      { generique: 'Dimercaprol (BAL)', notes: 'Pour le mercure inorganique et les expositions aiguës - administré IM.' },
-      { generique: 'Succimer (DMSA)', notes: 'Option orale pour le mercure organique et les expositions moins sévères. Mieux toléré que le BAL.' },
+      { generique: 'Vitamine K1 (phytoménadione)', notes: 'Antidote spécifique. Traitement prolongé : 2 semaines minimum pour les molécules de 1re génération (warfarine), 4 à 6 semaines pour les 2e génération (bromadiolone, brodifacoum, diphacinone). Mieux absorbée PO avec un repas gras. Transfusion de plasma ou de sang complet si saignement actif ou anémie sévère.' },
     ],
   },
   {
@@ -406,55 +476,10 @@ const INTOXICATIONS_ANTIDOTES = [
     ],
   },
   {
-    intoxication: 'Benzodiazépines / Zolpidem',
-    icone: 'ti-zzz',
-    antidotes: [
-      { generique: 'Flumazénil', notes: 'Antagoniste des récepteurs aux benzodiazépines - réverse la sédation. Effet court (30-60 min), à répéter si la dépression du SNC revient. À éviter si ingestion mixte avec un proconvulsivant (ex. tricycliques), car il peut abaisser le seuil convulsif.' },
-    ],
-  },
-  {
     intoxication: 'Vitamine D (cholécalciférol)',
     icone: 'ti-sun',
     antidotes: [
       { generique: 'Pamidronate', notes: 'Bisphosphonate contre l\'hypercalcémie - inhibe la résorption osseuse par les ostéoclastes. S\'associe aux fluides salins IV, diurèse forcée, et parfois calcitonine ou corticostéroïdes. Surveiller la calcémie et la phosphatémie sur plusieurs jours.' },
-    ],
-  },
-  {
-    intoxication: 'Champignons à amatoxines (Amanita)',
-    icone: 'ti-mushroom',
-    antidotes: [
-      { generique: 'Silibinine / Silymarine', notes: 'Bloque la captation hépatique des amatoxines par les hépatocytes. Antidote le plus reconnu pour ce type d\'empoisonnement - à débuter le plus tôt possible. Traitement de soutien hépatique intensif en parallèle.' },
-    ],
-  },
-  {
-    intoxication: 'Pyréthrinoïdes / Perméthrine',
-    icone: 'ti-paw',
-    antidotes: [
-      { generique: 'Méthocarbamol', notes: 'Myorelaxant central pour contrôler les tremblements et fasciculations - traitement symptomatique principal chez le chat intoxiqué. Anticonvulsivants (diazépam, phénobarbital) si convulsions. Décontamination (bain eau tiède + savon vaisselle) en priorité.' },
-      { generique: 'Émulsion lipidique IV (Intralipid)', notes: 'Adjuvant en cas de signes sévères réfractaires - séquestre les molécules lipophiles dans un compartiment lipidique sanguin. Pas un antidote spécifique. NOTE : l\'atropine est CONTRE-INDIQUÉE (ce n\'est pas une crise cholinergique).' },
-    ],
-  },
-  {
-    intoxication: 'Baclofène / Bloqueurs calciques / Bêta-bloquants',
-    icone: 'ti-heart-rate-monitor',
-    antidotes: [
-      { generique: 'Émulsion lipidique IV (Intralipid)', notes: 'Piège lipidique pour les molécules lipophiles (baclofène, diltiazem, vérapamil, propranolol). Adjuvant aux soins intensifs (fluides, vasopresseurs, gluconate de calcium pour les bloqueurs calciques).' },
-    ],
-  },
-  {
-    intoxication: 'Méthémoglobinémie (agents oxydants)',
-    icone: 'ti-droplet-half-2',
-    antidotes: [
-      { generique: 'Bleu de méthylène', notes: 'Antidote de la méthémoglobinémie - réduit la méthémoglobine en hémoglobine fonctionnelle. Prudence chez le chat : peut lui-même causer hémolyse et corps de Heinz à forte dose. Utiliser à 1-1,5 mg/kg IV lent.' },
-      { generique: 'Vitamine C (acide ascorbique)', notes: 'Réducteur adjuvant, moins puissant que le bleu de méthylène mais sans risque hémolytique.' },
-    ],
-  },
-  {
-    intoxication: 'Palmier de Sago / Xylitol (hépatotoxicité)',
-    icone: 'ti-plant-2',
-    antidotes: [
-      { generique: 'N-Acétylcystéine (NAC)', notes: 'Hépatoprotecteur adjuvant - restaure le glutathion intrahépatique. Pas un antidote spécifique, mais réduit les dommages oxydatifs hépatiques.' },
-      { generique: 'Silibinine / Silymarine', notes: 'Hépatoprotecteur adjuvant - soutient la fonction hépatique. Rôle plus marginal ici que pour les amatoxines.' },
     ],
   },
 ]
@@ -853,22 +878,23 @@ export default function Toxicologie() {
 
         {/* ─── ANTIDOTES PAR INTOXICATION ─────── */}
         {onglet === 'antidotes' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
-            <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: 0 }}>
-              Appuyez sur un type d'intoxication pour afficher l'antidote.
-            </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {INTOXICATIONS_ANTIDOTES.map((item, i) => (
-                <button
-                  key={i}
-                  onClick={() => setIntoxicationSelectionnee(i)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 999, border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-primary)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-                >
-                  <i className={`ti ${item.icone}`} style={{ fontSize: 15 }}></i>
-                  {item.intoxication}
-                </button>
-              ))}
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
+            {INTOXICATIONS_ANTIDOTES.map((item, i) => (
+              <button
+                key={i}
+                onClick={() => setIntoxicationSelectionnee(i)}
+                className="labo-etape-card"
+                style={{ textAlign: 'left', padding: '12px 14px', width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
+              >
+                <i className={`ti ${item.icone}`} style={{ fontSize: 22, color: 'var(--primary)', flexShrink: 0 }}></i>
+                <div>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', display: 'block' }}>{item.intoxication}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 2, display: 'block' }}>
+                    {item.antidotes.length} antidote{item.antidotes.length > 1 ? 's' : ''}
+                  </span>
+                </div>
+              </button>
+            ))}
           </div>
         )}
 
