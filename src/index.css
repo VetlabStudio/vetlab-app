@@ -6749,15 +6749,9 @@ input[type="number"] {
   height: 28px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 7.5px;
-  font-weight: 800;
-  text-align: center;
-  line-height: 1.15;
   flex-shrink: 0;
-  color: white;
+  object-fit: contain;
+  background: white;
 }
 .nutri-aliment-nom {
   flex: 1;

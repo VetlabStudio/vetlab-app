@@ -1,150 +1,221 @@
-const SECTIONS = [
+import { useState } from 'react'
+
+const CONSEILS = [
   {
+    icone: 'ti-clipboard-check',
     titre: 'Avant la saillie',
-    items: [
+    apercu: 'BCS 4-5/9 · dépistages · vaccins à jour',
+    type: 'bullets',
+    bullets: [
+      <>L'animal devrait être en bonne forme physique (<em>Body Condition Score</em> (BCS) 4-5/9), à jour pour les vaccins et le vermifuge.</>,
+      "Chienne : dépistage brucellose et herpèsvirus recommandé. Chatte : dépistage FeLV/FIV.",
+      "Faire maigrir la chienne avant la saillie si nécessaire, pas pendant la gestation. Éviter la reproduction chez la chatte si BCS ≤ 3/9 ou > 6/9.",
+    ],
+  },
+  {
+    icone: 'ti-trending-up',
+    titre: 'Alimentation en gestation',
+    apercu: 'Chienne → dès sem. 5 · Chatte → à volonté dès le début',
+    type: 'especes',
+    especes: [
       {
-        avis: "L'animal devrait être dans une bonne forme physique avant la reproduction, ni trop maigre ni trop gras, et à jour pour les vaccins et le vermifuge.",
-        tech: 'BCS cible 4-5/9',
+        label: 'Chienne',
+        texte: "Augmenter la portion progressivement dès la 5e semaine (+15%/sem), jusqu'à 1,5x la portion habituelle à la mise bas. En fin de gestation, fractionner en petits repas fréquents.",
       },
       {
-        avis: "Un dépistage de la brucellose et de l'herpèsvirus est recommandé chez la chienne avant la saillie, et un dépistage FeLV/FIV chez la chatte.",
-      },
-      {
-        avis: "Si la chienne fait de l'embonpoint, il vaut mieux la faire maigrir avant la saillie plutôt que pendant la gestation. Chez la chatte, éviter la reproduction si elle est trop maigre ou trop grasse.",
-        tech: 'Chatte : éviter si BCS <= 3/9 ou > 6/9',
+        label: 'Chatte',
+        texte: "Laisser manger à volonté dès le début de la gestation. Elle mangera environ 1,5x sa portion habituelle en fin de gestation.",
       },
     ],
   },
   {
-    titre: 'Gestation - chienne (~63 jours)',
-    items: [
+    icone: 'ti-droplet',
+    titre: 'Alimentation en lactation',
+    apercu: 'Manger à volonté · besoins très élevés',
+    type: 'especes',
+    especes: [
       {
-        avis: "Dès la 5e semaine de gestation, augmentez peu à peu la portion habituelle. Au moment de la mise bas, la chienne devrait manger environ une fois et demie sa portion d'avant la saillie.",
-        tech: '+15 %/semaine dès la semaine 5, jusqu\'à +60 % au total',
+        label: 'Chienne',
+        texte: "Laisser manger à volonté ou offrir des repas très fréquents. Les besoins peuvent doubler ou plus selon le nombre de chiots. Pic entre 3 et 5 semaines postpartum.",
       },
       {
-        avis: "En fin de gestation, offrez plusieurs petits repas plutôt que 1 ou 2 gros repas : l'utérus laisse moins de place à l'estomac.",
-      },
-      {
-        avis: "Choisissez une nourriture pour chiots/croissance ou \"toutes étapes de vie\" de bonne qualité : elle fournit déjà assez d'énergie et de glucides pour éviter les baisses de sucre, et couvre aussi le calcium et le phosphore sans calcul.",
-        tech: 'Min. 23 % MS glucides digestibles - Ca 1-1,7 % MS - P 0,7-1,3 % MS',
-        food: {
-          examples: ['Royal Canin Starter Mother & Babydog', 'Hill\'s Science Diet Puppy', 'Purina Pro Plan Puppy'],
-          why: "Formulées pour la croissance/gestation : plus riches en énergie et en calcium/phosphore déjà bien balancés, donc pas besoin d'ajuster ou de superviser le calcul soi-même.",
-        },
-      },
-      {
-        avis: "Ne donnez jamais de supplément de calcium pendant la gestation ou l'allaitement, même en vente libre : ça peut causer une crise de calcium dangereuse (éclampsie) après la mise bas.",
-        alerte: true,
+        label: 'Chatte',
+        texte: "Laisser manger à volonté. Les besoins peuvent tripler par rapport à l'entretien et augmentent chaque semaine jusqu'au sevrage.",
       },
     ],
   },
   {
-    titre: 'Gestation - chatte (~63 jours)',
-    items: [
-      {
-        avis: "Chez la chatte, contrairement à la chienne, on augmente la portion dès la première semaine de gestation. La laisser manger à volonté est une bonne option.",
-      },
-      {
-        avis: "En fin de gestation, elle mangera environ une fois et demie sa portion habituelle.",
-        tech: 'Jusqu\'à +25 à 50 % vs entretien ; BEQ : BEE x1,6 à la saillie -> BEE x2 à la mise bas',
-        food: {
-          examples: ['Royal Canin Starter Mother & Babydog', 'Hill\'s Science Diet Kitten', 'Purina Pro Plan Kitten'],
-          why: 'Mêmes formules croissance que pour la chienne : énergie et minéraux déjà adaptés à la gestation.',
-        },
-      },
-    ],
-  },
-  {
-    titre: 'Lactation - chienne',
-    items: [
-      {
-        avis: "Laissez la chienne manger à volonté ou offrez-lui des repas très fréquents durant l'allaitement : ses besoins explosent, jusqu'à près du double de sa portion habituelle, et encore plus selon le nombre de chiots.",
-        tech: 'BEQ environ 1,9 x BEE + 25 % par chiot ; pic entre 3 et 5 semaines postpartum',
-      },
-      {
-        avis: 'Continuez avec une nourriture pour chiots/croissance riche en protéines et en gras : ça couvre les besoins accrus sans supplément.',
-        tech: 'Protéines 25-35 % MS ; matières grasses min. 8,5 % MS, idéalement >= 20 % MS pour les portées nombreuses ou les grandes races',
-      },
-      {
-        avis: "Si la diète est une nourriture commerciale complète et de bonne qualité pour la croissance, aucun supplément vitaminique ou minéral n'est nécessaire. Le DHA, important pour le développement du cerveau des chiots, est déjà inclus dans les bonnes formules croissance.",
-      },
-    ],
-  },
-  {
-    titre: 'Lactation - chatte',
-    items: [
-      {
-        avis: "Laissez la chatte manger à volonté durant l'allaitement : ses besoins peuvent tripler par rapport à l'entretien normal, et augmentent chaque semaine.",
-        tech: '1,5 x BEQ semaine 1 -> 2,5-3 x BEQ semaine 4',
-      },
-      {
-        avis: "Une nourriture pour chatons de bonne qualité, riche en protéines animales et en gras, couvre bien ces besoins. Les protéines végétales seules ne suffisent pas : la taurine, essentielle pour le chat, ne vient que de sources animales.",
-        tech: 'Protéines min. 30 % MS, matières grasses min. 9 % MS, DHA+EPA min. 0,01 % MS',
-      },
-      {
-        avis: "Le calcium et le phosphore sont aussi déjà bien dosés dans une bonne nourriture pour chatons, pas besoin de les calculer.",
-        tech: 'Ca 1,1-1,6 % MS - P 0,8-1,4 % MS',
-      },
-    ],
-  },
-  {
-    titre: 'Eau et sevrage',
-    items: [
-      {
-        avis: "De l'eau fraîche doit être accessible en tout temps. Si la mère ou les petits boivent peu, offrir de la nourriture humide aide à combler les besoins en eau.",
-      },
-      {
-        avis: "Commencez à introduire de la nourriture solide, ramollie, vers 3 à 4 semaines. Le sevrage complet se fait généralement vers 6 semaines.",
-      },
-      {
-        avis: "Après le sevrage, réduisez progressivement la portion de la mère pour revenir à son poids et à sa portion d'avant la reproduction, généralement en 6 à 8 semaines.",
-      },
+    icone: 'ti-calendar',
+    titre: 'Sevrage',
+    apercu: 'Solide dès 3-4 sem · complet vers 6 sem',
+    type: 'bullets',
+    bullets: [
+      "Introduire de la nourriture solide ramollie vers 3 à 4 semaines.",
+      "Sevrage complet généralement vers 6 semaines.",
+      "Après le sevrage, réduire progressivement la portion de la mère pour revenir à son poids d'avant la reproduction en 6 à 8 semaines.",
     ],
   },
 ]
 
+const ALIMENTS = [
+  { nom: 'Royal Canin Starter Mother & Babydog', img: '/logo-royal-canin.jpg' },
+  { nom: "Hill's Science Diet Puppy ou Kitten",   img: '/logo-hills.jpg' },
+  { nom: 'Purina Pro Plan Puppy ou Kitten',       img: '/logo-purina.jpg' },
+]
+
 export default function NutritionGestationLactation() {
+  const [ouverts, setOuverts]     = useState([])
+  const [msOuverte, setMsOuverte] = useState(false)
+
+  const toggleConseil = (i) =>
+    setOuverts(o => o.includes(i) ? o.filter(x => x !== i) : [...o, i])
+
   return (
     <div className="labo-detail-page">
-      <div className="nutrition-note-ms">
-        <i className="ti ti-info-circle"></i>
-        <span>Conseils concrets à donner à la clientèle en premier ; les repères techniques (matière sèche, ratios) sont indiqués en plus petit pour les cas qui demandent plus de précision. <strong>MS</strong> = matière sèche, soit le % du nutriment calculé une fois l'eau retirée de l'aliment ; ne pas confondre avec aliment sec vs humide. Une conserve contient environ 75-80 % d'eau alors qu'une croquette en contient environ 10 %.</span>
-      </div>
-      {SECTIONS.map((s, i) => (
-        <div key={i} className="postop-section">
-          <div className="postop-section-header">
-            <div className="postop-section-icone" style={{ background: 'rgba(37,77,86,0.1)', color: 'var(--primary)' }}>
-              <i className="ti ti-heart"></i>
-            </div>
-            <h2 className="postop-section-titre">{s.titre}</h2>
-          </div>
-          <div className="nutrition-tip-list">
-            {s.items.map((it, j) => (
-              <div key={j} className={`nutrition-tip${it.alerte ? ' nutrition-tip--alerte' : ''}`}>
-                <p className="nutrition-tip-advice">{it.avis}</p>
-                {it.food && (
-                  <div className="nutrition-food-examples">
-                    <p className="nutrition-food-examples-label">Exemples à proposer</p>
-                    <div className="nutrition-food-chip-row">
-                      {it.food.examples.map((f, k) => (
-                        <span key={k} className="nutrition-food-chip">{f}</span>
-                      ))}
-                    </div>
-                    <p className="nutrition-food-why">Pourquoi : {it.food.why}</p>
+
+      {/* ── À conseiller au client ── */}
+      <section>
+        <div className="nutri-sec-label">Essentiel</div>
+        <div className="nutri-sec-titre">À conseiller au client</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          {CONSEILS.map((c, i) => (
+            <div key={i} className={`nutri-conseil-card${ouverts.includes(i) ? ' ouvert' : ''}`}>
+              <button className="nutri-conseil-row" onClick={() => toggleConseil(i)}>
+                <div className="nutri-conseil-icone">
+                  <i className={`ti ${c.icone}`}></i>
+                </div>
+                <div className="nutri-conseil-corps">
+                  <div className="nutri-conseil-titre">{c.titre}</div>
+                  <div className="nutri-conseil-apercu">{c.apercu}</div>
+                </div>
+                <i className="ti ti-chevron-right nutri-conseil-chevron"></i>
+              </button>
+              <div className="nutri-conseil-detail">
+                {c.type === 'especes' && (
+                  <div>
+                    {c.especes.map((e, j) => (
+                      <div key={j} className="nutri-espece-ligne">
+                        <span className="nutri-espece-tag" style={{ color: 'var(--primary)' }}>{e.label}</span>
+                        <span className="nutri-espece-arrow">→</span>
+                        <span className="nutri-espece-texte">{e.texte}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
-                {it.tech && (
-                  <div className="nutrition-tip-tech">
-                    <span className="nutrition-tip-tech-label">Repère :</span>
-                    <span>{it.tech}</span>
+                {c.type === 'bullets' && (
+                  <div className="nutri-bullet-liste">
+                    {c.bullets.map((b, j) => (
+                      <div key={j} className="nutri-bullet-item">
+                        <div className="nutri-bullet-puce"></div>
+                        <span>{b}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Repères nutritionnels ── */}
+      <section>
+        <div className="nutri-sec-label">Données à retenir</div>
+        <div className="nutri-sec-titre">Repères nutritionnels</div>
+        <div className="nutri-reperes-grille">
+          <div className="nutri-repere-col">
+            <div className="nutri-repere-en-tete">
+              <div className="nutri-repere-point" style={{ background: 'var(--primary)' }}></div>
+              <span className="nutri-repere-titre" style={{ color: 'var(--primary)' }}>Chienne</span>
+            </div>
+            <div className="nutri-repere-pilules">
+              <span className="nutri-repere-pilule">Gest. - Glucides ≥ 23% MS</span>
+              <span className="nutri-repere-pilule">Gest. - Ca 1-1,7% MS</span>
+              <span className="nutri-repere-pilule">Lact. - Prot. 25-35% MS</span>
+              <span className="nutri-repere-pilule">Lact. - MG ≥ 20% MS</span>
+            </div>
+          </div>
+          <div className="nutri-repere-col">
+            <div className="nutri-repere-en-tete">
+              <div className="nutri-repere-point" style={{ background: 'var(--accent-red)' }}></div>
+              <span className="nutri-repere-titre" style={{ color: 'var(--accent-red)' }}>Chatte</span>
+            </div>
+            <div className="nutri-repere-pilules">
+              {[
+                'Gest. - +25-50% vs entretien',
+                'Lact. - Prot. ≥ 30% MS',
+                'Lact. - MG ≥ 9% MS',
+              ].map((p, i) => (
+                <span key={i} className="nutri-repere-pilule"
+                  style={{ background: 'rgba(112,47,58,0.07)', color: 'var(--accent-red)', borderColor: 'rgba(112,47,58,0.2)' }}>
+                  {p}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
-      ))}
+
+        <div className={`nutri-ms-expand${msOuverte ? ' ouvert' : ''}`}>
+          <button className="nutri-ms-btn" onClick={() => setMsOuverte(v => !v)}>
+            <i className="ti ti-info-circle" style={{ color: 'var(--text-hint)', fontSize: 15 }}></i>
+            Comprendre la matière sèche (MS)
+            <i className="ti ti-chevron-down nutri-ms-chevron"></i>
+          </button>
+          <div className="nutri-ms-detail">
+            <p>
+              La <strong>matière sèche (MS)</strong> permet de comparer les aliments indépendamment
+              de leur teneur en eau. Une conserve contient environ 75-80 % d'eau, une croquette
+              environ 10 % - on ne peut pas les comparer directement en pourcentage tel quel.
+            </p>
+            <div className="nutri-formule">
+              <strong>Formule :</strong><br />
+              % nutriment (MS) = % nutriment (tel quel) ÷ (1 - % humidité) × 100
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Aliments à proposer ── */}
+      <section>
+        <div className="nutri-sec-label">Exemples de diètes adaptées</div>
+        <div className="nutri-sec-titre">Aliments à proposer</div>
+        <div className="nutri-aliments-liste">
+          {ALIMENTS.map((a, i) => (
+            <div key={i} className="nutri-aliment-item">
+              <img src={a.img} alt="" className="nutri-aliment-logo" />
+              <span className="nutri-aliment-nom">{a.nom}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Points de vigilance ── */}
+      <section>
+        <div className="nutri-sec-titre">Points de vigilance</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          <div className="nutri-alerte nutri-alerte--rouge">
+            <i className="ti ti-alert-triangle" style={{ fontSize: 18, color: 'var(--accent-red)', flexShrink: 0, marginTop: 1 }}></i>
+            <div>
+              <div className="nutri-alerte-titre">Jamais de supplément de calcium</div>
+              <p className="nutri-alerte-texte">
+                Ne jamais supplémenter en calcium pendant la gestation ou l'allaitement, même en vente libre.
+                Risque d'éclampsie (crise de calcium) après la mise bas.
+              </p>
+            </div>
+          </div>
+          <div className="nutri-alerte nutri-alerte--amber">
+            <i className="ti ti-alert-triangle" style={{ fontSize: 18, color: '#7A500A', flexShrink: 0, marginTop: 1 }}></i>
+            <div>
+              <div className="nutri-alerte-titre">Eau fraîche en tout temps</div>
+              <p className="nutri-alerte-texte">
+                L'hydratation est critique, surtout en lactation. Si la mère ou les petits boivent peu,
+                offrir de la nourriture humide pour combler les besoins en eau.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   )
 }

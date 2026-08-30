@@ -34,14 +34,14 @@ const CONSEILS = [
     apercu: 'Atteindre et maintenir un poids idéal',
     type: 'poids',
     texte: "L'obésité entraîne une résistance à l'insuline. La perte de poids peut améliorer significativement le contrôle glycémique, parfois jusqu'à la rémission chez le chat.",
-    chip: 'Cible NEC : 4-5 / 9',
+    chip: <>Cible <em>Body Condition Score</em> (BCS) : 4-5 / 9</>,
   },
 ]
 
 const ALIMENTS = [
-  { nom: 'Royal Canin Veterinary Diet Diabetic',                    logo: 'RC',    bg: '#CC1A23' },
-  { nom: "Hill's Prescription Diet w/d",                             logo: "Hill's", bg: '#003DA5' },
-  { nom: 'Purina Pro Plan Veterinary Diets DM Diabetes Management', logo: 'PP',    bg: '#E31837' },
+  { nom: 'Royal Canin Veterinary Diet Diabetic',                    img: '/logo-royal-canin.jpg' },
+  { nom: "Hill's Prescription Diet w/d",                             img: '/logo-hills.jpg' },
+  { nom: 'Purina Pro Plan Veterinary Diets DM Diabetes Management', img: '/logo-purina.jpg' },
 ]
 
 export default function NutritionDiabete() {
@@ -54,16 +54,6 @@ export default function NutritionDiabete() {
 
   return (
     <div className="labo-detail-page">
-
-      {/* ── Bannière info ── */}
-      <div className="nutrition-note-ms">
-        <i className="ti ti-info-circle"></i>
-        <span>
-          <strong>Conseils concrets à donner à la clientèle en premier.</strong>{' '}
-          Les repères techniques (matière sèche, ratios) sont indiqués en plus petit
-          pour les cas qui demandent plus de précision.
-        </span>
-      </div>
 
       {/* ── À conseiller au client ── */}
       <section>
@@ -172,9 +162,8 @@ export default function NutritionDiabete() {
         <div className="nutri-aliments-liste">
           {ALIMENTS.map((a, i) => (
             <div key={i} className="nutri-aliment-item">
-              <div className="nutri-aliment-logo" style={{ background: a.bg }}>{a.logo}</div>
+              <img src={a.img} alt="" className="nutri-aliment-logo" />
               <span className="nutri-aliment-nom">{a.nom}</span>
-              <i className="ti ti-chevron-right nutri-aliment-fleche"></i>
             </div>
           ))}
         </div>

@@ -1,90 +1,202 @@
-const SECTIONS = [
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+const CONSEILS = [
   {
+    icone: 'ti-scale',
     titre: 'Combien nourrir',
-    items: [
-      {
-        avis: "La quantité de départ se calcule à partir du poids IDÉAL de l'animal, pas de son poids actuel : c'est l'équipe vétérinaire qui fait ce calcul de base pour établir la portion de départ.",
-        tech: 'BEE (kcal/jour) = 70 x (poids idéal en kg)^0,75. Chien : 1,0 x BEE (1,4 x si tendance à l\'obésité). Chat : 0,8 x BEE (1,0 x si tendance à l\'obésité)',
-      },
-      {
-        avis: "Toujours peser la nourriture sur une balance de cuisine plutôt qu'avec une tasse à mesurer : une simple tasse peut facilement doubler la portion réelle sans qu'on s'en rende compte.",
-        alerte: true,
-      },
+    apercu: 'Calculer sur le poids idéal · peser la portion',
+    type: 'bullets',
+    bullets: [
+      "Utiliser le calculateur de besoin énergétique en entrant le poids idéal (pas le poids actuel). Appliquer le facteur de perte de poids : chien 1,0 × BEE, chat 0,8 × BEE. Diviser par la densité calorique de l'aliment (indiquée sur l'emballage) pour obtenir la portion en grammes.",
+      "Toujours peser la nourriture sur une balance de cuisine plutôt qu'avec une tasse à mesurer : une simple tasse peut facilement doubler la portion réelle sans qu'on s'en rende compte.",
     ],
   },
   {
+    icone: 'ti-bowl',
     titre: 'Stratégies qui aident vraiment',
-    items: [
-      {
-        avis: "Une nourriture riche en protéines et en fibres aide à garder le muscle et à calmer la faim pendant la perte de poids, plutôt que de simplement donner moins de la même nourriture.",
-        food: {
-          examples: ["Royal Canin Veterinary Diet Satiety Support Weight Management", "Hill's Prescription Diet Metabolic", "Purina Pro Plan Veterinary Diets OM Obesity Management"],
-          why: "Conçues pour garder l'animal rassasié avec moins de calories, contrairement à une nourriture régulière simplement servie en plus petite quantité.",
-        },
-      },
-      {
-        avis: "Les gâteries comptent : elles ne devraient jamais dépasser environ le dixième de tout ce que l'animal mange dans une journée, et il faut réduire la nourriture principale en conséquence.",
-        tech: 'Friandises <= 10 % de l\'apport énergétique total',
-      },
-      {
-        avis: "Nourrir dans un bol dédié et, s'il y a plusieurs animaux dans la maison, les séparer au moment des repas : ça évite qu'un animal vole la portion d'un autre.",
-      },
+    apercu: 'Protéines et fibres élevées · gâteries limitées · repas séparés',
+    type: 'bullets',
+    bullets: [
+      "Une nourriture riche en protéines et en fibres aide à garder le muscle et à calmer la faim pendant la perte de poids, plutôt que de simplement donner moins de la même nourriture.",
+      "Les gâteries comptent : elles ne devraient jamais dépasser 10 % de l'apport énergétique total, et il faut réduire la nourriture principale en conséquence.",
+      "S'il y a plusieurs animaux dans la maison, les séparer au moment des repas pour éviter qu'un animal mange la portion d'un autre.",
     ],
   },
   {
-    titre: 'Suivi',
-    items: [
-      {
-        avis: "Prévoir une pesée toutes les 2 à 4 semaines pour ajuster la portion selon les résultats réels, plutôt que de garder la même quantité pendant des mois.",
-      },
-      {
-        avis: "Une fois le poids idéal atteint, la portion doit être recalculée et l'animal peut passer à une nourriture d'entretien régulière.",
-      },
+    icone: 'ti-chart-line',
+    titre: 'Suivi du poids',
+    apercu: 'Pesée aux 2-4 semaines · ajuster selon les résultats',
+    type: 'bullets',
+    bullets: [
+      "Prévoir une pesée toutes les 2 à 4 semaines pour ajuster la portion selon les résultats réels, plutôt que de garder la même quantité pendant des mois.",
+      "Une fois le poids idéal atteint, la portion doit être recalculée et l'animal peut passer à une nourriture d'entretien régulière.",
     ],
   },
 ]
 
+const ALIMENTS = [
+  { nom: 'Royal Canin Veterinary Diet Satiety Support Weight Management', img: '/logo-royal-canin.jpg' },
+  { nom: "Hill's Prescription Diet Metabolic",                            img: '/logo-hills.jpg' },
+  { nom: 'Purina Pro Plan Veterinary Diets OM Obesity Management',        img: '/logo-purina.jpg' },
+]
+
 export default function NutritionPertePoids() {
+  const [ouverts, setOuverts]     = useState([])
+  const [msOuverte, setMsOuverte] = useState(false)
+  const navigate                  = useNavigate()
+
+  const toggleConseil = (i) =>
+    setOuverts(o => o.includes(i) ? o.filter(x => x !== i) : [...o, i])
+
   return (
     <div className="labo-detail-page">
-      <div className="nutrition-note-ms">
-        <i className="ti ti-info-circle"></i>
-        <span>Conseils concrets à donner à la clientèle en premier ; les repères techniques (formules, ratios) sont indiqués en plus petit pour les cas qui demandent plus de précision.</span>
-      </div>
-      {SECTIONS.map((s, i) => (
-        <div key={i} className="postop-section">
-          <div className="postop-section-header">
-            <div className="postop-section-icone" style={{ background: 'rgba(37,77,86,0.1)', color: 'var(--primary)' }}>
-              <i className="ti ti-scale"></i>
-            </div>
-            <h2 className="postop-section-titre">{s.titre}</h2>
-          </div>
-          <div className="nutrition-tip-list">
-            {s.items.map((it, j) => (
-              <div key={j} className={`nutrition-tip${it.alerte ? ' nutrition-tip--alerte' : ''}`}>
-                <p className="nutrition-tip-advice">{it.avis}</p>
-                {it.food && (
-                  <div className="nutrition-food-examples">
-                    <p className="nutrition-food-examples-label">Exemples à proposer</p>
-                    <div className="nutrition-food-chip-row">
-                      {it.food.examples.map((f, k) => (
-                        <span key={k} className="nutrition-food-chip">{f}</span>
-                      ))}
+
+      {/* À conseiller au client */}
+      <section>
+        <div className="nutri-sec-label">Essentiel</div>
+        <div className="nutri-sec-titre">À conseiller au client</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          {CONSEILS.map((c, i) => (
+            <div key={i} className={`nutri-conseil-card${ouverts.includes(i) ? ' ouvert' : ''}`}>
+              <button className="nutri-conseil-row" onClick={() => toggleConseil(i)}>
+                <div className="nutri-conseil-icone">
+                  <i className={`ti ${c.icone}`}></i>
+                </div>
+                <div className="nutri-conseil-corps">
+                  <div className="nutri-conseil-titre">{c.titre}</div>
+                  <div className="nutri-conseil-apercu">{c.apercu}</div>
+                </div>
+                <i className="ti ti-chevron-right nutri-conseil-chevron"></i>
+              </button>
+              <div className="nutri-conseil-detail">
+                <div className="nutri-bullet-liste">
+                  {c.bullets.map((b, j) => (
+                    <div key={j} className="nutri-bullet-item">
+                      <div className="nutri-bullet-puce"></div>
+                      <span>{b}</span>
                     </div>
-                    <p className="nutrition-food-why">Pourquoi : {it.food.why}</p>
-                  </div>
-                )}
-                {it.tech && (
-                  <div className="nutrition-tip-tech">
-                    <span className="nutrition-tip-tech-label">Repère :</span>
-                    <span>{it.tech}</span>
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Repères nutritionnels */}
+      <section>
+        <div className="nutri-sec-label">Données à retenir</div>
+        <div className="nutri-sec-titre">Repères nutritionnels</div>
+        <div className="nutri-reperes-grille">
+          <div className="nutri-repere-col">
+            <div className="nutri-repere-en-tete">
+              <div className="nutri-repere-point" style={{ background: 'var(--primary)' }}></div>
+              <span className="nutri-repere-titre" style={{ color: 'var(--primary)' }}>Chien</span>
+            </div>
+            <div className="nutri-repere-pilules">
+              <span className="nutri-repere-pilule">BCS cible 4-5/9</span>
+              <span className="nutri-repere-pilule">Facteur 1,0 × BEE</span>
+              <span className="nutri-repere-pilule">Protéines élevées</span>
+              <span className="nutri-repere-pilule">Gâteries ≤ 10 % kcal</span>
+            </div>
+          </div>
+          <div className="nutri-repere-col">
+            <div className="nutri-repere-en-tete">
+              <div className="nutri-repere-point" style={{ background: 'var(--accent-red)' }}></div>
+              <span className="nutri-repere-titre" style={{ color: 'var(--accent-red)' }}>Chat</span>
+            </div>
+            <div className="nutri-repere-pilules">
+              {[
+                'BCS cible 4-5/9',
+                'Facteur 0,8 × BEE',
+                'Perte ≤ 2 % poids/sem.',
+                'Gâteries ≤ 10 % kcal',
+              ].map((p, i) => (
+                <span key={i} className="nutri-repere-pilule"
+                  style={{ background: 'rgba(112,47,58,0.07)', color: 'var(--accent-red)', borderColor: 'rgba(112,47,58,0.2)' }}>
+                  {p}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
-      ))}
+
+        <button
+          onClick={() => navigate('/calculateurs/besoin')}
+          style={{
+            marginTop: 10,
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border)',
+            borderRadius: 8,
+            padding: '10px 12px',
+            cursor: 'pointer',
+            textAlign: 'left',
+          }}
+        >
+          <i className="ti ti-calculator" style={{ fontSize: 16, color: 'var(--primary)', flexShrink: 0 }}></i>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>Calculateur de besoin énergétique</div>
+            <div style={{ fontSize: 11, color: 'var(--text-hint)' }}>Calculer la ration à partir du poids idéal</div>
+          </div>
+          <i className="ti ti-chevron-right" style={{ fontSize: 14, color: 'var(--text-hint)' }}></i>
+        </button>
+
+        <div className={`nutri-ms-expand${msOuverte ? ' ouvert' : ''}`} style={{ marginTop: 10 }}>
+          <button className="nutri-ms-btn" onClick={() => setMsOuverte(v => !v)}>
+            <i className="ti ti-info-circle" style={{ color: 'var(--text-hint)', fontSize: 15 }}></i>
+            Comprendre la matière sèche (MS)
+            <i className="ti ti-chevron-down nutri-ms-chevron"></i>
+          </button>
+          <div className="nutri-ms-detail">
+            <p>
+              La <strong>matière sèche (MS)</strong> permet de comparer les aliments indépendamment
+              de leur teneur en eau. Une conserve contient environ 75-80 % d'eau, une croquette
+              environ 10 % - on ne peut pas les comparer directement en pourcentage tel quel.
+            </p>
+            <div className="nutri-formule">
+              <strong>Formule :</strong><br />
+              % nutriment (MS) = % nutriment (tel quel) ÷ (1 - % humidité) × 100
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Aliments à proposer */}
+      <section>
+        <div className="nutri-sec-label">Diètes de contrôle du poids</div>
+        <div className="nutri-sec-titre">Aliments à proposer</div>
+        <div className="nutri-aliments-liste">
+          {ALIMENTS.map((a, i) => (
+            <div key={i} className="nutri-aliment-item">
+              <img src={a.img} alt="" className="nutri-aliment-logo" />
+              <span className="nutri-aliment-nom">{a.nom}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Points de vigilance */}
+      <section>
+        <div className="nutri-sec-titre">Points de vigilance</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          <div className="nutri-alerte nutri-alerte--amber">
+            <i className="ti ti-alert-triangle" style={{ fontSize: 18, color: '#7A500A', flexShrink: 0, marginTop: 1 }}></i>
+            <div>
+              <div className="nutri-alerte-titre">Chat : ne pas restreindre trop rapidement</div>
+              <p className="nutri-alerte-texte">
+                Une restriction calorique trop rapide chez le chat peut provoquer une lipidose
+                hépatique. La perte de poids doit être progressive - idéalement 0,5 à 2 % par semaine.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   )
 }

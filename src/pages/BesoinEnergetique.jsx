@@ -41,7 +41,8 @@ export default function BesoinEnergetique() {
   const [poids, setPoids] = useState('')
   const [unitePoids, setUnitePoids] = useState('kg')
   const [conditionId, setConditionId] = useState('castre')
-  const [kcalTasse, setKcalTasse] = useState('')
+  const [uniteNourriture, setUniteNourriture] = useState('kg')
+  const [kcalNourriture, setKcalNourriture] = useState('')
   const [facteurCustom, setFacteurCustom] = useState('')
 
   const poidsKg = useMemo(() => {
@@ -78,13 +79,20 @@ export default function BesoinEnergetique() {
     return arrondir(bee * facteurActif.facteurMax)
   }, [bee, facteurActif])
 
-  const tassesResult = useMemo(() => {
-    const k = parseFloat(kcalTasse)
+  const portionResult = useMemo(() => {
+    const k = parseFloat(kcalNourriture)
     if (!k || k <= 0 || !beqMin) return null
-    const min = arrondir(beqMin / k, 2)
-    const max = beqMax ? arrondir(beqMax / k, 2) : null
-    return { min, max }
-  }, [beqMin, beqMax, kcalTasse])
+    if (uniteNourriture === 'kg') {
+      const min = arrondir(beqMin / k * 1000, 0)
+      const max = beqMax ? arrondir(beqMax / k * 1000, 0) : null
+      return { min, max, unite: 'g/jour' }
+    } else {
+      const min = arrondir(beqMin / k, 2)
+      const max = beqMax ? arrondir(beqMax / k, 2) : null
+      const label = min <= 1 && (!max || max <= 1) ? 'tasse/jour' : 'tasses/jour'
+      return { min, max, unite: label }
+    }
+  }, [beqMin, beqMax, kcalNourriture, uniteNourriture])
 
   function handleEspece(e) {
     setEspece(e)
@@ -97,7 +105,7 @@ export default function BesoinEnergetique() {
     <div className="page-calculateurs">
       <div className="calc-form">
 
-        {/* ─── ESPÈCE ─────────────────────────── */}
+        {/* ESPÈCE */}
         <div className="champ">
           <label>Choisir l'espèce</label>
           <div className="espece-toggle">
@@ -118,7 +126,7 @@ export default function BesoinEnergetique() {
           </div>
         </div>
 
-        {/* ─── POIDS ──────────────────────────── */}
+        {/* POIDS */}
         <div className="champ">
           <label>Poids de l'animal</label>
           <div className="champ-input">
@@ -139,14 +147,14 @@ export default function BesoinEnergetique() {
           </div>
         </div>
 
-        {/* ─── BEE ────────────────────────────── */}
+        {/* BEE */}
         <div className="bee-card">
           <p className="bee-titre">BEE — Besoin Énergétique d'Entretien</p>
           <p className="bee-formule">(30 × poids en kg) + 70 = kcal/jour</p>
           <p className="bee-resultat">{bee > 0 ? `${bee} kcal/jour` : '—'}</p>
         </div>
 
-        {/* ─── CONDITION ──────────────────────── */}
+        {/* CONDITION */}
         <div className="champ">
           <label>Condition / stade de vie</label>
           <select
@@ -162,7 +170,7 @@ export default function BesoinEnergetique() {
             ))}
           </select>
 
-          {/* ─── FACTEUR PERSONNALISÉ ─────────── */}
+          {/* FACTEUR PERSONNALISÉ */}
           <div className="champ-input" style={{ marginTop: 8 }}>
             <div className="champ-icone-wrapper">
               <i className="ti ti-math-function" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -186,7 +194,7 @@ export default function BesoinEnergetique() {
           </div>
         </div>
 
-        {/* ─── RÉSULTAT BEQ ────────────────────── */}
+        {/* RÉSULTAT BEQ */}
         {bee > 0 && (
           <div className="resultat-card">
             <div className="resultat-ligne" style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -204,39 +212,42 @@ export default function BesoinEnergetique() {
           </div>
         )}
 
-        {/* ─── KCAL PAR TASSE ──────────────────── */}
+        {/* DENSITÉ CALORIQUE */}
         <div className="champ">
-          <label>Kcal par tasse (optionnel)</label>
+          <label>Densité calorique de l'aliment (optionnel)</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
-              <img src="/icone-energie.svg" alt="kcal par tasse" />
+              <img src="/icone-energie.svg" alt="kcal" />
             </div>
             <input
               type="text"
               inputMode="decimal"
-              value={kcalTasse}
-              onChange={e => setKcalTasse(e.target.value.replace(',', '.'))}
-              placeholder="Ex: 475"
+              value={kcalNourriture}
+              onChange={e => setKcalNourriture(e.target.value.replace(',', '.'))}
+              placeholder={uniteNourriture === 'kg' ? 'Ex: 3800' : 'Ex: 475'}
             />
-            <span className="unite-fixe">kcal/tasse</span>
+            <div className="radio-groupe">
+              <button className={`radio-btn ${uniteNourriture === 'kg' ? 'active' : ''}`} onClick={() => { setUniteNourriture('kg'); setKcalNourriture('') }}>kcal/kg</button>
+              <button className={`radio-btn ${uniteNourriture === 'tasse' ? 'active' : ''}`} onClick={() => { setUniteNourriture('tasse'); setKcalNourriture('') }}>kcal/tasse</button>
+            </div>
           </div>
         </div>
 
-        {/* ─── RÉSULTAT TASSES ─────────────────── */}
-        {tassesResult && (
+        {/* RÉSULTAT PORTION */}
+        {portionResult && (
           <div className="resultat-card">
             <div className="resultat-ligne" style={{ flexDirection: 'row', alignItems: 'center' }}>
               <span>Quantité à donner</span>
               <strong>
-                {tassesResult.max
-                  ? `${tassesResult.min} – ${tassesResult.max} tasses/jour`
-                  : `${tassesResult.min} tasse${tassesResult.min > 1 ? 's' : ''}/jour`}
+                {portionResult.max
+                  ? `${portionResult.min} – ${portionResult.max} ${portionResult.unite}`
+                  : `${portionResult.min} ${portionResult.unite}`}
               </strong>
             </div>
           </div>
         )}
 
-        {/* ─── AVERTISSEMENT ──────────────────── */}
+        {/* AVERTISSEMENT */}
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
           Ces valeurs sont des estimations théoriques. Ajuster selon l'évolution du poids corporel et de la condition corporelle (BCS).
