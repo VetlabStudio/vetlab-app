@@ -343,7 +343,7 @@ export default function App() {
         <Route path="/labo/urologie/valeurs" element={<RouteProtegee session={session}><ProGate><LaboUrologieValeurs /></ProGate></RouteProtegee>} />
         <Route path="/labo/urologie/sediments" element={<RouteProtegee session={session}><ProGate><LaboUrologieSediments /></ProGate></RouteProtegee>} />
         <Route path="/labo/2e0222f2-5733-4d01-bc99-8c380bec5abe" element={<RouteProtegee session={session}><LaboParasitologie /></RouteProtegee>} />
-        <Route path="/labo/parasitologie/oeufs" element={<RouteProtegee session={session}><ProGate><LaboParasitologieOeufs /></ProGate></RouteProtegee>} />
+        <Route path="/labo/parasitologie/oeufs" element={<RouteProtegee session={session}><LaboParasitologieOeufs /></RouteProtegee>} />
         <Route path="/labo/parasitologie/hotes" element={<RouteProtegee session={session}><ProGate><LaboParasitologieHotes /></ProGate></RouteProtegee>} />
         <Route path="/labo/4efe71ce-bfa9-4ea9-a8af-ecbd6dc97320" element={<RouteProtegee session={session}><LaBiochimie /></RouteProtegee>} />
         <Route path="/labo/biochimie/tubes" element={<RouteProtegee session={session}><ProGate><LaBiochimieTubes /></ProGate></RouteProtegee>} />

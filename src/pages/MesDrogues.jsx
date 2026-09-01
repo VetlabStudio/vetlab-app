@@ -6,7 +6,7 @@ import { useProfil } from '../context/ProfilContext'
 
 export default function MesDrogues() {
   const navigate = useNavigate()
-  const { estEquipe, teamId } = useProfil()
+  const { estEquipe, teamId, estPro } = useProfil()
   const [favoris, setFavoris] = useState([])
   const [loading, setLoading] = useState(true)
   const [especeFiltree, setEspeceFiltree] = useState('tous')
@@ -94,6 +94,37 @@ export default function MesDrogues() {
 
   return (
     <div className="drogues-page">
+
+      {!estPro && (
+        <div style={{
+          background: 'rgba(var(--accent-gold-rgb, 180,140,40), 0.1)',
+          border: '1px solid var(--accent-gold)',
+          borderRadius: 12,
+          padding: '14px 16px',
+          marginBottom: 16,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+        }}>
+          <i className="ti ti-lock" style={{ fontSize: 22, color: 'var(--accent-gold)', flexShrink: 0 }}></i>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 2px 0' }}>Fonctionnalité Pro</p>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>
+              Le forfait Pro est requis pour mettre des médicaments en favoris.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/abonnement')}
+            style={{
+              background: 'var(--primary)', color: '#fff', border: 'none',
+              borderRadius: 8, padding: '6px 12px', fontSize: 12, fontWeight: 700,
+              cursor: 'pointer', flexShrink: 0,
+            }}
+          >
+            S'abonner
+          </button>
+        </div>
+      )}
 
       {favoris.length === 0 ? (
         <div className="mes-drogues-vide">

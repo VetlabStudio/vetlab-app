@@ -210,7 +210,7 @@ export default function DroguesCategorie({ categorie }) {
               >
                 <button
                   className={`favori-btn ${favorisIds.has(m.id) ? 'actif' : ''}`}
-                  onClick={e => { e.stopPropagation(); toggleFavori(m.id, m.estCustom) }}
+                  onClick={e => { e.stopPropagation(); estPro ? toggleFavori(m.id, m.estCustom) : setShowProMsg(true) }}
                 >
                   {favorisIds.has(m.id) ? '★' : '☆'}
                 </button>

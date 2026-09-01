@@ -1,4 +1,8 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useProfil } from '../context/ProfilContext'
+import PopupPro from '../components/PopupPro'
+import BadgePro from '../components/BadgePro'
 
 const CONDITIONS = [
   { id: 'gestation-lactation', label: 'Gestation et lactation',      route: '/nutrition/gestation-lactation' },
@@ -19,6 +23,8 @@ const CONDITIONS = [
 
 export default function NutritionListe() {
   const navigate = useNavigate()
+  const { estPro } = useProfil()
+  const [showProMsg, setShowProMsg] = useState(false)
 
   return (
     <div className="page-calculateurs">
@@ -27,14 +33,18 @@ export default function NutritionListe() {
           <button
             key={c.id}
             className="menu-page-item"
-            onClick={() => navigate(c.route)}
-            style={{ borderBottom: idx < CONDITIONS.length - 1 ? '1px solid var(--border)' : 'none' }}
+            onClick={() => estPro ? navigate(c.route) : setShowProMsg(true)}
+            style={{ borderBottom: idx < CONDITIONS.length - 1 ? '1px solid var(--border)' : 'none', position: 'relative' }}
           >
             <span className="menu-page-item-label">{c.label}</span>
-            <i className="ti ti-chevron-right menu-page-item-chevron"></i>
+            {estPro
+              ? <i className="ti ti-chevron-right menu-page-item-chevron"></i>
+              : <BadgePro />
+            }
           </button>
         ))}
       </div>
+      {showProMsg && <PopupPro onClose={() => setShowProMsg(false)} />}
     </div>
   )
 }
