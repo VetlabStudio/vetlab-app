@@ -513,9 +513,23 @@ function Babillard() {
     return d.toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' })
   }
 
-  function renderContenu(contenu) {
-    if (!contenu) return ''
-    return contenu.replace(/@([\w\s]+?)(?=\s|$)/g, '<span style="color:var(--primary);font-weight:600">@$1</span>')
+  function RenduContenu({ texte }) {
+    if (!texte) return null
+    const regex = /@([\w]+(?:\s[\w]+)*)/g
+    const parts = []
+    let lastIndex = 0
+    let match
+    while ((match = regex.exec(texte)) !== null) {
+      if (match.index > lastIndex) parts.push(texte.slice(lastIndex, match.index))
+      parts.push({ mention: match[0] })
+      lastIndex = match.index + match[0].length
+    }
+    if (lastIndex < texte.length) parts.push(texte.slice(lastIndex))
+    return parts.map((part, i) =>
+      typeof part === 'string'
+        ? part
+        : <span key={i} style={{ color: 'var(--primary)', fontWeight: 600 }}>{part.mention}</span>
+    )
   }
 
   function apercu(contenu) {
@@ -609,7 +623,7 @@ function Babillard() {
                   {note.titre ? <p className="note-tuile-titre">{note.titre}</p> : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>}
                 </div>
                 {note.categorie && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4 }}>{note.categorie}</span>}
-                <p className="note-tuile-apercu" dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }} />
+                <p className="note-tuile-apercu"><RenduContenu texte={apercu(note.contenu)} /></p>
                 <p className="note-tuile-date"><span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>{' · '}{formatDate(note.created_at)}</p>
               </div>
             ))}
@@ -628,7 +642,7 @@ function Babillard() {
                   {note.titre ? <p className="note-tuile-titre">{note.titre}</p> : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>}
                 </div>
                 {note.categorie && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4 }}>{note.categorie}</span>}
-                <p className="note-tuile-apercu" dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }} />
+                <p className="note-tuile-apercu"><RenduContenu texte={apercu(note.contenu)} /></p>
                 <p className="note-tuile-date"><span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>{' · '}{formatDate(note.created_at)}</p>
               </div>
             ))}
@@ -672,7 +686,7 @@ function Babillard() {
                     {note.titre ? <p className="note-tuile-titre">{note.titre}</p> : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>}
                   </div>
                   {note.categorie && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4 }}>{note.categorie}</span>}
-                  <p className="note-tuile-apercu" dangerouslySetInnerHTML={{ __html: renderContenu(apercu(note.contenu)) }} />
+                  <p className="note-tuile-apercu"><RenduContenu texte={apercu(note.contenu)} /></p>
                   <p className="note-tuile-date"><span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>{' · '}{formatDate(note.created_at)}</p>
                 </div>
               ))}
@@ -738,9 +752,9 @@ function Babillard() {
                 )}
               </div>
             </div>
-            <p style={{ fontSize: 14, color: '#333', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}
-              dangerouslySetInnerHTML={{ __html: renderContenu(noteActive.contenu) }}
-            />
+            <p style={{ fontSize: 14, color: '#333', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>
+              <RenduContenu texte={noteActive.contenu} />
+            </p>
             <div style={{ marginTop: 16 }}>
               <button className="labo-btn-secondary" style={{ width: '100%' }} onClick={() => setNoteActive(null)}>Fermer</button>
             </div>

@@ -89,6 +89,7 @@ const titres = {
   '/soins-generaux/dentisterie/termes-directionnels': 'Termes directionnels',
   '/soins-generaux/abreviations': 'Abréviations courantes',
   '/soins-generaux/termes-directionnels': 'Termes directionnels',
+  '/labo/af3ffd7b-ac2f-4e43-adf0-7108bf79099c': 'Radiologie',
   '/labo/radiologie/notions-base': 'Notions de base : mA, kVp et distance',
   '/labo/radiologie/depannage': 'Dépannage',
   '/labo/radiologie/charte': 'Charte radiographique',

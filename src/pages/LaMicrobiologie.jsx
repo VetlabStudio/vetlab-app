@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import BadgePro from '../components/BadgePro'
 import { useProfil } from '../context/ProfilContext'
+import PopupPro from '../components/PopupPro'
 
 const CATEGORIE_ID = 'e216b2ee-59c8-4ea8-a06e-92c0f6f05ee5'
 
@@ -76,26 +77,7 @@ setProtocoles([
         ))}
       </div>
 
-      {showProMsg && (
-        <div className="popup-overlay" onClick={() => setShowProMsg(false)}>
-          <div className="popup-card" onClick={e => e.stopPropagation()}>
-            <div className="popup-header">
-              <span>Fonctionnalité Pro</span>
-              <button className="popup-close" onClick={() => setShowProMsg(false)}>✕</button>
-            </div>
-            <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
-              <i className="ti ti-lock" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
-              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 8 }}>
-                L'ajout de protocoles personnalisés est réservé au forfait <strong>Pro</strong>.
-              </p>
-              <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.5 }}>
-                Passez au forfait Pro dans votre profil pour accéder à cette fonctionnalité.
-              </p>
-            </div>
-            <button className="labo-btn-primary" style={{ width: '100%' }} onClick={() => setShowProMsg(false)}>Compris</button>
-          </div>
-        </div>
-      )}
+      {showProMsg && <PopupPro onClose={() => setShowProMsg(false)} />}
     </div>
   )
 }

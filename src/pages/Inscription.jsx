@@ -23,6 +23,11 @@ export default function Inscription() {
       return
     }
 
+    if (motDePasse.length < 8) {
+      setErreur('Le mot de passe doit contenir au moins 8 caractères.')
+      return
+    }
+
     setShowAvertissement(true)
   }
 
@@ -104,7 +109,7 @@ export default function Inscription() {
               value={motDePasse}
               onChange={(e) => setMotDePasse(e.target.value)}
               placeholder="••••••••"
-              minLength={6}
+              minLength={8}
               required
             />
           </div>

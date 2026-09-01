@@ -33,7 +33,8 @@ export default function Connexion() {
     if (error) {
       setErreur('Courriel ou mot de passe incorrect.')
     } else {
-      navigate(redirectUrl || '/accueil')
+      const safeRedirect = redirectUrl && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//') ? redirectUrl : '/accueil'
+      navigate(safeRedirect)
     }
     setChargement(false)
   }
