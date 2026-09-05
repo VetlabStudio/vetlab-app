@@ -82,7 +82,7 @@ export default function Pharmacologie() {
               >
                 <span className="recherche-item-nom">{m.nom}</span>
                 <span className="recherche-cat">
-                  {m.categorie}{m.sous_categories?.length > 0 ? ` — ${m.sous_categories.join(', ')}` : ''}
+                  {m.especes?.join(' / ')}{m.sous_categories?.length > 0 ? ` — ${m.sous_categories.join(', ')}` : ''}
                 </span>
               </div>
             )) : (

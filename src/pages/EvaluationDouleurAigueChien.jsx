@@ -217,6 +217,11 @@ export default function EvaluationDouleurAigueChien() {
         <span>Réévaluer régulièrement la douleur et ajuster le plan analgésique au besoin.</span>
       </div>
 
+      <div className="postop-note-bas" style={{ marginTop: 8 }}>
+        <i className="ti ti-book"></i>
+        <span>Basé sur la Colorado State University's Canine Acute Pain Scale.</span>
+      </div>
+
     </div>
   )
 }

@@ -30,6 +30,7 @@ const SECTIONS = [
     icone: 'ti-pill',
     paragraphes: [],
     liste: [
+      'FORSYTHE, L.R. Blackwell\'s Five-Minute Veterinary Drug Consult: Canine and Feline. Wiley, 2026, 177 p.',
       'HOVDA, L.R., BRUTLAG, A.G., POPPENGA, R.H. et EPSTEIN, S.E. Blackwell\'s Five-Minute Veterinary Consult Clinical Companion: Small Animal Toxicology (3e éd.). Wiley Blackwell, 2024, 947 p.',
       'SIROIS, M. Mosby\'s veterinary PDQ: Veterinary facts at hand (3e éd.). Elsevier, 2018, 326 p.',
       'PLUMB, C. Plumb\'s Veterinary Drug Handbook (7e éd.). PharmaVet Inc, 2011, 1299 p.',
