@@ -110,7 +110,7 @@ export default function Inscription() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <img src="/logo.png" alt="Vetlab Studio" className="auth-logo" />
+        <img src="/logo-adjuvet.png" alt="Adjuvet" className="auth-logo" />
         <h1 className="auth-titre">Créer un compte</h1>
 
         <form onSubmit={handleInscription} className="auth-form">
