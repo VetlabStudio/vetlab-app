@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 
 export default function Inscription() {
+  const [searchParams] = useSearchParams()
+  const redirectUrl = searchParams.get('redirect') || ''
+  const emailParam = searchParams.get('email') || ''
+
   const [nom, setNom] = useState('')
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(emailParam)
   const [motDePasse, setMotDePasse] = useState('')
   const [confirmation, setConfirmation] = useState('')
   const [erreur, setErreur] = useState(null)
@@ -47,7 +51,11 @@ export default function Inscription() {
     })
 
     if (error) {
-      setErreur("Erreur lors de l'inscription. Vérifiez votre courriel.")
+      if (error.message?.toLowerCase().includes('already registered') || error.message?.toLowerCase().includes('already been registered') || error.status === 422) {
+        setErreur('Un compte existe déjà avec ce courriel.')
+      } else {
+        setErreur("Erreur lors de l'inscription. Vérifiez votre courriel.")
+      }
     } else {
       setSucces(true)
     }
@@ -55,6 +63,10 @@ export default function Inscription() {
   }
 
   if (succes) {
+    const lienConnexion = redirectUrl
+      ? `/connexion?redirect=${encodeURIComponent(redirectUrl)}`
+      : '/connexion'
+
     return (
       <div className="auth-container">
         <div className="auth-card">
@@ -63,9 +75,14 @@ export default function Inscription() {
           </div>
           <h1 className="auth-titre">Vérifiez votre courriel</h1>
           <p className="auth-description">
-            Un lien de confirmation vous a été envoyé. Cliquez dessus pour activer votre compte.
+            Un lien de confirmation vous a été envoyé à <strong>{email}</strong>. Cliquez dessus pour activer votre compte.
           </p>
-          <Link to="/connexion" className="btn-primary" style={{display:'block', textAlign:'center'}}>
+          {redirectUrl && (
+            <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 16 }}>
+              Après confirmation, connectez-vous pour finaliser votre accès à l'équipe.
+            </p>
+          )}
+          <Link to={lienConnexion} className="btn-primary" style={{display:'block', textAlign:'center'}}>
             Retour à la connexion
           </Link>
         </div>
@@ -98,6 +115,8 @@ export default function Inscription() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="votre@courriel.com"
+              readOnly={!!emailParam}
+              style={emailParam ? { opacity: 0.7, cursor: 'not-allowed' } : {}}
               required
             />
           </div>

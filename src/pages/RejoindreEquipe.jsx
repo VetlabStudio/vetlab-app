@@ -10,6 +10,13 @@ export default function RejoindreEquipe() {
   const [statut, setStatut] = useState('chargement')
   const [invitation, setInvitation] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [sessionUser, setSessionUser] = useState(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSessionUser(session?.user || null)
+    })
+  }, [])
 
   useEffect(() => {
     if (!token) { setStatut('invalide'); return }
@@ -41,7 +48,7 @@ export default function RejoindreEquipe() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      navigate(`/connexion?redirect=/rejoindre?token=${token}`)
+      navigate(`/connexion?redirect=${encodeURIComponent(`/rejoindre?token=${token}`)}`)
       return
     }
 
@@ -88,6 +95,9 @@ export default function RejoindreEquipe() {
     setLoading(false)
   }
 
+  const redirectInscription = encodeURIComponent(`/rejoindre?token=${token}`)
+  const redirectConnexion = encodeURIComponent(`/rejoindre?token=${token}`)
+
   return (
     <div style={{
       minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -117,17 +127,50 @@ export default function RejoindreEquipe() {
             <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--primary)', marginBottom: 24 }}>
               {invitation.equipes?.nom}
             </p>
-            <button
-              onClick={accepterInvitation}
-              disabled={loading}
-              style={{
-                width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
-                background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
-                cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
-              }}
-            >
-              {loading ? 'Connexion...' : "Accepter l'invitation"}
-            </button>
+
+            {sessionUser ? (
+              <button
+                onClick={accepterInvitation}
+                disabled={loading}
+                style={{
+                  width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
+                  background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
+                  cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
+                }}
+              >
+                {loading ? 'Connexion...' : "Accepter l'invitation"}
+              </button>
+            ) : (
+              <>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 20, lineHeight: 1.5 }}>
+                  Cette invitation est pour <strong>{invitation.email}</strong>.<br />
+                  Connectez-vous ou créez un compte avec cette adresse pour l'accepter.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <button
+                    onClick={() => navigate(`/inscription?redirect=${redirectInscription}&email=${encodeURIComponent(invitation.email)}`)}
+                    style={{
+                      width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
+                      background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Créer un compte
+                  </button>
+                  <button
+                    onClick={() => navigate(`/connexion?redirect=${redirectConnexion}`)}
+                    style={{
+                      width: '100%', padding: '12px 0', borderRadius: 10,
+                      border: '1.5px solid var(--primary)', background: 'transparent',
+                      color: 'var(--primary)', fontSize: 15, fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    J'ai déjà un compte
+                  </button>
+                </div>
+              </>
+            )}
           </>
         )}
 
