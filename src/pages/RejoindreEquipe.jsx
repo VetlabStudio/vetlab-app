@@ -52,51 +52,22 @@ export default function RejoindreEquipe() {
       return
     }
 
-    if (user.email !== invitation.email) {
-      setStatut('erreur')
+    const { error } = await supabase.rpc('accepter_invitation', { token_param: token })
+
+    if (error) {
+      const msg = error.message || ''
+      if (msg.includes('Courriel non concordant')) { setStatut('erreur') }
+      else if (msg.includes('pleine')) { setStatut('plein') }
+      else { setStatut('invalide') }
       setLoading(false)
       return
     }
-
-    const { data: equipe } = await supabase
-      .from('equipes')
-      .select('max_membres')
-      .eq('id', invitation.team_id)
-      .single()
-
-    const { count: membresCount } = await supabase
-      .from('membres_equipe')
-      .select('*', { count: 'exact', head: true })
-      .eq('equipe_id', invitation.team_id)
-
-    if (equipe?.max_membres && membresCount !== null && membresCount >= equipe.max_membres) {
-      setStatut('plein')
-      setLoading(false)
-      return
-    }
-
-    const { error: membreErr } = await supabase
-      .from('membres_equipe')
-      .upsert({ equipe_id: invitation.team_id, user_id: user.id, role: invitation.role }, { onConflict: 'equipe_id,user_id' })
-
-    if (membreErr) { setStatut('erreur'); setLoading(false); return }
-
-    await supabase
-      .from('team_invitations')
-      .update({ status: 'accepted' })
-      .eq('token', token)
-
-    await supabase
-      .from('profiles')
-      .update({ plan: 'equipe', equipe_id: invitation.team_id, role: invitation.role })
-      .eq('id', user.id)
 
     setStatut('accepte')
     setLoading(false)
   }
 
-  const redirectInscription = encodeURIComponent(`/rejoindre?token=${token}`)
-  const redirectConnexion = encodeURIComponent(`/rejoindre?token=${token}`)
+  const redirectUrl = encodeURIComponent(`/rejoindre?token=${token}`)
 
   return (
     <div style={{
@@ -138,7 +109,7 @@ export default function RejoindreEquipe() {
                   cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
                 }}
               >
-                {loading ? 'Connexion...' : "Accepter l'invitation"}
+                {loading ? 'En cours...' : "Accepter l'invitation"}
               </button>
             ) : (
               <>
@@ -148,7 +119,7 @@ export default function RejoindreEquipe() {
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <button
-                    onClick={() => navigate(`/inscription?redirect=${redirectInscription}&email=${encodeURIComponent(invitation.email)}`)}
+                    onClick={() => navigate(`/inscription?redirect=${redirectUrl}&email=${encodeURIComponent(invitation.email)}`)}
                     style={{
                       width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
                       background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
@@ -158,7 +129,7 @@ export default function RejoindreEquipe() {
                     Créer un compte
                   </button>
                   <button
-                    onClick={() => navigate(`/connexion?redirect=${redirectConnexion}`)}
+                    onClick={() => navigate(`/connexion?redirect=${redirectUrl}`)}
                     style={{
                       width: '100%', padding: '12px 0', borderRadius: 10,
                       border: '1.5px solid var(--primary)', background: 'transparent',
@@ -193,8 +164,20 @@ export default function RejoindreEquipe() {
         {statut === 'erreur' && (
           <>
             <i className="ti ti-alert-circle" style={{ fontSize: 40, color: 'var(--accent-red)', display: 'block', marginBottom: 16 }}></i>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Courriel non concordant</p>
-            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Cette invitation a été envoyée à une autre adresse courriel.</p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Mauvais compte</p>
+            <p style={{ fontSize: 14, color: 'var(--text-hint)', marginBottom: 20 }}>
+              Cette invitation est pour <strong>{invitation?.email}</strong>. Déconnectez-vous et reconnectez-vous avec ce courriel.
+            </p>
+            <button
+              onClick={async () => { await supabase.auth.signOut(); window.location.reload() }}
+              style={{
+                width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
+                background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              Se déconnecter
+            </button>
           </>
         )}
 
@@ -203,7 +186,7 @@ export default function RejoindreEquipe() {
             <i className="ti ti-circle-check" style={{ fontSize: 40, color: '#4CAF50', display: 'block', marginBottom: 16 }}></i>
             <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Bienvenue dans l'équipe!</p>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 20 }}>
-              Rafraîchissez la page pour activer votre forfait équipe.
+              Votre forfait équipe est maintenant actif.
             </p>
             <button
               onClick={() => { window.location.href = '/equipe' }}
@@ -213,7 +196,7 @@ export default function RejoindreEquipe() {
                 cursor: 'pointer',
               }}
             >
-              Rafraîchir et accéder à l'équipe
+              Accéder à l'équipe
             </button>
           </>
         )}
