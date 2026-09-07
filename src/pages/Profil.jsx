@@ -113,7 +113,7 @@ export default function Profil() {
   // ─── SUPPRIMER COMPTE SIMPLE ──────────────────
   async function supprimerCompte() {
     setSaving(true)
-    const { error } = await supabase.rpc('delete_user')
+    const { error } = await supabase.functions.invoke('delete-account')
     setSaving(false)
     if (error) return setErreur('Erreur : ' + error.message)
     await supabase.auth.signOut()
@@ -136,7 +136,7 @@ export default function Profil() {
       // Supprimer l'équipe
       await supabase.from('equipes').delete().eq('id', equipeProprietaire.id)
       // Supprimer le compte
-      const { error } = await supabase.rpc('delete_user')
+      const { error } = await supabase.functions.invoke('delete-account')
       if (error) throw error
       await supabase.auth.signOut()
       navigate('/connexion')
