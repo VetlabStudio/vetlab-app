@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { useNavigate, Link, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 
 export default function Inscription() {
   const [searchParams] = useSearchParams()
-  const redirectUrl = searchParams.get('redirect') || ''
+  const redirectParam = searchParams.get('redirect') || ''
   const emailParam = searchParams.get('email') || ''
+  const tokenMatch = redirectParam.match(/token=([^&]+)/)
+  const invitationToken = tokenMatch ? decodeURIComponent(tokenMatch[1]) : null
 
   const [nom, setNom] = useState('')
   const [email, setEmail] = useState(emailParam)
@@ -44,6 +46,34 @@ export default function Inscription() {
     setShowAvertissement(false)
     setChargement(true)
 
+    // Parcours invitation : créer compte confirmé + accepter invitation en une étape
+    if (invitationToken) {
+      const { data, error } = await supabase.functions.invoke('signup-and-accept-invitation', {
+        body: { token: invitationToken, email, password: motDePasse, nom: nom.trim() },
+      })
+
+      if (error || data?.error) {
+        const err = data?.error || ''
+        if (err === 'deja_inscrit') setErreur('Un compte existe déjà avec ce courriel. Utilisez "J\'ai déjà un compte".')
+        else if (err === 'plein') setErreur("L'équipe a atteint sa limite de membres.")
+        else setErreur("Erreur lors de l'inscription. Vérifiez vos informations.")
+        setChargement(false)
+        return
+      }
+
+      // Connexion automatique après création
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: motDePasse })
+      if (signInError) {
+        setErreur('Compte créé. Connectez-vous pour accéder à votre équipe.')
+        setChargement(false)
+        return
+      }
+
+      navigate('/equipe')
+      return
+    }
+
+    // Parcours normal
     const { error } = await supabase.auth.signUp({
       email,
       password: motDePasse,
@@ -51,11 +81,7 @@ export default function Inscription() {
     })
 
     if (error) {
-      if (error.message?.toLowerCase().includes('already registered') || error.message?.toLowerCase().includes('already been registered') || error.status === 422) {
-        setErreur('Un compte existe déjà avec ce courriel.')
-      } else {
-        setErreur("Erreur lors de l'inscription. Vérifiez votre courriel.")
-      }
+      setErreur("Erreur lors de l'inscription. Vérifiez votre courriel.")
     } else {
       setSucces(true)
     }
@@ -63,10 +89,6 @@ export default function Inscription() {
   }
 
   if (succes) {
-    const lienConnexion = redirectUrl
-      ? `/connexion?redirect=${encodeURIComponent(redirectUrl)}`
-      : '/connexion'
-
     return (
       <div className="auth-container">
         <div className="auth-card">
@@ -75,14 +97,9 @@ export default function Inscription() {
           </div>
           <h1 className="auth-titre">Vérifiez votre courriel</h1>
           <p className="auth-description">
-            Un lien de confirmation vous a été envoyé à <strong>{email}</strong>. Cliquez dessus pour activer votre compte.
+            Un lien de confirmation vous a été envoyé. Cliquez dessus pour activer votre compte.
           </p>
-          {redirectUrl && (
-            <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 16 }}>
-              Après confirmation, connectez-vous pour finaliser votre accès à l'équipe.
-            </p>
-          )}
-          <Link to={lienConnexion} className="btn-primary" style={{display:'block', textAlign:'center'}}>
+          <Link to="/connexion" className="btn-primary" style={{display:'block', textAlign:'center'}}>
             Retour à la connexion
           </Link>
         </div>
@@ -113,10 +130,10 @@ export default function Inscription() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => !invitationToken && setEmail(e.target.value)}
               placeholder="votre@courriel.com"
-              readOnly={!!emailParam}
-              style={emailParam ? { opacity: 0.7, cursor: 'not-allowed' } : {}}
+              readOnly={!!invitationToken}
+              style={invitationToken ? { opacity: 0.7, cursor: 'not-allowed' } : {}}
               required
             />
           </div>
