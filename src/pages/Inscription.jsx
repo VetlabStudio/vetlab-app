@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate, Link } from 'react-router-dom'
 
@@ -19,7 +19,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Utilisation du service',
-        texte: 'ADJUVET est fourni à titre strictement informatif et éducatif. Il ne constitue pas un avis médical vétérinaire et ne remplace en aucun cas le jugement clinique d\'un médecin vétérinaire. VetLab Studio décline toute responsabilité pour les erreurs, omissions, inexactitudes ou défaillances techniques pouvant affecter les informations présentées dans l\'application. L\'utilisateur reconnaît assumer l\'entière responsabilité de toute décision clinique ou thérapeutique prise à partir des données de l\'application, et exonère expressément VetLab Studio de toute responsabilité en cas de préjudice, incluant toute erreur de traitement médical, résultant de son utilisation.',
+        texte: 'ADJUVET est fourni à titre informatif uniquement et ne remplace pas le jugement clinique d\'un vétérinaire. VetLab Studio décline toute responsabilité pour les décisions thérapeutiques prises à partir de l\'application.',
       },
     ],
   },
@@ -56,6 +56,7 @@ export default function Inscription() {
   const [etapeCgu, setEtapeCgu] = useState(null)
   const [voirMdp, setVoirMdp] = useState(false)
   const [voirConfirm, setVoirConfirm] = useState(false)
+  const touchStartX = useRef(null)
   const navigate = useNavigate()
 
   const handleInscription = (e) => {
@@ -68,12 +69,22 @@ export default function Inscription() {
     setEtapeCgu(0)
   }
 
-  const handleValider = async () => {
-    if (etapeCgu < CGU_PAGES.length - 1) {
-      setEtapeCgu(e => e + 1)
-      return
-    }
+  const handleSwipeStart = (e) => {
+    touchStartX.current = e.touches[0].clientX
+  }
 
+  const handleSwipeEnd = (e) => {
+    if (touchStartX.current === null) return
+    const delta = e.changedTouches[0].clientX - touchStartX.current
+    touchStartX.current = null
+    if (delta < -50 && etapeCgu < CGU_PAGES.length - 1) {
+      setEtapeCgu(e => e + 1)
+    } else if (delta > 50 && etapeCgu > 0) {
+      setEtapeCgu(e => e - 1)
+    }
+  }
+
+  const handleAccepter = async () => {
     setChargement(true)
     const { error } = await supabase.auth.signUp({
       email,
@@ -89,6 +100,7 @@ export default function Inscription() {
     }
     setChargement(false)
   }
+
 
   if (succes) {
     return (
@@ -109,8 +121,14 @@ export default function Inscription() {
 
   if (etapeCgu !== null) {
     const { fond, animal, sections } = CGU_PAGES[etapeCgu]
+    const estDernier = etapeCgu === CGU_PAGES.length - 1
     return (
-      <div className="cgu-page" style={{ backgroundImage: `url('${fond}')` }}>
+      <div
+        className="cgu-page"
+        style={{ backgroundImage: `url('${fond}')` }}
+        onTouchStart={handleSwipeStart}
+        onTouchEnd={handleSwipeEnd}
+      >
         <div className="cgu-contenu">
           <img src="/icone-logo-bleu.svg" alt="" className="cgu-icone" />
           <h1 className="cgu-titre">Conditions d'utilisations</h1>
@@ -122,15 +140,17 @@ export default function Inscription() {
               </div>
             ))}
           </div>
-          <button className="cgu-btn" onClick={handleValider} disabled={chargement}>
-            {chargement ? 'Création...' : etapeCgu < CGU_PAGES.length - 1 ? 'Valider' : "J'accepte et je crée mon compte"}
-          </button>
+          {estDernier && (
+            <button className="cgu-btn" onClick={handleAccepter} disabled={chargement}>
+              {chargement ? 'Création...' : "J'accepte"}
+            </button>
+          )}
           <div className="cgu-dots">
             {CGU_PAGES.map((_, i) => (
               <button
                 key={i}
                 className={`cgu-dot${i === etapeCgu ? ' actif' : ''}`}
-                onClick={() => i < etapeCgu && setEtapeCgu(i)}
+                onClick={() => setEtapeCgu(i)}
               >
                 {i + 1}
               </button>

@@ -7006,7 +7006,7 @@ input[type="number"] {
   position: relative;
   z-index: 2;
   flex: 1;
-  padding: 48px 38px 24px;
+  padding: 38px 38px 24px;
   display: flex;
   flex-direction: column;
 }
