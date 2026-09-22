@@ -11,10 +11,6 @@ const CGU_PAGES = [
         titre: 'Acceptation des termes',
         texte: 'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et VetLab Studio.',
       },
-      {
-        titre: 'Utilisation du service',
-        texte: 'ADJUVET est fourni à titre informatif et éducatif seulement. Il ne constitue pas un avis médical et ne remplace jamais le jugement d\'un médecin vétérinaire. L\'utilisateur assume l\'entière responsabilité des décisions prises à partir des informations contenues dans l\'application.',
-      },
     ],
   },
   {
@@ -22,8 +18,8 @@ const CGU_PAGES = [
     animal: '/perroquet01.png',
     sections: [
       {
-        titre: 'Abonnement et facturation',
-        texte: 'Le forfait Pro est un abonnement payant - mensuel ou annuel - géré via Stripe. Vous pouvez gérer ou annuler votre abonnement à tout moment depuis la page Profil. Aucun remboursement n\'est offert pour les périodes partiellement utilisées.',
+        titre: 'Utilisation du service',
+        texte: 'ADJUVET est fourni à titre strictement informatif et éducatif. Il ne constitue pas un avis médical vétérinaire et ne remplace en aucun cas le jugement clinique d\'un médecin vétérinaire. VetLab Studio décline toute responsabilité pour les erreurs, omissions, inexactitudes ou défaillances techniques pouvant affecter les informations présentées dans l\'application. L\'utilisateur reconnaît assumer l\'entière responsabilité de toute décision clinique ou thérapeutique prise à partir des données de l\'application, et exonère expressément VetLab Studio de toute responsabilité en cas de préjudice, incluant toute erreur de traitement médical, résultant de son utilisation.',
       },
     ],
   },
@@ -32,12 +28,18 @@ const CGU_PAGES = [
     animal: '/Lapin01.png',
     sections: [
       {
-        titre: 'Modifications',
-        texte: 'Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants vous seront communiqués via l\'application. En continuant à utiliser ADJUVET après une mise à jour, vous acceptez les nouvelles conditions.',
+        titre: 'Abonnement et facturation',
+        texte: 'Le forfait Pro est un abonnement payant - mensuel ou annuel - géré via Stripe. Vous pouvez gérer ou annuler votre abonnement à tout moment depuis la page Profil. Aucun remboursement n\'est offert pour les périodes partiellement utilisées.',
       },
+    ],
+  },
+  {
+    fond:   '/fond-mauve.jpg',
+    animal: '/cheval.png',
+    sections: [
       {
-        titre: 'Contact',
-        texte: 'Pour toute question concernant ces conditions, écrivez-nous à info@vetlabstudio.ca. En cliquant sur "J\'accepte et je crée mon compte", vous confirmez avoir lu et accepté ces conditions.',
+        titre: 'Modifications',
+        texte: 'Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants vous seront communiqués par courriel. En continuant à utiliser ADJUVET après une mise à jour, vous acceptez les nouvelles conditions. Pour toute question, contactez-nous à info@vetlabstudio.ca.',
       },
     ],
   },
