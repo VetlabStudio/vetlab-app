@@ -6859,21 +6859,21 @@ input[type="number"] {
 }
 
 .auth2-logo {
-  width: 100%;
-  max-width: 450px;
+  width: 70%;
+  max-width: 350px;
   height: auto;
-  margin-top: 50px;
+  margin-top: 0px;
 }
 
 .auth2-tagline {
-  font-size: 28px;
+  font-size: 20px;
   color: #ffffff;
-  margin-top: 30px;
+  margin-top: 0px;
   text-align: center;
 }
 
 .auth2-section-titre {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
   color: #ffffff;
   margin-bottom: 16px;
@@ -6903,8 +6903,8 @@ input[type="number"] {
   background: #FFFFFF;
   border: none;
   border-radius: 50px;
-  padding: 28px 24px;
-  font-size: 24px;
+  padding: 16px 24px;
+  font-size: 18px;
   font-family: var(--font);
   color: #213058;
   outline: none;
@@ -6919,8 +6919,8 @@ input[type="number"] {
   background: #BBE6D5;
   border: none;
   border-radius: 50px;
-  padding: 28px 45px;
-  font-size: 24px;
+  padding: 16px 45px;
+  font-size: 18px;
   font-weight: 600;
   color: #213058;
   font-family: var(--font);
@@ -6935,7 +6935,7 @@ input[type="number"] {
 
 .auth2-lien {
   text-align: center;
-  font-size: 24px;
+  font-size: 16px;
   color: #213058;
   margin-top: 20px;
 }
