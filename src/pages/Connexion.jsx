@@ -43,7 +43,7 @@ export default function Connexion() {
 
       <div className="auth2-contenu">
         <div className="auth2-logo-zone">
-          <img src="/logo-adjuvet.svg" alt="adjuvet" className="auth2-logo" />
+          <img src="/adjuvet-logo-anime.svg" alt="adjuvet" className="auth2-logo" />
           <p className="auth2-tagline">Copilote en santé animale</p>
         </div>
 
