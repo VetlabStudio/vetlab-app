@@ -33,67 +33,62 @@ export default function Connexion() {
     if (error) {
       setErreur('Courriel ou mot de passe incorrect.')
     } else {
-      const safeRedirect = redirectUrl && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//') ? redirectUrl : '/accueil'
-      navigate(safeRedirect)
+      navigate(redirectUrl || '/accueil')
     }
     setChargement(false)
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <img src="/logo-adjuvet.png" alt="Vetlab Studio" className="auth-logo" />
-        <h1 className="auth-titre">Connexion</h1>
+    <div className="auth2-page">
+
+      <div className="auth2-contenu">
+        <div className="auth2-logo-zone">
+          <img src="/logo-adjuvet.svg" alt="adjuvet" className="auth2-logo" />
+          <p className="auth2-tagline">Copilote en santé animale</p>
+        </div>
+
+        <p className="auth2-section-titre">Connexion</p>
 
         {confirmé && (
-          <div style={{
-            background: 'rgba(76, 175, 80, 0.12)', border: '1px solid rgba(76, 175, 80, 0.4)',
-            borderRadius: 10, padding: '12px 16px', marginBottom: 16,
-            display: 'flex', alignItems: 'center', gap: 10,
-          }}>
-            <i className="ti ti-circle-check" style={{ fontSize: 20, color: '#4CAF50', flexShrink: 0 }}></i>
-            <p style={{ fontSize: 14, color: '#4CAF50', margin: 0, fontWeight: 600 }}>
-              Adresse courriel confirmée ! Vous pouvez maintenant vous connecter.
-            </p>
+          <div className="auth2-confirme">
+            <i className="ti ti-circle-check" style={{ fontSize: 20, flexShrink: 0 }}></i>
+            <span>Adresse courriel confirmée ! Vous pouvez maintenant vous connecter.</span>
           </div>
         )}
 
-        <form onSubmit={handleConnexion} className="auth-form">
-          <div className="champ">
-            <label>Courriel</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="votre@courriel.com"
-              required
-            />
-          </div>
-
-          <div className="champ">
-            <label>Mot de passe</label>
-            <input
-              type="password"
-              value={motDePasse}
-              onChange={(e) => setMotDePasse(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
-          </div>
-
-          {erreur && <p className="erreur">{erreur}</p>}
-
-          <button type="submit" className="btn-primary" disabled={chargement}>
+        <form onSubmit={handleConnexion} className="auth2-form">
+          <input
+            type="email"
+            className="auth2-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Courriel"
+            required
+          />
+          <input
+            type="password"
+            className="auth2-input"
+            value={motDePasse}
+            onChange={(e) => setMotDePasse(e.target.value)}
+            placeholder="Mot de passe"
+            required
+          />
+          {erreur && <p className="erreur" style={{ textAlign: 'center' }}>{erreur}</p>}
+          <button type="submit" className="auth2-btn" disabled={chargement}>
             {chargement ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
 
-        <p className="auth-lien">
+        <p className="auth2-lien">
           Pas encore de compte ?{' '}
           <Link to={redirectUrl ? `/inscription?redirect=${encodeURIComponent(redirectUrl)}` : '/inscription'}>
             Créer un compte
           </Link>
         </p>
+      </div>
+
+      <div className="auth2-photo">
+        <img src="/Chien_10.png" alt="" />
       </div>
     </div>
   )
