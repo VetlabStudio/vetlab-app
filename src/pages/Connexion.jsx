@@ -8,6 +8,7 @@ export default function Connexion() {
   const [erreur, setErreur] = useState(null)
   const [chargement, setChargement] = useState(false)
   const [confirmé, setConfirmé] = useState(false)
+  const [voirMdp, setVoirMdp] = useState(false)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectUrl = searchParams.get('redirect')
@@ -65,14 +66,19 @@ export default function Connexion() {
             placeholder="Courriel"
             required
           />
-          <input
-            type="password"
-            className="auth2-input"
-            value={motDePasse}
-            onChange={(e) => setMotDePasse(e.target.value)}
-            placeholder="Mot de passe"
-            required
-          />
+          <div className="auth2-input-wrap">
+            <input
+              type={voirMdp ? 'text' : 'password'}
+              className="auth2-input"
+              value={motDePasse}
+              onChange={(e) => setMotDePasse(e.target.value)}
+              placeholder="Mot de passe"
+              required
+            />
+            <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)}>
+              <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`}></i>
+            </button>
+          </div>
           {erreur && <p className="erreur" style={{ textAlign: 'center' }}>{erreur}</p>}
           <button type="submit" className="auth2-btn" disabled={chargement}>
             {chargement ? 'Connexion...' : 'Se connecter'}

@@ -52,6 +52,8 @@ export default function Inscription() {
   const [succes, setSucces] = useState(false)
   const [chargement, setChargement] = useState(false)
   const [etapeCgu, setEtapeCgu] = useState(null)
+  const [voirMdp, setVoirMdp] = useState(false)
+  const [voirConfirm, setVoirConfirm] = useState(false)
   const navigate = useNavigate()
 
   const handleInscription = (e) => {
@@ -167,23 +169,33 @@ export default function Inscription() {
             placeholder="Courriel"
             required
           />
-          <input
-            type="password"
-            className="auth2-input"
-            value={motDePasse}
-            onChange={(e) => setMotDePasse(e.target.value)}
-            placeholder="Mot de passe"
-            minLength={6}
-            required
-          />
-          <input
-            type="password"
-            className="auth2-input"
-            value={confirmation}
-            onChange={(e) => setConfirmation(e.target.value)}
-            placeholder="Confirmer le mot de passe"
-            required
-          />
+          <div className="auth2-input-wrap">
+            <input
+              type={voirMdp ? 'text' : 'password'}
+              className="auth2-input"
+              value={motDePasse}
+              onChange={(e) => setMotDePasse(e.target.value)}
+              placeholder="Mot de passe"
+              minLength={6}
+              required
+            />
+            <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)}>
+              <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`}></i>
+            </button>
+          </div>
+          <div className="auth2-input-wrap">
+            <input
+              type={voirConfirm ? 'text' : 'password'}
+              className="auth2-input"
+              value={confirmation}
+              onChange={(e) => setConfirmation(e.target.value)}
+              placeholder="Confirmer le mot de passe"
+              required
+            />
+            <button type="button" className="auth2-oeil" onClick={() => setVoirConfirm(v => !v)}>
+              <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`}></i>
+            </button>
+          </div>
           {erreur && <p className="erreur" style={{ textAlign: 'center' }}>{erreur}</p>}
           <button type="submit" className="auth2-btn">
             Créer mon compte
