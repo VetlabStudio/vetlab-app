@@ -7000,6 +7000,13 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
+}
+
+.cgu-slide-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .cgu-contenu {
@@ -7103,13 +7110,5 @@ input[type="number"] {
   object-position: top;
 }
 
-@keyframes cguSlideFromRight {
-  from { transform: translateX(48px); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
-}
-@keyframes cguSlideFromLeft {
-  from { transform: translateX(-48px); opacity: 0; }
-  to   { transform: translateX(0);     opacity: 1; }
-}
-.cgu-slide-next { animation: cguSlideFromRight 0.28s ease forwards; }
-.cgu-slide-prev { animation: cguSlideFromLeft  0.28s ease forwards; }
+.cgu-slide-next { animation: pageEnterFromRight 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+.cgu-slide-prev { animation: pageEnterFromLeft  0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }

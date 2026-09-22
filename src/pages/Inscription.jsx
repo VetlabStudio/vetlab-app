@@ -9,7 +9,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Acceptation des termes',
-        texte: 'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et VetLab Studio.',
+        texte: 'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et Vetlab Studio.',
       },
     ],
   },
@@ -19,7 +19,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Utilisation du service',
-        texte: 'ADJUVET est fourni à titre informatif uniquement et ne remplace pas le jugement clinique d\'un vétérinaire. VetLab Studio décline toute responsabilité pour les décisions thérapeutiques prises à partir de l\'application.',
+        texte: 'ADJUVET est fourni à titre informatif uniquement et ne remplace pas le jugement clinique d\'un vétérinaire. Il revient à l\'utilisateur de vérifier toute dose ou valeur calculée avant de l\'utiliser. Vetlab Studio décline toute responsabilité pour les décisions thérapeutiques prises à partir de l\'application, dans les limites permises par la loi.',
       },
     ],
   },
@@ -29,7 +29,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Abonnement et facturation',
-        texte: 'Le forfait Pro est un abonnement payant - mensuel ou annuel - géré via Stripe. Vous pouvez gérer ou annuler votre abonnement à tout moment depuis la page Profil. Aucun remboursement n\'est offert pour les périodes partiellement utilisées.',
+        texte: 'Le forfait Pro est un abonnement mensuel ou annuel géré par Stripe, renouvelé automatiquement. Vous pouvez l\'annuler en tout temps depuis la page Profil; l\'accès reste actif jusqu\'à la fin de la période payée. Sous réserve de la loi applicable, aucun remboursement n\'est offert pour une période partiellement utilisée.',
       },
     ],
   },
@@ -39,7 +39,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Modifications',
-        texte: 'Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants vous seront communiqués par courriel. En continuant à utiliser ADJUVET après une mise à jour, vous acceptez les nouvelles conditions. Pour toute question, contactez-nous à info@vetlabstudio.ca.',
+        texte: 'Ces conditions peuvent être mises à jour. Les changements importants vous seront communiqués par courriel. Pour toute question: info@vetlabstudio.ca.',
       },
     ],
   },
@@ -132,36 +132,36 @@ export default function Inscription() {
         onTouchStart={handleSwipeStart}
         onTouchEnd={handleSwipeEnd}
       >
-        <div key={etapeCgu} className={`cgu-contenu cgu-slide-${directionCgu.current}`}>
-          <img src="/icone-logo-bleu.svg" alt="" className="cgu-icone" />
-          <h1 className="cgu-titre">Conditions d'utilisations</h1>
-          <div className="cgu-sections">
-            {sections.map((s, i) => (
-              <div key={i} className="cgu-section">
-                <p className="cgu-section-titre">{s.titre}</p>
-                <p className="cgu-section-texte">{s.texte}</p>
-              </div>
-            ))}
-          </div>
-          {estDernier && (
-            <button className="cgu-btn" onClick={handleAccepter} disabled={chargement}>
-              {chargement ? 'Création...' : "J'accepte et je crée mon compte"}
-            </button>
-          )}
-          <div className="cgu-dots">
-            {CGU_PAGES.map((_, i) => (
-              <button
-                key={i}
-                className={`cgu-dot${i === etapeCgu ? ' actif' : ''}`}
-                onClick={() => { directionCgu.current = i > etapeCgu ? 'next' : 'prev'; setEtapeCgu(i) }}
-              >
-                {i + 1}
+        <div key={etapeCgu} className={`cgu-slide-wrap cgu-slide-${directionCgu.current}`}>
+          <div className="cgu-contenu">
+            <img src="/icone-logo-bleu.svg" alt="" className="cgu-icone" />
+            <h1 className="cgu-titre">Conditions d'utilisations</h1>
+            <div className="cgu-sections">
+              {sections.map((s, i) => (
+                <div key={i} className="cgu-section">
+                  <p className="cgu-section-titre">{s.titre}</p>
+                  <p className="cgu-section-texte">{s.texte}</p>
+                </div>
+              ))}
+            </div>
+            {estDernier && (
+              <button className="cgu-btn" onClick={handleAccepter} disabled={chargement}>
+                {chargement ? 'Création...' : "J'accepte"}
               </button>
-            ))}
+            )}
+            <div className="cgu-dots">
+              {CGU_PAGES.map((_, i) => (
+                <button
+                  key={i}
+                  className={`cgu-dot${i === etapeCgu ? ' actif' : ''}`}
+                  onClick={() => { directionCgu.current = i > etapeCgu ? 'next' : 'prev'; setEtapeCgu(i) }}
+                ></button>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="cgu-photo">
-          <img src={animal} alt="" />
+          <div className="cgu-photo">
+            <img src={animal} alt="" />
+          </div>
         </div>
       </div>
     )
