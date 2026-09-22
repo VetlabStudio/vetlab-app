@@ -1,79 +1,76 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+
+const CGU_PAGES = [
+  {
+    fond:   '/fond-jaune.jpg',
+    animal: '/Chat08.png',
+    sections: [
+      {
+        titre: 'Acceptation des termes',
+        texte: 'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et VetLab Studio.',
+      },
+      {
+        titre: 'Utilisation du service',
+        texte: 'ADJUVET est fourni à titre informatif et éducatif seulement. Il ne constitue pas un avis médical et ne remplace jamais le jugement d\'un médecin vétérinaire. L\'utilisateur assume l\'entière responsabilité des décisions prises à partir des informations contenues dans l\'application.',
+      },
+    ],
+  },
+  {
+    fond:   '/fond-vert.jpg',
+    animal: '/perroquet01.png',
+    sections: [
+      {
+        titre: 'Abonnement et facturation',
+        texte: 'Le forfait Pro est un abonnement payant - mensuel ou annuel - géré via Stripe. Vous pouvez gérer ou annuler votre abonnement à tout moment depuis la page Profil. Aucun remboursement n\'est offert pour les périodes partiellement utilisées.',
+      },
+    ],
+  },
+  {
+    fond:   '/fond-gris.jpg',
+    animal: '/Lapin01.png',
+    sections: [
+      {
+        titre: 'Modifications',
+        texte: 'Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants vous seront communiqués via l\'application. En continuant à utiliser ADJUVET après une mise à jour, vous acceptez les nouvelles conditions.',
+      },
+      {
+        titre: 'Contact',
+        texte: 'Pour toute question concernant ces conditions, écrivez-nous à info@vetlabstudio.ca. En cliquant sur "J\'accepte et je crée mon compte", vous confirmez avoir lu et accepté ces conditions.',
+      },
+    ],
+  },
+]
 
 export default function Inscription() {
-  const [searchParams] = useSearchParams()
-  const redirectParam = searchParams.get('redirect') || ''
-  const emailParam = searchParams.get('email') || ''
-  const tokenMatch = redirectParam.match(/token=([^&]+)/)
-  const invitationToken = tokenMatch ? decodeURIComponent(tokenMatch[1]) : null
-
   const [nom, setNom] = useState('')
-  const [email, setEmail] = useState(emailParam)
+  const [email, setEmail] = useState('')
   const [motDePasse, setMotDePasse] = useState('')
   const [confirmation, setConfirmation] = useState('')
   const [erreur, setErreur] = useState(null)
   const [succes, setSucces] = useState(false)
   const [chargement, setChargement] = useState(false)
-  const [showAvertissement, setShowAvertissement] = useState(false)
-  const [avertissementLu, setAvertissementLu] = useState(false)
+  const [etapeCgu, setEtapeCgu] = useState(null)
   const navigate = useNavigate()
 
   const handleInscription = (e) => {
     e.preventDefault()
     setErreur(null)
-
     if (motDePasse !== confirmation) {
       setErreur('Les mots de passe ne correspondent pas.')
       return
     }
+    setEtapeCgu(0)
+  }
 
-    if (motDePasse.length < 8) {
-      setErreur('Le mot de passe doit contenir au moins 8 caractères.')
+  const handleValider = async () => {
+    if (etapeCgu < CGU_PAGES.length - 1) {
+      setEtapeCgu(e => e + 1)
       return
     }
 
-    setShowAvertissement(true)
-  }
-
-  const handleScrollAvertissement = (e) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target
-    if (scrollHeight - scrollTop - clientHeight < 8) setAvertissementLu(true)
-  }
-
-  const confirmerInscription = async () => {
-    setShowAvertissement(false)
     setChargement(true)
-
-    // Parcours invitation : créer compte confirmé + accepter invitation en une étape
-    if (invitationToken) {
-      const { data, error } = await supabase.functions.invoke('signup-and-accept-invitation', {
-        body: { token: invitationToken, email, password: motDePasse, nom: nom.trim() },
-      })
-
-      if (error || data?.error) {
-        const err = data?.error || ''
-        if (err === 'deja_inscrit') setErreur('Un compte existe déjà avec ce courriel. Utilisez "J\'ai déjà un compte".')
-        else if (err === 'plein') setErreur("L'équipe a atteint sa limite de membres.")
-        else setErreur("Erreur lors de l'inscription. Vérifiez vos informations.")
-        setChargement(false)
-        return
-      }
-
-      // Connexion automatique après création
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: motDePasse })
-      if (signInError) {
-        setErreur('Compte créé. Connectez-vous pour accéder à votre équipe.')
-        setChargement(false)
-        return
-      }
-
-      navigate('/equipe')
-      return
-    }
-
-    // Parcours normal
     const { error } = await supabase.auth.signUp({
       email,
       password: motDePasse,
@@ -81,6 +78,7 @@ export default function Inscription() {
     })
 
     if (error) {
+      setEtapeCgu(null)
       setErreur("Erreur lors de l'inscription. Vérifiez votre courriel.")
     } else {
       setSucces(true)
@@ -90,16 +88,14 @@ export default function Inscription() {
 
   if (succes) {
     return (
-      <div className="auth-container">
-        <div className="auth-card">
-          <div className="succes-icone">
-            <i className="ti ti-circle-check"></i>
-          </div>
-          <h1 className="auth-titre">Vérifiez votre courriel</h1>
-          <p className="auth-description">
+      <div className="auth2-page">
+        <div className="auth2-contenu" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <i className="ti ti-circle-check" style={{ fontSize: 64, color: '#213058', marginBottom: 20 }}></i>
+          <p className="auth2-section-titre" style={{ textAlign: 'center', fontSize: 22 }}>Vérifiez votre courriel</p>
+          <p style={{ fontSize: 15, color: '#213058', textAlign: 'center', marginBottom: 28, lineHeight: 1.6 }}>
             Un lien de confirmation vous a été envoyé. Cliquez dessus pour activer votre compte.
           </p>
-          <Link to="/connexion" className="btn-primary" style={{display:'block', textAlign:'center'}}>
+          <Link to="/connexion" className="auth2-btn" style={{ display: 'block', textDecoration: 'none' }}>
             Retour à la connexion
           </Link>
         </div>
@@ -107,90 +103,98 @@ export default function Inscription() {
     )
   }
 
+  if (etapeCgu !== null) {
+    const { fond, animal, sections } = CGU_PAGES[etapeCgu]
+    return (
+      <div className="cgu-page" style={{ backgroundImage: `url('${fond}')` }}>
+        <div className="cgu-contenu">
+          <img src="/icone-logo-bleu.svg" alt="" className="cgu-icone" />
+          <h1 className="cgu-titre">Conditions d'utilisations</h1>
+          <div className="cgu-sections">
+            {sections.map((s, i) => (
+              <div key={i} className="cgu-section">
+                <p className="cgu-section-titre">{s.titre}</p>
+                <p className="cgu-section-texte">{s.texte}</p>
+              </div>
+            ))}
+          </div>
+          <button className="cgu-btn" onClick={handleValider} disabled={chargement}>
+            {chargement ? 'Création...' : etapeCgu < CGU_PAGES.length - 1 ? 'Valider' : "J'accepte et je crée mon compte"}
+          </button>
+          <div className="cgu-dots">
+            {CGU_PAGES.map((_, i) => (
+              <button
+                key={i}
+                className={`cgu-dot${i === etapeCgu ? ' actif' : ''}`}
+                onClick={() => i < etapeCgu && setEtapeCgu(i)}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="cgu-photo">
+          <img src={animal} alt="" />
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <img src="/logo-adjuvet.png" alt="Adjuvet" className="auth-logo" />
-        <h1 className="auth-titre">Créer un compte</h1>
+    <div className="auth2-page">
+      <div className="auth2-contenu">
+        <div className="auth2-logo-zone">
+          <img src="/adjuvet-logo-anime.svg" alt="adjuvet" className="auth2-logo" />
+          <p className="auth2-tagline">Copilote en santé animale</p>
+        </div>
 
-        <form onSubmit={handleInscription} className="auth-form">
-          <div className="champ">
-            <label>Nom complet</label>
-            <input
-              type="text"
-              value={nom}
-              onChange={(e) => setNom(e.target.value)}
-              placeholder="Prénom Nom"
-              required
-            />
-          </div>
+        <p className="auth2-section-titre">Créer un compte</p>
 
-          <div className="champ">
-            <label>Courriel</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => !invitationToken && setEmail(e.target.value)}
-              placeholder="votre@courriel.com"
-              readOnly={!!invitationToken}
-              style={invitationToken ? { opacity: 0.7, cursor: 'not-allowed' } : {}}
-              required
-            />
-          </div>
-
-          <div className="champ">
-            <label>Mot de passe</label>
-            <input
-              type="password"
-              value={motDePasse}
-              onChange={(e) => setMotDePasse(e.target.value)}
-              placeholder="••••••••"
-              minLength={8}
-              required
-            />
-          </div>
-
-          <div className="champ">
-            <label>Confirmer le mot de passe</label>
-            <input
-              type="password"
-              value={confirmation}
-              onChange={(e) => setConfirmation(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
-          </div>
-
-          {erreur && <p className="erreur">{erreur}</p>}
-
-          <button type="submit" className="btn-primary" disabled={chargement}>
-            {chargement ? 'Création...' : 'Créer mon compte'}
+        <form onSubmit={handleInscription} className="auth2-form">
+          <input
+            type="text"
+            className="auth2-input"
+            value={nom}
+            onChange={(e) => setNom(e.target.value)}
+            placeholder="Nom complet"
+            required
+          />
+          <input
+            type="email"
+            className="auth2-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Courriel"
+            required
+          />
+          <input
+            type="password"
+            className="auth2-input"
+            value={motDePasse}
+            onChange={(e) => setMotDePasse(e.target.value)}
+            placeholder="Mot de passe"
+            minLength={6}
+            required
+          />
+          <input
+            type="password"
+            className="auth2-input"
+            value={confirmation}
+            onChange={(e) => setConfirmation(e.target.value)}
+            placeholder="Confirmer le mot de passe"
+            required
+          />
+          {erreur && <p className="erreur" style={{ textAlign: 'center' }}>{erreur}</p>}
+          <button type="submit" className="auth2-btn">
+            Créer mon compte
           </button>
         </form>
 
-        <p className="auth-lien">
+        <p className="auth2-lien">
           Déjà un compte ?{' '}
           <Link to="/connexion">Se connecter</Link>
         </p>
       </div>
-
-      {showAvertissement && (
-        <div className="popup-overlay">
-          <div className="avertissement-card">
-            <h2 className="avertissement-titre">Avertissement et conditions d'utilisation</h2>
-            <div className="avertissement-texte" onScroll={handleScrollAvertissement}>
-              <p>Avant de continuer, merci de lire et d'accepter ce qui suit :</p>
-              <p>Le contenu d'ADJUVET (calculateurs, fiches médicaments, protocoles, checklists, guides de référence, etc.) est fourni <strong>à titre informatif et éducatif seulement</strong>. Il ne constitue pas un avis médical, un diagnostic ou une recommandation de traitement, et ne remplace jamais le jugement professionnel d'un médecin vétérinaire.</p>
-              <p>Toute décision clinique doit être validée par un professionnel qualifié, selon l'état particulier de chaque patient. Les calculateurs sont des outils d'aide au calcul — vérifiez toujours les valeurs obtenues avant administration.</p>
-              <p>Nous ne pouvons garantir l'exactitude, l'exhaustivité ou l'actualité complète du contenu. <strong>L'utilisateur assume l'entière responsabilité des décisions ou actions prises à partir des informations contenues dans ADJUVET.</strong> ADJUVET, Vetlab Studio et ses contributeurs déclinent toute responsabilité quant aux dommages résultant de l'utilisation de l'application, fournie « telle quelle », sans garantie d'aucune sorte.</p>
-              <p>En cliquant sur « J'ai compris et j'accepte », vous confirmez avoir lu cet avertissement et vous consentez à utiliser ADJUVET en toute connaissance de ces limites.</p>
-            </div>
-            <button className="btn-primary" disabled={!avertissementLu} onClick={confirmerInscription}>
-              J'ai compris et j'accepte
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
