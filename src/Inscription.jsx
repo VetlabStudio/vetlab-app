@@ -39,7 +39,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Modifications',
-        texte: 'Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants vous seront communiqués par courriel. En continuant à utiliser ADJUVET après une mise à jour, vous acceptez les nouvelles conditions. Pour toute question, contactez-nous à info@vetlabstudio.ca.',
+        texte: 'Ces conditions peuvent être mises à jour. Les changements importants vous seront communiqués par courriel. Pour toute question: info@vetlabstudio.ca.',
       },
     ],
   },
@@ -154,9 +154,7 @@ export default function Inscription() {
                 key={i}
                 className={`cgu-dot${i === etapeCgu ? ' actif' : ''}`}
                 onClick={() => { directionCgu.current = i > etapeCgu ? 'next' : 'prev'; setEtapeCgu(i) }}
-              >
-                {i + 1}
-              </button>
+              />
             ))}
           </div>
         </div>

@@ -6851,7 +6851,7 @@ input[type="number"] {
 .auth2-contenu {
   position: relative;
   z-index: 1;
-  padding: 36px 38px 38px;
+  padding: 56px 38px 38px;
   flex: 1;
   z-index:2;
 }
@@ -7006,7 +7006,7 @@ input[type="number"] {
   position: relative;
   z-index: 2;
   flex: 1;
-  padding: 38px 38px 24px;
+  padding: 48px 38px 24px;
   display: flex;
   flex-direction: column;
 }
@@ -7075,26 +7075,18 @@ input[type="number"] {
 }
 
 .cgu-dot {
-  width: 48px;
-  height: 48px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: 1.5px solid rgba(33, 48, 88, 0.35);
+  border: 2px solid #213058;
   background: transparent;
-  color: rgba(33, 48, 88, 0.45);
-  font-size: 18px;
-  font-weight: 600;
-  font-family: var(--font);
+  padding: 0;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
+  transition: background 0.15s;
 }
 
 .cgu-dot.actif {
-  border-color: #213058;
-  color: #213058;
-  background: rgba(33, 48, 88, 0.08);
+  background: #213058;
 }
 
 .cgu-photo {
@@ -7110,3 +7102,14 @@ input[type="number"] {
   object-fit: cover;
   object-position: top;
 }
+
+@keyframes cguSlideFromRight {
+  from { transform: translateX(48px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes cguSlideFromLeft {
+  from { transform: translateX(-48px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+.cgu-slide-next { animation: cguSlideFromRight 0.28s ease forwards; }
+.cgu-slide-prev { animation: cguSlideFromLeft  0.28s ease forwards; }
