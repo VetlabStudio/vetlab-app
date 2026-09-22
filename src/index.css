@@ -6859,7 +6859,7 @@ input[type="number"] {
 }
 
 .auth2-logo {
-  width: 70%;
+  width: 85%;
   max-width: 350px;
   height: auto;
   margin-top: 0px;
@@ -6951,10 +6951,12 @@ input[type="number"] {
   z-index: 1;
   width: 100%;
   line-height: 0;
+
 }
 
 .auth2-photo img {
   width: 100%;
   display: block;
   object-fit: cover;
+  margin-top: -60px;
 }
