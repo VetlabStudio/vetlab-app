@@ -42,6 +42,10 @@
 }
 
 /* ─── BASE ────────────────────────────────────── */
+#root:empty {
+  background: #BCAADC;
+  min-height: 100vh;
+}
 body {
   font-family: var(--font);
   background: var(--bg);
@@ -6847,7 +6851,7 @@ input[type="number"] {
 .auth2-contenu {
   position: relative;
   z-index: 1;
-  padding: 56px 38px 38px;
+  padding: 36px 38px 38px;
   flex: 1;
   z-index:2;
 }
