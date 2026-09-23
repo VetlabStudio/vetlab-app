@@ -15,10 +15,10 @@ export default function BadgePro() {
     width: 25,
     height: 25,
     borderRadius: '50%',
-    background: 'var(--accent-gold)',
+    background: 'var(--primary-light)',
     flexShrink: 0,
   }}>
-      <i className="ti ti-lock" style={{ fontSize: 16, color: 'white' }}></i>
+      <i className="ti ti-lock" style={{ fontSize: 16, color: 'var(--primary)' }}></i>
     </span>
   )
 }
