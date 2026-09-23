@@ -4,17 +4,17 @@ import { NavGuardContext, NavDirectionContext } from '../App'
 import { useProfil } from '../context/ProfilContext'
 
 const ONGLETS_BASE = [
-  { id: 'accueil',      label: 'Accueil',            icone: 'ti-home',        route: '/accueil' },
-  { id: 'calculateurs', label: 'Calcul rapide',       icone: 'ti-calculator',  route: '/calculateurs' },
-  { id: 'drogues',      label: 'Médicaments favoris', icone: 'ti-pill',        route: '/drogues/mes-drogues' },
-  { id: 'notes',        label: 'Notes',               icone: 'ti-notes',       route: '/notes' },
+  { id: 'accueil',      label: 'Accueil',            svg: '/icone-accueil-nav.svg', route: '/accueil' },
+  { id: 'calculateurs', label: 'Calcul rapide',       svg: '/icone-calc-nav.svg',    route: '/calculateurs' },
+  { id: 'drogues',      label: 'Médicaments favoris', svg: '/icone-pill-nav.svg',    route: '/drogues/mes-drogues' },
+  { id: 'notes',        label: 'Notes',               svg: '/icone-note-nav.svg',    route: '/notes' },
 ]
 
 const ONGLETS_EQUIPE = [
-  { id: 'accueil',      label: 'Accueil',            icone: 'ti-home',        route: '/accueil' },
-  { id: 'calculateurs', label: 'Calcul rapide',       icone: 'ti-calculator',  route: '/calculateurs' },
-  { id: 'drogues',      label: 'Médicaments favoris', icone: 'ti-pill',        route: '/drogues/mes-drogues' },
-  { id: 'equipe',       label: 'Équipe',              icone: 'ti-users',       route: '/equipe' },
+  { id: 'accueil',      label: 'Accueil',            svg: '/icone-accueil-nav.svg', route: '/accueil' },
+  { id: 'calculateurs', label: 'Calcul rapide',       svg: '/icone-calc-nav.svg',    route: '/calculateurs' },
+  { id: 'drogues',      label: 'Médicaments favoris', svg: '/icone-pill-nav.svg',    route: '/drogues/mes-drogues' },
+  { id: 'equipe',       label: 'Équipe',              svg: '/icone-equipe-nav.svg',  route: '/equipe' },
 ]
 
 export default function BottomNav() {
@@ -48,7 +48,7 @@ export default function BottomNav() {
           className={`bottom-nav-v2-btn ${estActif(o.route) ? 'active' : ''}`}
           onClick={() => allerVers(() => { navigate('/accueil', { replace: true }); navigate(o.route) })}
         >
-          <i className={`ti ${o.icone}`}></i>
+          <img src={o.svg} alt="" className="bottom-nav-v2-icone" />
           <span>{o.label}</span>
         </button>
       ))}

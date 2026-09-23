@@ -143,7 +143,7 @@ export default function Header() {
       <button className="header-back" onClick={retour}>
         <i className="ti ti-arrow-left"></i>
       </button>
-      <h1 style={{ textAlign: 'center', maxWidth: 'calc(100% - 80px)', lineHeight: 1.3, margin: 0, fontSize: 18 }}>{titre}</h1>
+      <h1 style={{ textAlign: 'center', maxWidth: 'calc(100% - 80px)', lineHeight: 1.3, margin: 0, fontSize: 20 }}>{titre}</h1>
     </div>
   )
 }
