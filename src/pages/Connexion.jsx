@@ -9,6 +9,7 @@ export default function Connexion() {
   const [chargement, setChargement] = useState(false)
   const [confirmé, setConfirmé] = useState(false)
   const [voirMdp, setVoirMdp] = useState(false)
+  const [logoSrc] = useState(() => `/adjuvet-logo-anime.svg?v=${Date.now()}`)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectUrl = searchParams.get('redirect')
@@ -44,7 +45,7 @@ export default function Connexion() {
 
       <div className="auth2-contenu">
         <div className="auth2-logo-zone">
-          <img src="/adjuvet-logo-anime.svg" alt="adjuvet" className="auth2-logo" />
+          <img src={logoSrc} alt="adjuvet" className="auth2-logo" />
           <p className="auth2-tagline">Copilote en santé animale</p>
         </div>
 

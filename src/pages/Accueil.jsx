@@ -87,7 +87,7 @@ const REFERENCES = [
   { id: 'chirurgie', label: 'Chirurgie', icone: '/icone-chirurgie-ref.svg', route: '/chirurgie' },
   { id: 'soins-generaux', label: 'Soins\ngénéraux', icone: '/icone-soins-generaux.svg', route: '/soins-generaux' },
   { id: 'toxicologie', label: 'Toxicologie', icone: '/toxico.svg', route: '/drogues/toxicologie', pro: true },
-  { id: 'nutrition', label: 'Nutrition', icone: '/icone-nutrition.png', route: '/nutrition' },
+  { id: 'nutrition', label: 'Nutrition', icone: '/icone-nutrition.svg', route: '/nutrition' },
 ]
 
 export default function Accueil() {
@@ -128,11 +128,12 @@ export default function Accueil() {
             }
           </div>
           <div>
-            {estEquipe && nomClinique && (
+           
+            <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: 0 }}>Bonjour</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{prenom || 'Bienvenue'}</p>
+             {estEquipe && nomClinique && (
               <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 2px 0' }}>{nomClinique}</p>
             )}
-            <p style={{ fontSize: 13, color: 'var(--text-hint)', margin: 0 }}>Bonjour 👋</p>
-            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{prenom || 'Bienvenue'}</p>
           </div>
         </div>
         <ClocheMiniAccueil />
@@ -142,7 +143,6 @@ export default function Accueil() {
       <section className="accueil-v2-section">
         {/* BOUTON PRÉCONSULTATION */}
         <button className="accueil-v2-preconsult-btn" onClick={() => estPro ? navigate('/soins-generaux/examen-physique') : setShowProMsg(true)}>
-          <i className="ti ti-clipboard-heart"></i>
           <span>Démarrer un examen</span>
           <BadgePro />
         </button>

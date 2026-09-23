@@ -253,7 +253,7 @@ input  { font-family: var(--font); }
 }
 
 .accueil-v2-titre-section {
-  font-size: 17px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
@@ -270,11 +270,11 @@ input  { font-family: var(--font); }
   padding: 16px 20px;
   margin-bottom: 16px;
   border: none;
-  border-radius: 14px;
+  border-radius: 99px;
   background: var(--primary);
   color: white;
   font-family: 'Gilroy', sans-serif;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
@@ -315,18 +315,18 @@ input  { font-family: var(--font); }
 }
 
 .accueil-v2-calc-icone {
-  width: 38px;
-  height: 38px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
 }
 
 .accueil-v2-calc-icone--ref {
-  width: 38px;
-  height: 38px;
+  width: 80px;
+  height: 80px;
 }
 
 .accueil-v2-calc-label {
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
   text-align: center;
@@ -703,7 +703,7 @@ input  { font-family: var(--font); }
   background: none;
   border: none;
   font-family: var(--font);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--primary-light);
   padding: 4px 12px;
@@ -716,7 +716,7 @@ input  { font-family: var(--font); }
 }
 
 .bottom-nav-v2-btn i {
-  font-size: 24px;
+  font-size: 35px;
 }
 
 .bottom-nav-v2-btn.active span {
@@ -6852,7 +6852,7 @@ input[type="number"] {
 .auth2-contenu {
   position: relative;
   z-index: 1;
-  padding: 56px 38px 38px;
+  padding: 20px 38px 38px;
   flex: 1;
   z-index:2;
 }

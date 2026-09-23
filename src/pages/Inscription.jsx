@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate, Link } from 'react-router-dom'
 
@@ -9,7 +9,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Acceptation des termes',
-        texte: 'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et Vetlab Studio.',
+        texte: 'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et VetLab Studio.',
       },
     ],
   },
@@ -19,7 +19,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Utilisation du service',
-        texte: 'ADJUVET est fourni à titre informatif uniquement et ne remplace pas le jugement clinique d\'un vétérinaire. Il revient à l\'utilisateur de vérifier toute dose ou valeur calculée avant de l\'utiliser. Vetlab Studio décline toute responsabilité pour les décisions thérapeutiques prises à partir de l\'application, dans les limites permises par la loi.',
+        texte: 'ADJUVET est fourni à titre strictement informatif et éducatif. Il ne constitue pas un avis médical vétérinaire et ne remplace en aucun cas le jugement clinique d\'un médecin vétérinaire. VetLab Studio décline toute responsabilité pour les erreurs, omissions, inexactitudes ou défaillances techniques pouvant affecter les informations présentées dans l\'application. L\'utilisateur reconnaît assumer l\'entière responsabilité de toute décision clinique ou thérapeutique prise à partir des données de l\'application, et exonère expressément VetLab Studio de toute responsabilité en cas de préjudice, incluant toute erreur de traitement médical, résultant de son utilisation.',
       },
     ],
   },
@@ -29,7 +29,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Abonnement et facturation',
-        texte: 'Le forfait Pro est un abonnement mensuel ou annuel géré par Stripe, renouvelé automatiquement. Vous pouvez l\'annuler en tout temps depuis la page Profil; l\'accès reste actif jusqu\'à la fin de la période payée. Sous réserve de la loi applicable, aucun remboursement n\'est offert pour une période partiellement utilisée.',
+        texte: 'Le forfait Pro est un abonnement payant - mensuel ou annuel - géré via Stripe. Vous pouvez gérer ou annuler votre abonnement à tout moment depuis la page Profil. Aucun remboursement n\'est offert pour les périodes partiellement utilisées.',
       },
     ],
   },
@@ -39,7 +39,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Modifications',
-        texte: 'Ces conditions peuvent être mises à jour. Les changements importants vous seront communiqués par courriel. Pour toute question: info@vetlabstudio.ca.',
+        texte: 'Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants vous seront communiqués par courriel. En continuant à utiliser ADJUVET après une mise à jour, vous acceptez les nouvelles conditions. Pour toute question, contactez-nous à info@vetlabstudio.ca.',
       },
     ],
   },
@@ -56,8 +56,7 @@ export default function Inscription() {
   const [etapeCgu, setEtapeCgu] = useState(null)
   const [voirMdp, setVoirMdp] = useState(false)
   const [voirConfirm, setVoirConfirm] = useState(false)
-  const touchStartX = useRef(null)
-  const directionCgu = useRef('next')
+  const [logoSrc] = useState(() => `/adjuvet-logo-anime.svg?v=${Date.now()}`)
   const navigate = useNavigate()
 
   const handleInscription = (e) => {
@@ -70,24 +69,12 @@ export default function Inscription() {
     setEtapeCgu(0)
   }
 
-  const handleSwipeStart = (e) => {
-    touchStartX.current = e.touches[0].clientX
-  }
-
-  const handleSwipeEnd = (e) => {
-    if (touchStartX.current === null) return
-    const delta = e.changedTouches[0].clientX - touchStartX.current
-    touchStartX.current = null
-    if (delta < -50 && etapeCgu < CGU_PAGES.length - 1) {
-      directionCgu.current = 'next'
+  const handleValider = async () => {
+    if (etapeCgu < CGU_PAGES.length - 1) {
       setEtapeCgu(e => e + 1)
-    } else if (delta > 50 && etapeCgu > 0) {
-      directionCgu.current = 'prev'
-      setEtapeCgu(e => e - 1)
+      return
     }
-  }
 
-  const handleAccepter = async () => {
     setChargement(true)
     const { error } = await supabase.auth.signUp({
       email,
@@ -103,7 +90,6 @@ export default function Inscription() {
     }
     setChargement(false)
   }
-
 
   if (succes) {
     return (
@@ -124,44 +110,36 @@ export default function Inscription() {
 
   if (etapeCgu !== null) {
     const { fond, animal, sections } = CGU_PAGES[etapeCgu]
-    const estDernier = etapeCgu === CGU_PAGES.length - 1
     return (
-      <div
-        className="cgu-page"
-        style={{ backgroundImage: `url('${fond}')` }}
-        onTouchStart={handleSwipeStart}
-        onTouchEnd={handleSwipeEnd}
-      >
-        <div key={etapeCgu} className={`cgu-slide-wrap cgu-slide-${directionCgu.current}`}>
-          <div className="cgu-contenu">
-            <img src="/icone-logo-bleu.svg" alt="" className="cgu-icone" />
-            <h1 className="cgu-titre">Conditions d'utilisations</h1>
-            <div className="cgu-sections">
-              {sections.map((s, i) => (
-                <div key={i} className="cgu-section">
-                  <p className="cgu-section-titre">{s.titre}</p>
-                  <p className="cgu-section-texte">{s.texte}</p>
-                </div>
-              ))}
-            </div>
-            {estDernier && (
-              <button className="cgu-btn" onClick={handleAccepter} disabled={chargement}>
-                {chargement ? 'Création...' : "J'accepte"}
+      <div className="cgu-page" style={{ backgroundImage: `url('${fond}')` }}>
+        <div className="cgu-contenu">
+          <img src="/icone-logo-bleu.svg" alt="" className="cgu-icone" />
+          <h1 className="cgu-titre">Conditions d'utilisations</h1>
+          <div className="cgu-sections">
+            {sections.map((s, i) => (
+              <div key={i} className="cgu-section">
+                <p className="cgu-section-titre">{s.titre}</p>
+                <p className="cgu-section-texte">{s.texte}</p>
+              </div>
+            ))}
+          </div>
+          <button className="cgu-btn" onClick={handleValider} disabled={chargement}>
+            {chargement ? 'Création...' : etapeCgu < CGU_PAGES.length - 1 ? 'Valider' : "J'accepte et je crée mon compte"}
+          </button>
+          <div className="cgu-dots">
+            {CGU_PAGES.map((_, i) => (
+              <button
+                key={i}
+                className={`cgu-dot${i === etapeCgu ? ' actif' : ''}`}
+                onClick={() => i < etapeCgu && setEtapeCgu(i)}
+              >
+                {i + 1}
               </button>
-            )}
-            <div className="cgu-dots">
-              {CGU_PAGES.map((_, i) => (
-                <button
-                  key={i}
-                  className={`cgu-dot${i === etapeCgu ? ' actif' : ''}`}
-                  onClick={() => { directionCgu.current = i > etapeCgu ? 'next' : 'prev'; setEtapeCgu(i) }}
-                ></button>
-              ))}
-            </div>
+            ))}
           </div>
-          <div className="cgu-photo">
-            <img src={animal} alt="" />
-          </div>
+        </div>
+        <div className="cgu-photo">
+          <img src={animal} alt="" />
         </div>
       </div>
     )
@@ -171,7 +149,7 @@ export default function Inscription() {
     <div className="auth2-page">
       <div className="auth2-contenu">
         <div className="auth2-logo-zone">
-          <img src="/adjuvet-logo-anime.svg" alt="adjuvet" className="auth2-logo" />
+          <img src={logoSrc} alt="adjuvet" className="auth2-logo" />
           <p className="auth2-tagline">Copilote en santé animale</p>
         </div>
 
