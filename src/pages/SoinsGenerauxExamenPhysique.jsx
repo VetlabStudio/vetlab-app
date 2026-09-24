@@ -128,10 +128,10 @@ const ESPECES = [
 
 const SECTIONS = [
   { id: 'identification', titre: 'Identification',    icone: 'ti-clipboard-text' },
+  { id: 'anamnese',       titre: 'Anamnèse',          icone: 'ti-message-circle', facultatif: true },
   { id: 'vitaux',         titre: 'Paramètres vitaux', icone: 'ti-heartbeat' },
   { id: 'general',        titre: 'État général',      icone: 'ti-paw' },
   { id: 'systemes',       titre: 'Systèmes',          icone: 'ti-stethoscope' },
-  { id: 'anamnese',       titre: 'Anamnèse',          icone: 'ti-message-circle', facultatif: true },
   { id: 'complements',    titre: 'Compléments',       icone: 'ti-notes',          facultatif: true },
 ]
 
@@ -203,6 +203,34 @@ function normaliserDonnees(donnees) {
 const MAX_HISTORIQUE = 30
 
 /* ─── SOUS-COMPOSANTS ───────────────────────────────────── */
+
+/* Le conteneur qui défile n'est pas toujours la fenêtre : on le
+   cherche, puis on retranche la hauteur du header collant pour que
+   le bloc arrive juste en dessous et non derrière. */
+function conteneurDeScroll(el) {
+  let parent = el.parentElement
+  while (parent) {
+    const overflow = getComputedStyle(parent).overflowY
+    if ((overflow === 'auto' || overflow === 'scroll') && parent.scrollHeight > parent.clientHeight) return parent
+    parent = parent.parentElement
+  }
+  return null
+}
+
+function scrollVersSection(id) {
+  const el = document.getElementById(`section-${id}`)
+  if (!el) return
+  const header = document.querySelector('.header')
+  const marge = (header?.offsetHeight || 0) + 8
+  const conteneur = conteneurDeScroll(el)
+  if (conteneur) {
+    const haut = el.getBoundingClientRect().top - conteneur.getBoundingClientRect().top + conteneur.scrollTop
+    conteneur.scrollTo({ top: Math.max(haut - marge, 0), behavior: 'smooth' })
+  } else {
+    const haut = el.getBoundingClientRect().top + window.scrollY
+    window.scrollTo({ top: Math.max(haut - marge, 0), behavior: 'smooth' })
+  }
+}
 
 function SectionAccordeon({ titre, icone, resume, etat, ouvert, onToggle, children, ancre }) {
   return (
@@ -313,6 +341,7 @@ export default function SoinsGenerauxExamenPhysique() {
   const [joursOuverts, setJoursOuverts] = useState(() => new Set())
   const [sectionOuverte, setSectionOuverte] = useState('identification')
   const [systemeOuvert, setSystemeOuvert] = useState(null)
+  const [scrollCible, setScrollCible] = useState(null)
   const [sauvegarde, setSauvegarde] = useState('idle') // 'idle' | 'encours' | 'ok'
   const { setTitreCustom } = useContext(TitreContext)
   const { estEquipe, teamId } = useProfil()
@@ -334,6 +363,18 @@ export default function SoinsGenerauxExamenPhysique() {
     ro.observe(nav)
     return () => ro.disconnect()
   }, [])
+
+  /* ─── Défilement après ouverture d'une section ───────── */
+  useEffect(() => {
+    if (!scrollCible) return
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scrollVersSection(scrollCible)
+        setScrollCible(null)
+      })
+    })
+    return () => cancelAnimationFrame(id)
+  }, [scrollCible])
 
   /* ─── Sauvegarde automatique du brouillon ────────────── */
   useEffect(() => {
@@ -547,11 +588,12 @@ export default function SoinsGenerauxExamenPhysique() {
   }
 
   function ouvrirSection(id) {
-    setSectionOuverte(prev => (prev === id ? null : id))
-    setTimeout(() => {
-      const el = document.getElementById(`section-${id}`)
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 60)
+    let ouverture = false
+    setSectionOuverte(prev => {
+      ouverture = prev !== id
+      return prev === id ? null : id
+    })
+    setScrollCible(ouverture ? id : null)
   }
 
   function allerA(sectionId) {
@@ -561,10 +603,7 @@ export default function SoinsGenerauxExamenPhysique() {
       const premier = SYSTEMES.find(s => !estEvalue(form.systemes[s.id]))
       setSystemeOuvert(premier ? premier.id : null)
     }
-    setTimeout(() => {
-      const el = document.getElementById(`section-${sectionId}`)
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 80)
+    setScrollCible(sectionId)
   }
 
   /* ─── Plages physiologiques ──────────────────────────── */
@@ -618,6 +657,16 @@ export default function SoinsGenerauxExamenPhysique() {
     lignes.push(`Date : ${dateAffichee}`)
     lignes.push(`Raison de la visite : ${form.raisonVisite?.trim() || '—'}`)
     lignes.push('')
+    lignes.push('Anamnèse :')
+    lignes.push(`- Appétit : ${form.anamnese.appetit || '—'}`)
+    lignes.push(`- Soif : ${form.anamnese.soif || '—'}`)
+    lignes.push(`- Exercice : ${form.anamnese.exercice || '—'}`)
+    lignes.push(`- Diète : ${form.anamnese.diete?.trim() || '—'}`)
+    lignes.push(`- Gâteries : ${form.anamnese.gateries?.trim() || '—'}`)
+    lignes.push('')
+    lignes.push('Commentaires du propriétaire :')
+    lignes.push(form.anamnese.commentaires?.trim() || '—')
+    lignes.push('')
     lignes.push('Paramètres vitaux :')
     lignes.push(`- Température : ${form.temperature ? form.temperature + ' °C' : '—'}`)
     lignes.push(`- Fréquence cardiaque : ${form.freqCardiaque ? form.freqCardiaque + ' bpm' : '—'}`)
@@ -633,16 +682,6 @@ export default function SoinsGenerauxExamenPhysique() {
     SYSTEMES.forEach(s => {
       lignes.push(`- ${s.titre} : ${texteSysteme(form.systemes[s.id])}`)
     })
-    lignes.push('')
-    lignes.push('Anamnèse :')
-    lignes.push(`- Appétit : ${form.anamnese.appetit || '—'}`)
-    lignes.push(`- Soif : ${form.anamnese.soif || '—'}`)
-    lignes.push(`- Exercice : ${form.anamnese.exercice || '—'}`)
-    lignes.push(`- Diète : ${form.anamnese.diete?.trim() || '—'}`)
-    lignes.push(`- Gâteries : ${form.anamnese.gateries?.trim() || '—'}`)
-    lignes.push('')
-    lignes.push('Commentaires du propriétaire :')
-    lignes.push(form.anamnese.commentaires?.trim() || '—')
 
     const c = form.complements
     const aDesComplements = c.micropuce || [c.vaccination, c.parasitaire, c.scoreMusculaire, c.pressionArterielle, c.analyseUrine, c.autresDiagnostics].some(v => String(v || '').trim())
@@ -709,17 +748,6 @@ export default function SoinsGenerauxExamenPhysique() {
       y += 6 * lignesSplit.length
     })
 
-    y += 2
-    autoTable(doc, {
-      startY: y,
-      head: [['Système', 'Observation']],
-      body: SYSTEMES.map(s => [s.titre, texteSystemePdf(donneesPdf.systemes?.[s.id])]),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [37, 77, 86] },
-      margin: { left: 14, right: 14 },
-    })
-    y = doc.lastAutoTable.finalY + 6
-
     const a = donneesPdf.anamnese || {}
     const lignesAnamnese = [
       a.appetit ? `Appétit : ${a.appetit}` : null,
@@ -743,6 +771,17 @@ export default function SoinsGenerauxExamenPhysique() {
       doc.text(texte, 14, y)
       y += 6 * texte.length
     }
+
+    y += 2
+    autoTable(doc, {
+      startY: y,
+      head: [['Système', 'Observation']],
+      body: SYSTEMES.map(s => [s.titre, texteSystemePdf(donneesPdf.systemes?.[s.id])]),
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [37, 77, 86] },
+      margin: { left: 14, right: 14 },
+    })
+    y = doc.lastAutoTable.finalY + 6
 
     const c = donneesPdf.complements || {}
     const lignesComplements = [
@@ -1275,6 +1314,78 @@ export default function SoinsGenerauxExamenPhysique() {
             />
           </div>
 
+          <button className="examen-suivant" onClick={() => ouvrirSection('anamnese')}>
+            Suivant : anamnèse <i className="ti ti-arrow-right"></i>
+          </button>
+        </SectionAccordeon>
+
+        {/* ═══ ANAMNÈSE ═══ */}
+        <SectionAccordeon
+          ancre="section-anamnese"
+          titre="Anamnèse"
+          icone="ti-message-circle"
+          resume={resumeSection('anamnese')}
+          etat={etatSection('anamnese')}
+          ouvert={sectionOuverte === 'anamnese'}
+          onToggle={() => ouvrirSection('anamnese')}
+        >
+          <p className="examen-aide">Rapporté par le propriétaire, avant l'examen.</p>
+
+          {[
+            { champ: 'appetit', label: 'Appétit', options: APPETIT_OPTIONS },
+            { champ: 'soif', label: 'Soif', options: SOIF_OPTIONS },
+            { champ: 'exercice', label: 'Exercice', options: EXERCICE_OPTIONS },
+          ].map(({ champ, label, options }) => (
+            <div className="form-groupe" key={champ}>
+              <label className="form-label">{label}</label>
+              <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
+                {options.map(opt => (
+                  <button
+                    key={opt}
+                    type="button"
+                    className={`toggle-btn ${form.anamnese[champ] === opt ? 'actif' : ''}`}
+                    onClick={() => modifierAnamnese(champ, form.anamnese[champ] === opt ? '' : opt)}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <div className="form-groupe">
+            <label className="form-label">Diète</label>
+            <input
+              type="text"
+              className="form-input"
+              value={form.anamnese.diete}
+              onChange={e => modifierAnamnese('diete', e.target.value)}
+              placeholder="Marque, type, quantité par jour..."
+            />
+          </div>
+
+          <div className="form-groupe">
+            <label className="form-label">Gâteries</label>
+            <input
+              type="text"
+              className="form-input"
+              value={form.anamnese.gateries}
+              onChange={e => modifierAnamnese('gateries', e.target.value)}
+              placeholder="Type et fréquence..."
+            />
+          </div>
+
+          <div className="form-groupe">
+            <label className="form-label">Commentaires du propriétaire</label>
+            <textarea
+              className="form-textarea"
+              rows={3}
+              placeholder="Ex. : le propriétaire mentionne que l'animal a moins d'appétit depuis 2 jours..."
+              value={form.anamnese.commentaires}
+              onChange={e => modifierAnamnese('commentaires', e.target.value)}
+            />
+          </div>
+
           <button className="examen-suivant" onClick={() => ouvrirSection('vitaux')}>
             Suivant : paramètres vitaux <i className="ti ti-arrow-right"></i>
           </button>
@@ -1423,78 +1534,6 @@ export default function SoinsGenerauxExamenPhysique() {
                 onNote={note => modifierNote(s.id, note)}
               />
             ))}
-          </div>
-
-          <button className="examen-suivant" onClick={() => ouvrirSection('anamnese')}>
-            Suivant : anamnèse <i className="ti ti-arrow-right"></i>
-          </button>
-        </SectionAccordeon>
-
-        {/* ═══ ANAMNÈSE ═══ */}
-        <SectionAccordeon
-          ancre="section-anamnese"
-          titre="Anamnèse"
-          icone="ti-message-circle"
-          resume={resumeSection('anamnese')}
-          etat={etatSection('anamnese')}
-          ouvert={sectionOuverte === 'anamnese'}
-          onToggle={() => ouvrirSection('anamnese')}
-        >
-          <p className="examen-aide">Rapporté par le propriétaire.</p>
-
-          {[
-            { champ: 'appetit', label: 'Appétit', options: APPETIT_OPTIONS },
-            { champ: 'soif', label: 'Soif', options: SOIF_OPTIONS },
-            { champ: 'exercice', label: 'Exercice', options: EXERCICE_OPTIONS },
-          ].map(({ champ, label, options }) => (
-            <div className="form-groupe" key={champ}>
-              <label className="form-label">{label}</label>
-              <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
-                {options.map(opt => (
-                  <button
-                    key={opt}
-                    type="button"
-                    className={`toggle-btn ${form.anamnese[champ] === opt ? 'actif' : ''}`}
-                    onClick={() => modifierAnamnese(champ, form.anamnese[champ] === opt ? '' : opt)}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-
-          <div className="form-groupe">
-            <label className="form-label">Diète</label>
-            <input
-              type="text"
-              className="form-input"
-              value={form.anamnese.diete}
-              onChange={e => modifierAnamnese('diete', e.target.value)}
-              placeholder="Marque, type, quantité par jour..."
-            />
-          </div>
-
-          <div className="form-groupe">
-            <label className="form-label">Gâteries</label>
-            <input
-              type="text"
-              className="form-input"
-              value={form.anamnese.gateries}
-              onChange={e => modifierAnamnese('gateries', e.target.value)}
-              placeholder="Type et fréquence..."
-            />
-          </div>
-
-          <div className="form-groupe">
-            <label className="form-label">Commentaires du propriétaire</label>
-            <textarea
-              className="form-textarea"
-              rows={3}
-              placeholder="Ex. : le propriétaire mentionne que l'animal a moins d'appétit depuis 2 jours..."
-              value={form.anamnese.commentaires}
-              onChange={e => modifierAnamnese('commentaires', e.target.value)}
-            />
           </div>
 
           <button className="examen-suivant" onClick={() => ouvrirSection('complements')}>
