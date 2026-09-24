@@ -22,6 +22,7 @@
 
 /* ─── VARIABLES DE MARQUE ─────────────────────── */
 :root {
+  --accent-red:     #BCAADC;
   --primary:        #213058;
   --primary-light:  #BBE6D5;
   --yellow:         #F8F6B8;
@@ -33,9 +34,9 @@
   --text-secondary: #213058;
   --text-hint:      rgba(33, 48, 88, 0.45);
   --font:           'Gilroy', system-ui, sans-serif;
-  --radius-sm:      6px;
-  --radius-md:      6px;
-  --radius-lg:      6px;
+  --radius-sm:      22px;
+  --radius-md:      22px;
+  --radius-lg:      22px;
   --radius-pill:    999px;
   --champ-bg:       white;
   --champ-border:   rgba(33, 48, 88, 0.15);
@@ -57,7 +58,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1 { font-size: 22px; font-weight: 700; color: var(--text-primary); font-family: 'Gilroy', Georgia, serif; }
+h1 { font-size: 28px; font-weight: 700; color: var(--text-primary); font-family: 'Gilroy', Georgia, serif; }
 h2 { font-size: 16px; font-weight: 600; color: var(--primary); font-family: 'Gilroy', Georgia, serif; }
 h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 
@@ -68,7 +69,7 @@ input  { font-family: var(--font); }
 .header {
   background: var(--bg);
   color: var(--text-primary);
-  padding: 16px 1rem;
+  padding: 30px 1rem;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -93,6 +94,12 @@ input  { font-family: var(--font); }
   padding: 0;
   cursor: pointer;
 }
+.ti-arrow-left:before {
+    content: "\ea19";
+    background: var(--primary);
+    color: white;
+    padding: 10px;
+    border-radius: 30px;  }
 
 /* ─── LAYOUT PRINCIPAL ────────────────────────── */
 .app-layout {
@@ -264,10 +271,10 @@ input  { font-family: var(--font); }
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: right;
   gap: 10px;
   width: 100%;
-  padding: 16px 20px;
+  padding: 16px 32px;
   margin-bottom: 16px;
   border: none;
   border-radius: 99px;
@@ -303,7 +310,7 @@ input  { font-family: var(--font); }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 0px;
   cursor: pointer;
   transition: transform 0.1s, box-shadow 0.1s;
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
@@ -1203,8 +1210,9 @@ input  { font-family: var(--font); }
 .toggle-slider {
   width: 52px;
   height: 28px;
-  background: var(--border);
+  background: var(--primary-light);
   border-radius: var(--radius-pill);
+  border:none;
   cursor: pointer;
   position: relative;
   transition: background 0.25s;
@@ -2884,7 +2892,7 @@ input[type="number"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: var(--bg-secondary);
+  background: white;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 12px 16px;
@@ -3127,11 +3135,11 @@ input[type="number"] {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  background: var(--primary);
+  background: var(--primary-light);
   border: none;
   padding: 14px 20px;
   font-family: var(--font);
-  color: #fff;
+  color: var(--font);
   text-align: left;
   box-shadow: 0 -4px 16px rgba(33, 48, 88, 0.18);
 }
@@ -3289,6 +3297,45 @@ input[type="number"] {
   width: 100%;
   outline: none;
   cursor: pointer;
+}
+/* ─── PROVENANCE (page CRI) ─────────────────────────────── */
+.cri-provenance {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--primary-light);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.cri-provenance > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.35;
+}
+
+.cri-provenance i {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.cri-provenance button {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 /* ─── PAGE CONVERSION ────────────────────────── */
 .conversion-section-titre {
@@ -4203,13 +4250,13 @@ input[type="number"] {
 }
 
 .labo-btn-primary {
-  padding: 10px 18px;
+  padding: 18px 18px;
   background: var(--primary);
   color: white;
   border: none;
   border-radius: var(--radius-pill);
   font-family: var(--font);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -4257,7 +4304,7 @@ input[type="number"] {
   padding: 14px;
   background: var(--accent-red);
   border: none;
-  border-radius: 10px;
+  border-radius: 90px;
   font-family: var(--font);
   font-size: 15px;
   font-weight: 700;
@@ -6628,6 +6675,493 @@ input[type="number"] {
 
 .douleur-btn-reinit:active {
   background: var(--bg);
+}
+/* ═══════════════════════════════════════════════════════════
+   EXAMEN PHYSIQUE, structure en accordéon
+   À ajouter à index.css. Aucune règle existante n'est
+   remplacée, sauf .examen-systeme (l'ancien bloc par système)
+   qui n'est plus utilisé.
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* valeur de repli, remplacée à l'exécution par la hauteur
+     réelle de la navigation du bas */
+  --examen-nav-h: 66px;
+}
+
+.examen-page {
+  padding-bottom: calc(var(--examen-nav-h) + 96px);
+}
+
+/* ─── BARRE DU HAUT ─────────────────────────────────────── */
+.examen-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.examen-retour {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 6px 0;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.examen-retour i {
+  font-size: 16px;
+}
+
+.examen-sauvegarde {
+  flex: 1;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-hint);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.examen-sauvegarde.encours,
+.examen-sauvegarde.ok {
+  opacity: 1;
+}
+
+.examen-reset {
+  background: none;
+  border: none;
+  padding: 6px;
+  color: var(--text-hint);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+/* ─── SECTIONS EN ACCORDÉON ─────────────────────────────── */
+.examen-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.examen-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.examen-section.ouvert {
+  border-color: var(--primary);
+}
+
+.examen-section-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  padding: 14px 16px;
+  font-family: var(--font);
+  text-align: left;
+}
+
+.examen-section-pastille {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  background: var(--bg-secondary);
+  color: var(--text-hint);
+}
+
+.examen-section-pastille.partiel {
+  background: rgba(33, 48, 88, 0.1);
+  color: var(--primary);
+}
+
+.examen-section-pastille.complet {
+  background: var(--primary);
+  color: #fff;
+}
+
+.examen-section-textes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.examen-section-titre {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.examen-section-resume {
+  font-size: 12px;
+  color: var(--text-hint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.examen-section-chevron {
+  font-size: 18px;
+  color: var(--text-hint);
+  flex-shrink: 0;
+}
+
+.examen-section-contenu {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 16px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.examen-suivant {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg-secondary);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 12px 18px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.examen-aide {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-hint);
+  margin: 0;
+}
+
+/* ─── ESPÈCES RAPIDES ───────────────────────────────────── */
+.examen-especes-rapides {
+  display: flex;
+  gap: 8px;
+}
+
+.examen-espece-btn {
+  flex: 1;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.examen-espece-btn img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.examen-espece-btn.actif {
+  border-color: var(--primary);
+  border-width: 2px;
+  background: white;
+}
+
+/* ─── PLAGES PHYSIOLOGIQUES ─────────────────────────────── */
+.examen-plage {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-hint);
+  margin: 0;
+}
+
+.examen-plage.hors {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--primary);
+  font-weight: 600;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+}
+
+.examen-plage.hors i {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ─── SCORE DE CONDITION CORPORELLE ─────────────────────── */
+.examen-bcs {
+  display: flex;
+  gap: 6px;
+}
+
+.examen-bcs-btn {
+  flex: 1;
+  min-height: 44px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.examen-bcs-btn.actif {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* ─── LIGNES DE SYSTÈME ─────────────────────────────────── */
+.examen-lignes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.examen-ligne {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-family: var(--font);
+  text-align: left;
+}
+
+.examen-ligne-pastille {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: transparent;
+}
+
+.examen-ligne-pastille.normal {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.examen-ligne-pastille.anormal {
+  background: var(--yellow);
+  border-color: var(--accent-gold, #D4AF37);
+  color: var(--text-primary);
+}
+
+.examen-ligne-textes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.examen-ligne-titre {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.examen-ligne-resume {
+  font-size: 12px;
+  color: var(--text-hint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.examen-ligne-chevron {
+  font-size: 16px;
+  color: var(--text-hint);
+  flex-shrink: 0;
+}
+
+.examen-ligne-ouverte {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.examen-ligne-entete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.examen-ligne-entete .examen-systeme-icone {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+/* ─── CONSTATS ──────────────────────────────────────────── */
+.examen-constats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.examen-constat {
+  min-height: 40px;
+  padding: 9px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.examen-constat.actif {
+  background: var(--yellow);
+  border-color: var(--accent-gold, #D4AF37);
+}
+
+.examen-constat.normal {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.examen-constat.normal.actif {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* ─── BARRE COLLANTE ────────────────────────────────────── */
+.examen-barre {
+  position: fixed;
+  bottom: var(--examen-nav-h);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+  box-shadow: 0 -4px 16px rgba(33, 48, 88, 0.1);
+}
+
+.examen-barre-progression {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.examen-barre-jauge {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.examen-barre-remplissage {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 99px;
+  transition: width 0.25s;
+}
+
+.examen-barre-texte {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-hint);
+}
+
+.examen-barre-btn {
+  flex-shrink: 0;
+  padding: 12px 24px;
+  background: var(--bg-secondary);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-hint);
+}
+
+.examen-barre-btn.complet {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* ─── LISTE DES ÉLÉMENTS MANQUANTS ──────────────────────── */
+.examen-manquants {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.examen-manquant {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--bg-secondary);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.examen-manquant i {
+  font-size: 16px;
+  color: var(--text-hint);
+  flex-shrink: 0;
 }
 /* ─── STRIPE CHECKOUT ────────────────────────── */
 
