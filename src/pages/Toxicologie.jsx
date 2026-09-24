@@ -866,11 +866,14 @@ export default function Toxicologie() {
                 key={i}
                 className="labo-etape-card"
                 onClick={() => setSelectionne(t)}
-                style={{ textAlign: 'left', padding: '12px 14px', width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer' }}
+                style={{ textAlign: 'left', padding: '12px 14px', width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}
               >
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', display: 'block' }}>{t.nom}</span>
-                <span style={{ fontSize: 12, color: couleurToxicite(t.toxicite), fontWeight: 600, marginTop: 4, display: 'block' }}>{t.toxicite}</span>
-                <div style={{ marginTop: 6 }}><IconesEspeces especes={t.especes} /></div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', display: 'block' }}>{t.nom}</span>
+                  <span style={{ fontSize: 12, color: couleurToxicite(t.toxicite), fontWeight: 600, marginTop: 4, display: 'block' }}>{t.toxicite}</span>
+                  <div style={{ marginTop: 6 }}><IconesEspeces especes={t.especes} /></div>
+                </div>
+                <i className="ti ti-chevron-right" style={{ fontSize: 16, color: 'var(--text-hint)', flexShrink: 0 }}></i>
               </button>
             ))}
           </div>
@@ -887,12 +890,13 @@ export default function Toxicologie() {
                 style={{ textAlign: 'left', padding: '12px 14px', width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
               >
                 <i className={`ti ${item.icone}`} style={{ fontSize: 22, color: 'var(--primary)', flexShrink: 0 }}></i>
-                <div>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', display: 'block' }}>{item.intoxication}</span>
                   <span style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 2, display: 'block' }}>
                     {item.antidotes.length} antidote{item.antidotes.length > 1 ? 's' : ''}
                   </span>
                 </div>
+                <i className="ti ti-chevron-right" style={{ fontSize: 16, color: 'var(--text-hint)', flexShrink: 0 }}></i>
               </button>
             ))}
           </div>

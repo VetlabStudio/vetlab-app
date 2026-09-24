@@ -6415,6 +6415,14 @@ input[type="number"] {
   flex-direction: column;
   justify-content: center;
 }
+.toxico-plante-card::after {
+  content: '\203A';
+  font-size: 22px;
+  color: var(--text-hint);
+  padding-right: 14px;
+  align-self: center;
+  flex-shrink: 0;
+}
 /* ─── PAGE ABONNEMENT ───────────────────────── */
 .abonnement-page {
   display: flex;

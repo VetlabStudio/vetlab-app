@@ -39,16 +39,23 @@ export function ProfilProvider({ children }) {
       return
     }
 
-    let { data: profilData } = await supabase
+    let { data: profilData, error: profilError } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
       .single()
 
+    if (profilError && profilError.code !== 'PGRST116') {
+      // Erreur réseau ou RLS - ne pas toucher au profil existant
+      setChargement(false)
+      return
+    }
+
     if (!profilData) {
+      // Profil vraiment absent - création initiale seulement
       const { data: nouveauProfil } = await supabase
         .from('profiles')
-        .upsert({ id: user.id, plan: 'free', email: user.email }, { onConflict: 'id' })
+        .insert({ id: user.id, plan: 'free', email: user.email })
         .select('*')
         .single()
       profilData = nouveauProfil
