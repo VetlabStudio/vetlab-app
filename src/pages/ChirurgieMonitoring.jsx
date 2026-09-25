@@ -6,7 +6,7 @@ import IconesEspeces, { ESPECES_CONFIG } from '../components/IconesEspeces'
 import {
   COULEUR_PRIMAIRE, COULEUR_ROUGE, creerDocument, bandeauPatient, sectionGrille,
   titreSection, tableau, dureeEntre, finaliser, ouvrir,
-} from '../lib/pdfAdjuvet'
+} from '../lib/pdfadjuvet'
 
 const ESPECES = [
   { id: 'chien',        label: 'Chien',              icone: '/icone-chien.svg' },

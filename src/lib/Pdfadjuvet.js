@@ -85,40 +85,67 @@ export async function chargerSvgEnPng(url, largeurPx = 360) {
   }
 }
 
+function mesurerImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => resolve(image)
+    image.onerror = reject
+    image.src = src
+  })
+}
+
 /* Charge n'importe quelle image (SVG, PNG, JPG) en dataURL.
-   On passe par fetch plutôt que par une balise img distante,
-   ce qui évite les problèmes de canvas contaminé. */
+   Trois stratégies successives, parce qu'un hébergement distant
+   peut refuser l'une ou l'autre selon ses entêtes CORS :
+   1. fetch et lecture du blob, la plus propre ;
+   2. balise img en mode anonyme, puis canvas ;
+   3. balise img sans CORS, qui échouera à l'export si le canvas
+      est contaminé, mais qui passe sur certains hébergements. */
 export async function chargerImage(url) {
-  console.log('[logo] url reçue :', url)
   if (!url) return null
-  if (/\.svg(\?|$)/i.test(url)) {
-    const resultat = await chargerSvgEnPng(url, 600)
-    console.log('[logo] branche SVG →', resultat ? 'ok' : 'échec')
-    return resultat
-  }
+  if (/\.svg(\?|$)/i.test(url)) return chargerSvgEnPng(url, 600)
+
+  // 1. fetch
   try {
-    const res = await fetch(url)
-    console.log('[logo] fetch', res.status, res.headers.get('content-type'))
-    if (!res.ok) return null
-    const blob = await res.blob()
-    const dataUrl = await new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onloadend = () => resolve(reader.result)
-      reader.onerror = reject
-      reader.readAsDataURL(blob)
-    })
-    const img = await new Promise((resolve, reject) => {
-      const image = new Image()
-      image.onload = () => resolve(image)
-      image.onerror = reject
-      image.src = dataUrl
-    })
-    console.log('[logo] image chargée', img.width, 'x', img.height)
-    return { dataUrl, ratio: img.width ? img.height / img.width : 1 }
-  } catch (e) {
-    console.warn('[logo] échec :', e)
-    return null
+    const res = await fetch(url, { mode: 'cors' })
+    if (res.ok) {
+      const blob = await res.blob()
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
+      const img = await mesurerImage(dataUrl)
+      if (img.width) return { dataUrl, ratio: img.height / img.width }
+    }
+  } catch {
+    /* on tente la suite */
   }
+
+  // 2 et 3. balise img, avec puis sans CORS
+  for (const anonyme of [true, false]) {
+    try {
+      const img = await new Promise((resolve, reject) => {
+        const image = new Image()
+        if (anonyme) image.crossOrigin = 'anonymous'
+        image.onload = () => resolve(image)
+        image.onerror = reject
+        image.src = url
+      })
+      if (!img.width) continue
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      canvas.getContext('2d').drawImage(img, 0, 0)
+      return { dataUrl: canvas.toDataURL('image/png'), ratio: img.height / img.width }
+    } catch {
+      /* on tente la suivante */
+    }
+  }
+
+  console.warn('[Adjuvet] Le logo de la clinique n\'a pas pu être chargé, le symbole Adjuvet est utilisé à la place :', url)
+  return null
 }
 
 /* ─── TEXTE ─────────────────────────────────────────────────
@@ -160,7 +187,6 @@ export async function creerDocument({ titre, sousTitre, date, clinique, logoClin
   const symbole = await chargerSvgEnPng('/logo-symbol.svg', 300)
   const logo = await chargerSvgEnPng('/logo-adjuvet.svg', 400)
   const logoDeLaClinique = await chargerImage(logoClinique)
-  console.log('[logo] résultat final :', logoDeLaClinique ? 'logo de clinique utilisé' : 'null, on retombe sur le symbole Adjuvet')
   const largeurPage = doc.internal.pageSize.getWidth()
   const hauteurPage = doc.internal.pageSize.getHeight()
 

@@ -5,7 +5,7 @@ import { useProfil } from '../context/ProfilContext'
 import {
   COULEUR_PRIMAIRE, creerDocument, bandeauPatient, sectionGrille,
   titreSection, tableau, finaliser, ouvrir,
-} from '../lib/pdfAdjuvet'
+} from '../lib/pdfadjuvet'
 
 /* ─── SYSTÈMES, DANS L'ORDRE DE L'EXAMEN ───────────────── */
 const SYSTEMES = [
