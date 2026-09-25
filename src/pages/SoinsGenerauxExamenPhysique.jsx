@@ -2,19 +2,10 @@ import { useState, useEffect, useContext, useMemo, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { TitreContext } from '../App'
 import { useProfil } from '../context/ProfilContext'
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
-
-function chargerImageBase64(url) {
-  return fetch(url)
-    .then(res => res.blob())
-    .then(blob => new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onloadend = () => resolve(reader.result)
-      reader.onerror = reject
-      reader.readAsDataURL(blob)
-    }))
-}
+import {
+  COULEUR_PRIMAIRE, creerDocument, bandeauPatient, sectionGrille,
+  titreSection, tableau, finaliser, ouvrir,
+} from '../lib/pdfAdjuvet'
 
 /* ─── SYSTÈMES, DANS L'ORDRE DE L'EXAMEN ───────────────── */
 const SYSTEMES = [
@@ -342,6 +333,7 @@ export default function SoinsGenerauxExamenPhysique() {
   const [sectionOuverte, setSectionOuverte] = useState('identification')
   const [systemeOuvert, setSystemeOuvert] = useState(null)
   const [scrollCible, setScrollCible] = useState(null)
+  const [clinique, setClinique] = useState({ nom: '', logo: '' })
   const [sauvegarde, setSauvegarde] = useState('idle') // 'idle' | 'encours' | 'ok'
   const { setTitreCustom } = useContext(TitreContext)
   const { estEquipe, teamId } = useProfil()
@@ -400,6 +392,17 @@ export default function SoinsGenerauxExamenPhysique() {
   useEffect(() => {
     chargerHistorique()
   }, [])
+
+  /* Nom et logo de la clinique, pour l'entête des PDF */
+  useEffect(() => {
+    if (!estEquipe || !teamId) return
+    supabase
+      .from('equipes')
+      .select('nom, logo_url')
+      .eq('id', teamId)
+      .single()
+      .then(({ data }) => setClinique({ nom: data?.nom || '', logo: data?.logo_url || '' }))
+  }, [estEquipe, teamId])
 
   async function chargerHistorique() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -716,119 +719,94 @@ export default function SoinsGenerauxExamenPhysique() {
 
   // ─── PDF ──────────────────────
   async function genererPDF(donneesBrutes, dateTexte) {
-    const donneesPdf = normaliserDonnees(donneesBrutes || form)
+    const dp = normaliserDonnees(donneesBrutes || form)
     const dateDoc = dateTexte || dateAffichee
-    const especeLabel = ESPECES.find(e => e.id === donneesPdf.espece)?.label
-    const doc = new jsPDF()
-    let y = 15
-    try {
-      const iconeData = await chargerImageBase64('/preconsult.png')
-      doc.addImage(iconeData, 'PNG', 14, 8, 12, 12)
-      y = 28
-    } catch {
-      y = 15
-    }
-    doc.setFontSize(16)
-    doc.text('Examen physique - Préconsultation', 14, y)
-    y += 8
-    doc.setFontSize(10)
-    const bcs = donneesPdf.conditionCorporelle
-    const infos = [
-      `Animal : ${donneesPdf.animalNom || '—'}`,
-      `Espèce : ${especeLabel || '—'}${donneesPdf.race?.trim() ? '   Race : ' + donneesPdf.race.trim() : ''}   Sexe : ${donneesPdf.sexe === 'femelle' ? 'Femelle' : donneesPdf.sexe === 'male' ? 'Mâle' : '—'}${donneesPdf.sterilise ? ' (stérilisé(e))' : ''}`,
-      `Poids : ${donneesPdf.poids ? donneesPdf.poids + ' ' + (donneesPdf.poidsUnite || 'kg') : '—'}`,
-      `Date : ${dateDoc}${donneesPdf.raisonVisite?.trim() ? '   Raison de la visite : ' + donneesPdf.raisonVisite.trim() : ''}`,
-      `Température : ${donneesPdf.temperature || '—'}   FC : ${donneesPdf.freqCardiaque || '—'}   FR : ${donneesPdf.freqRespiratoire || '—'}`,
-      `Attitude : ${donneesPdf.attitude || '—'}   Énergie : ${donneesPdf.niveauEnergie || '—'}`,
-      `Condition corporelle : ${bcs ? `${bcs}/9 (${BCS_LIBELLES[bcs]})` : '—'}   Comportement : ${donneesPdf.comportement || '—'}`,
-    ]
-    infos.forEach(ligne => {
-      const lignesSplit = doc.splitTextToSize(ligne, 180)
-      doc.text(lignesSplit, 14, y)
-      y += 6 * lignesSplit.length
+    const especeLabel = ESPECES.find(e => e.id === dp.espece)?.label
+    const bcs = dp.conditionCorporelle
+
+    const ctx = await creerDocument({
+      titre: 'Examen physique',
+      sousTitre: 'Préconsultation',
+      date: dateDoc,
+      clinique: clinique.nom,
+      logoClinique: clinique.logo,
     })
 
-    const a = donneesPdf.anamnese || {}
-    const lignesAnamnese = [
-      a.appetit ? `Appétit : ${a.appetit}` : null,
-      a.soif ? `Soif : ${a.soif}` : null,
-      a.exercice ? `Exercice : ${a.exercice}` : null,
-      a.diete?.trim() ? `Diète : ${a.diete.trim()}` : null,
-      a.gateries?.trim() ? `Gâteries : ${a.gateries.trim()}` : null,
-    ].filter(Boolean)
-    if (lignesAnamnese.length) {
-      if (y > 250) { doc.addPage(); y = 15 }
-      doc.setFontSize(10)
-      const texte = doc.splitTextToSize(`Anamnèse : ${lignesAnamnese.join('   ')}`, 180)
-      doc.text(texte, 14, y)
-      y += 6 * texte.length
-    }
+    const sexeTexte = dp.sexe === 'femelle' ? 'Femelle' : dp.sexe === 'male' ? 'Mâle' : null
+    const poidsTexte = dp.poids ? `${dp.poids} ${dp.poidsUnite || 'kg'}` : null
+    bandeauPatient(
+      ctx,
+      dp.animalNom || 'Animal',
+      [especeLabel, dp.race?.trim(), sexeTexte, poidsTexte, dp.raisonVisite?.trim()].filter(Boolean).join(' · ')
+    )
 
-    if (a.commentaires?.trim()) {
-      if (y > 250) { doc.addPage(); y = 15 }
-      doc.setFontSize(10)
-      const texte = doc.splitTextToSize(`Commentaires du propriétaire : ${a.commentaires.trim()}`, 180)
-      doc.text(texte, 14, y)
-      y += 6 * texte.length
-    }
+    sectionGrille(ctx, 'Identification', [
+      ['Espèce', especeLabel],
+      ['Race', dp.race],
+      ['Sexe', sexeTexte ? `${sexeTexte}${dp.sterilise ? ', stérilisé(e)' : ''}` : null],
+      ['Poids', poidsTexte],
+      ['Raison de la visite', dp.raisonVisite],
+      ['Date', dateDoc],
+    ])
 
-    y += 2
-    autoTable(doc, {
-      startY: y,
-      head: [['Système', 'Observation']],
-      body: SYSTEMES.map(s => [s.titre, texteSystemePdf(donneesPdf.systemes?.[s.id])]),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [37, 77, 86] },
-      margin: { left: 14, right: 14 },
+    const a = dp.anamnese || {}
+    sectionGrille(ctx, 'Anamnèse', [
+      ['Appétit', a.appetit],
+      ['Soif', a.soif],
+      ['Exercice', a.exercice],
+      ['Diète', a.diete],
+      ['Gâteries', a.gateries],
+      ['Commentaires', a.commentaires],
+    ])
+
+    sectionGrille(ctx, 'Paramètres vitaux', [
+      ['Température', dp.temperature ? `${dp.temperature} °C` : null],
+      ['Fréq. cardiaque', dp.freqCardiaque ? `${dp.freqCardiaque} bpm` : null],
+      ['Fréq. respiratoire', dp.freqRespiratoire ? `${dp.freqRespiratoire} rpm` : null],
+    ])
+
+    sectionGrille(ctx, 'État général', [
+      ['Attitude', dp.attitude],
+      ["Niveau d'énergie", dp.niveauEnergie],
+      ['Condition corporelle', bcs ? `${bcs} / 9, ${BCS_LIBELLES[bcs]}` : null],
+      ['Comportement', dp.comportement],
+    ])
+
+    const anormaux = SYSTEMES.filter(s => {
+      const v = dp.systemes?.[s.id]
+      return v && !(v.constats || []).includes('Normal') && texteSystemePdf(v) !== '—'
+    }).length
+    titreSection(
+      ctx,
+      'Observation par système',
+      anormaux > 0 ? `${anormaux} système${anormaux > 1 ? 's' : ''} avec anomalie` : 'Aucune anomalie notée',
+      6 * 5.5 + 8
+    )
+    tableau(ctx, {
+      head: ['Système', 'Observation'],
+      body: SYSTEMES.map(s => [s.titre, texteSystemePdf(dp.systemes?.[s.id])]),
+      columnStyles: {
+        0: { cellWidth: 52, fontStyle: 'bold', textColor: COULEUR_PRIMAIRE },
+        1: { cellWidth: 'auto' },
+      },
     })
-    y = doc.lastAutoTable.finalY + 6
 
-    const c = donneesPdf.complements || {}
-    const lignesComplements = [
-      c.vaccination?.trim() ? `Vaccination : ${c.vaccination.trim()}` : null,
-      c.parasitaire?.trim() ? `Parasitaire : ${c.parasitaire.trim()}` : null,
-      c.micropuce ? 'Micropuce vérifiée' : null,
-      c.scoreMusculaire ? `Condition musculaire : ${c.scoreMusculaire}` : null,
-      c.pressionArterielle?.trim() ? `Pression artérielle : ${c.pressionArterielle.trim()}` : null,
-      c.analyseUrine?.trim() ? `Analyse d'urine : ${c.analyseUrine.trim()}` : null,
-      c.autresDiagnostics?.trim() ? `Autres : ${c.autresDiagnostics.trim()}` : null,
-    ].filter(Boolean)
-    if (lignesComplements.length) {
-      if (y > 250) { doc.addPage(); y = 15 }
-      doc.setFontSize(10)
-      const texte = doc.splitTextToSize(`Compléments : ${lignesComplements.join('   ')}`, 180)
-      doc.text(texte, 14, y)
-      y += 6 * texte.length
+    const c = dp.complements || {}
+    const aDesComplements = c.micropuce || [c.vaccination, c.parasitaire, c.scoreMusculaire, c.pressionArterielle, c.analyseUrine, c.autresDiagnostics].some(v => String(v || '').trim())
+    if (aDesComplements) {
+      sectionGrille(ctx, 'Compléments', [
+        ['Vaccination', c.vaccination],
+        ['Contrôle parasitaire', c.parasitaire],
+        ['Micropuce', c.micropuce ? 'Vérifiée' : 'Non vérifiée'],
+        ['Condition musculaire', c.scoreMusculaire],
+        ['Pression artérielle', c.pressionArterielle],
+        ["Analyse d'urine", c.analyseUrine],
+        ['Autres diagnostics', c.autresDiagnostics],
+      ])
     }
 
-    // ─── Pied de page ──────────────────────
-    const pageHeight = doc.internal.pageSize.getHeight()
-    if (y > pageHeight - 25) { doc.addPage(); y = 15 }
-    const yFooter = pageHeight - 14
-    const nbPages = doc.internal.getNumberOfPages()
-    let logoData = null
-    try {
-      logoData = await chargerImageBase64('/logo-adjuvet.png')
-    } catch {
-      logoData = null
-    }
-    for (let p = 1; p <= nbPages; p++) {
-      doc.setPage(p)
-      if (logoData) {
-        doc.addImage(logoData, 'PNG', 14, yFooter - 12, 18, 16)
-        doc.setFontSize(8)
-        doc.setTextColor(150)
-        doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet", 36, yFooter - 2)
-        doc.text('par VetlabStudio, adjuvet.app', 36, yFooter + 3)
-      } else {
-        doc.setFontSize(8)
-        doc.setTextColor(150)
-        doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet par VetlabStudio, adjuvet.app", 14, yFooter)
-      }
-    }
-
-    const url = doc.output('bloburl')
-    window.open(url, '_blank')
+    finaliser(ctx, { sujet: `${dp.animalNom || 'Animal'} · ${dateDoc}` })
+    ouvrir(ctx)
   }
 
   function texteSystemePdf(valeur) {

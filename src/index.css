@@ -40,13 +40,18 @@
   --radius-pill:    999px;
   --champ-bg:       white;
   --champ-border:   rgba(33, 48, 88, 0.15);
+  /* hauteur réelle de la navigation du bas, recalculée à l'exécution */
+  --fluido-nav-h:   66px;
+  --examen-nav-h:   66px;
 }
 
 /* ─── BASE ────────────────────────────────────── */
+
 #root:empty {
   background: #BCAADC;
   min-height: 100vh;
 }
+
 body {
   font-family: var(--font);
   background: var(--bg);
@@ -58,14 +63,37 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1 { font-size: 28px; font-weight: 700; color: var(--text-primary); font-family: 'Gilroy', Georgia, serif; }
-h2 { font-size: 16px; font-weight: 600; color: var(--primary); font-family: 'Gilroy', Georgia, serif; }
-h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Gilroy', Georgia, serif;
+}
 
-button { font-family: var(--font); cursor: pointer; }
-input  { font-family: var(--font); }
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+  font-family: 'Gilroy', Georgia, serif;
+}
+
+h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+button {
+  font-family: var(--font);
+  cursor: pointer;
+}
+
+input {
+  font-family: var(--font);
+}
 
 /* ─── HEADER ──────────────────────────────────── */
+
 .header {
   background: var(--bg);
   color: var(--text-primary);
@@ -94,14 +122,17 @@ input  { font-family: var(--font); }
   padding: 0;
   cursor: pointer;
 }
+
 .ti-arrow-left:before {
-    content: "\ea19";
-    background: var(--primary);
-    color: white;
-    padding: 10px;
-    border-radius: 30px;  }
+  content: "\ea19";
+  background: var(--primary);
+  color: white;
+  padding: 10px;
+  border-radius: 30px;
+}
 
 /* ─── LAYOUT PRINCIPAL ────────────────────────── */
+
 .app-layout {
   display: flex;
   flex-direction: column;
@@ -115,9 +146,8 @@ input  { font-family: var(--font); }
   overflow-y: auto;
 }
 
-
-
 /* ─── NAVIGATION BAS ──────────────────────────── */
+
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -147,10 +177,16 @@ input  { font-family: var(--font); }
   transition: color 0.15s;
 }
 
-.bottom-nav-btn.active { color: #FFFFFF; }
-.bottom-nav-btn i { font-size: 22px; }
+.bottom-nav-btn.active {
+  color: #FFFFFF;
+}
+
+.bottom-nav-btn i {
+  font-size: 22px;
+}
 
 /* ─── BOUTONS ─────────────────────────────────── */
+
 .btn-primary {
   background: var(--primary);
   color: #fff;
@@ -164,8 +200,14 @@ input  { font-family: var(--font); }
   transition: opacity 0.15s;
 }
 
-.btn-primary:hover   { opacity: 0.9; }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .btn-secondary {
   background: var(--bg-card);
@@ -185,6 +227,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── CARDS ───────────────────────────────────── */
+
 .card {
   background: var(--bg-card);
   border: 1.5px solid var(--border);
@@ -208,6 +251,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── HEADER ─────────────────────────────────── */
+
 .accueil-v2-header {
   display: flex;
   align-items: center;
@@ -249,11 +293,9 @@ input  { font-family: var(--font); }
   margin: 2px 0 0 0;
 }
 
-
-
 /* ─── SECTIONS ───────────────────────────────── */
+
 .accueil-v2-section {
-   
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -267,6 +309,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── BOUTON PRÉCONSULTATION ────────────────── */
+
 .accueil-v2-preconsult-btn {
   position: relative;
   display: flex;
@@ -292,6 +335,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── GRILLE CALCULATEURS ────────────────────── */
+
 .accueil-v2-calc-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -342,6 +386,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── GRILLE DROGUES ─────────────────────────── */
+
 .accueil-v2-drogues-grid {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
@@ -374,11 +419,6 @@ input  { font-family: var(--font); }
   background: var(--bg);
 }
 
-
-.accueil-v2-drogue-item:active {
-  background: var(--bg);
-}
-
 .accueil-v2-drogue-item.accent {
   color: var(--accent-red);
 }
@@ -393,6 +433,7 @@ input  { font-family: var(--font); }
   color: var(--text-hint);
   flex-shrink: 0;
 }
+
 .bottom-nav-v2-icone {
   width: 24px;
   height: 24px;
@@ -410,31 +451,38 @@ input  { font-family: var(--font); }
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
 }
+
 @keyframes pageExitToLeft {
   from { transform: translateX(0); }
   to { transform: translateX(-30%); }
 }
+
 @keyframes pageEnterFromLeft {
   from { transform: translateX(-100%); }
   to { transform: translateX(0); }
 }
+
 @keyframes pageExitToRight {
   from { transform: translateX(0); }
   to { transform: translateX(100%); }
 }
+
 .page-enter-forward {
   animation: pageEnterFromRight 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   will-change: transform;
 }
+
 .page-exit-forward {
   animation: pageExitToLeft 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   will-change: transform;
   pointer-events: none;
 }
+
 .page-enter-back {
   animation: pageEnterFromLeft 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   will-change: transform;
 }
+
 .page-exit-back {
   animation: pageExitToRight 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   will-change: transform;
@@ -487,9 +535,21 @@ input  { font-family: var(--font); }
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-.menu-page-badge-plan.gratuit { background: var(--bg-secondary); color: var(--text-hint); }
-.menu-page-badge-plan.pro { background: rgba(37,77,86,0.12); color: var(--primary); }
-.menu-page-badge-plan.equipe { background: rgba(212,175,55,0.15); color: var(--accent-gold); }
+
+.menu-page-badge-plan.gratuit {
+  background: var(--bg-secondary);
+  color: var(--text-hint);
+}
+
+.menu-page-badge-plan.pro {
+  background: rgba(37,77,86,0.12);
+  color: var(--primary);
+}
+
+.menu-page-badge-plan.equipe {
+  background: rgba(212,175,55,0.15);
+  color: var(--accent-gold);
+}
 
 .menu-page-profil-btn {
   margin-left: auto;
@@ -508,11 +568,11 @@ input  { font-family: var(--font); }
 }
 
 .menu-page-section-titre {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--primary);
-    letter-spacing: 0.8px;
-    margin: 0 0 2px 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.8px;
+  margin: 0 0 2px 4px;
 }
 
 .menu-page-section-liste {
@@ -565,6 +625,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── NOTIFICATIONS PAGE ──────────────────────────────────── */
+
 .notifs-page {
   padding: 0;
   height: 100%;
@@ -814,12 +875,14 @@ input  { font-family: var(--font); }
 }
 
 /* Tuile spéciale "Mes drogues" — accent visuel */
+
 .tuile--large:last-child {
   border-color: var(--primary);
   color: var(--primary);
 }
 
 /* ─── ALERTES ─────────────────────────────────── */
+
 .alert-warning {
   background: #FEF2F2;
   border: 1.5px solid #FCA5A5;
@@ -842,6 +905,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── RÉSULTAT CALCUL (design system) ────────── */
+
 .result-box {
   background: #E6EEF0;
   border: 1.5px solid #7AB8C2;
@@ -865,6 +929,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── AUTH ────────────────────────────────────── */
+
 .auth-container {
   min-height: 100vh;
   display: flex;
@@ -925,7 +990,9 @@ input  { font-family: var(--font); }
   text-decoration: none;
 }
 
-.auth-lien a:hover { text-decoration: underline; }
+.auth-lien a:hover {
+  text-decoration: underline;
+}
 
 .succes-icone {
   font-size: 3rem;
@@ -940,6 +1007,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── CHAMPS FORMULAIRE ───────────────────────── */
+
 .champ {
   display: flex;
   flex-direction: column;
@@ -955,6 +1023,7 @@ input  { font-family: var(--font); }
 }
 
 /* Auth : labels plus petits */
+
 .auth-form .champ label {
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -964,6 +1033,7 @@ input  { font-family: var(--font); }
 }
 
 /* Auth : inputs fond neutre */
+
 .auth-form .champ input {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -977,6 +1047,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── CHAMP AVEC ICÔNE ───────────────────────── */
+
 .champ-input {
   display: flex;
   align-items: center;
@@ -1005,19 +1076,6 @@ input  { font-family: var(--font); }
   object-fit: contain;
 }
 
-.champ-input input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  font-family: var(--font);
-  font-size: 1rem;
-  color: var(--text-primary);
-  outline: none;
-  padding: 8px 0;
-  min-width: 0;
-  text-align: left;
-}
-
 .champ-input input::placeholder {
   color: var(--text-hint);
 }
@@ -1031,16 +1089,6 @@ input  { font-family: var(--font); }
 }
 
 /* ─── INPUT AVEC UNITÉ (ancien style — gardé pour admin/CRI) */
-.input-avec-unite {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: center;
-  background: var(--champ-bg);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
 
 .input-avec-unite input {
   flex: 1;
@@ -1086,18 +1134,26 @@ input  { font-family: var(--font); }
   background-position: right 0.25rem center;
   flex-shrink: 0;
   min-width: 80px;
-  flex-shrink: 0;
   width: auto;
-  min-width: 80px;
   max-width: 120px;
 }
+
 .champ-input input {
   flex: 1;
+  background: transparent;
+  border: none;
+  font-family: var(--font);
+  font-size: 1rem;
+  color: var(--text-primary);
+  outline: none;
+  padding: 8px 0;
   min-width: 0;
+  text-align: left;
   width: 0;
 }
 
 /* ─── RADIO BOUTONS kg/lb ────────────────────── */
+
 .radio-groupe {
   display: flex;
   gap: 6px;
@@ -1123,6 +1179,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── SELECT DANS CHAMP ──────────────────────── */
+
 .champ select {
   background: white;
   border: 1px solid var(--border);
@@ -1143,6 +1200,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── SÉLECTEUR ESPÈCE — 2 cartes carrées ────── */
+
 .espece-card-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1182,6 +1240,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── TOGGLE ESPÈCE (ancien — gardé pour compatibilité) ── */
+
 .espece-toggle {
   display: flex;
   align-items: center;
@@ -1199,7 +1258,9 @@ input  { font-family: var(--font); }
   transition: color 0.2s;
 }
 
-.espece-label.active { color: var(--primary); }
+.espece-label.active {
+  color: var(--primary);
+}
 
 .espece-icone {
   width: 28px;
@@ -1219,7 +1280,9 @@ input  { font-family: var(--font); }
   flex-shrink: 0;
 }
 
-.toggle-slider.droite { background: var(--primary); }
+.toggle-slider.droite {
+  background: var(--primary);
+}
 
 .toggle-thumb {
   position: absolute;
@@ -1233,9 +1296,12 @@ input  { font-family: var(--font); }
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
-.toggle-slider.droite .toggle-thumb { transform: translateX(24px); }
+.toggle-slider.droite .toggle-thumb {
+  transform: translateX(24px);
+}
 
 /* ─── CALCULATEUR ─────────────────────────────── */
+
 .page-calculateurs {
   padding: 1rem;
 }
@@ -1290,6 +1356,7 @@ input  { font-family: var(--font); }
 }
 
 /* ─── RÉSULTATS CALCULATEUR ───────────────────── */
+
 .resultat-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1323,12 +1390,8 @@ input  { font-family: var(--font); }
   padding-bottom: 0;
 }
 
-.resultat-ligne strong {
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
 /* ─── DÉMARCHE DE CALCUL ──────────────────────── */
+
 .demarche-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1405,17 +1468,8 @@ input  { font-family: var(--font); }
   color: var(--text-primary);
   margin: 0;
 }
+
 /* ─── RECHERCHE MÉDICAMENT ────────────────────── */
-.recherche-wrapper {
-  display: flex;
-  align-items: center;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 4px 12px 4px 4px;
-  gap: 10px;
-  width: 100%;
-}
 
 .recherche-icone {
   width: 38px;
@@ -1455,23 +1509,8 @@ input  { font-family: var(--font); }
   display: flex;
   align-items: center;
   cursor: pointer;
-}
-
-.recherche-input::placeholder {
-  color: var(--text-hint);
-}
-
-.recherche-clear {
   position: absolute;
   right: 0.75rem;
-  background: none;
-  border: none;
-  color: var(--text-hint);
-  font-size: 1rem;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
 }
 
 .recherche-dropdown {
@@ -1526,6 +1565,7 @@ input  { font-family: var(--font); }
   font-size: 0.9rem;
   text-align: center;
 }
+
 /* ===========================
    PANNEAU ADMIN — GÉNÉRAL
    =========================== */
@@ -1628,18 +1668,6 @@ input  { font-family: var(--font); }
   display: flex;
   flex-direction: column;
   gap: 8px;
-
-}
-
-.admin-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin:0px !important;
 }
 
 .admin-item-info {
@@ -1648,20 +1676,9 @@ input  { font-family: var(--font); }
   gap: 2px;
 }
 
-.admin-item-nom {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
 .admin-item-categorie {
   font-size: 11px;
   color: var(--text-secondary);
-}
-
-.admin-item-actions {
-  display: flex;
-  gap: 8px;
 }
 
 .btn-edit,
@@ -1675,8 +1692,13 @@ input  { font-family: var(--font); }
   transition: background 0.15s;
 }
 
-.btn-edit:active { background: rgba(134, 202, 183, 0.2); }
-.btn-delete:active { background: rgba(112, 47, 58, 0.15); }
+.btn-edit:active {
+  background: rgba(134, 202, 183, 0.2);
+}
+
+.btn-delete:active {
+  background: rgba(112, 47, 58, 0.15);
+}
 
 .admin-loading,
 .admin-vide {
@@ -1732,7 +1754,6 @@ input  { font-family: var(--font); }
   box-sizing: border-box;
 }
 
-
 select.form-input {
   appearance: none;
   -webkit-appearance: none;
@@ -1751,6 +1772,7 @@ select.form-input {
   appearance: none;
   cursor: pointer;
 }
+
 .form-scroll .form-select-unite {
   border: none;
   background: transparent;
@@ -1773,6 +1795,7 @@ select.form-input {
   resize: vertical;
   line-height: 1.5;
 }
+
 .form-textarea::-webkit-resizer {
   background-image: repeating-linear-gradient(135deg, var(--text-hint) 0 1.5px, transparent 1.5px 4px);
   background-position: bottom right;
@@ -1786,6 +1809,7 @@ select.form-input {
 }
 
 /* Toggle dose fixe / min-max */
+
 .toggle-groupe {
   display: flex;
   gap: 8px;
@@ -1813,10 +1837,17 @@ select.form-input {
 }
 
 /* Input avec unité inline */
+
 .input-avec-unite {
   display: flex;
-  gap: 8px;
   align-items: center;
+  width: 100%;
+  justify-content: center;
+  background: var(--champ-bg);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  gap: 8px;
 }
 
 .input-avec-unite .form-input {
@@ -1842,6 +1873,7 @@ select.form-input {
 }
 
 /* Voies admin */
+
 .voies-liste {
   display: flex;
   flex-direction: column;
@@ -1874,6 +1906,7 @@ select.form-input {
 }
 
 /* Erreur + bouton sauvegarde */
+
 .form-erreur {
   background: rgba(112, 47, 58, 0.1);
   border: 1px solid var(--accent-red);
@@ -1901,7 +1934,9 @@ select.form-input {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
 /* ─── POPUP ESPÈCES ───────────────────────────── */
+
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -2007,6 +2042,7 @@ select.form-input {
 }
 
 /* Champ espèce dans le formulaire */
+
 .espece-choisir {
   display: flex;
   align-items: center;
@@ -2033,11 +2069,13 @@ select.form-input {
   font-weight: 700;
   cursor: pointer;
 }
+
 .espece-icone-popup {
   width: 28px;
   height: 28px;
   object-fit: contain;
 }
+
 .admin-item-meta {
   display: flex;
   align-items: center;
@@ -2049,6 +2087,7 @@ select.form-input {
   height: 20px;
   object-fit: contain;
 }
+
 /* ===========================
    PAGE DROGUES LISTE
    =========================== */
@@ -2087,12 +2126,14 @@ select.form-input {
 .drogue-item:active {
   background: var(--champ-bg);
 }
+
 .drogues-sous-cat-titre {
   font-weight: 800;
   color:#1A2E2A;
 }
 
 /* ÉTOILE FAVORI */
+
 .favori-btn {
   background: none;
   border: none;
@@ -2114,14 +2155,9 @@ select.form-input {
 }
 
 /* NOM MÉDICAMENT */
-.drogue-nom {
-  flex: 1;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
 
 /* ICÔNE ESPÈCE */
+
 .drogue-espece-icone {
   width: 36px;
   height: 36px;
@@ -2130,6 +2166,7 @@ select.form-input {
 }
 
 /* BOUTON + FLOTTANT */
+
 .btn-fab {
   position: fixed;
   bottom: 90px;
@@ -2154,6 +2191,7 @@ select.form-input {
   transform: scale(0.95);
   opacity: 0.9;
 }
+
 /* ===========================
    PAGE FICHE MÉDICAMENT
    =========================== */
@@ -2175,6 +2213,7 @@ select.form-input {
 }
 
 /* ─── TOP : favori + espèce ──────────────────── */
+
 .fiche-top {
   display: flex;
   flex-direction: column;
@@ -2193,8 +2232,10 @@ select.form-input {
 }
 
 .favori-btn-fiche {
-  position: absolute;  /* ← ajoute ça */
-  left: 1rem;          /* ← ajoute ça */
+  position: absolute;
+  /* ← ajoute ça */
+  left: 1rem;
+  /* ← ajoute ça */
   background: none;
   border: none;
   font-size: 38px;
@@ -2224,6 +2265,7 @@ select.form-input {
   font-weight: 600;
   color: var(--text-secondary);
 }
+
 .labo-btn-secondary-medicament {
   padding: 10px 18px;
   background: transparent;
@@ -2234,10 +2276,12 @@ select.form-input {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  position: absolute; right: 1rem;
+  position: absolute;
+  right: 1rem;
 }
 
 /* ─── BOUTON MODIFIER (admin) ────────────────── */
+
 .btn-modifier-medicament {
   width: 100%;
   padding: 14px;
@@ -2259,26 +2303,28 @@ select.form-input {
 }
 
 /* Voies — meilleure lisibilité */
+
 .resultat-ligne strong {
+  color: var(--text-primary);
+  font-weight: 700;
   text-align: right;
   max-width: 55%;
   line-height: 1.4;
 }
+
 /* Retire les flèches des inputs number partout */
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+
 input[type="number"] {
   appearance: none;
   -moz-appearance: textfield;
 }
+
 /* ===========================
    PAGE PROFIL
    =========================== */
@@ -2292,23 +2338,13 @@ input[type="number"] {
 }
 
 /* ─── TOP ────────────────────────────────────── */
+
 .profil-top {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   padding: 16px 0;
-}
-
-.profil-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 1.5px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .profil-nom {
@@ -2325,6 +2361,7 @@ input[type="number"] {
 }
 
 /* ─── SECTIONS ───────────────────────────────── */
+
 .profil-section {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -2370,6 +2407,7 @@ input[type="number"] {
 }
 
 /* ─── BOUTON ADMIN ───────────────────────────── */
+
 .profil-admin-btn {
   width: 100%;
   display: flex;
@@ -2391,6 +2429,7 @@ input[type="number"] {
 }
 
 /* ─── ACTIONS ────────────────────────────────── */
+
 .profil-actions {
   display: flex;
   flex-direction: column;
@@ -2427,6 +2466,7 @@ input[type="number"] {
   cursor: pointer;
   text-decoration: underline;
 }
+
 .drogue-info {
   flex: 1;
   display: flex;
@@ -2435,6 +2475,7 @@ input[type="number"] {
 }
 
 .drogue-nom {
+  flex: 1;
   font-size: 14px;
   font-weight: 500;
   color: var(--text-primary);
@@ -2444,6 +2485,7 @@ input[type="number"] {
   font-size: 11px;
   color: var(--text-hint);
 }
+
 .btn-enregistrer-header {
   background: var(--accent-gold);
   border: none;
@@ -2475,7 +2517,9 @@ input[type="number"] {
 .btn-supprimer-medicament:active {
   opacity: 0.85;
 }
+
 /* ─── AVATAR AVEC OVERLAY ────────────────────── */
+
 .profil-avatar {
   width: 80px;
   height: 80px;
@@ -2510,6 +2554,7 @@ input[type="number"] {
 }
 
 /* ─── MESSAGE SUCCÈS ─────────────────────────── */
+
 .profil-succes {
   background: #e6f4f0;
   border: 1px solid var(--primary-light);
@@ -2519,6 +2564,7 @@ input[type="number"] {
   color: var(--primary);
   text-align: center;
 }
+
 .calc-avertissement {
   display: flex;
   align-items: flex-start;
@@ -2541,6 +2587,7 @@ input[type="number"] {
 }
 
 /* ─── TAP TEMPO ──────────────────────────────────────── */
+
 .tempo-resultat {
   display: flex;
   flex-direction: column;
@@ -2548,16 +2595,19 @@ input[type="number"] {
   gap: 4px;
   padding: 24px 0 8px;
 }
+
 .tempo-bpm {
   font-size: 56px;
   font-weight: 800;
   color: var(--primary);
   line-height: 1;
 }
+
 .tempo-bpm-label {
   font-size: 13px;
   color: var(--text-secondary);
 }
+
 .tempo-btn {
   display: flex;
   flex-direction: column;
@@ -2577,12 +2627,15 @@ input[type="number"] {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
+
 .tempo-btn:active {
   transform: scale(0.96);
 }
+
 .tempo-btn .ti {
   font-size: 36px;
 }
+
 .tempo-compteur {
   text-align: center;
   font-size: 13px;
@@ -2637,39 +2690,15 @@ input[type="number"] {
   line-height: 1.5;
   margin: 0;
 }
+
 /* ===========================
    PAGE FLUIDOTHÉRAPIE
    =========================== */
 
 /* ─── FORMULES ───────────────────────────────── */
-.fluido-formules {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.fluido-formule-btn {
-  width: 100%;
-  padding: 12px 14px;
-  background: var(--champ-bg);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  font-family: var(--font);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.fluido-formule-btn.actif {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
 
 /* ─── SLIDER ─────────────────────────────────── */
+
 .fluido-slider-row {
   display: flex;
   justify-content: flex-end;
@@ -2698,6 +2727,7 @@ input[type="number"] {
 }
 
 /* ─── BOUTON TABLEAU ─────────────────────────── */
+
 .fluido-btn-tableau {
   width: 100%;
   margin-top: 10px;
@@ -2713,9 +2743,12 @@ input[type="number"] {
   transition: opacity 0.15s;
 }
 
-.fluido-btn-tableau:active { opacity: 0.85; }
+.fluido-btn-tableau:active {
+  opacity: 0.85;
+}
 
 /* ─── RÉSULTAT PRINCIPAL ─────────────────────── */
+
 .fluido-resultat-principal {
   background: var(--primary);
   border-radius: var(--radius-lg);
@@ -2747,18 +2780,20 @@ input[type="number"] {
 }
 
 /* ─── SECTIONS ───────────────────────────────── */
+
 .fluido-section-titre {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-primary);
-    background: white;
-    padding: 0;
-    border-radius: var(--radius-md);
-    width: 100%;
-    margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: white;
+  padding: 0;
+  border-radius: var(--radius-md);
+  width: 100%;
+  margin: 0;
 }
 
 /* ─── INSTRUCTION CRI ────────────────────────── */
+
 .fluido-instruction {
   font-size: 13px;
   color: var(--text-secondary);
@@ -2768,6 +2803,7 @@ input[type="number"] {
 }
 
 /* ─── POPUP TABLEAU ──────────────────────────── */
+
 .popup-large {
   max-width: 420px;
   max-height: 80dvh;
@@ -2816,6 +2852,7 @@ input[type="number"] {
 .fluido-tableau-signes {
   color: var(--text-secondary);
 }
+
 /* ═══════════════════════════════════════════════════════════
    FLUIDOTHÉRAPIE, structure par divulgation progressive
    À coller dans index.css. Remplace les anciennes règles
@@ -2823,15 +2860,13 @@ input[type="number"] {
    .fluido-section-titre si elles ne servent plus ailleurs.
    ═══════════════════════════════════════════════════════════ */
 
-:root {
-  --fluido-nav-h: 66px; /* hauteur de .bottom-nav-v2 */
-}
-
 .fluido-page {
-  padding-bottom: 140px; /* place pour la barre collante */
+  padding-bottom: 140px;
+  /* place pour la barre collante */
 }
 
 /* ─── BARRE DU HAUT ─────────────────────────────────────── */
+
 .fluido-topbar {
   display: flex;
   justify-content: flex-end;
@@ -2861,6 +2896,7 @@ input[type="number"] {
 }
 
 /* ─── BLOCS ─────────────────────────────────────────────── */
+
 .fluido-bloc {
   width: 100%;
   display: flex;
@@ -2887,6 +2923,7 @@ input[type="number"] {
 }
 
 /* ─── RÉSUMÉ PATIENT REPLIÉ ─────────────────────────────── */
+
 .fluido-resume {
   width: 100%;
   display: flex;
@@ -2920,6 +2957,7 @@ input[type="number"] {
 }
 
 /* ─── LIGNE DE RÉSULTAT INTERNE ─────────────────────────── */
+
 .fluido-ligne-principale {
   display: flex;
   align-items: baseline;
@@ -2935,6 +2973,7 @@ input[type="number"] {
 }
 
 /* ─── LIENS TEXTE ───────────────────────────────────────── */
+
 .fluido-lien {
   align-self: flex-start;
   background: none;
@@ -2963,6 +3002,7 @@ input[type="number"] {
 }
 
 /* ─── FORMULES ──────────────────────────────────────────── */
+
 .fluido-formules {
   display: flex;
   flex-direction: column;
@@ -2980,15 +3020,19 @@ input[type="number"] {
   font-weight: 600;
   color: var(--text-primary);
   text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
 }
 
 .fluido-formule-btn.actif {
+  background: var(--primary-light);
+  color: white;
   border-color: var(--primary);
   border-width: 2px;
-  background: var(--primary-light);
 }
 
 /* ─── CHIPS ─────────────────────────────────────────────── */
+
 .fluido-chips {
   display: flex;
   flex-wrap: wrap;
@@ -3020,6 +3064,7 @@ input[type="number"] {
 }
 
 /* ─── RANGÉES DE VALEURS ────────────────────────────────── */
+
 .fluido-valeurs {
   display: flex;
   flex-wrap: wrap;
@@ -3056,6 +3101,7 @@ input[type="number"] {
 }
 
 /* ─── CHAMP COMPACT ─────────────────────────────────────── */
+
 .fluido-champ-compact {
   max-width: 180px;
   padding: 4px 12px;
@@ -3066,6 +3112,7 @@ input[type="number"] {
 }
 
 /* ─── SECTION REPLIABLE ─────────────────────────────────── */
+
 .fluido-repliable {
   width: 100%;
   border: 1px solid var(--border);
@@ -3101,6 +3148,7 @@ input[type="number"] {
 }
 
 /* ─── LIEN VERS UNE AUTRE PAGE ──────────────────────────── */
+
 .fluido-lien-page {
   width: 100%;
   display: flex;
@@ -3124,6 +3172,7 @@ input[type="number"] {
 }
 
 /* ─── BARRE DE RÉSULTAT COLLANTE ────────────────────────── */
+
 .fluido-barre {
   position: fixed;
   bottom: var(--fluido-nav-h);
@@ -3162,6 +3211,7 @@ input[type="number"] {
 }
 
 /* ─── PANNEAU DE DÉTAIL ─────────────────────────────────── */
+
 .fluido-sheet-overlay {
   position: fixed;
   inset: 0;
@@ -3213,6 +3263,7 @@ input[type="number"] {
 }
 
 /* ─── BANDEAU D'ANNULATION ──────────────────────────────── */
+
 .fluido-bandeau {
   position: fixed;
   bottom: calc(var(--fluido-nav-h) + 12px);
@@ -3243,7 +3294,9 @@ input[type="number"] {
   color: var(--primary-light);
   padding: 0;
 }
+
 /* ─── CRI INPUT AVEC SELECT ──────────────────── */
+
 .champ-avec-select {
   display: flex;
   align-items: center;
@@ -3286,8 +3339,9 @@ input[type="number"] {
   appearance: none;
   -webkit-appearance: none;
 }
+
 .select option {
-    border-radius: 12px;
+  border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--bg-card);
   font-family: var(--font);
@@ -3298,7 +3352,9 @@ input[type="number"] {
   outline: none;
   cursor: pointer;
 }
+
 /* ─── PROVENANCE (page CRI) ─────────────────────────────── */
+
 .cri-provenance {
   width: 100%;
   display: flex;
@@ -3337,7 +3393,9 @@ input[type="number"] {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
 /* ─── PAGE CONVERSION ────────────────────────── */
+
 .conversion-section-titre {
   font-size: 15px;
   font-weight: 700;
@@ -3347,6 +3405,7 @@ input[type="number"] {
   width: 100%;
   margin: 0;
 }
+
 .conversion-deux-colonnes {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3401,6 +3460,7 @@ input[type="number"] {
 }
 
 /* ─── TABLEAU FACTEURS ───────────────────────── */
+
 .bee-tableau {
   width: 100%;
   border: 1px solid var(--border);
@@ -3458,6 +3518,7 @@ input[type="number"] {
   white-space: nowrap;
   flex-shrink: 0;
 }
+
 /* ─── PAGE DILUTION ──────────────────────────── */
 
 .dilution-modes {
@@ -3528,6 +3589,7 @@ input[type="number"] {
 }
 
 /* ─── SÉLECTEUR DE TYPE CONVERSION ───────────── */
+
 .conversion-modes {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -3575,6 +3637,7 @@ input[type="number"] {
 }
 
 /* ─── RÉSULTAT DILUTION ──────────────────────── */
+
 .dilution-resultat {
   background: var(--primary);
   border-radius: var(--radius-lg);
@@ -3603,6 +3666,7 @@ input[type="number"] {
   margin: 0;
   line-height: 1.5;
 }
+
 /* ─── PAGE DATE MISE BAS ─────────────────────── */
 
 .mise-bas-section {
@@ -3680,6 +3744,7 @@ input[type="number"] {
   flex-shrink: 0;
   margin-top: 1px;
 }
+
 /* ─── PAGE TOXICITÉ CHOCOLAT ─────────────────── */
 
 .choco-types {
@@ -3729,6 +3794,7 @@ input[type="number"] {
 }
 
 /* ─── ALERTE ─────────────────────────────────── */
+
 .choco-alerte {
   width: 100%;
   border-radius: var(--radius-md);
@@ -3751,6 +3817,7 @@ input[type="number"] {
 }
 
 /* ─── TABLEAU SEUILS ─────────────────────────── */
+
 .choco-tableau {
   width: 100%;
   background: var(--bg-card);
@@ -3796,6 +3863,7 @@ input[type="number"] {
   font-weight: 700;
   color: var(--text-secondary);
 }
+
 .choco-icone-attention {
   filter: brightness(0) saturate(100%) invert(30%) sepia(90%) saturate(600%) hue-rotate(10deg) brightness(0.8);
 }
@@ -3811,6 +3879,7 @@ input[type="number"] {
 .choco-icone-check {
   filter: brightness(0) saturate(100%) invert(30%) sepia(60%) saturate(600%) hue-rotate(100deg) brightness(0.85);
 }
+
 /* ─── PAGE RCR ───────────────────────────────── */
 
 .rcr-page {
@@ -3824,6 +3893,7 @@ input[type="number"] {
 }
 
 /* ─── STATUS ─────────────────────────────────── */
+
 .rcr-status {
   width: 100%;
   display: flex;
@@ -3860,6 +3930,7 @@ input[type="number"] {
 }
 
 /* ─── CERCLE ─────────────────────────────────── */
+
 .rcr-cercle-wrapper {
   display: flex;
   align-items: center;
@@ -3867,6 +3938,7 @@ input[type="number"] {
 }
 
 /* ─── BARRE VENTILATION ──────────────────────── */
+
 .rcr-ventil-wrapper {
   display: flex;
   flex-direction: row;
@@ -3902,6 +3974,7 @@ input[type="number"] {
 }
 
 /* ─── INFOS ──────────────────────────────────── */
+
 .rcr-infos {
   width: 100%;
   display: grid;
@@ -3934,6 +4007,7 @@ input[type="number"] {
 }
 
 /* ─── BOUTON PRINCIPAL ───────────────────────── */
+
 .rcr-btn-principal {
   width: 100%;
   padding: 16px;
@@ -3976,6 +4050,7 @@ input[type="number"] {
 }
 
 /* ─── RAPPELS ────────────────────────────────── */
+
 .rcr-rappels {
   width: 100%;
   background: var(--bg-card);
@@ -4007,6 +4082,7 @@ input[type="number"] {
 }
 
 /* ─── MODAL PULSE CHECK ──────────────────────── */
+
 .rcr-pulse-card {
   text-align: center;
 }
@@ -4024,6 +4100,7 @@ input[type="number"] {
   margin: 0 0 16px 0;
   font-weight: 600;
 }
+
 .rcr-section-titre {
   width: 100%;
   font-size: 14px;
@@ -4089,6 +4166,7 @@ input[type="number"] {
   white-space: nowrap;
   flex-shrink: 0;
 }
+
 .drogues-filtres {
   display: flex;
   flex-wrap: wrap;
@@ -4115,11 +4193,22 @@ input[type="number"] {
   border-color: var(--primary);
   color: white;
 }
+
 .recherche-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px 12px 4px 4px;
+  gap: 10px;
+  width: 100%;
   margin-bottom: 10px;
   margin-top: 10px;
 }
+
 /* ─── PAGE MES DROGUES ──────────────────────── */
+
 .mes-drogues-vide {
   display: flex;
   flex-direction: column;
@@ -4137,9 +4226,11 @@ input[type="number"] {
   font-weight: 400;
   color: var(--text-hint);
 }
+
 .drogues-groupe {
   padding-top:20px;
 }
+
 /* ─── PAGE LABO ──────────────────────────────── */
 
 .labo-categories-grid {
@@ -4170,6 +4261,7 @@ input[type="number"] {
 }
 
 /* ─── PROTOCOLES ─────────────────────────────── */
+
 .labo-section-titre {
   font-size: 16px;
   font-weight: 700;
@@ -4229,6 +4321,7 @@ input[type="number"] {
 }
 
 /* ─── DÉTAIL PROTOCOLE ───────────────────────── */
+
 .labo-detail-page {
   display: flex;
   flex-direction: column;
@@ -4241,8 +4334,9 @@ input[type="number"] {
   gap: 8px;
   justify-content: flex-end;
 }
+
 .labo-actions-bas div {
-   display: flex;
+  display: flex;
   gap: 8px;
   justify-content: flex-end !important;
   position: relative;
@@ -4293,12 +4387,14 @@ input[type="number"] {
   cursor: pointer;
   padding: 4px;
 }
+
 .popup-actions-centrees {
   display: flex;
   gap: 8px;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
+
 .popup-actions-centrees .btn-supprimer-medicament {
   width: 100%;
   padding: 14px;
@@ -4312,9 +4408,10 @@ input[type="number"] {
   cursor: pointer;
   transition: opacity 0.15s;
   margin-top:0px;
-
 }
+
 /* ─── ÉTAPES ─────────────────────────────────── */
+
 .labo-materiel-liste {
   display: flex;
   flex-direction: column;
@@ -4499,6 +4596,7 @@ input[type="number"] {
   color: var(--primary);
   cursor: pointer;
 }
+
 .labo-materiel-affichage {
   list-style: disc;
   padding-left: 20px;
@@ -4512,6 +4610,7 @@ input[type="number"] {
 }
 
 /* ─── RÉORGANISER ────────────────────────────── */
+
 .labo-reorganiser-liste {
   display: flex;
   flex-direction: column;
@@ -4538,6 +4637,7 @@ input[type="number"] {
 }
 
 /* ─── NOUVEAU PROTOCOLE ──────────────────────── */
+
 .labo-nouveau-etapes {
   display: flex;
   flex-direction: column;
@@ -4570,6 +4670,7 @@ input[type="number"] {
   font-weight: 700;
   color: var(--primary);
 }
+
 /* ─── ADMIN LABO ─────────────────────────────── */
 
 .admin-labo-cats {
@@ -4603,10 +4704,10 @@ input[type="number"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 12px;
+  padding: 14px 16px;
   margin: 0 1rem 8px;
 }
 
@@ -4640,6 +4741,7 @@ input[type="number"] {
   color: var(--accent-red);
   font-size: 16px;
 }
+
 /* ─── RÉFÉRENCES LABO ────────────────────────── */
 
 .labo-ref-section {
@@ -4679,7 +4781,6 @@ input[type="number"] {
   gap: 8px;
   text-align: left;
 }
-
 
 .labo-ref-ligne {
   display: grid;
@@ -4933,7 +5034,9 @@ input[type="number"] {
   line-height: 1.5;
   margin: 0;
 }
+
 /* ─── ABRÉVIATIONS COURANTES ────────────────── */
+
 .labo-ref-header--4col-abrev,
 .labo-ref-ligne--4col-abrev {
   grid-template-columns: 0.7fr 1.3fr 0.7fr 1.3fr;
@@ -4945,18 +5048,22 @@ input[type="number"] {
 }
 
 /* ─── PARASITOLOGIE — tableau 5 colonnes ────── */
+
 .labo-ref-header--5col {
   grid-template-columns: 1.6fr 0.45fr 0.45fr 1.4fr 1.2fr;
 }
+
 .labo-ref-ligne--5col {
   grid-template-columns: 1.6fr 0.45fr 0.45fr 1.4fr 1.2fr;
   font-size: 12px;
 }
+
 .labo-ref-ligne--5col span:nth-child(4),
 .labo-ref-ligne--5col span:nth-child(5) {
   font-size: 12px;
   color: var(--text-secondary);
 }
+
 /* ─── TUBES ──────────────────────────────────── */
 
 .labo-tubes-liste {
@@ -5026,7 +5133,9 @@ input[type="number"] {
   flex-shrink: 0;
   margin-top: 1px;
 }
+
 /* ─── BIOCHIMIE ORGANES ──────────────────────── */
+
 .bio-organe-section {
   display: flex;
   flex-direction: column;
@@ -5119,9 +5228,17 @@ input[type="number"] {
   margin-bottom: 4px;
 }
 
-.bio-popup-label--primaire { color: var(--primary); }
-.bio-popup-label--eleve { color: var(--accent-red); }
-.bio-popup-label--bas { color: var(--primary-light); }
+.bio-popup-label--primaire {
+  color: var(--primary);
+}
+
+.bio-popup-label--eleve {
+  color: var(--accent-red);
+}
+
+.bio-popup-label--bas {
+  color: var(--primary-light);
+}
 
 .bio-popup-texte {
   font-size: 13px;
@@ -5143,7 +5260,9 @@ input[type="number"] {
   width: 18px;
   height: 18px;
 }
+
 /* ─── COLONIES BACTÉRIENNES ──────────────────── */
+
 .colonies-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -5179,31 +5298,42 @@ input[type="number"] {
   color: var(--text-secondary);
   text-align: center;
 }
+
 /* ─── PRÉLÈVEMENT 3 COLONNES ─────────────────── */
+
 .labo-ref-header--3col-prelevement {
   grid-template-columns: 1.2fr 1.2fr 1.4fr;
 }
+
 .labo-ref-ligne--3col-prelevement {
   grid-template-columns: 1.2fr 1.2fr 1.4fr;
   font-size: 12px;
 }
+
 /* ─── LEVURES 4 COLONNES ─────────────────────── */
+
 .labo-ref-header--4col-levures {
   grid-template-columns: 1fr 1.2fr 1.4fr 1.2fr;
 }
+
 .labo-ref-ligne--4col-levures {
   grid-template-columns: 1fr 1.2fr 1.4fr 1.2fr;
   font-size: 12px;
 }
+
 /* ─── CULTURES 3 COLONNES ────────────────────── */
+
 .labo-ref-header--3col-cultures {
   grid-template-columns: 1fr 1.4fr 1.6fr;
 }
+
 .labo-ref-ligne--3col-cultures {
   grid-template-columns: 1fr 1.4fr 1.6fr;
   font-size: 12px;
 }
+
 /* ─── NOTES ──────────────────────────────────── */
+
 .notes-page {
   padding: 16px;
   padding-bottom: 80px;
@@ -5361,7 +5491,9 @@ input[type="number"] {
   color: white;
   border-color: var(--primary);
 }
+
 /* ─── TUBES ENDOTRACHÉAUX ────────────────────── */
+
 .tubes-grid {
   grid-template-columns: 1fr 1fr;
   font-size: 14px;
@@ -5370,6 +5502,7 @@ input[type="number"] {
 .tubes-grid span {
   text-align: center;
 }
+
 .labo-ref-header--chat {
   background: var(--accent-red);
 }
@@ -5403,7 +5536,9 @@ input[type="number"] {
 .tubes-note {
   margin-top: 8px;
 }
+
 /* ─── MONITORING CHIRURGIE ───────────────────── */
+
 .monitoring-param-ligne {
   display: flex;
   justify-content: space-between;
@@ -5558,13 +5693,13 @@ input[type="number"] {
 }
 
 /* ─── MONITORING ANESTHÉSIQUE — TABLEAU DE SUIVI ── */
+
 .monitoring-table-wrap {
   overflow-x: auto;
   overflow-y: hidden;
   border: 1px solid var(--border);
   border-radius: 12px;
   margin-top: 20px;
-
 }
 
 .monitoring-table {
@@ -5620,49 +5755,6 @@ input[type="number"] {
   gap: 6px;
 }
 
-.monitoring-med-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  max-height: 240px;
-  overflow-y: auto;
-  z-index: 20;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-}
-
-.monitoring-med-dropdown-item {
-  padding: 10px 14px;
-  font-size: 14px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-}
-
-.monitoring-med-dropdown-item:last-child {
-  border-bottom: none;
-}
-
-.monitoring-med-dropdown-item:hover {
-  background: var(--bg);
-}
-
-.monitoring-med-dropdown-nom {
-  font-weight: 600;
-}
-
-.monitoring-med-dropdown-details {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
 .monitoring-med-card {
   display: flex;
   flex-direction: column;
@@ -5679,6 +5771,7 @@ input[type="number"] {
   justify-content: space-between;
   align-items: center;
 }
+
 .monitoring-med-card-header--toggle {
   width: 100%;
   background: none;
@@ -5701,7 +5794,6 @@ input[type="number"] {
   font-weight: 700;
   font-size: 15px;
 }
-
 
 .monitoring-med-resume {
   display: flex;
@@ -5746,7 +5838,622 @@ input[type="number"] {
 .monitoring-table--suivi td:first-child {
   width: 30%;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   MONITORING ANESTHÉSIQUE, ajouts
+   À coller après le bloc de l'examen physique dans index.css.
+   Réutilise .examen-section*, .examen-barre*, .examen-suivant,
+   .examen-plage, .examen-manquants, déjà ajoutés pour l'examen.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── RANGÉE DE VALEURS (cote ASA) ──────────────────────── */
+
+/* ─── SUGGESTIONS DE NOMS ───────────────────────────────── */
+
+/* ─── DÉBORDEMENT DE LA LISTE DE MÉDICAMENTS ────────────
+   L'accordéon masque ce qui dépasse, ce qui coupait le menu
+   de recherche. Cette section seule laisse déborder.        */
+
+/* ═══════════════════════════════════════════════════════════
+   MONITORING ANESTHÉSIQUE, ajouts
+   À coller après le bloc de l'examen physique dans index.css.
+   Réutilise .examen-section*, .examen-barre*, .examen-suivant,
+   .examen-plage, .examen-manquants, déjà ajoutés pour l'examen.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── RANGÉE DE VALEURS (cote ASA) ──────────────────────── */
+
+.examen-valeurs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.examen-valeur-btn {
+  min-width: 56px;
+  min-height: 44px;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.examen-valeur-btn.actif {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* ─── DOSSIERS EN COURS ─────────────────────────────────── */
+
+.monitoring-actifs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.monitoring-actifs-titre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin: 0 0 2px;
+}
+
+.monitoring-actifs-titre i {
+  font-size: 18px;
+}
+
+.monitoring-actif {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--text-hint);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  font-family: var(--font);
+  text-align: left;
+}
+
+.monitoring-actif.demarre {
+  border-left-color: var(--primary);
+  background: var(--primary-light);
+  border-color: var(--primary-light);
+}
+
+.monitoring-actif-haut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.monitoring-actif-nom {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.monitoring-actif-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.monitoring-actif-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  animation: monitoringPouls 1.6s ease-in-out infinite;
+}
+
+.monitoring-actif-badge.preparation {
+  background: var(--bg-secondary);
+  color: var(--text-hint);
+}
+
+.monitoring-actif-badge.preparation::before {
+  background: var(--text-hint);
+  animation: none;
+}
+
+@keyframes monitoringPouls {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+.monitoring-actif-details {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.monitoring-actif-bas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-hint);
+}
+
+.monitoring-actif.demarre .monitoring-actif-bas {
+  color: var(--primary);
+}
+
+.monitoring-actif-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ─── SUGGESTIONS DE NOMS ───────────────────────────────── */
+
+.monitoring-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.monitoring-suggestion {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-pill);
+  padding: 0 4px 0 12px;
+}
+
+.monitoring-suggestion > button {
+  background: none;
+  border: none;
+  padding: 8px 4px 8px 0;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.monitoring-suggestion-retirer {
+  font-size: 12px;
+  color: var(--text-hint);
+  padding: 8px 6px;
+  line-height: 1;
+}
+
+/* ─── DÉBORDEMENT DE LA LISTE DE MÉDICAMENTS ────────────
+   L'accordéon masque ce qui dépasse, ce qui coupait le menu
+   de recherche. Cette section seule laisse déborder.        */
+
+#section-medications,
+#section-medications .examen-section-contenu {
+  overflow: visible;
+}
+
+/* ─── PANNEAU DE CHOIX DES MÉDICAMENTS ──────────────────
+   Remplace les anciennes règles .monitoring-med-dropdown*,
+   qui ne servent plus : la recherche et la liste sont
+   maintenant réunies dans un panneau.                      */
+
+.monitoring-ajouter-med {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 13px 20px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.monitoring-ajouter-med i {
+  font-size: 18px;
+}
+
+.monitoring-sheet-med {
+  height: 85vh;
+}
+
+.monitoring-med-liste {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -4px;
+  padding: 0 4px;
+}
+
+.monitoring-med-liste .monitoring-categorie {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg-card);
+  padding: 8px 0 6px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-hint);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.monitoring-med-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 4px;
+  font-family: var(--font);
+  text-align: left;
+}
+
+.monitoring-med-item:active {
+  background: var(--bg-secondary);
+}
+
+.monitoring-med-item-nom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.monitoring-med-item-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+}
+
+.monitoring-med-item-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 24px;
+}
+
+.monitoring-med-item-details > span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-hint);
+  line-height: 1.3;
+}
+
+.monitoring-med-item-details > *:last-child {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.monitoring-med-item-details img,
+.monitoring-med-item-details svg {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ─── LISTE DE VÉRIFICATIONS ────────────────────────────── */
+
+.monitoring-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.monitoring-check {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-family: var(--font);
+  text-align: left;
+}
+
+.monitoring-check-case {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: transparent;
+}
+
+.monitoring-check.coche .monitoring-check-case {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.monitoring-check-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.monitoring-check.critique:not(.coche) {
+  border-color: #FCA5A5;
+  background: #FEF2F2;
+}
+
+.monitoring-check-alerte {
+  font-size: 17px;
+  color: #991B1B;
+  flex-shrink: 0;
+}
+
+/* ─── ENTÊTE PATIENT ────────────────────────────────────── */
+
+.monitoring-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.monitoring-entete-textes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.monitoring-entete-nom {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.monitoring-entete-detail {
+  font-size: 12px;
+  color: var(--primary-light);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.monitoring-entete-heure {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 8px 12px;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ─── DERNIÈRE MESURE ───────────────────────────────────── */
+
+.monitoring-derniere {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.monitoring-derniere-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.monitoring-derniere-titre {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.monitoring-tuiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+}
+
+.monitoring-tuile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 10px 6px;
+}
+
+.monitoring-tuile-valeur {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.1;
+}
+
+.monitoring-tuile-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-hint);
+  text-align: center;
+}
+
+.monitoring-categorie {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 4px 0 6px;
+}
+
+/* ─── CHRONOMÈTRE DANS LA BARRE ─────────────────────────── */
+
+.monitoring-chrono {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.monitoring-chrono-duree {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.monitoring-chrono-duree strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.monitoring-chrono-duree i {
+  font-size: 16px;
+  color: var(--text-hint);
+}
+
+.monitoring-chrono-mesure {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-hint);
+}
+
+.monitoring-chrono-mesure.retard {
+  color: #991B1B;
+}
+
+/* ─── VALEUR PRÉCÉDENTE ─────────────────────────────────── */
+
+.monitoring-precedent {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-secondary);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.monitoring-precedent i {
+  font-size: 14px;
+}
+
+/* ─── GROUPE COMPLÉMENTAIRE DU POPUP DE MESURE ──────────── */
+
+.monitoring-complementaires {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-secondary);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.monitoring-complementaires i {
+  font-size: 16px;
+}
+
+/* ─── TABLEAU DE SUIVI, PREMIÈRE COLONNE FIGÉE ──────────── */
+
+.monitoring-table-wrap--fige {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.monitoring-table--fige th:first-child,
+.monitoring-table--fige td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--bg-card);
+  box-shadow: 1px 0 0 var(--border);
+}
+
+.monitoring-table--fige thead th:first-child {
+  z-index: 3;
+}
+
+.monitoring-table--fige th,
+.monitoring-table--fige td {
+  white-space: nowrap;
+  font-size: 13px;
+}
+
 /* ─── CAPNOGRAPHIE ───────────────────────────── */
+
 .capno-bloc {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -5807,6 +6514,7 @@ input[type="number"] {
   color: var(--primary);
   margin: 0;
 }
+
 /* ─── SOINS POST-OPÉRATOIRES ─────────────────── */
 
 .postop-intro {
@@ -5834,18 +6542,21 @@ input[type="number"] {
 }
 
 /* ─── PAGES INFO (disclaimer, confidentialité, etc.) ────── */
+
 .page-info-contenu {
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+
 .page-info-contenu p {
   font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
 }
+
 .page-info-contenu ul {
   margin: 0;
   padding-left: 20px;
@@ -5853,12 +6564,14 @@ input[type="number"] {
   flex-direction: column;
   gap: 6px;
 }
+
 .page-info-contenu li {
   font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
+
 .page-info-faq-item {
   display: flex;
   flex-direction: column;
@@ -5869,29 +6582,34 @@ input[type="number"] {
   border-radius: 12px;
   cursor: pointer;
 }
+
 .page-info-faq-question {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
+
 .page-info-faq-question p {
   font-size: 13px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
 }
+
 .page-info-faq-question i {
   font-size: 16px;
   color: var(--text-hint);
   flex-shrink: 0;
 }
+
 .page-info-faq-reponse {
   font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
 }
+
 .page-info-lien {
   font-size: 13px;
   color: var(--primary);
@@ -5901,12 +6619,14 @@ input[type="number"] {
 }
 
 /* ─── MENU OVERLAY (bottom nav) ──────────────────────────── */
+
 .menu-overlay-liste {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 4px 0;
 }
+
 .menu-overlay-item {
   display: flex;
   align-items: center;
@@ -5920,12 +6640,14 @@ input[type="number"] {
   font-weight: 600;
   color: var(--text-primary);
 }
+
 .menu-overlay-item i:first-child {
   font-size: 18px;
   color: var(--primary);
   width: 22px;
   text-align: center;
 }
+
 .menu-overlay-item .ti-chevron-right {
   margin-left: auto;
   color: var(--text-hint);
@@ -5988,16 +6710,16 @@ input[type="number"] {
 }
 
 .postop-num {
-    min-width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--primary);
-    flex-shrink: 0;
-    margin-top: 1px;
+  min-width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .postop-texte {
@@ -6007,6 +6729,7 @@ input[type="number"] {
 }
 
 /* ─── NUTRITION ───────────────────────────── */
+
 .nutrition-note-ms {
   display: flex;
   align-items: flex-start;
@@ -6117,6 +6840,7 @@ input[type="number"] {
   flex-shrink: 0;
   margin-top: 1px;
 }
+
 /* ─── ÉVALUATION DE LA DOULEUR ───────────────── */
 
 .douleur-page {
@@ -6496,6 +7220,7 @@ input[type="number"] {
   gap: 8px;
   margin-top: 12px;
 }
+
 .examen-historique-item {
   display: flex;
   align-items: center;
@@ -6506,21 +7231,25 @@ input[type="number"] {
   border-radius: var(--radius-lg);
   cursor: pointer;
 }
+
 .examen-historique-info {
   flex: 1;
   min-width: 0;
 }
+
 .examen-historique-nom {
   font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
 }
+
 .examen-historique-date {
   font-size: 12px;
   color: var(--text-hint);
   margin: 2px 0 0;
 }
+
 .examen-historique-supprimer {
   background: none;
   border: none;
@@ -6530,9 +7259,11 @@ input[type="number"] {
   padding: 0;
   flex-shrink: 0;
 }
+
 .examen-historique-groupe {
   margin-top: 12px;
 }
+
 .examen-historique-groupe-header {
   display: flex;
   align-items: center;
@@ -6545,14 +7276,17 @@ input[type="number"] {
   cursor: pointer;
   text-align: left;
 }
+
 .examen-historique-groupe-chevron {
   color: var(--text-hint);
   font-size: 16px;
   transition: transform 0.15s ease;
 }
+
 .examen-historique-groupe-chevron.ouvert {
   transform: rotate(90deg);
 }
+
 .examen-historique-groupe-titre {
   flex: 1;
   font-size: 13px;
@@ -6560,6 +7294,7 @@ input[type="number"] {
   color: var(--text-primary);
   text-transform: capitalize;
 }
+
 .examen-historique-groupe-compte {
   font-size: 12px;
   font-weight: 700;
@@ -6676,6 +7411,7 @@ input[type="number"] {
 .douleur-btn-reinit:active {
   background: var(--bg);
 }
+
 /* ═══════════════════════════════════════════════════════════
    EXAMEN PHYSIQUE, structure en accordéon
    À ajouter à index.css. Aucune règle existante n'est
@@ -6683,17 +7419,12 @@ input[type="number"] {
    qui n'est plus utilisé.
    ═══════════════════════════════════════════════════════════ */
 
-:root {
-  /* valeur de repli, remplacée à l'exécution par la hauteur
-     réelle de la navigation du bas */
-  --examen-nav-h: 66px;
-}
-
 .examen-page {
   padding-bottom: calc(var(--examen-nav-h) + 96px);
 }
 
 /* ─── BARRE DU HAUT ─────────────────────────────────────── */
+
 .examen-topbar {
   display: flex;
   align-items: center;
@@ -6744,6 +7475,7 @@ input[type="number"] {
 }
 
 /* ─── SECTIONS EN ACCORDÉON ─────────────────────────────── */
+
 .examen-sections {
   display: flex;
   flex-direction: column;
@@ -6856,6 +7588,7 @@ input[type="number"] {
 }
 
 /* ─── ESPÈCES RAPIDES ───────────────────────────────────── */
+
 .examen-especes-rapides {
   display: flex;
   gap: 8px;
@@ -6891,6 +7624,7 @@ input[type="number"] {
 }
 
 /* ─── PLAGES PHYSIOLOGIQUES ─────────────────────────────── */
+
 .examen-plage {
   font-size: 12px;
   line-height: 1.4;
@@ -6916,6 +7650,7 @@ input[type="number"] {
 }
 
 /* ─── SCORE DE CONDITION CORPORELLE ─────────────────────── */
+
 .examen-bcs {
   display: flex;
   gap: 6px;
@@ -6940,6 +7675,7 @@ input[type="number"] {
 }
 
 /* ─── LIGNES DE SYSTÈME ─────────────────────────────────── */
+
 .examen-lignes {
   display: flex;
   flex-direction: column;
@@ -7036,6 +7772,7 @@ input[type="number"] {
 }
 
 /* ─── CONSTATS ──────────────────────────────────────────── */
+
 .examen-constats {
   display: flex;
   flex-wrap: wrap;
@@ -7072,6 +7809,7 @@ input[type="number"] {
 }
 
 /* ─── BARRE COLLANTE ────────────────────────────────────── */
+
 .examen-barre {
   position: fixed;
   bottom: var(--examen-nav-h);
@@ -7083,7 +7821,7 @@ input[type="number"] {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: var(--bg-card);
+  background: var(--primary-light);
   border-top: 1px solid var(--border);
   padding: 12px 16px;
   box-shadow: 0 -4px 16px rgba(33, 48, 88, 0.1);
@@ -7135,6 +7873,7 @@ input[type="number"] {
 }
 
 /* ─── LISTE DES ÉLÉMENTS MANQUANTS ──────────────────────── */
+
 .examen-manquants {
   display: flex;
   flex-direction: column;
@@ -7163,6 +7902,7 @@ input[type="number"] {
   color: var(--text-hint);
   flex-shrink: 0;
 }
+
 /* ─── STRIPE CHECKOUT ────────────────────────── */
 
 .profil-stripe-choix {
@@ -7233,6 +7973,7 @@ input[type="number"] {
   flex-direction: column;
   gap: 16px;
 }
+
 .profil-portal-btn {
   display: flex;
   align-items: center;
@@ -7249,16 +7990,19 @@ input[type="number"] {
   cursor: pointer;
   transition: all 0.15s;
 }
+
 .profil-portal-btn:hover {
   border-color: var(--primary);
   color: var(--primary);
 }
+
 .profil-portal-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* ─── CHARTE RADIOGRAPHIQUE ─────────────────────────────────── */
+
 .charte-item {
   display: flex;
   flex-direction: column;
@@ -7338,7 +8082,9 @@ input[type="number"] {
   margin: -4px 0 0;
   line-height: 1.4;
 }
+
 /* ─── TOXICOLOGIE — CARTE PLANTE AVEC PHOTO ──── */
+
 .toxico-plante-card {
   display: flex;
   align-items: stretch;
@@ -7376,6 +8122,7 @@ input[type="number"] {
   flex-direction: column;
   justify-content: center;
 }
+
 .toxico-plante-card::after {
   content: '\203A';
   font-size: 22px;
@@ -7384,7 +8131,9 @@ input[type="number"] {
   align-self: center;
   flex-shrink: 0;
 }
+
 /* ─── PAGE ABONNEMENT ───────────────────────── */
+
 .abonnement-page {
   display: flex;
   flex-direction: column;
@@ -7501,8 +8250,8 @@ input[type="number"] {
   opacity: 0.9;
 }
 
-
 /* ─── DESKTOP ─────────────────────────────────── */
+
 @media (min-width: 601px) {
   html {
     background: #EEF3F3;
@@ -7516,7 +8265,9 @@ input[type="number"] {
     right: calc(50% - 276px);
   }
 }
+
 /* ─── NUTRITION STRUCTURE V2 ──────────────────── */
+
 .nutri-sec-label {
   font-size: 10px;
   font-weight: 700;
@@ -7525,6 +8276,7 @@ input[type="number"] {
   color: var(--text-hint);
   margin-bottom: 2px;
 }
+
 .nutri-sec-titre {
   font-size: 15px;
   font-weight: 700;
@@ -7533,12 +8285,14 @@ input[type="number"] {
 }
 
 /* ── Conseil card (dépliable) */
+
 .nutri-conseil-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
+
 .nutri-conseil-row {
   display: flex;
   align-items: center;
@@ -7554,6 +8308,7 @@ input[type="number"] {
   font-family: var(--font);
   color: var(--text-primary);
 }
+
 .nutri-conseil-icone {
   width: 40px;
   height: 40px;
@@ -7566,32 +8321,47 @@ input[type="number"] {
   background: var(--bg-secondary);
   color: var(--primary);
 }
-.nutri-conseil-corps { flex: 1; min-width: 0; }
+
+.nutri-conseil-corps {
+  flex: 1;
+  min-width: 0;
+}
+
 .nutri-conseil-titre {
   font-size: 14px;
   font-weight: 700;
   color: var(--primary);
   margin-bottom: 2px;
 }
+
 .nutri-conseil-apercu {
   font-size: 12px;
   color: var(--text-hint);
 }
+
 .nutri-conseil-chevron {
   font-size: 18px;
   color: var(--text-hint);
   transition: transform 0.2s;
   flex-shrink: 0;
 }
-.nutri-conseil-card.ouvert .nutri-conseil-chevron { transform: rotate(90deg); }
+
+.nutri-conseil-card.ouvert .nutri-conseil-chevron {
+  transform: rotate(90deg);
+}
+
 .nutri-conseil-detail {
   display: none;
   border-top: 1px solid var(--border);
   padding: 12px 14px 14px;
 }
-.nutri-conseil-card.ouvert .nutri-conseil-detail { display: block; }
+
+.nutri-conseil-card.ouvert .nutri-conseil-detail {
+  display: block;
+}
 
 /* ── Species rows */
+
 .nutri-espece-ligne {
   display: flex;
   align-items: flex-start;
@@ -7599,7 +8369,12 @@ input[type="number"] {
   padding: 8px 0;
   border-bottom: 1px solid var(--border);
 }
-.nutri-espece-ligne:last-child { border-bottom: none; padding-bottom: 0; }
+
+.nutri-espece-ligne:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
 .nutri-espece-tag {
   font-size: 12px;
   font-weight: 700;
@@ -7607,11 +8382,28 @@ input[type="number"] {
   flex-shrink: 0;
   padding-top: 1px;
 }
-.nutri-espece-arrow { color: var(--text-hint); font-size: 11px; padding-top: 2px; flex-shrink: 0; }
-.nutri-espece-texte { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+.nutri-espece-arrow {
+  color: var(--text-hint);
+  font-size: 11px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+.nutri-espece-texte {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
 
 /* ── Bullet list */
-.nutri-bullet-liste { display: flex; flex-direction: column; gap: 7px; }
+
+.nutri-bullet-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
 .nutri-bullet-item {
   display: flex;
   align-items: flex-start;
@@ -7620,6 +8412,7 @@ input[type="number"] {
   color: var(--text-secondary);
   line-height: 1.5;
 }
+
 .nutri-bullet-puce {
   width: 5px;
   height: 5px;
@@ -7630,6 +8423,7 @@ input[type="number"] {
 }
 
 /* ── Target chip */
+
 .nutri-target-chip {
   display: inline-flex;
   align-items: center;
@@ -7645,27 +8439,46 @@ input[type="number"] {
 }
 
 /* ── Repères grille */
+
 .nutri-reperes-grille {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 7px;
   margin-bottom: 7px;
 }
+
 .nutri-repere-col {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 12px;
 }
+
 .nutri-repere-en-tete {
   display: flex;
   align-items: center;
   gap: 7px;
   margin-bottom: 9px;
 }
-.nutri-repere-point { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.nutri-repere-titre { font-size: 14px; font-weight: 700; }
-.nutri-repere-pilules { display: flex; flex-direction: column; gap: 5px; }
+
+.nutri-repere-point {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nutri-repere-titre {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.nutri-repere-pilules {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
 .nutri-repere-pilule {
   display: inline-block;
   padding: 5px 9px;
@@ -7680,12 +8493,14 @@ input[type="number"] {
 }
 
 /* ── MS expandable */
+
 .nutri-ms-expand {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
+
 .nutri-ms-btn {
   width: 100%;
   display: flex;
@@ -7701,15 +8516,35 @@ input[type="number"] {
   font-weight: 600;
   text-align: left;
 }
-.nutri-ms-chevron { margin-left: auto; color: var(--text-hint); font-size: 16px; transition: transform 0.2s; }
-.nutri-ms-expand.ouvert .nutri-ms-chevron { transform: rotate(180deg); }
+
+.nutri-ms-chevron {
+  margin-left: auto;
+  color: var(--text-hint);
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+
+.nutri-ms-expand.ouvert .nutri-ms-chevron {
+  transform: rotate(180deg);
+}
+
 .nutri-ms-detail {
   display: none;
   padding: 0 14px 14px;
   border-top: 1px solid var(--border);
 }
-.nutri-ms-expand.ouvert .nutri-ms-detail { display: block; }
-.nutri-ms-detail p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-top: 11px; }
+
+.nutri-ms-expand.ouvert .nutri-ms-detail {
+  display: block;
+}
+
+.nutri-ms-detail p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 11px;
+}
+
 .nutri-formule {
   margin-top: 10px;
   background: var(--bg-secondary);
@@ -7723,12 +8558,14 @@ input[type="number"] {
 }
 
 /* ── Food list */
+
 .nutri-aliments-liste {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
+
 .nutri-aliment-item {
   display: flex;
   align-items: center;
@@ -7736,7 +8573,11 @@ input[type="number"] {
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
 }
-.nutri-aliment-item:last-child { border-bottom: none; }
+
+.nutri-aliment-item:last-child {
+  border-bottom: none;
+}
+
 .nutri-aliment-logo {
   width: 44px;
   height: 28px;
@@ -7752,6 +8593,7 @@ input[type="number"] {
   flex-shrink: 0;
   color: white;
 }
+
 .nutri-aliment-nom {
   flex: 1;
   font-size: 13px;
@@ -7760,9 +8602,15 @@ input[type="number"] {
   line-height: 1.4;
   min-width: 0;
 }
-.nutri-aliment-fleche { font-size: 16px; color: var(--text-hint); flex-shrink: 0; }
+
+.nutri-aliment-fleche {
+  font-size: 16px;
+  color: var(--text-hint);
+  flex-shrink: 0;
+}
 
 /* ── Alertes */
+
 .nutri-alerte {
   border-radius: var(--radius-lg);
   padding: 13px 14px;
@@ -7770,27 +8618,51 @@ input[type="number"] {
   gap: 11px;
   align-items: flex-start;
 }
+
 .nutri-alerte--rouge {
   background: rgba(112,47,58,0.06);
   border: 1px solid rgba(112,47,58,0.25);
 }
+
 .nutri-alerte--amber {
   background: rgba(215,163,92,0.1);
   border: 1px solid rgba(215,163,92,0.4);
 }
-.nutri-alerte-titre { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
-.nutri-alerte--rouge .nutri-alerte-titre { color: var(--accent-red); }
-.nutri-alerte--amber .nutri-alerte-titre { color: #7A500A; }
-.nutri-alerte-texte { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-.nutri-alerte-valeur { font-weight: 700; color: #7A500A; }
+
+.nutri-alerte-titre {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.nutri-alerte--rouge .nutri-alerte-titre {
+  color: var(--accent-red);
+}
+
+.nutri-alerte--amber .nutri-alerte-titre {
+  color: #7A500A;
+}
+
+.nutri-alerte-texte {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.nutri-alerte-valeur {
+  font-weight: 700;
+  color: #7A500A;
+}
 
 /* ── Savoir plus */
+
 .nutri-savoir-plus {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
+
 .nutri-savoir-btn {
   width: 100%;
   display: flex;
@@ -7806,17 +8678,37 @@ input[type="number"] {
   font-weight: 700;
   text-align: left;
 }
-.nutri-savoir-chevron { margin-left: auto; color: var(--text-hint); font-size: 16px; transition: transform 0.2s; }
-.nutri-savoir-plus.ouvert .nutri-savoir-chevron { transform: rotate(180deg); }
+
+.nutri-savoir-chevron {
+  margin-left: auto;
+  color: var(--text-hint);
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+
+.nutri-savoir-plus.ouvert .nutri-savoir-chevron {
+  transform: rotate(180deg);
+}
+
 .nutri-savoir-corps {
   display: none;
   padding: 0 14px 14px;
   border-top: 1px solid var(--border);
 }
-.nutri-savoir-plus.ouvert .nutri-savoir-corps { display: block; }
-.nutri-savoir-corps p { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-top: 11px; }
+
+.nutri-savoir-plus.ouvert .nutri-savoir-corps {
+  display: block;
+}
+
+.nutri-savoir-corps p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-top: 11px;
+}
 
 /* ─── AUTH V2 ─────────────────────────────────── */
+
 .auth2-page {
   min-height: 100vh;
   background: #BCAADC url('/background-connexion.jpg') center/cover no-repeat;
@@ -7959,7 +8851,6 @@ input[type="number"] {
   z-index: 1;
   width: 100%;
   line-height: 0;
-
 }
 
 .auth2-photo img {
@@ -7970,6 +8861,7 @@ input[type="number"] {
 }
 
 /* ─── CONDITIONS D'UTILISATION (3 pages) ──────── */
+
 .cgu-page {
   min-height: 100vh;
   background-size: cover;
@@ -8088,5 +8980,465 @@ input[type="number"] {
   object-position: top;
 }
 
-.cgu-slide-next { animation: pageEnterFromRight 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
-.cgu-slide-prev { animation: pageEnterFromLeft  0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
+.cgu-slide-next {
+  animation: pageEnterFromRight 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.cgu-slide-prev {
+  animation: pageEnterFromLeft  0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PAGE GESTION DE L'ÉQUIPE
+   À ajouter à index.css. Remplace les styles inline de
+   l'ancienne version, rien à retirer ailleurs.
+   ═══════════════════════════════════════════════════════════ */
+
+.equipe-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 16px 100px;
+}
+
+/* ─── MESSAGES ──────────────────────────────────────────── */
+.equipe-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.equipe-message i {
+  font-size: 17px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.equipe-message.erreur {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #991B1B;
+}
+
+.equipe-message.succes {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* ─── CARTES ────────────────────────────────────────────── */
+.equipe-carte {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.equipe-carte.alerte {
+  border-color: #FCA5A5;
+}
+
+.equipe-carte-titre {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-hint);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.equipe-squelette {
+  height: 92px;
+  background: var(--bg-secondary);
+  border-color: transparent;
+  animation: equipePulsation 1.4s ease-in-out infinite;
+}
+
+.equipe-squelette--haute {
+  height: 200px;
+}
+
+@keyframes equipePulsation {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* ─── CLINIQUE ET LOGO ──────────────────────────────────── */
+.equipe-clinique {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.equipe-logo {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.equipe-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.equipe-logo i {
+  font-size: 28px;
+  color: var(--text-hint);
+}
+
+.equipe-clinique-textes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.equipe-clinique-nom {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.equipe-edition-nom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.equipe-edition-nom .form-input {
+  flex: 1;
+  min-width: 140px;
+}
+
+.equipe-actions-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ─── SIÈGES ────────────────────────────────────────────── */
+.equipe-sieges-haut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.equipe-sieges-compte {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.equipe-sieges-compte.alerte {
+  color: #991B1B;
+}
+
+.equipe-jauge {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.equipe-jauge-remplissage {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--primary);
+  transition: width 0.3s;
+}
+
+.equipe-jauge-remplissage.alerte {
+  background: #991B1B;
+}
+
+/* ─── BLOCS DE LISTE ────────────────────────────────────── */
+.equipe-bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.equipe-bloc-entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.equipe-bloc-titre {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-hint);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.equipe-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ─── MEMBRES ───────────────────────────────────────────── */
+.equipe-membre,
+.equipe-invitation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+}
+
+.equipe-membre-avatar {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.equipe-membre-textes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.equipe-membre-nom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.equipe-membre-moi {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-hint);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-pill);
+  padding: 1px 8px;
+}
+
+.equipe-membre-role {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-hint);
+}
+
+.equipe-membre-role.proprietaire {
+  color: var(--accent-gold, #B8860B);
+}
+
+.equipe-membre-role.admin {
+  color: var(--primary);
+}
+
+.equipe-membre-gerer {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 9px 16px;
+  background: var(--bg-secondary);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ─── INVITATIONS ───────────────────────────────────────── */
+.equipe-invitation-detail {
+  font-size: 12px;
+  color: var(--text-hint);
+}
+
+.equipe-invitation-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── BOUTONS ET LIENS ──────────────────────────────────── */
+.equipe-btn-primaire,
+.equipe-btn-secondaire,
+.equipe-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.equipe-btn-primaire {
+  width: 100%;
+  background: var(--primary);
+  color: #fff;
+}
+
+.equipe-btn-secondaire {
+  background: var(--bg-card);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.equipe-btn-danger {
+  background: #FEF2F2;
+  border-color: #FCA5A5;
+  color: #991B1B;
+}
+
+.equipe-btn-primaire:disabled,
+.equipe-btn-secondaire:disabled,
+.equipe-btn-danger:disabled {
+  opacity: 0.55;
+}
+
+.equipe-lien {
+  background: none;
+  border: none;
+  padding: 6px 2px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.equipe-lien.discret {
+  color: var(--text-hint);
+  font-weight: 600;
+}
+
+.equipe-lien.danger {
+  color: #991B1B;
+}
+
+.equipe-aide {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-hint);
+  margin: 0;
+}
+
+.equipe-aide.alerte {
+  color: #991B1B;
+  font-weight: 600;
+}
+
+/* ─── CONTENU DES POPUPS ────────────────────────────────── */
+.equipe-gestion {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.equipe-gestion-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.equipe-centre {
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.equipe-icone-grande {
+  font-size: 40px;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.equipe-icone-grande.danger {
+  color: #991B1B;
+}
+
+.equipe-centre-titre {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+}
+
+.equipe-avertissement {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--yellow);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.equipe-avertissement p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.equipe-emails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.equipe-email {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.equipe-email i {
+  color: var(--primary);
+  font-size: 14px;
+}

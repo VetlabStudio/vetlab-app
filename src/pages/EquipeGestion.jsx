@@ -1,93 +1,224 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { Navigate } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
 
+const BUCKET_LOGOS = 'logos-cliniques'
+const TAILLE_MAX_LOGO = 2 * 1024 * 1024 // 2 Mo
+const LARGEUR_LOGO = 600 // px, après redimensionnement
+
+const TYPES_LOGO = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp']
+
+function libelleRole(role) {
+  if (role === 'proprietaire') return 'Propriétaire'
+  if (role === 'admin') return 'Admin'
+  return 'Membre'
+}
+
+function depuis(dateIso) {
+  const jours = Math.floor((Date.now() - new Date(dateIso)) / 86400000)
+  if (jours <= 0) return "aujourd'hui"
+  if (jours === 1) return 'hier'
+  if (jours < 7) return `il y a ${jours} jours`
+  const semaines = Math.floor(jours / 7)
+  if (semaines < 5) return `il y a ${semaines} semaine${semaines > 1 ? 's' : ''}`
+  return `il y a ${Math.floor(jours / 30)} mois`
+}
+
+/* Redimensionne et convertit en PNG avant l'envoi : le logo se
+   retrouve embarqué dans chaque PDF, autant qu'il soit léger.
+   Le SVG est envoyé tel quel, il est déjà minuscule. */
+async function preparerLogo(fichier) {
+  if (fichier.type === 'image/svg+xml') {
+    return { blob: fichier, extension: 'svg', contentType: 'image/svg+xml' }
+  }
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsDataURL(fichier)
+  })
+  const img = await new Promise((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => resolve(image)
+    image.onerror = reject
+    image.src = dataUrl
+  })
+  const echelle = Math.min(1, LARGEUR_LOGO / (img.width || LARGEUR_LOGO))
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.max(1, Math.round(img.width * echelle))
+  canvas.height = Math.max(1, Math.round(img.height * echelle))
+  canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
+  return { blob, extension: 'png', contentType: 'image/png' }
+}
+
 export default function EquipeGestion() {
   const { teamId, roleEquipe, chargement, chargerProfil } = useProfil()
   const navigate = useNavigate()
+
   const [membres, setMembres] = useState([])
   const [invitations, setInvitations] = useState([])
   const [equipe, setEquipe] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [userId, setUserId] = useState(null)
+  const [message, setMessage] = useState(null) // { type, texte }
+
   const [emailsInput, setEmailsInput] = useState('')
   const [roleInvit, setRoleInvit] = useState('membre')
   const [envoi, setEnvoi] = useState(false)
   const [envoiProgress, setEnvoiProgress] = useState(null)
-  const [msgSucces, setMsgSucces] = useState('')
   const [erreurInvit, setErreurInvit] = useState('')
-  const [confirmRevoquer, setConfirmRevoquer] = useState(null)
+  const [msgSucces, setMsgSucces] = useState('')
   const [showInviteModal, setShowInviteModal] = useState(false)
+
+  const [confirmRevoquer, setConfirmRevoquer] = useState(null)
+  const [membreGere, setMembreGere] = useState(null)
   const [showTransfertModal, setShowTransfertModal] = useState(false)
   const [cibleTransfert, setCibleTransfert] = useState(null)
   const [transfertEnCours, setTransfertEnCours] = useState(false)
   const [erreurTransfert, setErreurTransfert] = useState('')
-  const [userId, setUserId] = useState(null)
+
   const [editNomClinique, setEditNomClinique] = useState(false)
   const [nouveauNomClinique, setNouveauNomClinique] = useState('')
+  const [envoiLogo, setEnvoiLogo] = useState(false)
+  const [confirmRetraitLogo, setConfirmRetraitLogo] = useState(false)
+  const champLogo = useRef(null)
 
   useEffect(() => {
     if (!teamId) return
     charger()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamId])
+
+  useEffect(() => {
+    if (!message) return
+    const t = setTimeout(() => setMessage(null), 4000)
+    return () => clearTimeout(t)
+  }, [message])
+
+  function signaler(type, texte) {
+    setMessage({ type, texte })
+  }
 
   async function charger() {
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
     setUserId(user.id)
 
-    const { data: eq } = await supabase
-      .from('equipes')
-      .select('*')
-      .eq('id', teamId)
-      .single()
+    const [{ data: eq, error: eqErreur }, { data: mems, error: memErreur }, { data: invits }] = await Promise.all([
+      supabase.from('equipes').select('*').eq('id', teamId).single(),
+      supabase.from('membres_equipe').select('*, profiles(nom)').eq('equipe_id', teamId),
+      supabase.from('team_invitations').select('*').eq('team_id', teamId).eq('status', 'pending').order('created_at', { ascending: false }),
+    ])
 
-    const { data: mems } = await supabase
-      .from('membres_equipe')
-      .select('*, profiles(nom)')
-      .eq('equipe_id', teamId)
+    if (eqErreur || memErreur) signaler('erreur', "Impossible de charger l'équipe. Vérifiez votre connexion.")
 
-    const { data: invits } = await supabase
-      .from('team_invitations')
-      .select('*')
-      .eq('team_id', teamId)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false })
-
-    setEquipe(eq)
+    setEquipe(eq || null)
     setMembres(mems || [])
     setInvitations(invits || [])
     setLoading(false)
   }
 
-  function parseEmails(text) {
+  /* ─── LOGO ────────────────────────────────────────────── */
+  async function choisirLogo(e) {
+    const fichier = e.target.files?.[0]
+    e.target.value = ''
+    if (!fichier) return
+
+    if (!TYPES_LOGO.includes(fichier.type)) {
+      signaler('erreur', 'Format non accepté. Utilisez un PNG, un JPG, un SVG ou un WebP.')
+      return
+    }
+    if (fichier.size > TAILLE_MAX_LOGO) {
+      signaler('erreur', 'Fichier trop lourd, maximum 2 Mo.')
+      return
+    }
+
+    setEnvoiLogo(true)
+    try {
+      const { blob, extension, contentType } = await preparerLogo(fichier)
+      const chemin = `${teamId}/logo.${extension}`
+
+      const { error: erreurUpload } = await supabase.storage
+        .from(BUCKET_LOGOS)
+        .upload(chemin, blob, { upsert: true, contentType, cacheControl: '3600' })
+      if (erreurUpload) throw erreurUpload
+
+      const { data: pub } = supabase.storage.from(BUCKET_LOGOS).getPublicUrl(chemin)
+      const url = `${pub.publicUrl}?v=${Date.now()}`
+
+      const { error: erreurMaj } = await supabase.from('equipes').update({ logo_url: url }).eq('id', teamId)
+      if (erreurMaj) throw erreurMaj
+
+      setEquipe(prev => ({ ...prev, logo_url: url }))
+      signaler('succes', 'Logo mis à jour. Il apparaîtra sur vos prochains PDF.')
+    } catch (err) {
+      signaler('erreur', `Le logo n'a pas pu être envoyé. ${err?.message || ''}`.trim())
+    } finally {
+      setEnvoiLogo(false)
+    }
+  }
+
+  async function retirerLogo() {
+    setConfirmRetraitLogo(false)
+    setEnvoiLogo(true)
+    try {
+      await supabase.storage.from(BUCKET_LOGOS).remove([`${teamId}/logo.png`, `${teamId}/logo.svg`])
+      const { error } = await supabase.from('equipes').update({ logo_url: null }).eq('id', teamId)
+      if (error) throw error
+      setEquipe(prev => ({ ...prev, logo_url: null }))
+      signaler('succes', 'Logo retiré.')
+    } catch (err) {
+      signaler('erreur', `Le logo n'a pas pu être retiré. ${err?.message || ''}`.trim())
+    } finally {
+      setEnvoiLogo(false)
+    }
+  }
+
+  /* ─── NOM DE LA CLINIQUE ──────────────────────────────── */
+  async function sauvegarderNomClinique() {
+    const nom = nouveauNomClinique.trim()
+    if (!nom) return
+    const { error } = await supabase.from('equipes').update({ nom }).eq('id', teamId)
+    if (error) {
+      signaler('erreur', "Le nom n'a pas pu être enregistré.")
+      return
+    }
+    setEquipe(prev => ({ ...prev, nom }))
+    setEditNomClinique(false)
+  }
+
+  /* ─── INVITATIONS ─────────────────────────────────────── */
+  function parseEmails(texte) {
     return [...new Set(
-      text.split(/[\s,;]+/)
+      texte.split(/[\s,;]+/)
         .map(e => e.trim().toLowerCase())
         .filter(e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))
     )]
   }
 
-  const emailsParsed = parseEmails(emailsInput)
+  const emailsParsed = useMemo(() => parseEmails(emailsInput), [emailsInput])
   const siegesRestants = equipe?.max_membres ? equipe.max_membres - membres.length : Infinity
+  const plein = equipe?.max_membres && membres.length >= equipe.max_membres
 
-  async function inviterUn(email) {
-    await supabase.from('team_invitations')
-      .delete()
-      .eq('team_id', teamId)
-      .eq('email', email)
+  async function inviterUn(email, role) {
+    await supabase.from('team_invitations').delete().eq('team_id', teamId).eq('email', email)
 
     const token = crypto.randomUUID()
     const { error } = await supabase.from('team_invitations').insert({
-      team_id: teamId, email, role: roleInvit, invited_by: userId, token, status: 'pending',
+      team_id: teamId, email, role, invited_by: userId, token, status: 'pending',
     })
     if (error) return { ok: false, message: error.message || 'Erreur inconnue' }
 
     const baseUrl = import.meta.env.VITE_APP_URL || 'https://adjuvet.app'
-    const { error: fnError } = await supabase.functions.invoke('send-invitation', {
+    const { error: erreurCourriel } = await supabase.functions.invoke('send-invitation', {
       body: { email, nomClinique: equipe?.nom || 'notre équipe', lien: `${baseUrl}/rejoindre?token=${token}`, emailInvite: email },
     })
-    if (fnError) console.error('send-invitation error:', fnError)
+    // L'invitation existe, mais le courriel n'est pas parti : on le dit.
+    if (erreurCourriel) return { ok: false, message: "invitation créée, mais le courriel n'a pas pu être envoyé" }
     return { ok: true }
   }
 
@@ -96,72 +227,90 @@ export default function EquipeGestion() {
     setErreurInvit('')
 
     if (equipe?.max_membres && emailsParsed.length > siegesRestants) {
-      setErreurInvit(`Seulement ${siegesRestants} siège(s) disponible(s) pour ${emailsParsed.length} invitations.`)
+      setErreurInvit(`Seulement ${siegesRestants} siège${siegesRestants > 1 ? 's' : ''} disponible${siegesRestants > 1 ? 's' : ''} pour ${emailsParsed.length} invitations.`)
       return
     }
 
     setEnvoi(true)
     let envoyes = 0
-    const messagesErreur = []
+    const erreurs = []
     setEnvoiProgress({ total: emailsParsed.length, envoyes: 0, erreurs: 0 })
 
     for (const email of emailsParsed) {
-      const result = await inviterUn(email)
-      if (result.ok) envoyes++
-      else messagesErreur.push(`${email} : ${result.message}`)
-      setEnvoiProgress({ total: emailsParsed.length, envoyes, erreurs: messagesErreur.length })
+      const resultat = await inviterUn(email, roleInvit)
+      if (resultat.ok) envoyes++
+      else erreurs.push(`${email} : ${resultat.message}`)
+      setEnvoiProgress({ total: emailsParsed.length, envoyes, erreurs: erreurs.length })
     }
 
     setEmailsInput('')
-    charger()
-    if (messagesErreur.length === 0) {
-      setMsgSucces(`${envoyes} invitation${envoyes > 1 ? 's' : ''} envoyée${envoyes > 1 ? 's' : ''} avec succès.`)
-      setTimeout(() => { setShowInviteModal(false); setMsgSucces('') }, 2000)
+    await charger()
+
+    if (erreurs.length === 0) {
+      setMsgSucces(`${envoyes} invitation${envoyes > 1 ? 's' : ''} envoyée${envoyes > 1 ? 's' : ''}.`)
+      setTimeout(() => { setShowInviteModal(false); setMsgSucces('') }, 1800)
     } else if (envoyes === 0) {
-      setErreurInvit(messagesErreur.join('\n'))
+      setErreurInvit(erreurs.join('\n'))
     } else {
-      setErreurInvit(`${envoyes} envoyée${envoyes > 1 ? 's' : ''}. Échec :\n${messagesErreur.join('\n')}`)
+      setErreurInvit(`${envoyes} envoyée${envoyes > 1 ? 's' : ''}. Échec :\n${erreurs.join('\n')}`)
     }
     setEnvoiProgress(null)
     setEnvoi(false)
   }
 
+  async function renvoyerInvitation(invitation) {
+    const resultat = await inviterUn(invitation.email, invitation.role)
+    if (resultat.ok) signaler('succes', `Invitation renvoyée à ${invitation.email}.`)
+    else signaler('erreur', `Échec du renvoi : ${resultat.message}`)
+    charger()
+  }
+
   async function annulerInvitation(id) {
-    await supabase.from('team_invitations').delete().eq('id', id)
+    const { error } = await supabase.from('team_invitations').delete().eq('id', id)
+    if (error) {
+      signaler('erreur', "L'invitation n'a pas pu être annulée.")
+      return
+    }
     setInvitations(prev => prev.filter(i => i.id !== id))
   }
 
-  async function revoquerMembre(memberId) {
-    const membre = membres.find(m => m.id === memberId)
-    if (!membre) return
-    await supabase.rpc('revoquer_membre', {
-      membre_user_id: membre.user_id,
-      equipe_id_param: teamId,
-    })
-    // Rétrograder le plan du membre révoqué
-    await supabase.from('profiles')
-      .update({ plan: 'free', equipe_id: null, role: null })
-      .eq('id', membre.user_id)
-    setMembres(prev => prev.filter(m => m.id !== memberId))
-    setConfirmRevoquer(null)
-  }
-
-  async function sauvegarderNomClinique() {
-    if (!nouveauNomClinique.trim()) return
-    await supabase.from('equipes').update({ nom: nouveauNomClinique.trim() }).eq('id', teamId)
-    setEquipe(prev => ({ ...prev, nom: nouveauNomClinique.trim() }))
-    setEditNomClinique(false)
-  }
-
-  async function changerRole(memberId, nouveauRole) {
-    const membre = membres.find(m => m.id === memberId)
-    if (!membre) return
-    await supabase.rpc('changer_role_membre', {
+  /* ─── MEMBRES ─────────────────────────────────────────── */
+  async function changerRole(membre, nouveauRole) {
+    const { error } = await supabase.rpc('changer_role_membre', {
       membre_user_id: membre.user_id,
       equipe_id_param: teamId,
       nouveau_role: nouveauRole,
     })
-    setMembres(prev => prev.map(m => m.id === memberId ? { ...m, role: nouveauRole } : m))
+    if (error) {
+      signaler('erreur', "Le rôle n'a pas pu être modifié.")
+      return
+    }
+    setMembres(prev => prev.map(m => m.id === membre.id ? { ...m, role: nouveauRole } : m))
+    setMembreGere(prev => prev && prev.id === membre.id ? { ...prev, role: nouveauRole } : prev)
+    signaler('succes', `${membre.profiles?.nom || 'Ce membre'} est maintenant ${libelleRole(nouveauRole).toLowerCase()}.`)
+  }
+
+  async function revoquerMembre(membre) {
+    const { error } = await supabase.rpc('revoquer_membre', {
+      membre_user_id: membre.user_id,
+      equipe_id_param: teamId,
+    })
+    if (error) {
+      signaler('erreur', "L'accès n'a pas pu être révoqué. Rien n'a été modifié.")
+      setConfirmRevoquer(null)
+      return
+    }
+    const { error: erreurProfil } = await supabase.from('profiles')
+      .update({ plan: 'free', equipe_id: null, role: null })
+      .eq('id', membre.user_id)
+    if (erreurProfil) {
+      signaler('erreur', "Accès révoqué, mais le forfait du membre n'a pas pu être rétrogradé.")
+    } else {
+      signaler('succes', 'Accès révoqué.')
+    }
+    setMembres(prev => prev.filter(m => m.id !== membre.id))
+    setConfirmRevoquer(null)
+    setMembreGere(null)
   }
 
   async function effectuerTransfert() {
@@ -181,178 +330,243 @@ export default function EquipeGestion() {
 
     setShowTransfertModal(false)
     setCibleTransfert(null)
+    setMembreGere(null)
     setTransfertEnCours(false)
     await charger()
     if (chargerProfil) chargerProfil()
   }
 
-  if (chargement || loading) return null
+  /* ─── RENDU ───────────────────────────────────────────── */
+  if (chargement) return null
+  if (roleEquipe !== 'admin' && roleEquipe !== 'proprietaire') return <Navigate to="/equipe" replace />
 
-  if (roleEquipe !== 'admin' && roleEquipe !== 'proprietaire') {
-    navigate('/equipe')
-    return null
+  if (loading) {
+    return (
+      <div className="equipe-page">
+        <div className="equipe-carte equipe-squelette" />
+        <div className="equipe-carte equipe-squelette" />
+        <div className="equipe-carte equipe-squelette equipe-squelette--haute" />
+      </div>
+    )
   }
 
-  const labelRole = r => r === 'proprietaire' ? 'Propriétaire' : r === 'admin' ? 'Admin' : 'Membre'
-  const couleurRole = r => r === 'proprietaire' ? 'var(--accent-gold)' : r === 'admin' ? 'var(--primary)' : 'var(--text-secondary)'
-  const plein = equipe?.max_membres && membres.length >= equipe.max_membres
+  const estProprietaire = roleEquipe === 'proprietaire'
 
   return (
-    <div className="abonnement-page">
+    <div className="equipe-page">
 
-      {/* Clinique */}
-      {equipe && (
-        <div className="abonnement-carte" style={{ padding: '14px 16px' }}>
-          {editNomClinique ? (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <input
-                value={nouveauNomClinique}
-                onChange={e => setNouveauNomClinique(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') sauvegarderNomClinique(); if (e.key === 'Escape') setEditNomClinique(false) }}
-                autoFocus
-                style={{
-                  flex: 1, border: '1px solid var(--border)', borderRadius: 8, padding: '6px 10px',
-                  fontSize: 15, fontWeight: 700, background: 'var(--bg-secondary)', color: 'var(--text-primary)', outline: 'none',
-                }}
-              />
-              <button onClick={sauvegarderNomClinique} style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-                Sauvegarder
-              </button>
-              <button onClick={() => setEditNomClinique(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)', fontSize: 18, lineHeight: 1 }}>✕</button>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 2 }}>Clinique</p>
-                <p style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', margin: 0 }}>{equipe.nom}</p>
-              </div>
-              <button onClick={() => { setNouveauNomClinique(equipe.nom); setEditNomClinique(true) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)', fontSize: 16, padding: 4 }}>
-                <i className="ti ti-pencil"></i>
-              </button>
-            </div>
-          )}
+      {message && (
+        <div className={`equipe-message ${message.type}`}>
+          <i className={`ti ti-${message.type === 'erreur' ? 'alert-circle' : 'circle-check'}`}></i>
+          <span>{message.texte}</span>
         </div>
       )}
 
-      {/* Sièges */}
+      {/* ═══ CLINIQUE ═══ */}
+      <div className="equipe-carte">
+        <div className="equipe-carte-titre">Clinique</div>
+
+        <div className="equipe-clinique">
+          <div className="equipe-logo">
+            {equipe?.logo_url
+              ? <img src={equipe.logo_url} alt="Logo de la clinique" />
+              : <i className="ti ti-building-hospital"></i>}
+          </div>
+
+          <div className="equipe-clinique-textes">
+            {editNomClinique ? (
+              <div className="equipe-edition-nom">
+                <input
+                  className="form-input"
+                  value={nouveauNomClinique}
+                  onChange={e => setNouveauNomClinique(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') sauvegarderNomClinique()
+                    if (e.key === 'Escape') setEditNomClinique(false)
+                  }}
+                  autoFocus
+                />
+                <button className="equipe-lien" onClick={sauvegarderNomClinique}>Enregistrer</button>
+                <button className="equipe-lien discret" onClick={() => setEditNomClinique(false)}>Annuler</button>
+              </div>
+            ) : (
+              <>
+                <span className="equipe-clinique-nom">{equipe?.nom || 'Clinique'}</span>
+                <button className="equipe-lien" onClick={() => { setNouveauNomClinique(equipe?.nom || ''); setEditNomClinique(true) }}>
+                  Renommer
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        <p className="equipe-aide">
+          Le logo remplace le symbole Adjuvet en haut de vos PDF. Image de 2 Mo maximum.
+          Un logo carré sur fond transparent ou blanc donne le meilleur résultat.
+        </p>
+
+        <div className="equipe-actions-logo">
+          <input
+            ref={champLogo}
+            type="file"
+            accept="image/png,image/jpeg,image/svg+xml,image/webp"
+            onChange={choisirLogo}
+            style={{ display: 'none' }}
+          />
+          <button className="equipe-btn-secondaire" onClick={() => champLogo.current?.click()} disabled={envoiLogo}>
+            <i className="ti ti-upload"></i>
+            {envoiLogo ? 'Envoi...' : equipe?.logo_url ? 'Remplacer le logo' : 'Ajouter un logo'}
+          </button>
+          {equipe?.logo_url && (
+            <button className="equipe-lien danger" onClick={() => setConfirmRetraitLogo(true)} disabled={envoiLogo}>
+              Retirer
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ═══ SIÈGES ═══ */}
       {equipe?.max_membres && (
-        <div className="abonnement-carte" style={{ borderColor: plein ? 'var(--accent-red)' : 'var(--border)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>
-              <i className="ti ti-users" style={{ marginRight: 6 }}></i>Sièges utilisés
-            </span>
-            <span style={{ fontSize: 14, fontWeight: 700, color: plein ? 'var(--accent-red)' : 'var(--primary)' }}>
+        <div className={`equipe-carte ${plein ? 'alerte' : ''}`}>
+          <div className="equipe-sieges-haut">
+            <span className="equipe-carte-titre">Sièges utilisés</span>
+            <span className={`equipe-sieges-compte ${plein ? 'alerte' : ''}`}>
               {membres.length} / {equipe.max_membres}
             </span>
           </div>
-          <div style={{ background: 'var(--border)', borderRadius: 99, height: 5, overflow: 'hidden' }}>
-            <div style={{
-              height: '100%', borderRadius: 99,
-              width: `${Math.min(100, (membres.length / equipe.max_membres) * 100)}%`,
-              background: plein ? 'var(--accent-red)' : 'var(--primary)',
-              transition: 'width 0.3s',
-            }} />
+          <div className="equipe-jauge">
+            <div
+              className={`equipe-jauge-remplissage ${plein ? 'alerte' : ''}`}
+              style={{ width: `${Math.min(100, (membres.length / equipe.max_membres) * 100)}%` }}
+            />
           </div>
-          <p style={{ fontSize: 12, color: plein ? 'var(--accent-red)' : 'var(--text-hint)', margin: '8px 0 0' }}>
+          <p className={`equipe-aide ${plein ? 'alerte' : ''}`}>
             {plein
-              ? "Limite atteinte — augmentez le nombre de sièges pour inviter d'autres membres."
-              : `${equipe.max_membres - membres.length} siège${equipe.max_membres - membres.length > 1 ? 's' : ''} disponible${equipe.max_membres - membres.length > 1 ? 's' : ''}`
-            }
+              ? "Limite atteinte. Augmentez le nombre de sièges pour inviter d'autres membres."
+              : `${equipe.max_membres - membres.length} siège${equipe.max_membres - membres.length > 1 ? 's' : ''} disponible${equipe.max_membres - membres.length > 1 ? 's' : ''}`}
           </p>
-          {plein && roleEquipe === 'proprietaire' && (
-            <button
-              onClick={() => navigate('/abonnement')}
-              style={{ marginTop: 10, background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-            >
-              <i className="ti ti-arrow-up-circle" style={{ marginRight: 5 }}></i>Augmenter les sièges
+          {plein && estProprietaire && (
+            <button className="equipe-btn-secondaire" onClick={() => navigate('/abonnement')}>
+              <i className="ti ti-arrow-up-circle"></i> Augmenter les sièges
             </button>
           )}
         </div>
       )}
 
-      {/* Membres */}
-      <div>
-        <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 10 }}>
-          Membres
+      {/* ═══ MEMBRES ═══ */}
+      <div className="equipe-bloc">
+        <div className="equipe-bloc-entete">
+          <span className="equipe-bloc-titre">Membres ({membres.length})</span>
+          <button
+            className="equipe-lien"
+            onClick={() => plein ? navigate('/abonnement') : setShowInviteModal(true)}
+          >
+            {plein ? 'Limite atteinte' : '+ Ajouter'}
+          </button>
+        </div>
+
+        <p className="equipe-aide">
+          Un admin peut inviter, retirer et changer les rôles. Un membre consulte les protocoles et les
+          monographies de l'équipe sans pouvoir les modifier.
         </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {membres.map(m => (
-            <div key={m.id} className="abonnement-carte" style={{ padding: '12px 14px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', margin: 0 }}>
-                    {m.profiles?.nom || '—'}
-                    {m.user_id === userId && <span style={{ fontSize: 11, color: 'var(--text-hint)', marginLeft: 6 }}>(vous)</span>}
-                  </p>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: couleurRole(m.role) }}>{labelRole(m.role)}</span>
+
+        <div className="equipe-liste">
+          {membres.map(m => {
+            const cestMoi = m.user_id === userId
+            return (
+              <div key={m.id} className="equipe-membre">
+                <div className="equipe-membre-avatar">
+                  {(m.profiles?.nom || '?').trim().charAt(0).toUpperCase()}
                 </div>
-                {m.role !== 'proprietaire' && m.user_id !== userId && (
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <select
-                      value={m.role}
-                      onChange={e => {
-                        if (e.target.value === 'proprietaire') {
-                          setCibleTransfert(m)
-                          setShowTransfertModal(true)
-                        } else {
-                          changerRole(m.id, e.target.value)
-                        }
-                      }}
-                      className="form-input"
-                      style={{ borderRadius: 8, fontSize: 12, backgroundColor: 'var(--bg-secondary)', color: 'var(--text)', padding: '5px 8px' }}
-                    >
-                      <option value="membre">Membre</option>
-                      <option value="admin">Admin</option>
-                      {roleEquipe === 'proprietaire' && (
-                        <option value="proprietaire">Propriétaire</option>
-                      )}
-                    </select>
-                    <button onClick={() => setConfirmRevoquer(m.id)} style={{ background: 'none', border: '1px solid var(--accent-red)', color: 'var(--accent-red)', borderRadius: 8, padding: '5px 10px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-                      Révoquer
-                    </button>
-                  </div>
+                <div className="equipe-membre-textes">
+                  <span className="equipe-membre-nom">
+                    {m.profiles?.nom || 'Sans nom'}
+                    {cestMoi && <span className="equipe-membre-moi">vous</span>}
+                  </span>
+                  <span className={`equipe-membre-role ${m.role}`}>{libelleRole(m.role)}</span>
+                </div>
+                {m.role !== 'proprietaire' && !cestMoi && (
+                  <button className="equipe-membre-gerer" onClick={() => setMembreGere(m)}>
+                    Gérer
+                  </button>
                 )}
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 
-      {/* Invitations en attente */}
+      {/* ═══ INVITATIONS ═══ */}
       {invitations.length > 0 && (
-        <div>
-          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 10 }}>
-            Invitations en attente ({invitations.length})
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="equipe-bloc">
+          <div className="equipe-bloc-entete">
+            <span className="equipe-bloc-titre">Invitations en attente ({invitations.length})</span>
+          </div>
+          <div className="equipe-liste">
             {invitations.map(inv => (
-              <div key={inv.id} className="abonnement-carte" style={{ padding: '12px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p style={{ fontSize: 14, color: 'var(--text)', fontWeight: 600, margin: 0 }}>{inv.email}</p>
-                  <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: '2px 0 0' }}>{labelRole(inv.role)}</p>
+              <div key={inv.id} className="equipe-invitation">
+                <div className="equipe-membre-textes">
+                  <span className="equipe-membre-nom">{inv.email}</span>
+                  <span className="equipe-invitation-detail">
+                    {libelleRole(inv.role)} · envoyée {depuis(inv.created_at)}
+                  </span>
                 </div>
-                <button onClick={() => annulerInvitation(inv.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent-red)', fontSize: 13, fontWeight: 600 }}>
-                  Annuler
-                </button>
+                <div className="equipe-invitation-actions">
+                  <button className="equipe-lien" onClick={() => renvoyerInvitation(inv)}>Renvoyer</button>
+                  <button className="equipe-lien danger" onClick={() => annulerInvitation(inv.id)}>Annuler</button>
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Bouton ajouter */}
-      <button
-        className="abonnement-btn-abonner"
-        onClick={() => plein ? navigate('/abonnement') : setShowInviteModal(true)}
-        style={{ background: plein ? 'var(--text-hint)' : 'var(--primary)' }}
-      >
-        {plein
-          ? <><i className="ti ti-lock"></i> Limite atteinte</>
-          : <><i className="ti ti-user-plus"></i> Ajouter un membre</>
-        }
-      </button>
+      {/* ═══ POPUP GESTION D'UN MEMBRE ═══ */}
+      {membreGere && (
+        <div className="popup-overlay" onClick={() => setMembreGere(null)}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <span>{membreGere.profiles?.nom || 'Membre'}</span>
+              <button className="popup-close" onClick={() => setMembreGere(null)}>✕</button>
+            </div>
 
-      {/* Modal invitation */}
+            <div className="equipe-gestion">
+              <div className="equipe-gestion-section">
+                <span className="equipe-carte-titre">Rôle</span>
+                <div className="toggle-groupe">
+                  <button
+                    className={`toggle-btn ${membreGere.role === 'membre' ? 'actif' : ''}`}
+                    onClick={() => changerRole(membreGere, 'membre')}
+                  >
+                    Membre
+                  </button>
+                  <button
+                    className={`toggle-btn ${membreGere.role === 'admin' ? 'actif' : ''}`}
+                    onClick={() => changerRole(membreGere, 'admin')}
+                  >
+                    Admin
+                  </button>
+                </div>
+              </div>
+
+              {estProprietaire && (
+                <button
+                  className="equipe-btn-secondaire"
+                  onClick={() => { setCibleTransfert(membreGere); setShowTransfertModal(true) }}
+                >
+                  <i className="ti ti-arrows-exchange"></i> Transférer la propriété
+                </button>
+              )}
+
+              <button className="equipe-btn-danger" onClick={() => setConfirmRevoquer(membreGere)}>
+                <i className="ti ti-user-x"></i> Révoquer l'accès
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ POPUP INVITATION ═══ */}
       {showInviteModal && (
         <div className="popup-overlay" onClick={() => { setShowInviteModal(false); setEmailsInput(''); setErreurInvit(''); setMsgSucces('') }}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
@@ -361,75 +575,63 @@ export default function EquipeGestion() {
               <button className="popup-close" onClick={() => { setShowInviteModal(false); setEmailsInput(''); setErreurInvit(''); setMsgSucces('') }}>✕</button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '4px 0 8px' }}>
+            <div className="equipe-gestion">
               <textarea
-                placeholder={'Courriel(s) — séparés par virgule, espace ou retour de ligne'}
+                className="form-textarea"
+                rows={3}
+                placeholder="Courriels, séparés par une virgule, un espace ou un retour de ligne"
                 value={emailsInput}
                 onChange={e => { setEmailsInput(e.target.value); setErreurInvit('') }}
-                rows={3}
-                style={{
-                  border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
-                  fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text)',
-                  outline: 'none', resize: 'vertical', fontFamily: 'var(--font)', width: '100%', boxSizing: 'border-box',
-                }}
               />
 
               {emailsParsed.length > 1 && (
-                <div style={{ padding: '8px 12px', borderRadius: 8, background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                    {emailsParsed.length} courriels détectés
-                  </p>
+                <div className="equipe-emails">
+                  <span className="equipe-carte-titre">{emailsParsed.length} courriels détectés</span>
                   {emailsParsed.map(e => (
-                    <p key={e} style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '2px 0' }}>
-                      <i className="ti ti-mail" style={{ marginRight: 6, color: 'var(--primary)' }}></i>{e}
-                    </p>
+                    <p key={e} className="equipe-email"><i className="ti ti-mail"></i>{e}</p>
                   ))}
                 </div>
               )}
 
-              <select
-                value={roleInvit}
-                onChange={e => setRoleInvit(e.target.value)}
-                className="form-input"
-                style={{ borderRadius: 10, fontSize: 14, backgroundColor: 'var(--bg-secondary)', color: 'var(--text)' }}
-              >
-                <option value="membre">Membre</option>
-                <option value="admin">Admin</option>
-              </select>
+              <div>
+                <span className="equipe-carte-titre">Rôle attribué</span>
+                <div className="toggle-groupe" style={{ marginTop: 6 }}>
+                  <button className={`toggle-btn ${roleInvit === 'membre' ? 'actif' : ''}`} onClick={() => setRoleInvit('membre')}>Membre</button>
+                  <button className={`toggle-btn ${roleInvit === 'admin' ? 'actif' : ''}`} onClick={() => setRoleInvit('admin')}>Admin</button>
+                </div>
+              </div>
 
               {envoiProgress && (
-                <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
-                  <i className="ti ti-loader-2" style={{ marginRight: 6 }}></i>
-                  Envoi en cours… {envoiProgress.envoyes + envoiProgress.erreurs} / {envoiProgress.total}
+                <p className="equipe-aide">
+                  Envoi en cours, {envoiProgress.envoyes + envoiProgress.erreurs} sur {envoiProgress.total}
                 </p>
               )}
 
               {erreurInvit && (
-                <div style={{ padding: '10px 14px', borderRadius: 10, background: '#FFEBEE', color: 'var(--accent-red)', fontSize: 13, fontWeight: 600 }}>
-                  <i className="ti ti-alert-circle" style={{ marginRight: 6 }}></i>{erreurInvit}
+                <div className="equipe-message erreur" style={{ whiteSpace: 'pre-line' }}>
+                  <i className="ti ti-alert-circle"></i><span>{erreurInvit}</span>
                 </div>
               )}
 
               {msgSucces && (
-                <div style={{ padding: '10px 14px', borderRadius: 10, background: '#E8F5E9', color: '#388E3C', fontSize: 13, fontWeight: 600 }}>
-                  <i className="ti ti-circle-check" style={{ marginRight: 6 }}></i>{msgSucces}
+                <div className="equipe-message succes">
+                  <i className="ti ti-circle-check"></i><span>{msgSucces}</span>
                 </div>
               )}
 
-              <button
-                className="abonnement-btn-abonner"
-                onClick={inviter}
-                disabled={emailsParsed.length === 0 || envoi}
-                style={{ marginTop: 4 }}
-              >
-                {envoi ? 'Envoi en cours…' : emailsParsed.length > 1 ? `Envoyer ${emailsParsed.length} invitations` : "Envoyer l'invitation"}
+              <button className="equipe-btn-primaire" onClick={inviter} disabled={emailsParsed.length === 0 || envoi}>
+                {envoi
+                  ? 'Envoi en cours...'
+                  : emailsParsed.length > 1
+                    ? `Envoyer ${emailsParsed.length} invitations`
+                    : "Envoyer l'invitation"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal transfert de propriété */}
+      {/* ═══ POPUP TRANSFERT ═══ */}
       {showTransfertModal && cibleTransfert && (
         <div className="popup-overlay" onClick={() => { if (!transfertEnCours) { setShowTransfertModal(false); setCibleTransfert(null); setErreurTransfert('') } }}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
@@ -438,67 +640,77 @@ export default function EquipeGestion() {
               <button className="popup-close" onClick={() => { setShowTransfertModal(false); setCibleTransfert(null); setErreurTransfert('') }} disabled={transfertEnCours}>✕</button>
             </div>
 
-            <div style={{ padding: '8px 0 16px' }}>
-              <div style={{ textAlign: 'center', marginBottom: 16 }}>
-                <i className="ti ti-arrows-exchange" style={{ fontSize: 36, color: 'var(--primary)', display: 'block', marginBottom: 8 }}></i>
-                <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', margin: '0 0 4px' }}>
-                  Transférer à {cibleTransfert.profiles?.nom}?
-                </p>
-                <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
-                  Vous deviendrez Admin. Cette action est irréversible.
-                </p>
+            <div className="equipe-gestion">
+              <div className="equipe-centre">
+                <i className="ti ti-arrows-exchange equipe-icone-grande"></i>
+                <p className="equipe-centre-titre">Transférer à {cibleTransfert.profiles?.nom}?</p>
+                <p className="equipe-aide">Vous deviendrez admin. Cette action est irréversible.</p>
               </div>
 
-              {/* Avertissement facturation */}
-              <div style={{ background: 'rgba(244, 181, 44, 0.1)', border: '1px solid var(--accent-gold)', borderRadius: 10, padding: '12px 14px', marginBottom: erreurTransfert ? 12 : 0 }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', margin: '0 0 6px' }}>
-                  <i className="ti ti-credit-card" style={{ marginRight: 6, color: 'var(--accent-gold)' }}></i>Attention — Facturation
-                </p>
-                <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                  Le renouvellement sera chargé sur la <strong>carte de crédit actuellement enregistrée</strong> jusqu'à ce que <strong>{cibleTransfert.profiles?.nom}</strong> mette à jour ses informations de paiement dans <strong>Abonnement → Gérer ma facturation</strong>.
+              <div className="equipe-avertissement">
+                <span className="equipe-carte-titre">Facturation</span>
+                <p>
+                  Le renouvellement sera chargé sur la carte de crédit actuellement enregistrée jusqu'à ce
+                  que {cibleTransfert.profiles?.nom} mette à jour ses informations de paiement dans
+                  Abonnement, puis Gérer ma facturation.
                 </p>
               </div>
 
               {erreurTransfert && (
-                <div style={{ padding: '10px 14px', borderRadius: 10, background: '#FFEBEE', color: 'var(--accent-red)', fontSize: 13, fontWeight: 600 }}>
-                  <i className="ti ti-alert-circle" style={{ marginRight: 6 }}></i>{erreurTransfert}
+                <div className="equipe-message erreur">
+                  <i className="ti ti-alert-circle"></i><span>{erreurTransfert}</span>
                 </div>
               )}
-            </div>
 
-            <div className="popup-actions-centrees">
-              <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => { setShowTransfertModal(false); setCibleTransfert(null); setErreurTransfert('') }} disabled={transfertEnCours}>
-                Annuler
-              </button>
-              <button
-                className="abonnement-btn-abonner"
-                style={{ flex: 1, marginTop: 0 }}
-                onClick={effectuerTransfert}
-                disabled={transfertEnCours}
-              >
-                {transfertEnCours ? 'Transfert…' : 'Confirmer'}
-              </button>
+              <div className="popup-actions-centrees">
+                <button className="equipe-btn-secondaire" style={{ flex: 1 }} onClick={() => { setShowTransfertModal(false); setCibleTransfert(null); setErreurTransfert('') }} disabled={transfertEnCours}>
+                  Annuler
+                </button>
+                <button className="equipe-btn-primaire" style={{ flex: 1 }} onClick={effectuerTransfert} disabled={transfertEnCours}>
+                  {transfertEnCours ? 'Transfert...' : 'Confirmer'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Confirmation révoquer */}
+      {/* ═══ CONFIRMATION RÉVOCATION ═══ */}
       {confirmRevoquer && (
         <div className="popup-overlay" onClick={() => setConfirmRevoquer(null)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
-            <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
-              <i className="ti ti-user-x" style={{ fontSize: 36, color: 'var(--accent-red)', marginBottom: 10, display: 'block' }}></i>
-              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Révoquer cet accès?</p>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Ce membre perdra l'accès au forfait Équipe.</p>
+            <div className="equipe-centre">
+              <i className="ti ti-user-x equipe-icone-grande danger"></i>
+              <p className="equipe-centre-titre">Révoquer cet accès?</p>
+              <p className="equipe-aide">
+                {confirmRevoquer.profiles?.nom || 'Ce membre'} perdra l'accès au forfait équipe et repassera au forfait gratuit.
+              </p>
             </div>
             <div className="popup-actions-centrees">
-              <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setConfirmRevoquer(null)}>Annuler</button>
-              <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => revoquerMembre(confirmRevoquer)}>Révoquer</button>
+              <button className="equipe-btn-secondaire" style={{ flex: 1 }} onClick={() => setConfirmRevoquer(null)}>Annuler</button>
+              <button className="equipe-btn-danger" style={{ flex: 1 }} onClick={() => revoquerMembre(confirmRevoquer)}>Révoquer</button>
             </div>
           </div>
         </div>
       )}
+
+      {/* ═══ CONFIRMATION RETRAIT DU LOGO ═══ */}
+      {confirmRetraitLogo && (
+        <div className="popup-overlay" onClick={() => setConfirmRetraitLogo(false)}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="equipe-centre">
+              <i className="ti ti-photo-off equipe-icone-grande"></i>
+              <p className="equipe-centre-titre">Retirer le logo?</p>
+              <p className="equipe-aide">Vos prochains PDF reprendront le symbole Adjuvet.</p>
+            </div>
+            <div className="popup-actions-centrees">
+              <button className="equipe-btn-secondaire" style={{ flex: 1 }} onClick={() => setConfirmRetraitLogo(false)}>Annuler</button>
+              <button className="equipe-btn-danger" style={{ flex: 1 }} onClick={retirerLogo}>Retirer</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
