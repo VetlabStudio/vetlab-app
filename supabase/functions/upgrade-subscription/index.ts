@@ -72,24 +72,58 @@ Deno.serve(async (req) => {
   if (RESEND_API_KEY && profil.email) {
     const prenom = profil.nom ? profil.nom.split(' ')[0] : ''
     const salutation = prenom ? `Bonjour ${prenom},` : 'Bonjour,'
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; background: #f9f9f9;">
-        <div style="background: #ffffff; border-radius: 12px; padding: 32px; border: 1px solid #e5e7eb;">
-          <h2 style="color: #254D56; margin: 0 0 8px;">Forfait Adjuvet ${nomPlan} activé</h2>
-          <p style="color: #555; font-size: 15px; line-height: 1.6; margin: 0 0 24px;">
-            ${salutation}<br /><br />
-            Votre forfait a été mis à jour vers <strong>Adjuvet ${nomPlan}</strong>.
-            Le changement est effectif immédiatement.
-          </p>
-          <a href="https://adjuvet.app" style="display: inline-block; background: #254D56; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 700; font-size: 15px;">
-            Ouvrir Adjuvet
-          </a>
-          <p style="color: #999; font-size: 12px; margin: 24px 0 0; line-height: 1.5;">
-            Vous pouvez gérer votre abonnement depuis votre profil dans l'application.
-          </p>
-        </div>
-      </div>
-    `
+    const html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<meta name="supported-color-schemes" content="light" />
+<title>Forfait Adjuvet ${nomPlan}</title>
+<!--[if mso]><style type="text/css">body,table,td,a{font-family:Arial,Helvetica,sans-serif!important;}</style><![endif]-->
+<style type="text/css">
+body{margin:0;padding:0;width:100%!important;background-color:#EDECE9;}
+img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;}
+@media only screen and (max-width:620px){.conteneur{width:100%!important;}.bloc{padding:28px 22px!important;}.titre{font-size:22px!important;}}
+</style>
+</head>
+<body style="margin:0;padding:0;background-color:#EDECE9;">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#EDECE9;">Votre forfait Adjuvet ${nomPlan} est maintenant actif.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#EDECE9;">
+  <tr><td align="center" style="padding:32px 16px;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="conteneur" style="width:600px;max-width:600px;">
+      <tr>
+        <td style="background-color:#BCAADC;border-radius:16px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tr><td class="bloc" align="center" style="padding:32px;">
+              <img src="https://adjuvet.app/logo-adjuvet.png" width="132" alt="Adjuvet" style="display:block;width:132px;max-width:132px;height:auto;margin:0 auto 26px;" />
+              <h1 class="titre" style="margin:0 0 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:25px;line-height:1.25;font-weight:bold;color:#FFFFFF;text-align:center;">Forfait ${nomPlan} activ&eacute;</h1>
+              <p style="margin:0 0 26px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.65;color:#2E3A5C;text-align:center;">${salutation}<br /><br />Votre forfait a &eacute;t&eacute; mis &agrave; jour vers <strong>Adjuvet ${nomPlan}</strong>. Le changement est effectif imm&eacute;diatement.</p>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+                <tr>
+                  <td align="center" style="border-radius:999px;background-color:#213058;">
+                    <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://adjuvet.app" style="height:48px;v-text-anchor:middle;width:220px;" arcsize="50%" stroke="f" fillcolor="#213058"><w:anchorlock/><center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;">Ouvrir Adjuvet</center></v:roundrect><![endif]-->
+                    <!--[if !mso]><!-->
+                    <a href="https://adjuvet.app" style="display:inline-block;padding:15px 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:bold;color:#FFFFFF;text-decoration:none;border-radius:999px;background-color:#213058;">Ouvrir Adjuvet</a>
+                    <!--<![endif]-->
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:24px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#3D4666;text-align:center;">Vous pouvez g&eacute;rer votre abonnement depuis votre profil dans l'application.</p>
+            </td></tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="padding:20px 16px 0;">
+          <p style="margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#8A90A0;">Adjuvet, par Vetlab Studio</p>
+          <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#8A90A0;"><a href="https://adjuvet.app" style="color:#8A90A0;text-decoration:underline;">adjuvet.app</a></p>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
