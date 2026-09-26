@@ -3,17 +3,17 @@ import { useState, useMemo } from 'react'
 const ESPECES = [
   { id: 'chien',   label: 'Chien',   icone: '/icone-chien.svg' },
   { id: 'chat',    label: 'Chat',    icone: '/icone-chat.svg' },
-  { id: 'lapin',   label: 'Lapin',   icone: '/icone-lapin.png' },
-  { id: 'cheval',  label: 'Cheval',  icone: '/icone-cheval.png' },
-  { id: 'vache',   label: 'Vache',   icone: '/icone-vache.png' },
-  { id: 'mouton',  label: 'Mouton',  icone: '/icone-mouton.png' },
-  { id: 'chevre',  label: 'Chèvre',  icone: '/icone-chevre.png' },
-  { id: 'lama',    label: 'Lama',    icone: '/icone-lama.png' },
-  { id: 'cochon',  label: 'Cochon',  icone: '/icone-cochon.png' },
-  { id: 'furet',   label: 'Furet',   icone: '/furet.svg' },
-  { id: 'rat',     label: 'Rat',     icone: '/icone-rongeurs.png' },
-  { id: 'souris',  label: 'Souris',  icone: '/icone-rongeurs.png' },
-  { id: 'hamster', label: 'Hamster', icone: '/hamster.svg' },
+  { id: 'lapin',   label: 'Lapin',   icone: '/icone-lapin.svg' },
+  { id: 'cheval',  label: 'Cheval',  icone: '/icone-cheval.svg' },
+  { id: 'vache',   label: 'Vache',   icone: '/icone-vache.svg' },
+  { id: 'mouton',  label: 'Mouton',  icone: '/icone-mouton.svg' },
+  { id: 'chevre',  label: 'Chèvre',  icone: '/icone-chevre.svg' },
+  { id: 'lama',    label: 'Lama',    icone: '/icone-lama.svg' },
+  { id: 'cochon',  label: 'Cochon',  icone: '/icone-cochon.svg' },
+  { id: 'furet',   label: 'Furet',   icone: '/icone-furet.svg' },
+  { id: 'rat',     label: 'Rat',     icone: '/icone-rongeurs.svg' },
+  { id: 'souris',  label: 'Souris',  icone: '/icone-rongeurs.svg' },
+  { id: 'hamster', label: 'Hamster', icone: '/icone-hamster.svg' },
 ]
 
 const INFO_GESTATION = {

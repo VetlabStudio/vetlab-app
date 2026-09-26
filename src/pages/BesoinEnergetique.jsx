@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 
 function arrondir(val, decimales = 1) {
   return Math.round(val * Math.pow(10, decimales)) / Math.pow(10, decimales)
@@ -10,6 +10,8 @@ function labelFacteur(f) {
     ? `× ${f.facteurMin} – ${f.facteurMax}${suffixe}`
     : `× ${f.facteurMin}`
 }
+
+const REPAS = [1, 2, 3, 4]
 
 const FACTEURS = {
   chat: [
@@ -43,7 +45,26 @@ export default function BesoinEnergetique() {
   const [conditionId, setConditionId] = useState('castre')
   const [uniteNourriture, setUniteNourriture] = useState('kg')
   const [kcalNourriture, setKcalNourriture] = useState('')
+  const [facteurPerso, setFacteurPerso] = useState(false)
   const [facteurCustom, setFacteurCustom] = useState('')
+  const [nbRepas, setNbRepas] = useState(2)
+  const [copie, setCopie] = useState(false)
+
+  /* Hauteur réelle de la barre de navigation, pour que la barre
+     de résultat se pose juste au-dessus sur tous les appareils. */
+  useEffect(() => {
+    const nav = document.querySelector('.bottom-nav-v2')
+    if (!nav) return
+    const appliquer = () => {
+      document.documentElement.style.setProperty('--calc-nav-h', `${nav.offsetHeight}px`)
+    }
+    appliquer()
+    const ro = new ResizeObserver(appliquer)
+    ro.observe(nav)
+    return () => ro.disconnect()
+  }, [])
+
+  // ─── CALCULS ─────────────────────────────────────────
 
   const poidsKg = useMemo(() => {
     const p = parseFloat(poids)
@@ -51,9 +72,11 @@ export default function BesoinEnergetique() {
     return unitePoids === 'lb' ? arrondir(p / 2.205, 3) : p
   }, [poids, unitePoids])
 
+  /* BEE arrondi à l'unité : la chaîne BEE → BEQ reste vérifiable
+     à la main par les étudiants, sans décimales fantômes. */
   const bee = useMemo(() => {
     if (!poidsKg) return 0
-    return arrondir((30 * poidsKg) + 70)
+    return Math.round((30 * poidsKg) + 70)
   }, [poidsKg])
 
   const facteurs = FACTEURS[espece]
@@ -64,48 +87,125 @@ export default function BesoinEnergetique() {
   )
 
   const facteurActif = useMemo(() => {
-    const custom = parseFloat(facteurCustom)
-    if (custom > 0) return { facteurMin: custom, facteurMax: null, plus: false }
+    if (facteurPerso) {
+      const custom = parseFloat(facteurCustom)
+      return custom > 0 ? { facteurMin: custom, facteurMax: null, plus: false } : null
+    }
     return conditionSelectionnee
-  }, [facteurCustom, conditionSelectionnee])
+  }, [facteurPerso, facteurCustom, conditionSelectionnee])
 
   const beqMin = useMemo(() => {
-    if (!bee || !facteurActif.facteurMin) return null
-    return arrondir(bee * facteurActif.facteurMin)
+    if (!bee || !facteurActif?.facteurMin) return null
+    return Math.round(bee * facteurActif.facteurMin)
   }, [bee, facteurActif])
 
   const beqMax = useMemo(() => {
-    if (!bee || !facteurActif.facteurMax) return null
-    return arrondir(bee * facteurActif.facteurMax)
+    if (!bee || !facteurActif?.facteurMax) return null
+    return Math.round(bee * facteurActif.facteurMax)
   }, [bee, facteurActif])
 
-  const portionResult = useMemo(() => {
+  const portion = useMemo(() => {
     const k = parseFloat(kcalNourriture)
     if (!k || k <= 0 || !beqMin) return null
     if (uniteNourriture === 'kg') {
-      const min = arrondir(beqMin / k * 1000, 0)
-      const max = beqMax ? arrondir(beqMax / k * 1000, 0) : null
-      return { min, max, unite: 'g/jour' }
-    } else {
-      const min = arrondir(beqMin / k, 2)
-      const max = beqMax ? arrondir(beqMax / k, 2) : null
-      const label = min <= 1 && (!max || max <= 1) ? 'tasse/jour' : 'tasses/jour'
-      return { min, max, unite: label }
+      return {
+        type: 'g',
+        min: Math.round(beqMin / k * 1000),
+        max: beqMax ? Math.round(beqMax / k * 1000) : null,
+      }
+    }
+    return {
+      type: 'tasse',
+      min: arrondir(beqMin / k, 2),
+      max: beqMax ? arrondir(beqMax / k, 2) : null,
     }
   }, [beqMin, beqMax, kcalNourriture, uniteNourriture])
 
-  function handleEspece(e) {
-    setEspece(e)
-    setConditionId(FACTEURS[e][0].id)
+  const parRepas = useMemo(() => {
+    if (!portion) return null
+    const diviser = v => portion.type === 'g' ? Math.round(v / nbRepas) : arrondir(v / nbRepas, 2)
+    return { min: diviser(portion.min), max: portion.max ? diviser(portion.max) : null }
+  }, [portion, nbRepas])
+
+  // ─── TEXTES ──────────────────────────────────────────
+
+  const suffixePlus = facteurActif?.plus ? '+' : ''
+
+  const beqValeur = beqMin
+    ? (beqMax ? `${beqMin} – ${beqMax}${suffixePlus}` : `${beqMin}${suffixePlus}`)
+    : null
+
+  const traceFacteur = facteurPerso
+    ? `Facteur personnalisé · ${bee} × ${parseFloat(facteurCustom)}`
+    : `${conditionSelectionnee.label} · ${bee} ${labelFacteur(conditionSelectionnee)}`
+
+  function uniteJour(p, valeur) {
+    if (p.type === 'g') return 'g/jour'
+    return valeur <= 1 ? 'tasse/jour' : 'tasses/jour'
   }
 
-  const utilisantCustom = parseFloat(facteurCustom) > 0
+  function uniteRepas(p, valeur) {
+    if (p.type === 'g') return 'g'
+    return valeur <= 1 ? 'tasse' : 'tasses'
+  }
+
+  const portionValeur = portion
+    ? (portion.max ? `${portion.min} – ${portion.max}` : `${portion.min}`)
+    : null
+  const portionUnite = portion ? uniteJour(portion, portion.max ?? portion.min) : null
+
+  const repasTexte = parRepas
+    ? `${parRepas.max ? `${parRepas.min} – ${parRepas.max}` : parRepas.min} ${uniteRepas(portion, parRepas.max ?? parRepas.min)}`
+    : null
+
+  const barre = useMemo(() => {
+    if (portionValeur) return { cle: 'Quantité à donner', valeur: `${portionValeur} ${portionUnite}` }
+    if (beqValeur) return { cle: 'BEQ estimé', valeur: `${beqValeur} kcal/jour` }
+    if (bee > 0) return { cle: 'Besoin d\'entretien', valeur: `${bee} kcal/jour` }
+    return null
+  }, [portionValeur, portionUnite, beqValeur, bee])
+
+  // ─── ACTIONS ─────────────────────────────────────────
+
+  function handleEspece(e) {
+    setEspece(e)
+    setConditionId(prev => FACTEURS[e].some(f => f.id === prev) ? prev : FACTEURS[e][0].id)
+  }
+
+  function activerFacteurPerso() {
+    setFacteurPerso(true)
+    setFacteurCustom('')
+  }
+
+  function retourAuTableau() {
+    setFacteurPerso(false)
+    setFacteurCustom('')
+  }
+
+  async function copier() {
+    const lignes = [
+      `${espece === 'chien' ? 'Chien' : 'Chat'} ${arrondir(poidsKg, 2)} kg`,
+      `BEE ${bee} kcal/jour`,
+    ]
+    if (beqValeur) lignes.push(`BEQ ${beqValeur} kcal/jour (${traceFacteur.split(' · ')[0]})`)
+    if (portionValeur) {
+      lignes.push(`Quantité ${portionValeur} ${portionUnite}`)
+      if (repasTexte && nbRepas > 1) lignes.push(`${nbRepas} repas : ${repasTexte} par repas`)
+    }
+    try {
+      await navigator.clipboard.writeText(lignes.join(' · '))
+      setCopie(true)
+      setTimeout(() => setCopie(false), 1800)
+    } catch {
+      /* presse-papiers refusé : on ne bloque rien */
+    }
+  }
 
   return (
     <div className="page-calculateurs">
       <div className="calc-form">
 
-        {/* ESPÈCE */}
+        {/* ─── ESPÈCE ─────────────────────────── */}
         <div className="champ">
           <label>Choisir l'espèce</label>
           <div className="espece-toggle">
@@ -126,7 +226,7 @@ export default function BesoinEnergetique() {
           </div>
         </div>
 
-        {/* POIDS */}
+        {/* ─── POIDS ──────────────────────────── */}
         <div className="champ">
           <label>Poids de l'animal</label>
           <div className="champ-input">
@@ -147,72 +247,77 @@ export default function BesoinEnergetique() {
           </div>
         </div>
 
-        {/* BEE */}
-        <div className="bee-card">
-          <p className="bee-titre">BEE — Besoin Énergétique d'Entretien</p>
-          <p className="bee-formule">(30 × poids en kg) + 70 = kcal/jour</p>
-          <p className="bee-resultat">{bee > 0 ? `${bee} kcal/jour` : '—'}</p>
+        {/* ─── BEE (niveau 2 : étape de calcul) ── */}
+        <div className={`res-etape ${bee > 0 ? '' : 'vide'}`}>
+          <span className="res-etape-cle">BEE, besoin énergétique d'entretien</span>
+          <span className="res-etape-valeur">
+            {bee > 0 ? bee : '—'}
+            {bee > 0 && <span className="res-unite">kcal/jour</span>}
+          </span>
+          <span className="res-etape-trace">
+            {bee > 0 ? `(30 × ${arrondir(poidsKg, 2)}) + 70` : '(30 × poids en kg) + 70'}
+          </span>
         </div>
 
-        {/* CONDITION */}
+        {/* ─── CONDITION ──────────────────────── */}
         <div className="champ">
           <label>Condition / stade de vie</label>
-          <select
-            className="champ-select-native"
-            value={conditionId}
-            onChange={e => setConditionId(e.target.value)}
-            style={{ opacity: utilisantCustom ? 0.4 : 1 }}
-          >
-            {facteurs.map(f => (
-              <option key={f.id} value={f.id}>
-                {f.label} — {labelFacteur(f)}
-              </option>
-            ))}
-          </select>
 
-          {/* FACTEUR PERSONNALISÉ */}
-          <div className="champ-input" style={{ marginTop: 8 }}>
-            <div className="champ-icone-wrapper">
-              <i className="ti ti-math-function" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
-            </div>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={facteurCustom}
-              onChange={e => setFacteurCustom(e.target.value.replace(',', '.'))}
-              placeholder="Facteur personnalisé (ex : 1.8)"
-            />
-            {facteurCustom !== '' && (
-              <button
-                className="radio-btn"
-                onClick={() => setFacteurCustom('')}
-                style={{ whiteSpace: 'nowrap' }}
+          {!facteurPerso ? (
+            <>
+              <select
+                className="champ-select-native"
+                value={conditionId}
+                onChange={e => setConditionId(e.target.value)}
               >
-                ✕
+                {facteurs.map(f => (
+                  <option key={f.id} value={f.id}>
+                    {f.label} — {labelFacteur(f)}
+                  </option>
+                ))}
+              </select>
+              <button type="button" className="res-lien" onClick={activerFacteurPerso}>
+                <i className="ti ti-math-function"></i>
+                Utiliser un facteur personnalisé
               </button>
-            )}
-          </div>
+            </>
+          ) : (
+            <>
+              <div className="champ-input">
+                <div className="champ-icone-wrapper">
+                  <i className="ti ti-math-function" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
+                </div>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={facteurCustom}
+                  onChange={e => setFacteurCustom(e.target.value.replace(',', '.'))}
+                  placeholder="Ex : 1.8"
+                  autoFocus
+                />
+                <span className="unite-fixe">× BEE</span>
+              </div>
+              <button type="button" className="res-lien" onClick={retourAuTableau}>
+                <i className="ti ti-arrow-back-up"></i>
+                Revenir aux facteurs du tableau
+              </button>
+            </>
+          )}
         </div>
 
-        {/* RÉSULTAT BEQ */}
-        {bee > 0 && (
-          <div className="resultat-card">
-            <div className="resultat-ligne" style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <span>BEQ estimé</span>
-              <strong>
-                {beqMin
-                  ? beqMax ? `${beqMin} – ${beqMax} kcal/jour` : `${beqMin} kcal/jour`
-                  : '—'}
-              </strong>
-            </div>
-            <div className="resultat-ligne" style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <span>Facteur appliqué</span>
-              <strong>{utilisantCustom ? `× ${parseFloat(facteurCustom)}` : labelFacteur(conditionSelectionnee)}</strong>
-            </div>
+        {/* ─── BEQ (niveau 2 accentué) ────────── */}
+        {bee > 0 && beqValeur && (
+          <div className="res-etape fort">
+            <span className="res-etape-cle">BEQ, besoin quotidien estimé</span>
+            <span className="res-etape-valeur">
+              {beqValeur}
+              <span className="res-unite">kcal/jour</span>
+            </span>
+            <span className="res-etape-trace">{traceFacteur}</span>
           </div>
         )}
 
-        {/* DENSITÉ CALORIQUE */}
+        {/* ─── DENSITÉ CALORIQUE ──────────────── */}
         <div className="champ">
           <label>Densité calorique de l'aliment (optionnel)</label>
           <div className="champ-input">
@@ -227,33 +332,57 @@ export default function BesoinEnergetique() {
               placeholder={uniteNourriture === 'kg' ? 'Ex: 3800' : 'Ex: 475'}
             />
             <div className="radio-groupe">
-              <button className={`radio-btn ${uniteNourriture === 'kg' ? 'active' : ''}`} onClick={() => { setUniteNourriture('kg'); setKcalNourriture('') }}>kcal/kg</button>
-              <button className={`radio-btn ${uniteNourriture === 'tasse' ? 'active' : ''}`} onClick={() => { setUniteNourriture('tasse'); setKcalNourriture('') }}>kcal/tasse</button>
+              <button
+                className={`radio-btn ${uniteNourriture === 'kg' ? 'active' : ''}`}
+                onClick={() => { setUniteNourriture('kg'); setKcalNourriture('') }}
+              >kcal/kg</button>
+              <button
+                className={`radio-btn ${uniteNourriture === 'tasse' ? 'active' : ''}`}
+                onClick={() => { setUniteNourriture('tasse'); setKcalNourriture('') }}
+              >kcal/tasse</button>
             </div>
           </div>
         </div>
 
-        {/* RÉSULTAT PORTION */}
-        {portionResult && (
-          <div className="resultat-card">
-            <div className="resultat-ligne" style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <span>Quantité à donner</span>
-              <strong>
-                {portionResult.max
-                  ? `${portionResult.min} – ${portionResult.max} ${portionResult.unite}`
-                  : `${portionResult.min} ${portionResult.unite}`}
-              </strong>
+        {/* ─── QUANTITÉ (niveau 1 : la réponse) ── */}
+        {portion && (
+          <div className="res-primaire">
+            <span className="res-primaire-cle">Quantité à donner</span>
+            <p className="res-primaire-valeur">
+              {portionValeur}
+              <span className="res-unite">{portionUnite}</span>
+            </p>
+            <div className="res-primaire-sep"></div>
+            <div className="res-primaire-repas">
+              {REPAS.map(n => (
+                <button
+                  key={n}
+                  type="button"
+                  className={n === nbRepas ? 'actif' : ''}
+                  onClick={() => setNbRepas(n)}
+                >
+                  {n} repas
+                </button>
+              ))}
             </div>
+            {nbRepas > 1 && repasTexte && (
+              <p className="res-primaire-note">≈ {repasTexte} par repas</p>
+            )}
           </div>
         )}
 
-        {/* AVERTISSEMENT */}
+        {/* ─── AVERTISSEMENT ──────────────────── */}
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
           Ces valeurs sont des estimations théoriques. Ajuster selon l'évolution du poids corporel et de la condition corporelle (BCS).
         </div>
 
+        {barre && <div className="res-barre-espace"></div>}
+
       </div>
+
+      
+
     </div>
   )
 }

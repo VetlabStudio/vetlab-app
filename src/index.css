@@ -48,7 +48,7 @@
 /* ─── BASE ────────────────────────────────────── */
 
 #root:empty {
-  background: #BCAADC;
+  background: #b5a7d8;
   min-height: 100vh;
 }
 
@@ -1271,7 +1271,7 @@ input {
 .toggle-slider {
   width: 52px;
   height: 28px;
-  background: var(--primary-light);
+  background: var(--primary);
   border-radius: var(--radius-pill);
   border:none;
   cursor: pointer;
@@ -1281,7 +1281,7 @@ input {
 }
 
 .toggle-slider.droite {
-  background: var(--primary);
+  background: #766f8c;
 }
 
 .toggle-thumb {
@@ -3592,10 +3592,11 @@ input[type="number"] {
 
 .conversion-modes {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   width: 100%;
 }
+
 
 .conversion-mode-btn {
   display: flex;
@@ -3617,15 +3618,16 @@ input[type="number"] {
   border-color: var(--primary);
 }
 
-.conversion-mode-btn .ti {
-  font-size: 20px;
-  color: var(--text-hint);
+/* Changer repeat(3, 1fr) → repeat(4, 1fr) dans .conversion-modes */
+
+.conversion-mode-icone {
+  width: 22px;
+  height: 22px;
 }
 
-.conversion-mode-btn.actif .ti {
-  color: white;
+.conversion-mode-btn.actif .conversion-mode-icone {
+  filter: brightness(0) invert(1);
 }
-
 .conversion-mode-label {
   font-size: 12px;
   font-weight: 700;
@@ -9441,4 +9443,241 @@ input[type="number"] {
 .equipe-email i {
   color: var(--primary);
   font-size: 14px;
+}
+/* ═══════════════════════════════════════════════════════════
+   SYSTÈME DE RÉSULTATS (à ajouter à index.css)
+
+   Trois niveaux, réutilisables sur toutes les pages de calcul :
+     .res-primaire  niveau 1, la réponse qu'on inscrit au dossier
+     .res-etape     niveau 2, une étape du calcul
+     .res-etape-trace  niveau 3, la trace vérifiable
+
+   Après installation, les classes .bee-card, .bee-titre,
+   .bee-formule et .bee-resultat ne servent plus à la page
+   Besoin énergétique. Vérifier avec une recherche globale
+   avant de les supprimer.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── NIVEAU 2 : ÉTAPE DE CALCUL ─────────────────────────
+   Fond teinté, filet à gauche, pas de bordure complète :
+   impossible de le confondre avec un champ de saisie. */
+.res-etape {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #dcd7e8;
+    border-radius: var(--radius-md);
+    padding: 20px 20px 20px 20px;
+    margin-bottom: 16px;
+}
+
+.res-etape + .res-etape {
+  margin-top: -8px;
+}
+
+.res-etape-cle {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--primary);
+  opacity: 0.75;
+  line-height: 1.35;
+}
+
+.res-etape-valeur {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.res-etape-trace {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--primary);
+  opacity: 0.7;
+}
+
+.res-etape.fort {
+  border-left-color: var(--primary);
+}
+
+.res-etape.fort .res-etape-valeur {
+  font-size: 23px;
+}
+
+.res-etape.vide .res-etape-valeur {
+  opacity: 0.4;
+}
+
+/* ─── NIVEAU 1 : LA RÉPONSE ──────────────────────────────
+   Une seule par page. */
+.res-primaire {
+  background: var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 15px 16px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.res-primaire-cle {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.res-primaire-valeur {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  line-height: 1.1;
+  margin: 6px 0 0;
+}
+
+.res-primaire-sep {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.16);
+  margin: 13px 0 11px;
+}
+
+.res-primaire-repas {
+  display: flex;
+  gap: 7px;
+}
+
+.res-primaire-repas button {
+  flex: 1;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  border-radius: 11px;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.res-primaire-repas button.actif {
+  background: #fff;
+  color: var(--primary);
+}
+
+.res-primaire-note {
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.85;
+  margin: 10px 0 0;
+}
+
+/* Unité, dans les deux niveaux */
+.res-unite {
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+.res-primaire .res-unite {
+  font-size: 15px;
+  opacity: 0.8;
+}
+
+/* ─── LIEN D'ACTION SOUS UN CHAMP ────────────────────────
+   Sert à révéler le facteur personnalisé. */
+.res-lien {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 6px 2px;
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.res-lien i {
+  font-size: 16px;
+}
+
+/* ─── BARRE DE RÉSULTAT COLLANTE ─────────────────────────
+   --calc-nav-h est mesurée à l'exécution par la page.
+   z-index 110 pour passer devant .bottom-nav-v2 (100). */
+.res-barre {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--calc-nav-h, 66px) + 10px);
+  width: calc(100% - 24px);
+  max-width: 520px;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--primary);
+  border-radius: 16px;
+  padding: 11px 12px 11px 15px;
+  box-shadow: 0 8px 22px rgba(33, 48, 88, 0.28);
+}
+
+.res-barre-texte {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.res-barre-cle {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0.65;
+}
+
+.res-barre-valeur {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.res-barre-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 9px 15px;
+  background: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.res-barre-btn i {
+  font-size: 16px;
+}
+
+/* Réserve la place sous le dernier bloc pour que la barre
+   ne masque jamais l'avertissement. */
+.res-barre-espace {
+  height: 86px;
 }

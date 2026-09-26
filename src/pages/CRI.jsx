@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
+const VOLUMES_SAC = [250, 500, 1000]
+
 function arrondir(val, decimales = 2) {
   return Math.round(val * Math.pow(10, decimales)) / Math.pow(10, decimales)
 }
@@ -19,6 +21,7 @@ export default function CRI() {
   const [uniteDebit, setUniteDebit] = useState(recu ? 'ml/h' : 'ml/kg/h')
   const [provenance, setProvenance] = useState(Boolean(recu))
   const [volumeSac, setVolumeSac] = useState(500)
+  const [sacAutre, setSacAutre] = useState(false)
   const [doseCharge, setDoseCharge] = useState('')
   const [dosageCRI, setDosageCRI] = useState('')
   const [uniteDosage, setUniteDosage] = useState('mg/kg/h')
@@ -141,21 +144,46 @@ useEffect(() => {
         {/* ─── VOLUME SAC ─────────────────────── */}
         <div className="champ">
           <label>Volume du sac de fluide</label>
-          <div className="champ-input">
-            <div className="champ-icone-wrapper">
-              <img src="/icone-sac.svg" alt="volume" />
-            </div>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={volumeSac}
-              onChange={e => {
-                const v = e.target.value.replace(',', '.')
-                setVolumeSac(v === '' ? '' : (parseFloat(v) || 0))
-              }}
-            />
-            <span className="unite-fixe">ml</span>
+          <div className="fluido-valeurs">
+            {VOLUMES_SAC.map(v => (
+              <button
+                key={v}
+                type="button"
+                className={`fluido-valeur-btn ${!sacAutre && volumeSac === v ? 'actif' : ''}`}
+                onClick={() => { setSacAutre(false); setVolumeSac(v) }}
+              >
+                {v} ml
+              </button>
+            ))}
+            <button
+              type="button"
+              className={`fluido-valeur-btn ${sacAutre ? 'actif' : ''}`}
+              onClick={() => { setSacAutre(true); setVolumeSac('') }}
+            >
+              Autre
+            </button>
           </div>
+
+          {sacAutre && (
+            <div className="champ-input">
+              <div className="champ-icone-wrapper">
+                <img src="/icone-sac.svg" alt="volume" />
+              </div>
+              <input
+                type="text"
+                inputMode="decimal"
+                value={volumeSac}
+                onChange={e => {
+                  const v = e.target.value.replace(',', '.')
+                  setVolumeSac(v === '' ? '' : (parseFloat(v) || 0))
+                }}
+                placeholder="Ex: 100"
+                autoFocus
+              />
+              <span className="unite-fixe">ml</span>
+            </div>
+          )}
+
           {dureeSac > 0 && (
             <p className="range-hint" style={{ color: 'var(--accent-red)', fontWeight: 600 }}>
               Durée du sac de fluide : {dureeSac} hrs

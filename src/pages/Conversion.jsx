@@ -38,11 +38,10 @@ const UNITES_MESURE = [
 
 // ─── MODES ───────────────────────────────────────────────
 const MODES = [
-  { id: 'poids', label: 'Poids', icone: 'ti-weight' },
-  { id: 'temperature', label: 'Température', icone: 'ti-thermometer' },
-  { id: 'volume', label: 'Volume', icone: 'ti-droplet' },
-  { id: 'masse', label: 'Masse', icone: 'ti-scale' },
-  { id: 'mesure', label: 'Mesures', icone: 'ti-ruler' },
+  { id: 'poids',       label: 'Poids',        svg: '/icone-poids2.svg' },
+  { id: 'temperature', label: 'Température',  svg: '/icone-temperature.svg' },
+  { id: 'volume',      label: 'Volume',        svg: '/icone-volume.svg'},
+  { id: 'mesure',      label: 'Mesures',       svg: '/icone-mesures.svg' },
 ]
 
 function convertir(valeur, uniteSource, uniteCible, unites) {
@@ -133,7 +132,7 @@ export default function Conversion() {
               className={`conversion-mode-btn ${mode === m.id ? 'actif' : ''}`}
               onClick={() => setMode(m.id)}
             >
-              <i className={`ti ${m.icone}`}></i>
+              <img src={m.svg} alt="" className="conversion-mode-icone" />
               <span className="conversion-mode-label">{m.label}</span>
             </button>
           ))}
@@ -162,30 +161,62 @@ export default function Conversion() {
               </div>
             </div>
 
-            <div className="resultat-card">
-              <div className="resultat-ligne">
-                <span>{unitePoids === 'lb' ? 'Kilogrammes' : 'Livres'}</span>
-                <strong>{unitePoids === 'lb' ? `${poidsKg} kg` : `${poidsLb} lb`}</strong>
+            {poidsKg > 0 && (
+              <div className="resultat-card">
+                <div className="resultat-ligne">
+                  <span>{unitePoids === 'lb' ? 'Kilogrammes' : 'Livres'}</span>
+                  <strong>{unitePoids === 'lb' ? `${poidsKg} kg` : `${poidsLb} lb`}</strong>
+                </div>
+                <div className="resultat-ligne" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+                  <span>Surface corporelle</span>
+                  <span></span>
+                </div>
+                <div className="resultat-ligne">
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <img src="/icone-chien.svg" alt="chien" style={{ width: 24, height: 24 }} />
+                    Chien
+                  </span>
+                  <strong>{bsaChien} m²</strong>
+                </div>
+                <div className="resultat-ligne" style={{ borderBottom: 'none', paddingBottom: 0 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <img src="/icone-chat.svg" alt="chat" style={{ width: 24, height: 24 }} />
+                    Chat
+                  </span>
+                  <strong>{bsaChat} m²</strong>
+                </div>
               </div>
-              <div className="resultat-ligne" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Surface corporelle
-                </span>
-                <span></span>
+            )}
+
+            <div className="conversion-deux-colonnes">
+              <div className="champ">
+                <label>Conversion de masse</label>
+                <div className="champ-input">
+                  <div className="champ-icone-wrapper">
+                    <img src="/icone-dosage.svg" alt="masse" />
+                  </div>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={masse1}
+                    onChange={e => setMasse1(e.target.value.replace(',', '.'))}
+                    placeholder="Ex: 500"
+                  />
+                </div>
+                <select className="conversion-select" value={uniteMasse1} onChange={e => setUniteMasse1(e.target.value)}>
+                  {UNITES_MASSE.map(u => <option key={u.id} value={u.id}>{u.label}</option>)}
+                </select>
               </div>
-              <div className="resultat-ligne">
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <img src="/icone-chien.svg" alt="chien" style={{ width: 24, height: 24 }} />
-                  Chien
-                </span>
-                <strong>{bsaChien} m²</strong>
-              </div>
-              <div className="resultat-ligne" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <img src="/icone-chat.svg" alt="chat" style={{ width: 24, height: 24 }} />
-                  Chat
-                </span>
-                <strong>{bsaChat} m²</strong>
+              <div className="champ">
+                <label>Vers</label>
+                <div className="champ-input">
+                  <span style={{ flex: 1, padding: '8px 8px', fontWeight: 700, color: masse2 ? 'var(--primary)' : 'var(--text-hint)' }}>
+                    {masse2 || '—'}
+                  </span>
+                </div>
+                <select className="conversion-select" value={uniteMasse2} onChange={e => setUniteMasse2(e.target.value)}>
+                  {UNITES_MASSE.map(u => <option key={u.id} value={u.id}>{u.label}</option>)}
+                </select>
               </div>
             </div>
           </>
@@ -259,40 +290,6 @@ export default function Conversion() {
           </div>
         )}
 
-        {/* ─── MASSE ──────────────────────────── */}
-        {mode === 'masse' && (
-          <div className="conversion-deux-colonnes">
-            <div className="champ">
-              <label>De</label>
-              <div className="champ-input">
-                <div className="champ-icone-wrapper">
-                  <img src="/icone-poids.svg" alt="masse" />
-                </div>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={masse1}
-                  onChange={e => setMasse1(e.target.value.replace(',', '.'))}
-                  placeholder="Ex: 500"
-                />
-              </div>
-              <select className="conversion-select" value={uniteMasse1} onChange={e => setUniteMasse1(e.target.value)}>
-                {UNITES_MASSE.map(u => <option key={u.id} value={u.id}>{u.label}</option>)}
-              </select>
-            </div>
-            <div className="champ">
-              <label>Vers</label>
-              <div className="champ-input">
-                <span style={{ flex: 1, padding: '8px 8px', fontWeight: 700, color: masse2 ? 'var(--primary)' : 'var(--text-hint)' }}>
-                  {masse2 || '—'}
-                </span>
-              </div>
-              <select className="conversion-select" value={uniteMasse2} onChange={e => setUniteMasse2(e.target.value)}>
-                {UNITES_MASSE.map(u => <option key={u.id} value={u.id}>{u.label}</option>)}
-              </select>
-            </div>
-          </div>
-        )}
 
         {/* ─── MESURES ────────────────────────── */}
         {mode === 'mesure' && (
