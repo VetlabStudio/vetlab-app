@@ -5,13 +5,14 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
    Doses et paramètres : RECOVER 2024 (ACVECC), JVECC,
    Burkitt-Creedon et coll., doi 10.1111/vec.13391.
 
-   Les doses en mg/kg sont des valeurs de protocole : elles
-   restent figées dans le code et ne viennent pas des fiches.
-   Les concentrations servent uniquement à convertir en mL ;
-   celles inscrites ici reprennent les fiches actuelles de la
-   base. Quand les fiches d'urgence seront corrigées, cette
-   constante sera remplacée par une lecture de `medicaments`
-   avec surcharge par `medicaments_custom`.
+   Doses et concentrations restent figées ici, par choix : une
+   page d'urgence ne doit pas dépendre d'une fiche mal remplie.
+   Les concentrations viennent des monographies approuvées par
+   Santé Canada. Elles ne servent qu'à convertir en millilitres.
+
+   Si une clinique stocke une autre concentration, c'est la
+   valeur affichée sous chaque dose qu'il faut comparer à
+   l'étiquette de la fiole avant de prélever.
    ════════════════════════════════════════════════════════════ */
 
 const BPM = 110                              // 100 à 120/min
@@ -50,7 +51,7 @@ const PRODUITS = [
     nom: 'Vasopressine',
     groupe: 'principal',
     doseMin: 0.8, doseMax: null, unite: 'U/kg',
-    concentration: null, uniteConc: 'U/mL',
+    concentration: 20, uniteConc: 'U/mL',
     voie: 'IV/IO',
     frequence: 'aux 3 à 5 min, un cycle sur deux',
     especes: ['chien', 'chat'],
@@ -80,7 +81,7 @@ const PRODUITS = [
     nom: 'Amiodarone',
     groupe: 'antiarythmique',
     doseMin: 5, doseMax: null, unite: 'mg/kg',
-    concentration: null, uniteConc: 'mg/mL',
+    concentration: 50, uniteConc: 'mg/mL',
     voie: 'IV lent sur 2 à 4 min',
     note: 'Antiarythmique de remplacement chez le chat.',
     especes: ['chien', 'chat'],
@@ -90,7 +91,7 @@ const PRODUITS = [
     nom: 'Esmolol',
     groupe: 'antiarythmique',
     doseMin: 0.5, doseMax: null, unite: 'mg/kg',
-    concentration: null, uniteConc: 'mg/mL',
+    concentration: 10, uniteConc: 'mg/mL',
     voie: 'IV lent sur 3 à 5 min',
     note: 'Suivi d’une CRI de 50 µg/kg/min.',
     especes: ['chien', 'chat'],
