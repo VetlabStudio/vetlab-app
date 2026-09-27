@@ -18,6 +18,8 @@ export default function Profil() {
   const [modalSupprimer, setModalSupprimer] = useState(false)
   const [modalSupprimerProprietaire, setModalSupprimerProprietaire] = useState(false)
   const [confirmerSuppressionEquipe, setConfirmerSuppressionEquipe] = useState(false)
+  const [apercuSuppression, setApercuSuppression] = useState(null)
+  const [chargementApercu, setChargementApercu] = useState(false)
 
   // Champs édition
   const [nouveauNom, setNouveauNom] = useState('')
@@ -49,6 +51,24 @@ export default function Profil() {
     setProfil({ ...data, email: user.email })
     setAvatarUrl(data?.avatar_url || null)
     setLoading(false)
+  }
+
+  /* supabase-js met le corps d'une réponse non 2xx dans
+     error.context, pas dans data. Sans ça on n'a que
+     « Edge Function returned a non-2xx status code ». */
+  async function lireCodeErreur(error) {
+    try {
+      const corps = await error.context.json()
+      return corps?.error || null
+    } catch {
+      return null
+    }
+  }
+
+  const MESSAGES_SUPPRESSION = {
+    stripe_indisponible: "Impossible de joindre Stripe en ce moment. Rien n'a été supprimé, réessayez dans quelques minutes.",
+    annulation_impossible: "Votre abonnement n'a pas pu être annulé. Rien n'a été supprimé pour éviter que la facturation continue sans compte. Réessayez, ou écrivez-nous.",
+    retrogradation_impossible: "Les membres de votre clinique n'ont pas pu être rétrogradés. Rien n'a été supprimé.",
   }
 
   function afficherSucces(msg) {
@@ -110,46 +130,46 @@ export default function Profil() {
     setAvatarUrl(url)
   }
 
-  // ─── SUPPRIMER COMPTE SIMPLE ──────────────────
+  // ─── SUPPRIMER COMPTE ─────────────────────────
+  /* Un seul chemin maintenant. La fonction edge annule les
+     abonnements Stripe, rétrograde les membres de la clinique
+     puis dissout l'équipe, dans cet ordre. Le faire depuis le
+     navigateur, comme avant, supprimait l'équipe avant que la
+     fonction puisse la voir. */
   async function supprimerCompte() {
     setSaving(true)
+    setErreur('')
     const { error } = await supabase.functions.invoke('delete-account')
-    setSaving(false)
-    if (error) return setErreur('Erreur : ' + error.message)
+    if (error) {
+      const code = await lireCodeErreur(error)
+      setSaving(false)
+      return setErreur(MESSAGES_SUPPRESSION[code] || 'Erreur : ' + error.message)
+    }
     await supabase.auth.signOut()
     navigate('/connexion')
   }
 
-  // ─── SUPPRIMER ÉQUIPE + COMPTE PROPRIÉTAIRE ───
-  async function supprimerEquipeEtCompte() {
-    setSaving(true)
-    setErreur('')
-    try {
-      // Retirer l'equipe_id de tous les membres
-      await supabase
-        .from('profiles')
-        .update({ equipe_id: null, plan: 'free' })
-        .eq('equipe_id', equipeProprietaire.id)
-        .neq('id', profil.id)
-      // Supprimer les entrées membres_equipe
-      await supabase.from('membres_equipe').delete().eq('equipe_id', equipeProprietaire.id)
-      // Supprimer l'équipe
-      await supabase.from('equipes').delete().eq('id', equipeProprietaire.id)
-      // Supprimer le compte
-      const { error } = await supabase.functions.invoke('delete-account')
-      if (error) throw error
-      await supabase.auth.signOut()
-      navigate('/connexion')
-    } catch (err) {
-      setSaving(false)
-      setErreur('Erreur lors de la suppression : ' + err.message)
-    }
-  }
+  // Le cas du propriétaire passe par la même fonction : c'est
+  // elle qui sait dans quel ordre défaire les choses.
+  const supprimerEquipeEtCompte = supprimerCompte
 
   // ─── DÉCONNEXION ──────────────────────────────
   async function deconnecter() {
     await supabase.auth.signOut()
     navigate('/connexion')
+  }
+
+  /* L'aperçu ne supprime rien : il retourne ce qui se passerait,
+     pour que la confirmation annonce les vrais chiffres au lieu
+     d'un avertissement vague. */
+  async function chargerApercuSuppression() {
+    setChargementApercu(true)
+    setApercuSuppression(null)
+    const { data, error } = await supabase.functions.invoke('delete-account', {
+      body: { verification: true },
+    })
+    setChargementApercu(false)
+    if (!error && data?.apercu) setApercuSuppression(data.apercu)
   }
 
   function ouvrirModal(modal) {
@@ -159,6 +179,7 @@ export default function Profil() {
     if (modal === 'email') { setNouveauEmail(profil?.email || ''); setModalEmail(true) }
     if (modal === 'mdp') { setNouveauMdp(''); setConfirmMdp(''); setModalMdp(true) }
     if (modal === 'supprimer') {
+      chargerApercuSuppression()
       if (equipeProprietaire) {
         setConfirmerSuppressionEquipe(false)
         setModalSupprimerProprietaire(true)
@@ -302,9 +323,17 @@ export default function Profil() {
               <span>Supprimer le compte</span>
               <button className="popup-close" onClick={() => setModalSupprimer(false)}>✕</button>
             </div>
-            <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 16 }}>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 12 }}>
               Cette action est irréversible. Toutes vos données seront supprimées définitivement.
             </p>
+            {chargementApercu && (
+              <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 12 }}>Vérification en cours...</p>
+            )}
+            {apercuSuppression?.nbAbonnements > 0 && (
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
+                Votre abonnement sera annulé immédiatement, vous ne serez plus facturé.
+              </p>
+            )}
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-supprimer-medicament" onClick={supprimerCompte} disabled={saving}>
               {saving ? 'Suppression...' : 'Confirmer la suppression'}
@@ -328,7 +357,10 @@ export default function Profil() {
                   <i className="ti ti-users" style={{ fontSize: 36, color: 'var(--accent-red)', display: 'block', marginBottom: 12 }}></i>
                   <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                     Votre compte est propriétaire de l'équipe <strong>{equipeProprietaire?.nom}</strong>.
-                    Que souhaitez-vous faire ?
+                    {apercuSuppression?.nbMembres > 0 && (
+                      <> Elle compte <strong>{apercuSuppression.nbMembres} autre{apercuSuppression.nbMembres > 1 ? 's' : ''} membre{apercuSuppression.nbMembres > 1 ? 's' : ''}</strong>.</>
+                    )}
+                    {' '}Que souhaitez-vous faire ?
                   </p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -358,8 +390,18 @@ export default function Profil() {
                 <div style={{ textAlign: 'center', padding: '4px 0 16px' }}>
                   <i className="ti ti-alert-triangle" style={{ fontSize: 36, color: 'var(--accent-red)', display: 'block', marginBottom: 12 }}></i>
                   <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                    Cette action est <strong>irréversible</strong>. Le compte propriétaire sera supprimé ainsi que toutes les données partagées de la clinique (médicaments personnalisés, protocoles, charte radiographique). Les membres perdront immédiatement leur accès à l'équipe.
+                    Cette action est <strong>irréversible</strong>. Le compte propriétaire sera supprimé ainsi que toutes les données partagées de la clinique : médicaments personnalisés, protocoles, charte radiographique.
                   </p>
+                  {apercuSuppression?.nbMembres > 0 && (
+                    <p style={{ fontSize: 14, color: 'var(--accent-red)', fontWeight: 600, lineHeight: 1.6, marginTop: 12 }}>
+                      {apercuSuppression.nbMembres} personne{apercuSuppression.nbMembres > 1 ? 's' : ''} repassera{apercuSuppression.nbMembres > 1 ? 'ont' : ''} au forfait gratuit et perdra{apercuSuppression.nbMembres > 1 ? 'ont' : ''} l'accès aux données de la clinique.
+                    </p>
+                  )}
+                  {apercuSuppression?.nbAbonnements > 0 && (
+                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginTop: 10 }}>
+                      Votre abonnement sera annulé immédiatement.
+                    </p>
+                  )}
                 </div>
                 {erreur && <div className="form-erreur" style={{ marginBottom: 12 }}>{erreur}</div>}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

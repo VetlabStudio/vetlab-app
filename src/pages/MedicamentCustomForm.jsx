@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { TitreContext } from '../App'
@@ -13,7 +13,9 @@ const VOIES = [
   'Topique',
 ]
 
-const UNITES_DOSE = ['mg/kg', 'mcg/kg', 'UI/kg', 'mL/kg']
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+const UNITES_DOSE = ['mg/kg', 'mcg/kg', 'g/kg', 'UI/kg', 'mL/kg']
 const UNITES_CONC = ['mg/mL', 'mcg/mL', 'UI/mL', '%']
 
 export default function MedicamentCustomForm() {
@@ -27,8 +29,16 @@ export default function MedicamentCustomForm() {
   const [customId, setCustomId] = useState(null)
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(false)
   const { setTitreCustom } = useContext(TitreContext)
+  const formRef = useRef(null)
+  formRef.current = form
 
   useEffect(() => {
+    /* Même contrat que la fiche : pendant une transition, les
+       paramètres de route de la page sortante disparaissent. */
+    if (!UUID.test(id || '')) {
+      if (!formRef.current) setLoading(false)
+      return
+    }
     chargerDonnees()
   }, [id])
 
@@ -52,9 +62,6 @@ const { data: customDirect } = await supabase
   .eq('user_id', user.id)
   .eq('id', id)
   .maybeSingle()
-console.log('id URL:', id)
-console.log('customParMedId:', customParMedId)
-console.log('customDirect:', customDirect)
 const custom = customParMedId || customDirect
 
 if (custom) {
@@ -141,7 +148,6 @@ if (custom) {
       especes:             form.especes,
       updated_at:          new Date().toISOString(),
     }
-console.log('customId:', customId)
     if (customId) {
       const { error } = await supabase
         .from('medicaments_custom')
@@ -165,6 +171,10 @@ console.log('customId:', customId)
   .from('medicaments_custom')
   .delete()
   .eq('id', customId)
+
+    // Un médicament créé de zéro peut n'avoir aucune catégorie.
+    if (!form.categorie) { navigate('/drogues'); return }
+
     navigate(`/drogues/${form.categorie
   .toLowerCase()
   .normalize('NFD')

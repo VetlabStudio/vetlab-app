@@ -22,6 +22,43 @@ async function getUserIdFromCustomer(customerId: string): Promise<string | null>
   return data?.id || null
 }
 
+/* ════════════════════════════════════════════════════════════
+   LA GARDE
+
+   Le forfait d'une personne vient de l'une de deux sources :
+   son propre abonnement, ou l'équipe de quelqu'un d'autre.
+
+   Sans cette vérification, annuler l'abonnement Pro de quelqu'un
+   qui vient de rejoindre une équipe le sortirait de cette équipe,
+   puisque traiterAbonnement remet `equipe_id` à null. Et même
+   une annulation en fin de période casserait : Stripe envoie
+   d'abord un `subscription.updated` encore actif, qui réécrirait
+   son plan à `pro` par-dessus `equipe`.
+
+   L'ordre joue en notre faveur : l'insertion dans
+   `membres_equipe` est validée avant que la requête d'annulation
+   parte vers Stripe, donc la ligne existe déjà quand le webhook
+   arrive.
+
+   Le propriétaire d'une équipe est membre de sa propre équipe :
+   la fonction retourne false pour lui, et son abonnement continue
+   de gouverner son forfait, ce qui est le bon comportement.
+   ════════════════════════════════════════════════════════════ */
+async function appartientAEquipeDunAutre(userId: string): Promise<boolean> {
+  const { data: lignes } = await supabase
+    .from('membres_equipe')
+    .select('equipe_id')
+    .eq('user_id', userId)
+  if (!lignes?.length) return false
+
+  const { data: equipes } = await supabase
+    .from('equipes')
+    .select('id, proprietaire_id')
+    .in('id', lignes.map(l => l.equipe_id))
+
+  return (equipes || []).some(e => e.proprietaire_id && e.proprietaire_id !== userId)
+}
+
 async function mettreAJourEquipe(userId: string, maxMembres: number) {
   const { data: equipe } = await supabase
     .from('equipes')
@@ -94,52 +131,78 @@ async function envoyerConfirmationAbonnement(customerId: string, plan: string, q
   const prenom = profil.nom ? profil.nom.split(' ')[0] : ''
   const salutation = prenom ? `Bonjour ${prenom},` : 'Bonjour,'
 
+  /* Même gabarit que les quatre autres courriels : titre blanc,
+     texte marine verrouillé contre le mode sombre par le dégradé,
+     les sélecteurs data-ogsc et la requête prefers-color-scheme,
+     coins à 24 px, pied de page à 5,32:1. */
   const html = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="x-apple-disable-message-reformatting" />
 <meta name="color-scheme" content="light" />
 <meta name="supported-color-schemes" content="light" />
 <title>Bienvenue sur Adjuvet ${nomPlan}</title>
 <!--[if mso]><style type="text/css">body,table,td,a{font-family:Arial,Helvetica,sans-serif!important;}</style><![endif]-->
 <style type="text/css">
+:root{color-scheme:light;supported-color-schemes:light;}
 body{margin:0;padding:0;width:100%!important;background-color:#EDECE9;}
 img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;}
 @media only screen and (max-width:620px){.conteneur{width:100%!important;}.bloc{padding:28px 22px!important;}.titre{font-size:22px!important;}}
+
+[data-ogsc] .fond,  [data-ogsb] .fond  {background-color:#EDECE9!important;}
+[data-ogsc] .carte, [data-ogsb] .carte {background-color:#BCAADC!important;}
+[data-ogsc] .bouton,[data-ogsb] .bouton{background-color:#213058!important;}
+[data-ogsc] .titre  {color:#FFFFFF!important;}
+[data-ogsc] .texte  {color:#2E3A5C!important;}
+[data-ogsc] .lien   {color:#213058!important;}
+[data-ogsc] .pied   {color:#5A6070!important;}
+[data-ogsc] .btn-texte{color:#FFFFFF!important;}
+
+@media (prefers-color-scheme:dark){
+  .fond   {background-color:#EDECE9!important;}
+  .carte  {background-color:#BCAADC!important;}
+  .bouton {background-color:#213058!important;}
+  .titre  {color:#FFFFFF!important;}
+  .texte  {color:#2E3A5C!important;}
+  .lien   {color:#213058!important;}
+  .pied   {color:#5A6070!important;}
+  .btn-texte{color:#FFFFFF!important;}
+}
 </style>
 </head>
-<body style="margin:0;padding:0;background-color:#EDECE9;">
+<body class="fond" style="margin:0;padding:0;background-color:#EDECE9;background-image:linear-gradient(#EDECE9,#EDECE9);">
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#EDECE9;">Votre abonnement Adjuvet ${nomPlan} est maintenant actif.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#EDECE9;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="fond" style="background-color:#EDECE9;background-image:linear-gradient(#EDECE9,#EDECE9);">
   <tr><td align="center" style="padding:32px 16px;">
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="conteneur" style="width:600px;max-width:600px;">
       <tr>
-        <td style="background-color:#BCAADC;border-radius:16px;">
+        <td class="carte" style="background-color:#BCAADC;background-image:linear-gradient(#BCAADC,#BCAADC);border-radius:24px;">
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
             <tr><td class="bloc" align="center" style="padding:32px;">
               <img src="https://adjuvet.app/logo-adjuvet.png" width="132" alt="Adjuvet" style="display:block;width:132px;max-width:132px;height:auto;margin:0 auto 26px;" />
               <h1 class="titre" style="margin:0 0 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:25px;line-height:1.25;font-weight:bold;color:#FFFFFF;text-align:center;">Bienvenue sur Adjuvet ${nomPlan}&nbsp;!</h1>
-              <p style="margin:0 0 26px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.65;color:#2E3A5C;text-align:center;">${salutation}<br /><br />Votre abonnement <strong>Adjuvet ${nomPlan}</strong> est maintenant actif. Vous avez acc&egrave;s &agrave; toutes les fonctionnalit&eacute;s incluses dans votre forfait.</p>
+              <p class="texte" style="margin:0 0 26px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.65;color:#2E3A5C;text-align:center;">${salutation}<br /><br />Votre abonnement <strong>Adjuvet ${nomPlan}</strong> est maintenant actif. Vous avez acc&egrave;s &agrave; toutes les fonctionnalit&eacute;s incluses dans votre forfait.</p>
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
                 <tr>
-                  <td align="center" style="border-radius:999px;background-color:#213058;">
+                  <td class="bouton" align="center" style="border-radius:999px;background-color:#213058;background-image:linear-gradient(#213058,#213058);">
                     <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://adjuvet.app" style="height:48px;v-text-anchor:middle;width:220px;" arcsize="50%" stroke="f" fillcolor="#213058"><w:anchorlock/><center style="color:#FFFFFF;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;">Ouvrir Adjuvet</center></v:roundrect><![endif]-->
                     <!--[if !mso]><!-->
-                    <a href="https://adjuvet.app" style="display:inline-block;padding:15px 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:bold;color:#FFFFFF;text-decoration:none;border-radius:999px;background-color:#213058;">Ouvrir Adjuvet</a>
+                    <a class="btn-texte" href="https://adjuvet.app" style="display:inline-block;padding:15px 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;font-weight:bold;color:#FFFFFF;text-decoration:none;border-radius:999px;background-color:#213058;">Ouvrir Adjuvet</a>
                     <!--<![endif]-->
                   </td>
                 </tr>
               </table>
-              <p style="margin:24px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#3D4666;text-align:center;">Vous pouvez g&eacute;rer votre abonnement depuis votre profil dans l'application.</p>
+              <p class="texte" style="margin:24px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#2E3A5C;text-align:center;">Vous pouvez g&eacute;rer votre abonnement depuis votre profil dans l'application.</p>
             </td></tr>
           </table>
         </td>
       </tr>
       <tr>
         <td align="center" style="padding:20px 16px 0;">
-          <p style="margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#8A90A0;">Adjuvet, par Vetlab Studio</p>
-          <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#8A90A0;"><a href="https://adjuvet.app" style="color:#8A90A0;text-decoration:underline;">adjuvet.app</a></p>
+          <p class="pied" style="margin:0 0 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#5A6070;">Adjuvet, par Vetlab Studio</p>
+          <p class="pied" style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#5A6070;"><a class="pied" href="https://adjuvet.app" style="color:#5A6070;text-decoration:underline;">adjuvet.app</a></p>
         </td>
       </tr>
     </table>
@@ -160,13 +223,22 @@ img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;}
 }
 
 async function traiterAbonnement(customerId: string, priceId: string | undefined, actif: boolean, quantity = 1): Promise<string | null> {
+  const userId = await getUserIdFromCustomer(customerId)
+
+  /* Cette personne tire son forfait de l'équipe de quelqu'un
+     d'autre : son abonnement personnel ne gouverne plus rien,
+     on ne touche pas à son profil. */
+  if (userId && await appartientAEquipeDunAutre(userId)) {
+    console.log(`Abonnement ignoré, ${userId} est membre de l'équipe d'un autre:`, customerId, actif ? 'actif' : 'résilié')
+    return null
+  }
+
   if (!actif) {
     // Rétrograder le propriétaire et effacer les liens d'équipe
     await supabase.from('profiles').update({ plan: 'free', equipe_id: null, role: null }).eq('stripe_customer_id', customerId)
     console.log('Plan résilié:', customerId)
 
     // Rétrograder tous les membres de son équipe
-    const userId = await getUserIdFromCustomer(customerId)
     if (userId) await mettreAJourMembresEquipe(userId, 'free')
 
     return null
@@ -178,13 +250,10 @@ async function traiterAbonnement(customerId: string, priceId: string | undefined
   await supabase.from('profiles').update({ plan }).eq('stripe_customer_id', customerId)
   console.log('Plan mis à jour:', customerId, plan, isEquipe ? `(${quantity} sièges)` : '')
 
-  if (isEquipe) {
-    const userId = await getUserIdFromCustomer(customerId)
-    if (userId) {
-      await mettreAJourEquipe(userId, quantity)
-      // Réactiver tous les membres existants de l'équipe
-      await mettreAJourMembresEquipe(userId, 'equipe')
-    }
+  if (isEquipe && userId) {
+    await mettreAJourEquipe(userId, quantity)
+    // Réactiver tous les membres existants de l'équipe
+    await mettreAJourMembresEquipe(userId, 'equipe')
   }
 
   return plan

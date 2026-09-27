@@ -1,14 +1,22 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Navigate } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
 
 const BUCKET_LOGOS = 'logos-cliniques'
 const TAILLE_MAX_LOGO = 2 * 1024 * 1024 // 2 Mo
 const LARGEUR_LOGO = 600 // px, après redimensionnement
+const SEUIL_RECHERCHE = 8 // au-delà, la liste devient difficile à parcourir
+const JOURS_VALIDITE = 7  // durée de vie d'une invitation
+
+function invitationExpiree(creeLe) {
+  if (!creeLe) return false
+  return Date.now() - new Date(creeLe).getTime() > JOURS_VALIDITE * 86400000
+}
 
 const TYPES_LOGO = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp']
+
+const ORDRE_ROLE = { proprietaire: 0, admin: 1, membre: 2 }
 
 function libelleRole(role) {
   if (role === 'proprietaire') return 'Propriétaire'
@@ -24,6 +32,10 @@ function depuis(dateIso) {
   const semaines = Math.floor(jours / 7)
   if (semaines < 5) return `il y a ${semaines} semaine${semaines > 1 ? 's' : ''}`
   return `il y a ${Math.floor(jours / 30)} mois`
+}
+
+function sansAccent(texte) {
+  return (texte || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 }
 
 /* Redimensionne et convertit en PNG avant l'envoi : le logo se
@@ -64,6 +76,8 @@ export default function EquipeGestion() {
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState(null)
   const [message, setMessage] = useState(null) // { type, texte }
+  const [recherche, setRecherche] = useState('')
+  const [reglagesOuverts, setReglagesOuverts] = useState(false)
 
   const [emailsInput, setEmailsInput] = useState('')
   const [roleInvit, setRoleInvit] = useState('membre')
@@ -110,7 +124,7 @@ export default function EquipeGestion() {
 
     const [{ data: eq, error: eqErreur }, { data: mems, error: memErreur }, { data: invits }] = await Promise.all([
       supabase.from('equipes').select('*').eq('id', teamId).single(),
-      supabase.from('membres_equipe').select('*, profiles(nom)').eq('equipe_id', teamId),
+      supabase.from('membres_equipe').select('*, profiles(nom, email, avatar_url)').eq('equipe_id', teamId),
       supabase.from('team_invitations').select('*').eq('team_id', teamId).eq('status', 'pending').order('created_at', { ascending: false }),
     ])
 
@@ -191,6 +205,19 @@ export default function EquipeGestion() {
     setEditNomClinique(false)
   }
 
+  /* ─── SIÈGES ──────────────────────────────────────────────
+     Une invitation en attente occupe une place : sans ça, on peut
+     inviter dix personnes pour cinq sièges, et les dernières
+     apprennent que l'équipe est pleine après avoir créé leur
+     compte. Le compteur et la garde à l'envoi comptent donc les
+     deux ensemble. */
+  /* Une invitation périmée ne peut plus être acceptée : elle
+     ne retient donc aucun siège. */
+  const invitationsVives = invitations.filter(i => !invitationExpiree(i.created_at))
+  const occupes = membres.length + invitationsVives.length
+  const siegesRestants = equipe?.max_membres ? equipe.max_membres - occupes : Infinity
+  const plein = equipe?.max_membres ? occupes >= equipe.max_membres : false
+
   /* ─── INVITATIONS ─────────────────────────────────────── */
   function parseEmails(texte) {
     return [...new Set(
@@ -201,8 +228,6 @@ export default function EquipeGestion() {
   }
 
   const emailsParsed = useMemo(() => parseEmails(emailsInput), [emailsInput])
-  const siegesRestants = equipe?.max_membres ? equipe.max_membres - membres.length : Infinity
-  const plein = equipe?.max_membres && membres.length >= equipe.max_membres
 
   async function inviterUn(email, role) {
     await supabase.from('team_invitations').delete().eq('team_id', teamId).eq('email', email)
@@ -226,8 +251,17 @@ export default function EquipeGestion() {
     if (emailsParsed.length === 0 || envoi) return
     setErreurInvit('')
 
-    if (equipe?.max_membres && emailsParsed.length > siegesRestants) {
-      setErreurInvit(`Seulement ${siegesRestants} siège${siegesRestants > 1 ? 's' : ''} disponible${siegesRestants > 1 ? 's' : ''} pour ${emailsParsed.length} invitations.`)
+    /* Les réinvitations d'une adresse déjà en attente ne prennent pas
+       de siège supplémentaire : inviterUn remplace l'invitation. */
+    const emailsEnAttente = new Set(invitationsVives.map(i => i.email))
+    const nouveaux = emailsParsed.filter(e => !emailsEnAttente.has(e)).length
+
+    if (equipe?.max_membres && nouveaux > siegesRestants) {
+      setErreurInvit(
+        siegesRestants > 0
+          ? `Seulement ${siegesRestants} siège${siegesRestants > 1 ? 's' : ''} disponible${siegesRestants > 1 ? 's' : ''} pour ${nouveaux} nouvelles invitations.`
+          : "Tous les sièges sont occupés, invitations en attente comprises. Annulez une invitation ou ajoutez des sièges."
+      )
       return
     }
 
@@ -336,6 +370,37 @@ export default function EquipeGestion() {
     if (chargerProfil) chargerProfil()
   }
 
+  /* ─── LISTE UNIFIÉE ───────────────────────────────────────
+     Membres et invitations répondent à la même question, « qui est
+     dans mon équipe ». Une invitation est une personne avec un
+     statut différent, pas une catégorie séparée. */
+  const elements = useMemo(() => {
+    const lignes = [
+      ...membres.map(m => ({
+        cle: `m-${m.id}`,
+        type: 'membre',
+        donnee: m,
+        nom: m.profiles?.nom || 'Sans nom',
+        recherchable: `${m.profiles?.nom || ''} ${m.profiles?.email || ''}`,
+        tri: ORDRE_ROLE[m.role] ?? 3,
+      })),
+      ...invitations.map(i => ({
+        cle: `i-${i.id}`,
+        type: 'invitation',
+        donnee: i,
+        nom: i.email,
+        recherchable: i.email,
+        tri: 4,
+      })),
+    ]
+
+    lignes.sort((a, b) => a.tri - b.tri || a.nom.localeCompare(b.nom))
+
+    const q = sansAccent(recherche.trim())
+    if (!q) return lignes
+    return lignes.filter(l => sansAccent(l.recherchable).includes(q))
+  }, [membres, invitations, recherche])
+
   /* ─── RENDU ───────────────────────────────────────────── */
   if (chargement) return null
   if (roleEquipe !== 'admin' && roleEquipe !== 'proprietaire') return <Navigate to="/equipe" replace />
@@ -351,6 +416,7 @@ export default function EquipeGestion() {
   }
 
   const estProprietaire = roleEquipe === 'proprietaire'
+  const afficherRecherche = membres.length + invitations.length > SEUIL_RECHERCHE
 
   return (
     <div className="equipe-page">
@@ -362,164 +428,223 @@ export default function EquipeGestion() {
         </div>
       )}
 
-      {/* ═══ CLINIQUE ═══ */}
-      <div className="equipe-carte">
-        <div className="equipe-carte-titre">Clinique</div>
-
-        <div className="equipe-clinique">
-          <div className="equipe-logo">
-            {equipe?.logo_url
-              ? <img src={equipe.logo_url} alt="Logo de la clinique" />
-              : <i className="ti ti-building-hospital"></i>}
-          </div>
-
-          <div className="equipe-clinique-textes">
-            {editNomClinique ? (
-              <div className="equipe-edition-nom">
-                <input
-                  className="form-input"
-                  value={nouveauNomClinique}
-                  onChange={e => setNouveauNomClinique(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') sauvegarderNomClinique()
-                    if (e.key === 'Escape') setEditNomClinique(false)
-                  }}
-                  autoFocus
-                />
-                <button className="equipe-lien" onClick={sauvegarderNomClinique}>Enregistrer</button>
-                <button className="equipe-lien discret" onClick={() => setEditNomClinique(false)}>Annuler</button>
-              </div>
-            ) : (
-              <>
-                <span className="equipe-clinique-nom">{equipe?.nom || 'Clinique'}</span>
-                <button className="equipe-lien" onClick={() => { setNouveauNomClinique(equipe?.nom || ''); setEditNomClinique(true) }}>
-                  Renommer
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
-        <p className="equipe-aide">
-          Le logo remplace le symbole Adjuvet en haut de vos PDF. Image de 2 Mo maximum.
-          Un logo carré sur fond transparent ou blanc donne le meilleur résultat.
-        </p>
-
-        <div className="equipe-actions-logo">
-          <input
-            ref={champLogo}
-            type="file"
-            accept="image/png,image/jpeg,image/svg+xml,image/webp"
-            onChange={choisirLogo}
-            style={{ display: 'none' }}
-          />
-          <button className="equipe-btn-secondaire" onClick={() => champLogo.current?.click()} disabled={envoiLogo}>
-            <i className="ti ti-upload"></i>
-            {envoiLogo ? 'Envoi...' : equipe?.logo_url ? 'Remplacer le logo' : 'Ajouter un logo'}
-          </button>
-          {equipe?.logo_url && (
-            <button className="equipe-lien danger" onClick={() => setConfirmRetraitLogo(true)} disabled={envoiLogo}>
-              Retirer
-            </button>
-          )}
-        </div>
+      {/* ═══ BANDEAU DE LA CLINIQUE ═══
+           Une étiquette, pas une commande : le titre de la page ne
+           dit pas de quelle clinique il s'agit. Les réglages
+           s'ouvrent depuis le bas, et un seul endroit les ouvre. */}
+      <div className="equipe-bandeau">
+        <span className="equipe-bandeau-logo">
+          {equipe?.logo_url
+            ? <img src={equipe.logo_url} alt="" />
+            : <i className="ti ti-building-hospital"></i>}
+        </span>
+        <span className="equipe-bandeau-nom">{equipe?.nom || 'Clinique'}</span>
       </div>
 
       {/* ═══ SIÈGES ═══ */}
       {equipe?.max_membres && (
-        <div className={`equipe-carte ${plein ? 'alerte' : ''}`}>
-          <div className="equipe-sieges-haut">
-            <span className="equipe-carte-titre">Sièges utilisés</span>
-            <span className={`equipe-sieges-compte ${plein ? 'alerte' : ''}`}>
-              {membres.length} / {equipe.max_membres}
-            </span>
-          </div>
-          <div className="equipe-jauge">
-            <div
-              className={`equipe-jauge-remplissage ${plein ? 'alerte' : ''}`}
-              style={{ width: `${Math.min(100, (membres.length / equipe.max_membres) * 100)}%` }}
-            />
-          </div>
-          <p className={`equipe-aide ${plein ? 'alerte' : ''}`}>
-            {plein
-              ? "Limite atteinte. Augmentez le nombre de sièges pour inviter d'autres membres."
-              : `${equipe.max_membres - membres.length} siège${equipe.max_membres - membres.length > 1 ? 's' : ''} disponible${equipe.max_membres - membres.length > 1 ? 's' : ''}`}
+        <div className={`equipe-sieges ${plein ? 'plein' : ''}`}>
+          <span className="equipe-sieges-cle">Sièges</span>
+          <p className="equipe-sieges-valeur">
+            {occupes} sur {equipe.max_membres}
+            <em>{plein ? 'occupés' : `· ${siegesRestants} libre${siegesRestants > 1 ? 's' : ''}`}</em>
           </p>
+          <div className="equipe-sieges-jauge">
+            <span style={{ width: `${Math.min(100, (occupes / equipe.max_membres) * 100)}%` }} />
+          </div>
+
           {plein && estProprietaire && (
-            <button className="equipe-btn-secondaire" onClick={() => navigate('/abonnement')}>
-              <i className="ti ti-arrow-up-circle"></i> Augmenter les sièges
+            <button className="equipe-sieges-btn" onClick={() => navigate('/abonnement')}>
+              <i className="ti ti-arrow-up-circle"></i> Ajouter des sièges
+            </button>
+          )}
+
+          <p className="equipe-sieges-note">
+            {membres.length} membre{membres.length > 1 ? 's' : ''} actif{membres.length > 1 ? 's' : ''}
+            {invitationsVives.length > 0 && ` et ${invitationsVives.length} invitation${invitationsVives.length > 1 ? 's' : ''} en attente`}.
+            {invitationsVives.length > 0 && " Une invitation réserve un siège tant qu'elle n'est pas annulée."}
+          </p>
+        </div>
+      )}
+
+      {/* ═══ RECHERCHE ═══ */}
+      {afficherRecherche && (
+        <div className="equipe-recherche">
+          <i className="ti ti-search"></i>
+          <input
+            type="text"
+            value={recherche}
+            onChange={e => setRecherche(e.target.value)}
+            placeholder="Rechercher une personne..."
+          />
+          {recherche && (
+            <button type="button" onClick={() => setRecherche('')} aria-label="Effacer">
+              <i className="ti ti-x"></i>
             </button>
           )}
         </div>
       )}
 
-      {/* ═══ MEMBRES ═══ */}
-      <div className="equipe-bloc">
-        <div className="equipe-bloc-entete">
-          <span className="equipe-bloc-titre">Membres ({membres.length})</span>
-          <button
-            className="equipe-lien"
-            onClick={() => plein ? navigate('/abonnement') : setShowInviteModal(true)}
-          >
-            {plein ? 'Limite atteinte' : '+ Ajouter'}
-          </button>
-        </div>
+      {/* ═══ LISTE UNIFIÉE ═══ */}
+      <div className="equipe-liste">
+        {elements.length === 0 && (
+          <p className="equipe-aide" style={{ textAlign: 'center', padding: '18px 0' }}>
+            Aucune personne ne correspond à cette recherche.
+          </p>
+        )}
 
-        <p className="equipe-aide">
-          Un admin peut inviter, retirer et changer les rôles. Un membre consulte les protocoles et les
-          monographies de l'équipe sans pouvoir les modifier.
-        </p>
-
-        <div className="equipe-liste">
-          {membres.map(m => {
+        {elements.map(ligne => {
+          if (ligne.type === 'membre') {
+            const m = ligne.donnee
             const cestMoi = m.user_id === userId
+            const gerable = m.role !== 'proprietaire' && !cestMoi
             return (
-              <div key={m.id} className="equipe-membre">
+              <div key={ligne.cle} className="equipe-membre">
                 <div className="equipe-membre-avatar">
-                  {(m.profiles?.nom || '?').trim().charAt(0).toUpperCase()}
+                  {m.profiles?.avatar_url
+                    ? <img src={m.profiles.avatar_url} alt="" />
+                    : (m.profiles?.nom || '?').trim().charAt(0).toUpperCase()}
                 </div>
                 <div className="equipe-membre-textes">
                   <span className="equipe-membre-nom">
                     {m.profiles?.nom || 'Sans nom'}
                     {cestMoi && <span className="equipe-membre-moi">vous</span>}
                   </span>
-                  <span className={`equipe-membre-role ${m.role}`}>{libelleRole(m.role)}</span>
+                  {m.profiles?.email && (
+                    <span className="equipe-membre-mail">{m.profiles.email}</span>
+                  )}
                 </div>
-                {m.role !== 'proprietaire' && !cestMoi && (
-                  <button className="equipe-membre-gerer" onClick={() => setMembreGere(m)}>
-                    Gérer
+
+                {gerable ? (
+                  <button
+                    className={`equipe-role ${m.role}`}
+                    onClick={() => setMembreGere(m)}
+                    aria-label={`Modifier le rôle de ${m.profiles?.nom || 'ce membre'}`}
+                  >
+                    {libelleRole(m.role)}
+                    <i className="ti ti-chevron-down"></i>
                   </button>
+                ) : (
+                  <span className={`equipe-role fixe ${m.role}`}>{libelleRole(m.role)}</span>
                 )}
               </div>
             )
-          })}
-        </div>
+          }
+
+          const inv = ligne.donnee
+          const expiree = invitationExpiree(inv.created_at)
+          return (
+            <div key={ligne.cle} className="equipe-membre">
+              <div className="equipe-membre-avatar attente">
+                <i className="ti ti-mail"></i>
+              </div>
+              <div className="equipe-membre-textes">
+                <span className="equipe-membre-nom">{inv.email}</span>
+                <span className="equipe-membre-mail">
+                  <span className={`equipe-statut ${expiree ? 'vieille' : ''}`}>
+                    {expiree ? 'Expirée' : 'Invitation'} · {depuis(inv.created_at)}
+                  </span>
+                  {' '}{libelleRole(inv.role)}
+                </span>
+              </div>
+              <div className="equipe-invitation-actions">
+                <button className="equipe-lien" onClick={() => renvoyerInvitation(inv)}>Renvoyer</button>
+                <button className="equipe-lien danger" onClick={() => annulerInvitation(inv.id)}>Annuler</button>
+              </div>
+            </div>
+          )
+        })}
       </div>
 
-      {/* ═══ INVITATIONS ═══ */}
-      {invitations.length > 0 && (
-        <div className="equipe-bloc">
-          <div className="equipe-bloc-entete">
-            <span className="equipe-bloc-titre">Invitations en attente ({invitations.length})</span>
-          </div>
-          <div className="equipe-liste">
-            {invitations.map(inv => (
-              <div key={inv.id} className="equipe-invitation">
-                <div className="equipe-membre-textes">
-                  <span className="equipe-membre-nom">{inv.email}</span>
-                  <span className="equipe-invitation-detail">
-                    {libelleRole(inv.role)} · envoyée {depuis(inv.created_at)}
-                  </span>
-                </div>
-                <div className="equipe-invitation-actions">
-                  <button className="equipe-lien" onClick={() => renvoyerInvitation(inv)}>Renvoyer</button>
-                  <button className="equipe-lien danger" onClick={() => annulerInvitation(inv.id)}>Annuler</button>
-                </div>
+      <button
+        className="equipe-btn-primaire"
+        style={{ marginTop: 14 }}
+        onClick={() => plein ? navigate('/abonnement') : setShowInviteModal(true)}
+      >
+        <i className={`ti ti-${plein ? 'arrow-up-circle' : 'user-plus'}`}></i>
+        {plein ? 'Ajouter des sièges pour inviter' : 'Inviter une personne'}
+      </button>
+
+      <p className="equipe-aide" style={{ marginTop: 10 }}>
+        Un admin peut inviter, retirer et changer les rôles. Un membre consulte les protocoles et les
+        monographies de l'équipe sans pouvoir les modifier.
+      </p>
+
+      {/* ═══ RÉGLAGES DE LA CLINIQUE ═══ */}
+      <div className="bloc-repli" style={{ marginTop: 18 }}>
+        <button
+          type="button"
+          className={`bloc-repli-entete ${reglagesOuverts ? 'ouvert' : ''}`}
+          onClick={() => setReglagesOuverts(o => !o)}
+          aria-expanded={reglagesOuverts}
+        >
+          <i className="ti ti-settings bloc-repli-icone"></i>
+          <span className="bloc-repli-label">Réglages de la clinique</span>
+          <i className={`ti ti-chevron-${reglagesOuverts ? 'up' : 'down'}`}></i>
+        </button>
+
+        {reglagesOuverts && (
+          <div className="bloc-repli-contenu">
+            <div className="equipe-clinique">
+              <div className="equipe-logo">
+                {equipe?.logo_url
+                  ? <img src={equipe.logo_url} alt="Logo de la clinique" />
+                  : <i className="ti ti-building-hospital"></i>}
               </div>
-            ))}
+
+              <div className="equipe-clinique-textes">
+                {editNomClinique ? (
+                  <div className="equipe-edition-nom">
+                    <input
+                      className="form-input"
+                      value={nouveauNomClinique}
+                      onChange={e => setNouveauNomClinique(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') sauvegarderNomClinique()
+                        if (e.key === 'Escape') setEditNomClinique(false)
+                      }}
+                      autoFocus
+                    />
+                    <button className="equipe-lien" onClick={sauvegarderNomClinique}>Enregistrer</button>
+                    <button className="equipe-lien discret" onClick={() => setEditNomClinique(false)}>Annuler</button>
+                  </div>
+                ) : (
+                  <>
+                    <span className="equipe-clinique-nom">{equipe?.nom || 'Clinique'}</span>
+                    <button className="equipe-lien" onClick={() => { setNouveauNomClinique(equipe?.nom || ''); setEditNomClinique(true) }}>
+                      Renommer
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <p className="equipe-aide">
+              Le logo remplace le symbole Adjuvet en haut de vos PDF. PNG, JPG ou SVG, 2 Mo maximum.
+              Un logo horizontal sur fond transparent donne le meilleur résultat.
+            </p>
+
+            <div className="equipe-actions-logo">
+              <input
+                ref={champLogo}
+                type="file"
+                accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                onChange={choisirLogo}
+                style={{ display: 'none' }}
+              />
+              <button className="equipe-btn-secondaire" onClick={() => champLogo.current?.click()} disabled={envoiLogo}>
+                <i className="ti ti-upload"></i>
+                {envoiLogo ? 'Envoi...' : equipe?.logo_url ? 'Remplacer le logo' : 'Ajouter un logo'}
+              </button>
+              {equipe?.logo_url && (
+                <button className="equipe-lien danger" onClick={() => setConfirmRetraitLogo(true)} disabled={envoiLogo}>
+                  Retirer
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ═══ POPUP GESTION D'UN MEMBRE ═══ */}
       {membreGere && (
@@ -571,11 +696,19 @@ export default function EquipeGestion() {
         <div className="popup-overlay" onClick={() => { setShowInviteModal(false); setEmailsInput(''); setErreurInvit(''); setMsgSucces('') }}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Ajouter un membre</span>
+              <span>Inviter une personne</span>
               <button className="popup-close" onClick={() => { setShowInviteModal(false); setEmailsInput(''); setErreurInvit(''); setMsgSucces('') }}>✕</button>
             </div>
 
             <div className="equipe-gestion">
+              {equipe?.max_membres && (
+                <p className="equipe-aide">
+                  {siegesRestants > 0
+                    ? `${siegesRestants} siège${siegesRestants > 1 ? 's' : ''} disponible${siegesRestants > 1 ? 's' : ''}.`
+                    : 'Aucun siège disponible.'}
+                </p>
+              )}
+
               <textarea
                 className="form-textarea"
                 rows={3}

@@ -23,6 +23,7 @@
 /* ─── VARIABLES DE MARQUE ─────────────────────── */
 :root {
   --accent-red:     #BCAADC;
+  --accent-light:   #ebe8f7;
   --primary:        #213058;
   --primary-light:  #BBE6D5;
   --yellow:         #F8F6B8;
@@ -3882,6 +3883,428 @@ input[type="number"] {
   filter: brightness(0) saturate(100%) invert(30%) sepia(60%) saturate(600%) hue-rotate(100deg) brightness(0.85);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   PAGE RCR : nouvelles classes
+   À ajouter à index.css. Les classes existantes (.rcr-status,
+   .rcr-cercle-wrapper, .rcr-ventil-*, .rcr-infos, .rcr-btn-*,
+   .rcr-rappels, .rcr-section-titre, .rcr-pulse-*) ne changent pas.
+
+   Les classes .rcr-drogues-tableau, .rcr-drogue-header,
+   .rcr-drogue-ligne, .rcr-drogue-nom, .rcr-drogue-dose et
+   .rcr-drogue-note ne servent plus. Vérifier avec une recherche
+   globale avant de les supprimer.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── ONGLETS CHRONO / DOSES ─────────────────────────────── */
+.rcr-onglets {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  padding: 4px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-pill);
+}
+
+.rcr-onglets button {
+  position: relative;
+  flex: 1;
+  min-height: 40px;
+  padding: 9px 12px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.rcr-onglets button.actif {
+  background: var(--bg-card);
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgba(33, 48, 88, 0.12);
+}
+
+/* Pastille : le poids n'est pas encore saisi */
+.rcr-onglet-point {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--accent-red);
+  vertical-align: middle;
+}
+
+/* Remplace le style en ligne de la rangée chronomètre */
+.rcr-chrono-rangee {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ─── CARTE DE DOSE ──────────────────────────────────────── */
+.rcr-doses-bloc {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.rcr-dose {
+  background: var(--accent-light);
+  border-radius: var(--radius-md);
+  padding: 11px 13px 12px 14px;
+}
+
+.rcr-dose-haut {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rcr-dose-nom {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.rcr-dose-ref {
+  font-size: 12px;
+  color: var(--primary);
+  opacity: 0.65;
+  white-space: nowrap;
+}
+
+.rcr-dose-valeurs {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+
+.rcr-dose-quantite {
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  color: var(--primary);
+}
+
+.rcr-dose-volume {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--primary);
+  background: var(--bg-card);
+  border-radius: var(--radius-pill);
+  padding: 4px 11px;
+}
+
+.rcr-dose-bas,
+.rcr-dose-note {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--primary);
+  opacity: 0.7;
+  margin-top: 6px;
+}
+
+.rcr-dose-note {
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.rcr-dose-tag {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rcr-dose-tag.due {
+  background: var(--accent-red);
+  color: #fff;
+}
+
+.rcr-doses-ou {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-hint);
+  text-align: center;
+  margin: 0;
+}
+
+/* ─── GROUPES REPLIÉS ────────────────────────────────────── */
+.rcr-groupe {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.rcr-groupe-entete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 13px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  text-align: left;
+}
+
+.rcr-groupe-entete.ouvert {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rcr-groupe-compte {
+  flex-shrink: 0;
+  min-width: 26px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.rcr-groupe-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.rcr-groupe-entete i {
+  font-size: 18px;
+  color: var(--text-hint);
+}
+
+/* Icône de tête, quand le groupe n'a pas de compte à afficher */
+.rcr-groupe-entete .rcr-groupe-icone {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.rcr-groupe-contenu {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+/* Les rappels gardent leur carte existante ; on aboute
+   seulement le haut à l'entête repliable. */
+.rcr-rappels--replie {
+  margin-top: 0;
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.rcr-contre-indication {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #991B1B;
+}
+
+.rcr-contre-indication i {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ─── DÉFIBRILLATION ─────────────────────────────────────── */
+.rcr-defib {
+  width: 100%;
+  margin-top: 16px;
+  padding: 15px 16px;
+  background: var(--primary);
+  border-radius: var(--radius-lg);
+  color: #fff;
+}
+
+.rcr-defib-cle {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.rcr-defib-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.rcr-defib-chips button {
+  min-height: 34px;
+  padding: 7px 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.rcr-defib-chips button.actif {
+  background: #fff;
+  color: var(--primary);
+}
+
+.rcr-defib-valeur {
+  font-size: 29px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  line-height: 1.1;
+  margin: 12px 0 0;
+}
+
+.rcr-defib-unite {
+  font-size: 15px;
+  font-weight: 700;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+
+.rcr-defib-detail {
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.75;
+  margin: 5px 0 0;
+}
+
+.rcr-defib-sep {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.16);
+  margin: 13px 0 11px;
+}
+
+/* Légende des rythmes : volontairement sans cadre ni fond,
+   pour qu'on ne la confonde pas avec les boutons du dessus.
+   Remplace l'ancienne .rcr-defib-rythmes, à supprimer. */
+.rcr-rythmes {
+  display: flex;
+  flex-direction: column;
+}
+
+.rcr-rythme {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.rcr-rythme + .rcr-rythme {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.rcr-rythme > i {
+  flex-shrink: 0;
+  font-size: 18px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.rcr-rythme > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rcr-rythme-titre {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin-bottom: 2px;
+}
+
+.rcr-rythme-detail {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.rcr-defib-note {
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.7;
+  margin: 10px 0 0;
+}
+
+/* ─── MODALES ────────────────────────────────────────────── */
+.rcr-modal-texte {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+
+.rcr-verif-compte {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 4px 0 16px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.rcr-verif-chiffre {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.rcr-verif-limite {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-hint);
+}
+
+.rcr-verif-compte.depassement {
+  background: #FEF2F2;
+}
+
+.rcr-verif-compte.depassement .rcr-verif-chiffre,
+.rcr-verif-compte.depassement .rcr-verif-limite {
+  color: #991B1B;
+}
+
 /* ─── PAGE RCR ───────────────────────────────── */
 
 .rcr-page {
@@ -4107,8 +4530,8 @@ input[type="number"] {
   width: 100%;
   font-size: 14px;
   font-weight: 700;
-  color: white;
-  background: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
   padding: 10px 16px;
   border-radius: var(--radius-md);
 }
@@ -9445,6 +9868,340 @@ input[type="number"] {
   font-size: 14px;
 }
 /* ═══════════════════════════════════════════════════════════
+   PAGE GESTION DE L'ÉQUIPE : nouvelles classes
+
+   À ajouter à index.css. Les classes existantes de la page
+   (.equipe-page, .equipe-carte, .equipe-membre, .equipe-logo,
+   .equipe-clinique, .equipe-lien, .equipe-btn-*, .equipe-gestion,
+   .equipe-message, .equipe-emails, .equipe-avertissement...)
+   ne changent pas.
+
+   Ces classes ne servent plus, la carte Sièges ayant été
+   remplacée : .equipe-sieges-haut, .equipe-sieges-compte,
+   .equipe-jauge, .equipe-jauge-remplissage. Vérifie avec une
+   recherche globale avant de les supprimer.
+
+   Le bloc .bloc-repli plus bas est le même que celui du fichier
+   de la transfusion. Si tu l'as déjà collé dans index.css,
+   saute cette section.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── BANDEAU DE LA CLINIQUE ─────────────────────────────── */
+.equipe-bandeau {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 13px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  text-align: left;
+}
+
+.equipe-bandeau-logo {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.equipe-bandeau-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.equipe-bandeau-logo i {
+  font-size: 17px;
+  color: var(--text-hint);
+}
+
+.equipe-bandeau-nom {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── SIÈGES ─────────────────────────────────────────────── */
+.equipe-sieges {
+  width: 100%;
+  padding: 15px 16px;
+  background: var(--primary);
+  border-radius: var(--radius-lg);
+  color: #fff;
+}
+
+.equipe-sieges.plein {
+  background: #7F1D1D;
+}
+
+.equipe-sieges-cle {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.equipe-sieges-valeur {
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+  margin: 6px 0 0;
+}
+
+.equipe-sieges-valeur em {
+  font-style: normal;
+  font-size: 15px;
+  font-weight: 700;
+  opacity: 0.8;
+  margin-left: 6px;
+}
+
+.equipe-sieges-jauge {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.22);
+  overflow: hidden;
+  margin: 12px 0 0;
+}
+
+.equipe-sieges-jauge span {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  transition: width 0.3s;
+}
+
+.equipe-sieges-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 13px;
+  padding: 12px 20px;
+  background: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.equipe-sieges.plein .equipe-sieges-btn {
+  color: #7F1D1D;
+}
+
+.equipe-sieges-btn i {
+  font-size: 17px;
+}
+
+.equipe-sieges-note {
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.78;
+  margin: 10px 0 0;
+}
+
+/* ─── RECHERCHE ──────────────────────────────────────────── */
+.equipe-recherche {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 10px 13px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.equipe-recherche > i {
+  font-size: 17px;
+  color: var(--text-hint);
+  flex-shrink: 0;
+}
+
+.equipe-recherche input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.equipe-recherche button {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 4px;
+  color: var(--text-hint);
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* ─── LIGNES DE LA LISTE ─────────────────────────────────── */
+/* Photo de profil quand il y en a une, initiales sinon. */
+.equipe-membre-avatar {
+  overflow: hidden;
+}
+
+.equipe-membre-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.equipe-membre-avatar.attente {
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border);
+  color: var(--text-hint);
+}
+
+.equipe-membre-avatar.attente i {
+  font-size: 17px;
+}
+
+.equipe-membre-mail {
+  font-size: 12px;
+  color: var(--text-hint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.equipe-statut {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--yellow);
+  color: #7A5B18;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.equipe-statut.vieille {
+  background: #FEF2F2;
+  color: #991B1B;
+}
+
+/* ─── RÔLE, AFFICHAGE ET COMMANDE AU MÊME ENDROIT ────────── */
+.equipe-role {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 38px;
+  padding: 8px 13px;
+  background: var(--primary-light);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.equipe-role i {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.equipe-role.proprietaire {
+  background: #FBF3DC;
+  color: var(--accent-gold, #B8860B);
+}
+
+/* Le rôle du propriétaire et le sien propre ne se modifient pas
+   d'un tap : pas de chevron, pas d'apparence de bouton. */
+.equipe-role.fixe {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.equipe-role.fixe.proprietaire {
+  background: #FBF3DC;
+  color: var(--accent-gold, #B8860B);
+}
+
+/* ─── BLOC REPLIABLE, GÉNÉRIQUE ──────────────────────────────
+   Identique au fichier de la transfusion. Ne le colle qu'une
+   seule fois dans index.css. */
+.bloc-repli {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.bloc-repli-entete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 13px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  text-align: left;
+}
+
+.bloc-repli-entete.ouvert {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.bloc-repli-entete i {
+  font-size: 18px;
+  color: var(--text-hint);
+}
+
+.bloc-repli-entete .bloc-repli-icone {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.bloc-repli-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.bloc-repli-contenu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+/* ═══════════════════════════════════════════════════════════
    SYSTÈME DE RÉSULTATS (à ajouter à index.css)
 
    Trois niveaux, réutilisables sur toutes les pages de calcul :
@@ -9465,7 +10222,7 @@ input[type="number"] {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    background: #dcd7e8;
+    background: var(--accent-light);
     border-radius: var(--radius-md);
     padding: 20px 20px 20px 20px;
     margin-bottom: 16px;
@@ -9680,4 +10437,178 @@ input[type="number"] {
    ne masque jamais l'avertissement. */
 .res-barre-espace {
   height: 86px;
+}
+/* ═══════════════════════════════════════════════════════════
+   PAGE TRANSFUSION SANGUINE
+   À ajouter à index.css, après le système de résultats
+   (.res-primaire, .res-etape), que cette page réutilise.
+
+   Le bloc .bloc-repli est volontairement générique : c'est le
+   même motif que .rcr-groupe sur la page RCR. Quand tu voudras
+   dédoubler, un simple remplacement de .rcr-groupe par
+   .bloc-repli dans RCR.jsx suffit, les règles sont identiques.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── BLOC REPLIABLE, GÉNÉRIQUE ──────────────────────────── */
+.bloc-repli {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.bloc-repli-entete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 13px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  text-align: left;
+}
+
+.bloc-repli-entete.ouvert {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.bloc-repli-entete i {
+  font-size: 18px;
+  color: var(--text-hint);
+}
+
+.bloc-repli-entete .bloc-repli-icone {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.bloc-repli-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.bloc-repli-contenu {
+  padding: 12px 14px 14px;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+/* ─── LISTES DE LA PAGE ──────────────────────────────────── */
+.transf-liste,
+.transf-etapes {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.transf-liste li,
+.transf-etapes li {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin-bottom: 7px;
+}
+
+.transf-liste li:last-child,
+.transf-etapes li:last-child {
+  margin-bottom: 0;
+}
+
+.transf-etapes li {
+  padding-left: 3px;
+}
+
+.transf-sous-titre {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-hint);
+  margin: 12px 0 6px;
+}
+
+.transf-astuce {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.transf-astuce i {
+  flex-shrink: 0;
+  font-size: 16px;
+  color: var(--primary);
+  margin-top: 1px;
+}
+
+/* ─── AVANT DE TRANSFUSER ────────────────────────────────── */
+.transf-typage {
+  width: 100%;
+  margin-top: 16px;
+  padding: 13px 15px;
+  background: var(--primary-light);
+  border-radius: var(--radius-md);
+}
+
+.transf-typage-titre {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.transf-typage-titre i {
+  font-size: 17px;
+}
+
+.transf-typage p {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--primary);
+  margin: 0 0 5px;
+}
+
+.transf-typage p:last-child {
+  margin-bottom: 0;
+}
+
+/* ─── ALERTE HORS PLAGE ──────────────────────────────────── */
+.transf-alerte {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 13px;
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #991B1B;
+}
+
+.transf-alerte i {
+  flex-shrink: 0;
+  font-size: 17px;
+  margin-top: 1px;
 }

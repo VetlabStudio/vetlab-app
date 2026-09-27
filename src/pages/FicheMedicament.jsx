@@ -6,6 +6,8 @@ import { TitreContext } from '../App'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 
 // ─── DÉMARCHE DE CALCUL ───────────────────────────────────
 function DemarcheCollapsible({ resultat, poids, unitePoids }) {
@@ -103,8 +105,19 @@ const { setTitreCustom } = useContext(TitreContext)
   const { estPro } = useProfil()
 const estProRef = useRef(estPro)
 estProRef.current = estPro
+const medicamentRef = useRef(null)
+medicamentRef.current = medicament
 
 useEffect(() => {
+  /* Pendant une transition de page, l'ancienne fiche reste montée
+     sous la nouvelle route : useParams ne renvoie plus rien. On ne
+     touche à rien pour que l'affichage reste intact le temps de
+     l'animation, et on ne lance surtout pas de requête avec un
+     identifiant indéfini. */
+  if (!UUID.test(id || '')) {
+    if (!medicamentRef.current) setLoading(false)
+    return
+  }
   chargerDonnees()
 }, [id])
 
@@ -116,7 +129,7 @@ useEffect(() => {
   useEffect(() => {
   if (medicament?.nom) setTitreCustom(medicament.nom)
   return () => setTitreCustom('')
-}, [medicament])
+}, [medicament?.nom])
 
   // Calcul automatique
   useEffect(() => {
@@ -149,9 +162,12 @@ useEffect(() => {
 
     const volume = doseTotale / conc
 
-    // Vérifier hors plage
+    /* Sans le else, une fiche sans dose maximale conservait
+       l'avertissement du médicament consulté précédemment. */
     if (medicament.dose_min && medicament.dose_max) {
       setHorsPlage(poso < medicament.dose_min || poso > medicament.dose_max)
+    } else {
+      setHorsPlage(false)
     }
 
     setResultat({
@@ -185,7 +201,6 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
 
       if (med) {
         setMedicament(med)
-        console.log('especes:', med.especes)
         setPosologie(med.dose_min?.toString() || '')
         setConcentration(med.concentration?.toString() || '')
       }

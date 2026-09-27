@@ -177,31 +177,28 @@ function LayoutPrincipal({ children }) {
         <div className={`app-layout ${estAccueil ? 'app-layout-accueil' : ''}`}>
           <Header />
           <main className="contenu-principal" style={{ position: 'relative', overflow: 'hidden' }}>
-            {/* La page sortante n'apparaît que pendant l'animation. */}
-            {transition && (
-              <div
-                className={`page-exit-${transition.direction}`}
-                style={{ position: 'absolute', inset: 0 }}
-                aria-hidden="true"
-              >
-                <Suspense fallback={null}>{transition.prevChildren}</Suspense>
+            {transition ? (
+              <>
+                <div
+                  className={`page-exit-${transition.direction}`}
+                  style={{ position: 'absolute', inset: 0 }}
+                  aria-hidden="true"
+                >
+                  <Suspense fallback={null}>{transition.prevChildren}</Suspense>
+                </div>
+                <div
+                  className={`page-enter-${transition.direction}`}
+                  style={{ position: 'absolute', inset: 0, background: 'var(--bg)' }}
+                  onAnimationEnd={() => setTransition(null)}
+                >
+                  <Suspense fallback={<div className="admin-loading">Chargement...</div>}>{children}</Suspense>
+                </div>
+              </>
+            ) : (
+              <div style={{ height: '100%' }}>
+                <Suspense fallback={<div className="admin-loading">Chargement...</div>}>{children}</Suspense>
               </div>
             )}
-
-            {/* La page courante garde le même noeud avant, pendant et
-                après la transition. Sans la clé, React remplaçait la
-                structure au lieu de la mettre à jour, ce qui démontait
-                et remontait chaque page à chaque navigation. */}
-            <div
-              key="page-courante"
-              className={transition ? `page-enter-${transition.direction}` : undefined}
-              style={transition
-                ? { position: 'absolute', inset: 0, background: 'var(--bg)' }
-                : { height: '100%' }}
-              onAnimationEnd={transition ? () => setTransition(null) : undefined}
-            >
-              <Suspense fallback={<div className="admin-loading">Chargement...</div>}>{children}</Suspense>
-            </div>
           </main>
           <BottomNav />
         </div>
