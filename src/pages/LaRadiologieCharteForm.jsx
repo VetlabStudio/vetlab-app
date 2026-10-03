@@ -18,6 +18,9 @@ const FORM_VIDE = {
   notes: '',
 }
 
+const ESPECES_RAPIDES = ['chien', 'chat']
+const ESPECES_AUTRES = Object.keys(ESPECES_CONFIG).filter(e => !ESPECES_RAPIDES.includes(e))
+
 export default function LaRadiologieCharteForm() {
   const navigate = useNavigate()
   const { id } = useParams()
@@ -93,24 +96,66 @@ export default function LaRadiologieCharteForm() {
     navigate(-1)
   }
 
+  const especeAutreActive = form.espece && !ESPECES_RAPIDES.includes(form.espece)
+
   if (loading) return <div className="admin-loading">Chargement...</div>
 
   return (
     <div className="admin-page">
       <div className="form-scroll">
 
+        {/* ─── ESPÈCE ─────────────────────────── */}
         <div className="form-groupe">
           <label className="form-label">Espèce</label>
-          <div className="espece-choisir">
-            <span className="espece-choisie-texte">
-              {form.espece ? ESPECES_CONFIG[form.espece]?.label : 'Aucune espèce choisie'}
-            </span>
-            <button type="button" className="btn-choisir-espece" onClick={() => setPopupEspece(true)}>
-              Choisir
+          <div style={{ display: 'flex', gap: 8 }}>
+            {ESPECES_RAPIDES.map(esp => {
+              const config = ESPECES_CONFIG[esp]
+              const actif = form.espece === esp
+              return (
+                <button
+                  key={esp}
+                  type="button"
+                  onClick={() => handleChange('espece', esp)}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    gap: 4, padding: '8px 16px', borderRadius: 10, cursor: 'pointer',
+                    border: actif ? '2px solid var(--primary)' : '1.5px solid var(--border)',
+                    background: actif ? 'rgba(37,77,86,0.08)' : 'var(--bg-card)',
+                    minWidth: 72,
+                  }}
+                >
+                  <img src={config.icone} alt={config.label} style={{ width: 28, height: 28, objectFit: 'contain' }} />
+                  <span style={{ fontSize: 12, fontWeight: 600, color: actif ? 'var(--primary)' : 'var(--text-secondary)' }}>
+                    {config.label}
+                  </span>
+                </button>
+              )
+            })}
+
+            <button
+              type="button"
+              onClick={() => setPopupEspece(true)}
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                gap: 4, padding: '8px 16px', borderRadius: 10, cursor: 'pointer',
+                border: especeAutreActive ? '2px solid var(--primary)' : '1.5px solid var(--border)',
+                background: especeAutreActive ? 'rgba(37,77,86,0.08)' : 'var(--bg-card)',
+                minWidth: 72,
+              }}
+            >
+              {especeAutreActive ? (
+                <img src={ESPECES_CONFIG[form.espece]?.icone} alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />
+              ) : (
+                <i className="ti ti-dots" style={{ fontSize: 24, color: 'var(--text-hint)', lineHeight: '28px' }}></i>
+              )}
+              <span style={{ fontSize: 12, fontWeight: 600, color: especeAutreActive ? 'var(--primary)' : 'var(--text-secondary)' }}>
+                {especeAutreActive ? ESPECES_CONFIG[form.espece]?.label : 'Autre'}
+              </span>
             </button>
           </div>
         </div>
 
+        {/* ─── RÉGION ─────────────────────────── */}
         <div className="form-groupe">
           <label className="form-label">Région anatomique</label>
           <select className="form-input form-select" value={form.region} onChange={e => handleChange('region', e.target.value)}>
@@ -119,6 +164,7 @@ export default function LaRadiologieCharteForm() {
           </select>
         </div>
 
+        {/* ─── ÉPAISSEUR ──────────────────────── */}
         <div className="form-groupe">
           <label className="form-label">Épaisseur (cm)</label>
           <div className="input-min-max">
@@ -127,40 +173,75 @@ export default function LaRadiologieCharteForm() {
           </div>
         </div>
 
+        {/* ─── kV + mAs CÔTE À CÔTE ───────────── */}
         <div className="form-groupe">
-          <label className="form-label">kV</label>
-          <input className="form-input" type="text" inputMode="decimal" value={form.kv} onChange={e => handleChange('kv', e.target.value)} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div>
+              <label className="form-label">kV</label>
+              <input className="form-input" type="text" inputMode="decimal" value={form.kv} onChange={e => handleChange('kv', e.target.value)} />
+            </div>
+            <div>
+              <label className="form-label">mAs</label>
+              <input className="form-input" type="text" inputMode="decimal" value={form.mas} onChange={e => handleChange('mas', e.target.value)} />
+            </div>
+          </div>
         </div>
 
-        <div className="form-groupe">
-          <label className="form-label">mAs</label>
-          <input className="form-input" type="text" inputMode="decimal" value={form.mas} onChange={e => handleChange('mas', e.target.value)} />
-        </div>
-
+        {/* ─── DFF ────────────────────────────── */}
         <div className="form-groupe">
           <label className="form-label">DFF (cm)</label>
-          <p className="form-aide">Distance foyer-film (ou distance source-récepteur) : distance entre le tube à rayons X et le détecteur. Généralement 100 cm en clinique.</p>
           <input className="form-input" type="text" inputMode="decimal" value={form.dff} onChange={e => handleChange('dff', e.target.value)} />
         </div>
 
+        {/* ─── GRILLE ─────────────────────────── */}
         <div className="form-groupe">
-          <label className="charte-checkbox-item">
-            <span className="form-label">Grille antidiffusante</span>
-            <input type="checkbox" checked={form.grille} onChange={e => handleChange('grille', e.target.checked)} />
-          </label>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span className="form-label" style={{ margin: 0 }}>Grille antidiffusante</span>
+            <button
+              type="button"
+              onClick={() => handleChange('grille', !form.grille)}
+              style={{
+                width: 44, height: 26, borderRadius: 13, border: 'none', cursor: 'pointer',
+                background: form.grille ? 'var(--primary)' : 'var(--border)',
+                position: 'relative', transition: 'background 0.2s', flexShrink: 0,
+              }}
+            >
+              <span style={{
+                position: 'absolute', top: 3, left: form.grille ? 21 : 3,
+                width: 20, height: 20, borderRadius: '50%', background: '#fff',
+                transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+              }} />
+            </button>
+          </div>
         </div>
 
+        {/* ─── QUALITÉ ────────────────────────── */}
         <div className="form-groupe">
           <label className="form-label">Qualité du résultat</label>
-          <select className="form-input form-select" value={form.qualite} onChange={e => handleChange('qualite', e.target.value)}>
-            <option value="">Non précisé</option>
-            {qualiteOptions.map(q => <option key={q.value} value={q.value}>{q.label}</option>)}
-          </select>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {[{ value: '', label: 'Non précisé' }, ...qualiteOptions].map(q => (
+              <button
+                key={q.value}
+                type="button"
+                onClick={() => handleChange('qualite', q.value)}
+                style={{
+                  flex: 1, padding: '9px 4px', borderRadius: 10, cursor: 'pointer',
+                  fontSize: 13, fontWeight: 600, fontFamily: 'var(--font)',
+                  border: form.qualite === q.value ? '2px solid var(--primary)' : '1.5px solid var(--border)',
+                  background: form.qualite === q.value ? 'rgba(37,77,86,0.08)' : 'var(--bg-card)',
+                  color: form.qualite === q.value ? 'var(--primary)' : 'var(--text-secondary)',
+                }}
+              >
+                {q.label}
+              </button>
+            ))}
+          </div>
         </div>
 
+        {/* ─── NOTES ──────────────────────────── */}
         <div className="form-groupe">
           <label className="form-label">Notes</label>
-          <textarea className="form-textarea" value={form.notes} onChange={e => handleChange('notes', e.target.value)} rows={4} />
+          <textarea className="form-textarea" value={form.notes} onChange={e => handleChange('notes', e.target.value)} rows={3} />
         </div>
 
         {erreur && <div className="form-erreur">{erreur}</div>}
@@ -171,6 +252,7 @@ export default function LaRadiologieCharteForm() {
 
       </div>
 
+      {/* ─── POPUP AUTRES ESPÈCES ────────────── */}
       {popupEspece && (
         <div className="popup-overlay" onClick={() => setPopupEspece(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
@@ -179,17 +261,20 @@ export default function LaRadiologieCharteForm() {
               <button className="popup-close" onClick={() => setPopupEspece(false)}>✕</button>
             </div>
             <div className="popup-especes">
-              {Object.entries(ESPECES_CONFIG).map(([id, esp]) => (
-                <label key={id} className="popup-espece-item">
-                  <input
-                    type="checkbox"
-                    checked={form.espece === id}
-                    onChange={() => { handleChange('espece', id); setPopupEspece(false) }}
-                  />
-                  <img src={esp.icone} alt={esp.label} className="espece-icone-popup" />
-                  <span>{esp.label}</span>
-                </label>
-              ))}
+              {ESPECES_AUTRES.map(esp => {
+                const config = ESPECES_CONFIG[esp]
+                return (
+                  <label key={esp} className="popup-espece-item">
+                    <input
+                      type="checkbox"
+                      checked={form.espece === esp}
+                      onChange={() => { handleChange('espece', esp); setPopupEspece(false) }}
+                    />
+                    <img src={config.icone} alt={config.label} className="espece-icone-popup" />
+                    <span>{config.label}</span>
+                  </label>
+                )
+              })}
             </div>
           </div>
         </div>

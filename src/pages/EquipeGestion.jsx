@@ -78,6 +78,7 @@ export default function EquipeGestion() {
   const [message, setMessage] = useState(null) // { type, texte }
   const [recherche, setRecherche] = useState('')
   const [reglagesOuverts, setReglagesOuverts] = useState(false)
+  const [portalLoading, setPortalLoading] = useState(false)
 
   const [emailsInput, setEmailsInput] = useState('')
   const [roleInvit, setRoleInvit] = useState('membre')
@@ -190,6 +191,27 @@ export default function EquipeGestion() {
     } finally {
       setEnvoiLogo(false)
     }
+  }
+
+  /* ─── PORTAIL STRIPE ─────────────────────────────────── */
+  async function ouvrirPortail() {
+    setPortalLoading(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const response = await fetch(
+        'https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/create-portal-session',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+        }
+      )
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || 'Erreur')
+      window.location.href = data.url
+    } catch {
+      signaler('erreur', "Impossible d'ouvrir le portail de facturation.")
+    }
+    setPortalLoading(false)
   }
 
   /* ─── NOM DE LA CLINIQUE ──────────────────────────────── */
@@ -646,6 +668,19 @@ export default function EquipeGestion() {
         )}
       </div>
 
+      {/* ═══ FACTURATION ═══ */}
+      {estProprietaire && (
+        <button
+          className="equipe-btn-secondaire"
+          style={{ marginTop: 10 }}
+          onClick={ouvrirPortail}
+          disabled={portalLoading}
+        >
+          <i className="ti ti-credit-card"></i>
+          {portalLoading ? 'Chargement...' : 'Gérer la facturation'}
+        </button>
+      )}
+
       {/* ═══ POPUP GESTION D'UN MEMBRE ═══ */}
       {membreGere && (
         <div className="popup-overlay" onClick={() => setMembreGere(null)}>
@@ -709,19 +744,33 @@ export default function EquipeGestion() {
                 </p>
               )}
 
-              <textarea
-                className="form-textarea"
-                rows={3}
-                placeholder="Courriels, séparés par une virgule, un espace ou un retour de ligne"
-                value={emailsInput}
-                onChange={e => { setEmailsInput(e.target.value); setErreurInvit('') }}
-              />
+              <div style={{ position: 'relative' }}>
+                <i className="ti ti-mail" style={{
+                  position: 'absolute', left: 12, top: 13,
+                  color: 'var(--text-hint)', fontSize: 16, pointerEvents: 'none',
+                }}></i>
+                <textarea
+                  className="form-textarea"
+                  rows={3}
+                  placeholder="adresse@clinique.com, autre@email.com..."
+                  value={emailsInput}
+                  onChange={e => { setEmailsInput(e.target.value); setErreurInvit('') }}
+                  style={{ paddingLeft: 36 }}
+                />
+              </div>
 
-              {emailsParsed.length > 1 && (
-                <div className="equipe-emails">
-                  <span className="equipe-carte-titre">{emailsParsed.length} courriels détectés</span>
+              {emailsParsed.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {emailsParsed.map(e => (
-                    <p key={e} className="equipe-email"><i className="ti ti-mail"></i>{e}</p>
+                    <span key={e} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                      fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 999,
+                      background: 'rgba(37,77,86,0.08)', color: 'var(--primary)',
+                      border: '1px solid rgba(37,77,86,0.2)',
+                    }}>
+                      <i className="ti ti-circle-check" style={{ fontSize: 11 }}></i>
+                      {e}
+                    </span>
                   ))}
                 </div>
               )}
@@ -731,6 +780,15 @@ export default function EquipeGestion() {
                 <div className="toggle-groupe" style={{ marginTop: 6 }}>
                   <button className={`toggle-btn ${roleInvit === 'membre' ? 'actif' : ''}`} onClick={() => setRoleInvit('membre')}>Membre</button>
                   <button className={`toggle-btn ${roleInvit === 'admin' ? 'actif' : ''}`} onClick={() => setRoleInvit('admin')}>Admin</button>
+                </div>
+                <div style={{
+                  marginTop: 8, padding: '10px 12px', borderRadius: 10,
+                  background: 'var(--bg-secondary)', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5,
+                }}>
+                  {roleInvit === 'membre'
+                    ? <><i className="ti ti-eye" style={{ marginRight: 6, color: 'var(--text-hint)' }}></i>Consulte les protocoles et médicaments de l'équipe. Ne peut pas les ajouter ni les modifier, et ne peut pas gérer les membres.</>
+                    : <><i className="ti ti-shield-check" style={{ marginRight: 6, color: 'var(--primary)' }}></i>Peut ajouter et modifier les médicaments et protocoles de labo, inviter des membres, modifier les rôles et gérer les réglages de la clinique.</>
+                  }
                 </div>
               </div>
 

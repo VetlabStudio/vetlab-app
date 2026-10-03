@@ -165,7 +165,10 @@ export default function DateMiseBas() {
             </h2>
 
             <div className="resultat-ligne">
-              <span>🟢 Date précoce ({info.dureeMin} jours)</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4caf50', flexShrink: 0, display: 'inline-block' }} />
+                Date précoce ({info.dureeMin} jours)
+              </span>
               <strong style={{ fontSize: 13 }}>{formaterDate(dates.tot)}</strong>
             </div>
             <div className="resultat-ligne" style={{ background: 'rgba(37,77,86,0.06)', borderRadius: 8, padding: '10px 12px', margin: '4px 0' }}>
@@ -176,7 +179,10 @@ export default function DateMiseBas() {
               <strong style={{ color: 'var(--primary)' }}>{formaterDate(dates.moyenne)}</strong>
             </div>
             <div className="resultat-ligne" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-              <span>🔴 Date tardive ({info.dureeMax} jours)</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#e57373', flexShrink: 0, display: 'inline-block' }} />
+                Date tardive ({info.dureeMax} jours)
+              </span>
               <strong style={{ fontSize: 13 }}>{formaterDate(dates.tard)}</strong>
             </div>
           </div>

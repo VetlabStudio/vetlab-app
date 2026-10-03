@@ -14,8 +14,8 @@ export default function SoinsGenerauxDentisterie() {
       <div className="labo-protocoles-grid">
         {SOUS_PAGES.map(s => (
           <button key={s.id} className="labo-protocole-btn" onClick={() => navigate(s.route)}>
-            <i className={`ti ${s.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
-            {s.label}
+            <i className={`ti ${s.icone}`} style={{ fontSize: 20, color: 'var(--primary)', flexShrink: 0 }}></i>
+            <span style={{ flex: 1 }}>{s.label}</span>
           </button>
         ))}
       </div>

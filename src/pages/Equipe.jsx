@@ -1561,14 +1561,6 @@ export default function Equipe() {
           ))}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', background: 'var(--primary)', borderRadius: '0 0 0 12px', marginTop: -14 }}>
-          {(roleEquipe === 'admin' || roleEquipe === 'proprietaire') && (
-            <button onClick={() => navigate('/equipe/gestion')} style={{
-              background: 'none', border: 'none', cursor: 'pointer', padding: '10px 12px',
-              color: '#fff', fontSize: 20,
-            }}>
-              <i className="ti ti-settings"></i>
-            </button>
-          )}
           <ClocheMini />
         </div>
       </div>

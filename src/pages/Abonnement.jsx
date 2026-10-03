@@ -289,7 +289,13 @@ export default function Abonnement() {
             fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999,
             color: couleurForfait, background: bgForfait,
           }}>Actif</span>
-          {estPro && (
+          {estEquipe && (
+            <button className="profil-portal-btn" onClick={() => navigate('/equipe/gestion')}
+              style={{ fontSize: 12, padding: '6px 14px' }}>
+              Gérer
+            </button>
+          )}
+          {estPro && !estEquipe && (
             <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}
               style={{ fontSize: 12, padding: '6px 14px' }}>
               {checkoutLoading ? '...' : 'Gérer'}

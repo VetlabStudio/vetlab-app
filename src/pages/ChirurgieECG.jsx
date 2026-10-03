@@ -22,8 +22,8 @@ export default function ChirurgieECG() {
             onClick={() => navigate(r.route)}
             style={{ position: 'relative' }}
           >
-            <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
-            {r.label}
+            <i className={`ti ${r.icone}`} style={{ fontSize: 20, color: 'var(--primary)', flexShrink: 0 }}></i>
+            <span style={{ flex: 1 }}>{r.label}</span>
             {r.pro && <BadgePro />}
           </button>
         ))}

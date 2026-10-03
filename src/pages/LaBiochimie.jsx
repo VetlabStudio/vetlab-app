@@ -58,17 +58,16 @@ setProtocoles([
               className="labo-protocole-btn"
               onClick={() => navigate(`/labo/protocole/${p.id}?type=${p.type}`)}
             >
-              {p.titre}
+              <span style={{ flex: 1 }}>{p.titre}</span>
+              <i className="ti ti-chevron-right" style={{ fontSize: 14, color: 'var(--text-hint)', flexShrink: 0 }}></i>
             </button>
           ))
         )}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <button className="labo-btn-ajouter" style={{ width: '80%' }} onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
-          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} Ajouter un protocole
-        </button>
-      </div>
+      <button className="labo-btn-ajouter" onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
+        {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} Ajouter un protocole
+      </button>
 
       {/* ─── RÉFÉRENCES ─────────────────────── */}
       <div className="labo-section-titre" style={{ marginTop: 8 }}>Références & Interprétation</div>
@@ -76,15 +75,15 @@ setProtocoles([
       <div className="labo-protocoles-grid">
         {REFERENCES.map(r => (
           <button
-  key={r.id}
-  className="labo-protocole-btn"
-  onClick={() => navigate(r.route)}
-  style={{ position: 'relative' }}
->
-  <i className={`ti ${r.icone}`} style={{ fontSize: 20, marginBottom: 6, display: 'block' }}></i>
-  {r.label}
-  {r.pro && <BadgePro />}
-</button>
+            key={r.id}
+            className="labo-protocole-btn"
+            onClick={() => navigate(r.route)}
+            style={{ position: 'relative' }}
+          >
+            <i className={`ti ${r.icone}`} style={{ fontSize: 20, color: 'var(--primary)', flexShrink: 0 }}></i>
+            <span style={{ flex: 1 }}>{r.label}</span>
+            {r.pro && <BadgePro />}
+          </button>
         ))}
       </div>
 

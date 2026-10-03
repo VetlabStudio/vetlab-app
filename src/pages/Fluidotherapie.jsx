@@ -115,6 +115,7 @@ export default function Fluidotherapie() {
   const [gouttesOuvert, setGouttesOuvert] = useState(false)
   const [debitSaisi, setDebitSaisi] = useState('')      // '' = hérite du calcul
   const [facteurManuel, setFacteurManuel] = useState(null) // null = automatique
+  const [sonActif, setSonActif] = useState(false)
 
   /* ─── ÉTAT : INTERFACE ───────────────────────────────── */
   const [popupDeshy, setPopupDeshy] = useState(false)
@@ -198,6 +199,27 @@ export default function Fluidotherapie() {
   const gttsParMin = debitPourGtts > 0 && facteurGtts > 0 ? (debitPourGtts * facteurGtts) / 60 : 0
   const gttsPar15Sec = gttsParMin / 4
   const dureeSac = debitPourGtts > 0 ? volumeSac / debitPourGtts : 0
+
+  /* ─── SON MÉTRONOME ──────────────────────────────────── */
+  useEffect(() => {
+    if (!sonActif || gttsParMin <= 0) return
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const bip = () => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = 'square'
+      osc.frequency.value = 880
+      gain.gain.setValueAtTime(0.6, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08)
+      osc.start()
+      osc.stop(ctx.currentTime + 0.08)
+    }
+    bip()
+    const id = setInterval(bip, (60 / gttsParMin) * 1000)
+    return () => { clearInterval(id); ctx.close() }
+  }, [sonActif, gttsParMin])
 
   const aDesDonnees = poids !== '' || deshyActive || pertesActive || debitSaisi !== ''
 
@@ -371,17 +393,33 @@ export default function Fluidotherapie() {
             </button>
 
             {formulesOuvertes && (
-              <div className="fluido-formules">
-                {FORMULES[espece].map(f => (
+              <>
+                <div className="fluido-formules">
+                  {FORMULES[espece].map(f => (
+                    <button
+                      key={f.id}
+                      className={`fluido-formule-btn ${formuleId === f.id ? 'actif' : ''}`}
+                      onClick={() => setFormuleId(f.id)}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
                   <button
-                    key={f.id}
-                    className={`fluido-formule-btn ${formuleId === f.id ? 'actif' : ''}`}
-                    onClick={() => { setFormuleId(f.id); setFormulesOuvertes(false) }}
+                    onClick={() => setFormulesOuvertes(false)}
+                    style={{
+                      background: 'var(--bg-secondary)', border: '1.5px solid var(--border)',
+                      cursor: 'pointer', borderRadius: '50%',
+                      width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: 'var(--text-secondary)', fontSize: 18, flexShrink: 0,
+                    }}
+                    title="Fermer"
                   >
-                    {f.label}
+                    <i className="ti ti-chevron-up"></i>
                   </button>
-                ))}
-              </div>
+                </div>
+              </>
             )}
 
             <div className="fluido-chips">
@@ -568,9 +606,30 @@ export default function Fluidotherapie() {
                     <span>Gouttes par minute</span>
                     <strong>{fmt(gttsParMin)} gtt/min</strong>
                   </div>
-                  <div className="resultat-ligne">
-                    <span>Gouttes aux 15 secondes</span>
-                    <strong>{fmt(gttsPar15Sec)} gtt/15 s</strong>
+                  <div className="resultat-ligne" style={{ alignItems: 'center' }}>
+                    <span>Rythme des gouttes</span>
+                    {gttsParMin > 0 && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <style>{`@keyframes gtt-pulse{0%,100%{transform:scale(1);opacity:.2}8%{transform:scale(1.8);opacity:1}30%{transform:scale(1);opacity:.2}}`}</style>
+                        <span style={{
+                          display: 'inline-block', width: 13, height: 13, borderRadius: '50%',
+                          background: 'var(--primary)', flexShrink: 0,
+                          animation: `gtt-pulse ${(60 / gttsParMin).toFixed(2)}s ease-in-out infinite`,
+                        }} />
+                        <button
+                          onClick={() => setSonActif(v => !v)}
+                          style={{
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            padding: '8px 10px', borderRadius: 8, lineHeight: 1,
+                            color: sonActif ? 'var(--primary)' : 'var(--text-hint)',
+                            fontSize: 26,
+                          }}
+                          title={sonActif ? 'Désactiver le son' : 'Activer le son'}
+                        >
+                          <i className={`ti ${sonActif ? 'ti-volume' : 'ti-volume-off'}`}></i>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

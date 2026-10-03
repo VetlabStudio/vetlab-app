@@ -111,8 +111,20 @@ useEffect(() => {
               placeholder="Ex: 10"
             />
             <div className="radio-groupe">
-              <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
-              <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
+              <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => {
+                if (unitePoids === 'lb') {
+                  const v = parseFloat(poids)
+                  if (v > 0) setPoids(String(arrondir(v / 2.205, 2)))
+                }
+                setUnitePoids('kg')
+              }}>kg</button>
+              <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => {
+                if (unitePoids === 'kg') {
+                  const v = parseFloat(poids)
+                  if (v > 0) setPoids(String(arrondir(v * 2.205, 1)))
+                }
+                setUnitePoids('lb')
+              }}>lb</button>
             </div>
           </div>
         </div>
