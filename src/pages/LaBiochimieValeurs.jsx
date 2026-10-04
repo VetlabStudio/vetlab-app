@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const SECTIONS = [
   {
     titre: 'Fonction rénale',
@@ -54,35 +56,53 @@ const SECTIONS = [
 ]
 
 export default function LaBiochimieValeurs() {
+  const [ouvert, setOuvert] = useState(null)
+
   return (
     <div className="labo-detail-page">
       <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: '0 0 8px 0', lineHeight: 1.5 }}>
         Valeurs indicatives; toujours se référer aux intervalles de référence de votre laboratoire.
       </p>
 
-      {SECTIONS.map((section, i) => (
-        <div key={i} className="labo-ref-section">
-          <h2 className="labo-ref-titre">{section.titre}</h2>
-          <div className="labo-ref-tableau">
-            <div className="labo-ref-header">
-              <span>Paramètre</span>
-              <span>Chien</span>
-              <span>Chat</span>
-            </div>
-            {section.parametres.map((p, j) => (
-              <div key={j} className="labo-ref-ligne">
-                <span>
-                  {p.nom}
-                  <br />
-                  <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>{p.unite}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {SECTIONS.map((section, i) => {
+          const estOuvert = ouvert === i
+          return (
+            <div key={i} className="labo-tube-card">
+              <button
+                className={`labo-valeurs-accordeon-header${estOuvert ? ' ouvert' : ''}`}
+                onClick={() => setOuvert(estOuvert ? null : i)}
+              >
+                <span className="labo-ref-titre">{section.titre}</span>
+                <span style={{ fontSize: 12, color: 'var(--text-hint)', marginRight: 4 }}>
+                  {section.parametres.length} paramètres
                 </span>
-                <span className="labo-ref-normal">{p.chien}</span>
-                <span className="labo-ref-normal">{p.chat}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
+                <i className={`ti ti-chevron-down labo-tube-chevron${estOuvert ? ' ouvert' : ''}`}></i>
+              </button>
+              {estOuvert && (
+                <div className="labo-ref-tableau">
+                  <div className="labo-ref-header">
+                    <span>Paramètre</span>
+                    <span>Chien</span>
+                    <span>Chat</span>
+                  </div>
+                  {section.parametres.map((p, j) => (
+                    <div key={j} className="labo-ref-ligne">
+                      <span>
+                        {p.nom}
+                        <br />
+                        <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>{p.unite}</span>
+                      </span>
+                      <span className="labo-ref-normal">{p.chien}</span>
+                      <span className="labo-ref-normal">{p.chat}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

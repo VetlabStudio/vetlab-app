@@ -74,7 +74,8 @@ const OEUFS = [
     nom: 'Isospora canis / I. felis',
     especes: 'Chien / Chat',
     description: 'Oocyste non sporulé à la ponte, paroi lisse, sporocystes visibles après sporulation. Taille : 30–45 µm (I. canis), 38–51 µm (I. felis).',
-    photo: null,
+    photo: '/parasites/isospora-felis-estelle-pelletier.jpg',
+    credit: 'Estelle Pelletier',
   },
 ]
 
@@ -85,7 +86,12 @@ export default function LaboParasitologieOeufs() {
         {OEUFS.map(o => (
           <div key={o.id} className="labo-sediment-card">
             {o.photo ? (
-              <img src={o.photo} alt={o.nom} className="labo-sediment-photo" />
+              <div style={{ position: 'relative' }}>
+                <img src={o.photo} alt={o.nom} className="labo-sediment-photo" />
+                {o.credit && (
+                  <span className="labo-sediment-credit">© {o.credit}</span>
+                )}
+              </div>
             ) : (
               <div className="labo-sediment-placeholder">
                 <i className="ti ti-egg"></i>

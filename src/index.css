@@ -350,7 +350,7 @@ input {
 .accueil-v2-calc-tuile {
   background: rgba(255, 255, 255);
   border: 2px solid white;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 8px 8px 8px;
   display: flex;
   flex-direction: column;
@@ -405,7 +405,7 @@ input {
   padding: 13px 12px;
   background: rgba(255, 255, 255, 0.6);
   border: 2px solid white;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-family: var(--font);
   font-size: 14px;
   font-weight: 600;
@@ -506,7 +506,7 @@ input {
   align-items: center;
   gap: 14px;
   background: var(--bg-card);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   padding: 16px;
 }
 
@@ -578,7 +578,7 @@ input {
 
 .menu-page-section-liste {
   background: var(--bg-card);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -1055,7 +1055,7 @@ input {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 4px 12px 4px 4px;
+  padding: 4px 12px 4px 12px;
   gap: 10px;
   width: 100%;
 }
@@ -3342,7 +3342,7 @@ input[type="number"] {
 }
 
 .select option {
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   background: var(--bg-card);
   font-family: var(--font);
@@ -4375,7 +4375,7 @@ input[type="number"] {
   width: 28px;
   height: 160px;
   background: var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -4385,7 +4385,7 @@ input[type="number"] {
 .rcr-ventil-barre-fill {
   width: 100%;
   background: var(--primary-light);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   transition: height 0.05s linear;
 }
 
@@ -4624,7 +4624,7 @@ input[type="number"] {
   align-items: center;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 4px 12px 4px 4px;
   gap: 10px;
   width: 100%;
@@ -4668,7 +4668,7 @@ input[type="number"] {
 .labo-categorie-btn {
   background: rgba(255, 255, 255, 0.6);
   border: 2px solid white;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 20px 12px;
   font-family: var(--font);
   font-size: 14px;
@@ -4705,7 +4705,7 @@ input[type="number"] {
 .labo-protocole-btn {
   background: rgba(255, 255, 255, 0.6);
   border: 1.5px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
   font-family: var(--font);
   font-size: 14px;
@@ -4734,7 +4734,7 @@ input[type="number"] {
   padding: 14px;
   background: transparent;
   border: 1.5px dashed var(--primary-light);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-family: var(--font);
   font-size: 14px;
   font-weight: 600;
@@ -4772,13 +4772,13 @@ input[type="number"] {
 }
 
 .labo-btn-primary {
-  padding: 18px 18px;
+  padding: 10px 18px;
   background: var(--primary);
   color: white;
   border: none;
   border-radius: var(--radius-pill);
   font-family: var(--font);
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -4845,7 +4845,7 @@ input[type="number"] {
   flex-direction: column;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   margin-bottom: 8px;
 }
@@ -4893,7 +4893,7 @@ input[type="number"] {
 .labo-etape-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -5017,7 +5017,7 @@ input[type="number"] {
   padding: 14px;
   background: transparent;
   border: 1.5px dashed var(--primary-light);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-family: var(--font);
   font-size: 14px;
   font-weight: 600;
@@ -5076,7 +5076,7 @@ input[type="number"] {
 .labo-nouveau-etape {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 14px;
   display: flex;
   flex-direction: column;
@@ -5134,7 +5134,7 @@ input[type="number"] {
   justify-content: space-between;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
   margin: 0 1rem 8px;
 }
@@ -5193,7 +5193,7 @@ input[type="number"] {
 
 .labo-ref-tableau {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--bg-card);
 }
@@ -5246,7 +5246,7 @@ input[type="number"] {
 .depannage-categorie {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -5262,7 +5262,7 @@ input[type="number"] {
 .depannage-conflit {
   background: rgba(185, 28, 28, 0.08);
   border: 1px solid var(--accent-red);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -5288,7 +5288,7 @@ input[type="number"] {
 .depannage-avertissement {
   background: rgba(217, 119, 6, 0.08);
   border: 1px solid #d97706;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -5339,7 +5339,7 @@ input[type="number"] {
 .depannage-carte {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -5364,7 +5364,7 @@ input[type="number"] {
 .maladie-carte {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -5401,24 +5401,32 @@ input[type="number"] {
 .labo-sediment-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
 .labo-sediment-photo {
   width: 100%;
   height: 200px;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
-  background: white;
 }
 
 .labo-sediment-photo-termes {
   width: 100%;
   max-height: 400px;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
+.labo-sediment-credit {
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  font-size: 12px;
+  color: black;
+  font-style: italic;
+}
+
 
 .labo-charte-dentaire {
   width: 100%;
@@ -5503,7 +5511,7 @@ input[type="number"] {
 .labo-tube-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -5512,7 +5520,27 @@ input[type="number"] {
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.labo-tube-header.ouvert {
   border-bottom: 1px solid var(--border);
+}
+.labo-tube-chevron {
+  margin-left: auto;
+  font-size: 16px;
+  color: var(--text-hint);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.labo-tube-chevron.ouvert {
+  transform: rotate(180deg);
 }
 
 .labo-tube-couleur {
@@ -5560,6 +5588,30 @@ input[type="number"] {
   color: var(--primary);
   flex-shrink: 0;
   margin-top: 1px;
+}
+
+/* ─── BIOCHIMIE VALEURS NORMALES ──────────────────────── */
+.labo-valeurs-accordeon-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.labo-valeurs-accordeon-header.ouvert {
+  border-bottom: 1px solid var(--border);
+}
+.labo-tube-card .labo-ref-tableau {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
 }
 
 /* ─── BIOCHIMIE ORGANES ──────────────────────── */
@@ -5622,7 +5674,7 @@ input[type="number"] {
   gap: 6px;
   background: rgba(134, 202, 183, 0.1);
   border: 2px solid white;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 12px 14px 12px 18px;
   font-size: 13px;
   font-weight: 700;
@@ -5688,6 +5740,145 @@ input[type="number"] {
   width: 18px;
   height: 18px;
 }
+.bio-organe-grille {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.bio-organe-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font);
+}
+
+.bio-organe-btn.actif {
+  border: 2px solid var(--primary);
+  background: rgba(37,77,86,0.08);
+  color: var(--primary);
+}
+
+.bio-organe-btn-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+.bio-organe-grille {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.bio-organe-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font);
+}
+
+.bio-organe-btn.actif {
+  border: 2px solid var(--primary);
+  background: rgba(37,77,86,0.08);
+  color: var(--primary);
+}
+
+.bio-organe-btn-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+.bio-organe-grille {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.bio-organe-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: var(--font);
+}
+
+.bio-organe-btn.actif {
+  border: 2px solid var(--primary);
+  background: rgba(37,77,86,0.08);
+  color: var(--primary);
+}
+
+.bio-organe-btn-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.labo-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 10px 14px;
+}
+
+.labo-search-icone {
+  font-size: 16px;
+  color: var(--text-hint);
+  flex-shrink: 0;
+}
+
+.labo-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-family: var(--font);
+  outline: none;
+}
+
+.labo-search-input::placeholder {
+  color: var(--text-hint);
+}
+
+.labo-search-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-hint);
+  padding: 0;
+  font-size: 14px;
+  flex-shrink: 0;
+}
 
 /* ─── COLONIES BACTÉRIENNES ──────────────────── */
 
@@ -5707,7 +5898,7 @@ input[type="number"] {
 .colonie-image-wrapper {
   width: 80px;
   height: 80px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: var(--bg);
   display: flex;
   align-items: center;
@@ -5774,7 +5965,7 @@ input[type="number"] {
 }
 
 .note-tuile {
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px;
   cursor: pointer;
   min-height: 120px;
@@ -5907,7 +6098,7 @@ input[type="number"] {
   font-size: 12px;
   font-weight: 600;
   padding: 6px 12px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-secondary);
@@ -6014,7 +6205,7 @@ input[type="number"] {
 .monitoring-stade {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px 14px;
 }
 
@@ -6090,7 +6281,7 @@ input[type="number"] {
 .monitoring-resultat {
   background: var(--bg-card);
   border: 1.5px solid var(--primary);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px 14px;
 }
 
@@ -6110,7 +6301,7 @@ input[type="number"] {
 .monitoring-capno-bloc {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px 14px;
 }
 
@@ -6126,7 +6317,7 @@ input[type="number"] {
   overflow-x: auto;
   overflow-y: hidden;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   margin-top: 20px;
 }
 
@@ -6189,7 +6380,7 @@ input[type="number"] {
   gap: 8px;
   padding: 12px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   margin-bottom: 10px;
   background: var(--bg-card);
 }
@@ -6884,7 +7075,7 @@ input[type="number"] {
 
 .capno-bloc {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 16px;
   background: var(--bg-card);
 }
@@ -6929,7 +7120,7 @@ input[type="number"] {
 .capno-anomalie-bloc {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
@@ -7007,7 +7198,7 @@ input[type="number"] {
   padding: 14px 16px;
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
 }
 
@@ -7062,7 +7253,7 @@ input[type="number"] {
   padding: 14px 16px;
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
@@ -7201,7 +7392,7 @@ input[type="number"] {
 .postop-alerte-section {
   background: rgba(112, 47, 58, 0.06);
   border: 1.5px solid var(--accent-red);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -7284,7 +7475,7 @@ input[type="number"] {
   gap: 12px;
   background: rgba(37, 77, 86, 0.06);
   border: 1px solid rgba(37, 77, 86, 0.15);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
 }
 
@@ -7305,7 +7496,7 @@ input[type="number"] {
 .douleur-categorie {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -7413,7 +7604,7 @@ input[type="number"] {
 .eda-score-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -7515,7 +7706,7 @@ input[type="number"] {
   padding: 10px;
   background: var(--bg-card);
   border: 1.5px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
   transition: all 0.15s;
   font-family: var(--font);
@@ -7565,7 +7756,7 @@ input[type="number"] {
   padding: 12px;
   background: var(--bg-card);
   border: 1.5px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-family: var(--font);
   font-size: 14px;
   font-weight: 700;
@@ -7740,7 +7931,7 @@ input[type="number"] {
 
 .douleur-score-total {
   background: var(--primary);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -7777,7 +7968,7 @@ input[type="number"] {
 
 .douleur-interpretation {
   border: 1.5px solid;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   padding: 14px 16px;
   display: flex;
@@ -8347,7 +8538,7 @@ input[type="number"] {
   padding: 14px 10px;
   background: var(--bg);
   border: 2px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-family: var(--font);
   cursor: pointer;
   transition: all 0.15s;
@@ -8519,7 +8710,7 @@ input[type="number"] {
   width: 100%;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   padding: 0;
   text-align: left;
@@ -8584,7 +8775,7 @@ input[type="number"] {
   display: grid;
   grid-template-columns: 1fr 1fr;
   background: var(--bg-secondary);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 4px;
   gap: 4px;
 }
@@ -9187,7 +9378,7 @@ input[type="number"] {
   align-items: center;
   gap: 10px;
   background: rgba(33, 48, 88, 0.1);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px 16px;
   margin-bottom: 16px;
   font-size: 14px;
@@ -10387,7 +10578,7 @@ input[type="number"] {
   justify-content: space-between;
   gap: 12px;
   background: var(--primary);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   padding: 11px 12px 11px 15px;
   box-shadow: 0 8px 22px rgba(33, 48, 88, 0.28);
 }

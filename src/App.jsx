@@ -66,6 +66,7 @@ const LaboParasitologieHotes = lazy(() => import('./pages/LaboParasitologieHotes
 const LaBiochimie = lazy(() => import('./pages/LaBiochimie'))
 const LaBiochimieTubes = lazy(() => import('./pages/LaBiochimieTubes'))
 const LaBiochimieValeurs = lazy(() => import('./pages/LaBiochimieValeurs'))
+const LaBiochimieOrganes = lazy(() => import('./pages/LaBiochimieOrganes'))
 const LaCytologie = lazy(() => import('./pages/LaCytologie'))
 const LaCytologiePrelevement = lazy(() => import('./pages/LaCytologiePrelevement'))
 const LaCytologieCellules = lazy(() => import('./pages/LaCytologieCellules'))
@@ -351,6 +352,7 @@ export default function App() {
         <Route path="/labo/4efe71ce-bfa9-4ea9-a8af-ecbd6dc97320" element={<RouteProtegee session={session}><LaBiochimie /></RouteProtegee>} />
         <Route path="/labo/biochimie/tubes" element={<RouteProtegee session={session}><ProGate><LaBiochimieTubes /></ProGate></RouteProtegee>} />
         <Route path="/labo/biochimie/valeurs" element={<RouteProtegee session={session}><ProGate><LaBiochimieValeurs /></ProGate></RouteProtegee>} />
+        <Route path="/labo/biochimie/organes" element={<RouteProtegee session={session}><ProGate><LaBiochimieOrganes /></ProGate></RouteProtegee>} />
         <Route path="/labo/173fb58a-988c-4202-8b14-bfcd15c4a16f" element={<RouteProtegee session={session}><LaCytologie /></RouteProtegee>} />
         <Route path="/labo/cytologie/prelevement" element={<RouteProtegee session={session}><ProGate><LaCytologiePrelevement /></ProGate></RouteProtegee>} />
         <Route path="/labo/cytologie/cellules" element={<RouteProtegee session={session}><ProGate><LaCytologieCellules /></ProGate></RouteProtegee>} />

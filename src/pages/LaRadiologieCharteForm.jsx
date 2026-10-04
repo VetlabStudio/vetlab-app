@@ -118,7 +118,7 @@ export default function LaRadiologieCharteForm() {
                   onClick={() => handleChange('espece', esp)}
                   style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    gap: 4, padding: '8px 16px', borderRadius: 10, cursor: 'pointer',
+                    gap: 4, padding: '8px 16px', borderRadius: 'var(--radius-lg)', cursor: 'pointer',
                     border: actif ? '2px solid var(--primary)' : '1.5px solid var(--border)',
                     background: actif ? 'rgba(37,77,86,0.08)' : 'var(--bg-card)',
                     minWidth: 72,
@@ -137,7 +137,7 @@ export default function LaRadiologieCharteForm() {
               onClick={() => setPopupEspece(true)}
               style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
-                gap: 4, padding: '8px 16px', borderRadius: 10, cursor: 'pointer',
+                gap: 4, padding: '8px 16px', borderRadius: 'var(--radius-lg)', cursor: 'pointer',
                 border: especeAutreActive ? '2px solid var(--primary)' : '1.5px solid var(--border)',
                 background: especeAutreActive ? 'rgba(37,77,86,0.08)' : 'var(--bg-card)',
                 minWidth: 72,
@@ -225,7 +225,7 @@ export default function LaRadiologieCharteForm() {
                 type="button"
                 onClick={() => handleChange('qualite', q.value)}
                 style={{
-                  flex: 1, padding: '9px 4px', borderRadius: 10, cursor: 'pointer',
+                  flex: 1, padding: '9px 4px', borderRadius: 'var(--radius-lg)', cursor: 'pointer',
                   fontSize: 13, fontWeight: 600, fontFamily: 'var(--font)',
                   border: form.qualite === q.value ? '2px solid var(--primary)' : '1.5px solid var(--border)',
                   background: form.qualite === q.value ? 'rgba(37,77,86,0.08)' : 'var(--bg-card)',

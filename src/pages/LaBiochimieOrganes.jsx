@@ -91,92 +91,149 @@ const ORGANES = [
   },
 ]
 
+const TOUS_LES_TESTS = ORGANES.flatMap(o => o.tests.map(t => ({ ...t, organe: o.nom })))
+
+function TestAccordeon({ test, ouvert, onToggle }) {
+  return (
+    <div className="labo-tube-card">
+      <button
+        className={`labo-tube-header${ouvert ? ' ouvert' : ''}`}
+        onClick={onToggle}
+      >
+        <span style={{ fontWeight: 700, color: 'var(--primary)', minWidth: 52, fontSize: 13 }}>{test.abrev}</span>
+        <span style={{ fontSize: 13, color: 'var(--text-secondary)', flex: 1, textAlign: 'left' }}>{test.nom}</span>
+        {test.organe && <span style={{ fontSize: 11, color: 'var(--text-hint)', marginRight: 4 }}>{test.organe}</span>}
+        <i className={`ti ti-chevron-down labo-tube-chevron${ouvert ? ' ouvert' : ''}`}></i>
+      </button>
+      {ouvert && (
+        <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>{test.mesure}</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div style={{ background: 'var(--bg)', borderRadius: 8, padding: '8px 10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                <img src="/icone-chien.svg" alt="chien" style={{ width: 16, height: 16 }} />
+                <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>Chien</span>
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{test.ref.chien}</span>
+            </div>
+            <div style={{ background: 'var(--bg)', borderRadius: 8, padding: '8px 10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                <img src="/icone-chat.svg" alt="chat" style={{ width: 16, height: 16 }} />
+                <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>Chat</span>
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{test.ref.chat}</span>
+            </div>
+          </div>
+          <div>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#E74C3C', display: 'block', marginBottom: 2 }}>↑ Élevé</span>
+            <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{test.eleve}</span>
+          </div>
+          <div>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#3498DB', display: 'block', marginBottom: 2 }}>↓ Bas</span>
+            <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{test.bas}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function LaBiochimieOrganes() {
-  const [testSelectionne, setTestSelectionne] = useState(null)
+  const [recherche, setRecherche] = useState('')
+  const [organeActif, setOrganeActif] = useState('foie')
+  const [testOuvert, setTestOuvert] = useState(null)
+
+  const termeNormalise = recherche.toLowerCase().trim()
+  const enRecherche = termeNormalise.length > 0
+
+  const resultatsRecherche = enRecherche
+    ? TOUS_LES_TESTS.filter(t =>
+        t.abrev.toLowerCase().includes(termeNormalise) ||
+        t.nom.toLowerCase().includes(termeNormalise)
+      )
+    : []
+
+  function selectionnerOrgane(id) {
+    setOrganeActif(id === organeActif ? null : id)
+    setTestOuvert(null)
+  }
+
+  const organe = ORGANES.find(o => o.id === organeActif)
 
   return (
     <div className="labo-detail-page">
 
-      <div className="douleur-intro">
-        <i className="ti ti-hand-click douleur-intro-icone"></i>
-        <p className="douleur-intro-texte">
-          Touche un test pour voir sa description, ses valeurs de référence et son interprétation.
-        </p>
+      {/* ─── BARRE DE RECHERCHE ─────────────── */}
+      <div className="labo-search-bar">
+        <i className="ti ti-search labo-search-icone"></i>
+        <input
+          className="labo-search-input"
+          type="text"
+          placeholder="Rechercher un test (ex: ALT, créatinine...)"
+          value={recherche}
+          onChange={e => { setRecherche(e.target.value); setOrganeActif(null); setTestOuvert(null) }}
+        />
+        {enRecherche && (
+          <button className="labo-search-clear" onClick={() => setRecherche('')}>
+            <i className="ti ti-x"></i>
+          </button>
+        )}
       </div>
 
-      {ORGANES.map(organe => (
-        <div key={organe.id} className="bio-organe-section">
-
-          <div className="bio-organe-header">
-            {organe.image ? (
-              <img src={organe.image} alt={organe.nom} className="bio-organe-icone" />
-            ) : (
-              <i className="ti ti-flask bio-organe-icone-fallback"></i>
-            )}
-            <h2 className="bio-organe-titre">{organe.nom}</h2>
-          </div>
-
-          <div className="bio-tests-grid">
-            {organe.tests.map(test => (
-              <button
-                key={test.abrev}
-                className="bio-test-btn"
-                onClick={() => setTestSelectionne(test)}
-              >
-               
-                <span>{test.abrev}</span>
-                <i className="ti ti-chevron-right"></i>
-              </button>
-            ))}
-          </div>
-
+      {enRecherche ? (
+        /* ─── RÉSULTATS RECHERCHE ───────────── */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+          {resultatsRecherche.length === 0
+            ? <p style={{ fontSize: 14, color: 'var(--text-hint)', textAlign: 'center', marginTop: 24 }}>Aucun résultat pour "{recherche}"</p>
+            : resultatsRecherche.map((test, i) => (
+                <TestAccordeon
+                  key={i}
+                  test={test}
+                  ouvert={testOuvert === `search-${i}`}
+                  onToggle={() => setTestOuvert(testOuvert === `search-${i}` ? null : `search-${i}`)}
+                />
+              ))
+          }
         </div>
-      ))}
-
-      {/* ─── POPUP DÉTAIL TEST ───────────────── */}
-      {testSelectionne && (
-        <div className="popup-overlay" onClick={() => setTestSelectionne(null)}>
-          <div className="popup-card" onClick={e => e.stopPropagation()}>
-            <div className="popup-header">
-              <span>{testSelectionne.abrev} — {testSelectionne.nom}</span>
-              <button className="popup-close" onClick={() => setTestSelectionne(null)}>✕</button>
-            </div>
-
-            <div className="bio-popup-section">
-
-              <div>
-                <p className="bio-popup-label bio-popup-label--primaire">Ce que ça mesure</p>
-                <p className="bio-popup-texte">{testSelectionne.mesure}</p>
-              </div>
-
-              <div>
-                <p className="bio-popup-label bio-popup-label--primaire">Valeurs de référence</p>
-                <p className="bio-popup-ref">
-                  <img src="/icone-chien.svg" alt="chien" />Chien {testSelectionne.ref.chien}
-                </p>
-                <p className="bio-popup-ref">
-                  <img src="/icone-chat.svg" alt="chat" />Chat {testSelectionne.ref.chat}
-                </p>
-              </div>
-
-              <div>
-                <p className="bio-popup-label bio-popup-label--eleve">↑ Élevé</p>
-                <p className="bio-popup-texte">{testSelectionne.eleve}</p>
-              </div>
-
-              <div>
-                <p className="bio-popup-label bio-popup-label--bas">↓ Bas</p>
-                <p className="bio-popup-texte">{testSelectionne.bas}</p>
-              </div>
-
-            </div>
-
-            <button className="labo-btn-primary" style={{ width: '100%', marginTop: 8 }} onClick={() => setTestSelectionne(null)}>
-              Fermer
-            </button>
-
+      ) : (
+        <>
+          {/* ─── GRILLE ORGANES ─────────────── */}
+          <div className="bio-organe-grille">
+            {ORGANES.map(o => {
+              const actif = organeActif === o.id
+              return (
+                <button
+                  key={o.id}
+                  className={`bio-organe-btn${actif ? ' actif' : ''}`}
+                  onClick={() => selectionnerOrgane(o.id)}
+                >
+                  {o.image
+                    ? <img src={o.image} alt={o.nom} className="bio-organe-btn-img" />
+                    : <i className="ti ti-flask" style={{ fontSize: 28, color: actif ? 'var(--primary)' : 'var(--text-hint)' }}></i>
+                  }
+                  <span>{o.nom}</span>
+                </button>
+              )
+            })}
           </div>
-        </div>
+
+          {/* ─── TESTS EN ACCORDÉON ─────────── */}
+          {organe && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)', margin: 0 }}>
+                {organe.nom} - {organe.tests.length} tests
+              </p>
+              {organe.tests.map((test, i) => (
+                <TestAccordeon
+                  key={test.abrev}
+                  test={{ ...test, organe: null }}
+                  ouvert={testOuvert === i}
+                  onToggle={() => setTestOuvert(testOuvert === i ? null : i)}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
     </div>

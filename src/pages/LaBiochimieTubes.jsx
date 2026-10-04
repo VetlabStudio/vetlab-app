@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const TUBES = [
   {
     couleur: '#9B59B6',
@@ -38,6 +40,8 @@ const TUBES = [
 ]
 
 export default function LaBiochimieTubes() {
+  const [ouvert, setOuvert] = useState(null)
+
   return (
     <div className="labo-detail-page">
 
@@ -49,27 +53,38 @@ export default function LaBiochimieTubes() {
       </div>
 
       <div className="labo-tubes-liste">
-        {TUBES.map((tube, i) => (
-          <div key={i} className="labo-tube-card">
-            <div className="labo-tube-header">
-              <div className="labo-tube-couleur" style={{ background: tube.couleur }}></div>
-              <span className="labo-tube-nom">{tube.nom}</span>
+        {TUBES.map((tube, i) => {
+          const estOuvert = ouvert === i
+          return (
+            <div key={i} className="labo-tube-card">
+              <button
+                className={`labo-tube-header${estOuvert ? ' ouvert' : ''}`}
+                onClick={() => setOuvert(estOuvert ? null : i)}
+              >
+                <div className="labo-tube-couleur" style={{ background: tube.couleur }}></div>
+                <span className="labo-tube-nom">{tube.nom}</span>
+                <i className={`ti ti-chevron-down labo-tube-chevron${estOuvert ? ' ouvert' : ''}`}></i>
+              </button>
+              {estOuvert && (
+                <>
+                  <div className="labo-tube-analyses">
+                    {tube.analyses.map((a, j) => (
+                      <div key={j} className="labo-tube-analyse-item">
+                        <span className="labo-materiel-puce" style={{ color: tube.couleur }}>•</span>
+                        <span>{a}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {tube.notes && (
+                    <p className="labo-tube-note">
+                      <i className="ti ti-info-circle"></i> {tube.notes}
+                    </p>
+                  )}
+                </>
+              )}
             </div>
-            <div className="labo-tube-analyses">
-              {tube.analyses.map((a, j) => (
-                <div key={j} className="labo-tube-analyse-item">
-                  <span className="labo-materiel-puce" style={{ color: tube.couleur }}>•</span>
-                  <span>{a}</span>
-                </div>
-              ))}
-            </div>
-            {tube.notes && (
-              <p className="labo-tube-note">
-                <i className="ti ti-info-circle"></i> {tube.notes}
-              </p>
-            )}
-          </div>
-        ))}
+          )
+        })}
       </div>
 
     </div>
