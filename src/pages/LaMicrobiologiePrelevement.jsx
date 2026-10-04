@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const SYSTEMES = [
   {
     nom: 'Voies respiratoires inférieures',
@@ -92,27 +94,54 @@ const BONNES_PRATIQUES = [
 ]
 
 export default function LaMicrobiologiePrelevement() {
+  const [ouvert, setOuvert] = useState(null)
+
   return (
     <div className="labo-detail-page">
 
-      {SYSTEMES.map((sys, i) => (
-        <div key={i} className="labo-ref-section">
-          <div className="labo-ref-tableau">
-            <div className="labo-ref-header labo-ref-header--3col-prelevement">
-              <span>{sys.nom}</span>
-              <span>Transport</span>
-              <span>Notes</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+        {SYSTEMES.map((sys, i) => {
+          const estOuvert = ouvert === i
+          return (
+            <div key={i} className="labo-tube-card">
+              <button
+                className={`labo-tube-header${estOuvert ? ' ouvert' : ''}`}
+                onClick={() => setOuvert(estOuvert ? null : i)}
+              >
+                <span className="labo-tube-nom">{sys.nom}</span>
+                <span style={{ fontSize: 12, color: 'var(--text-hint)', marginRight: 4 }}>
+                  {sys.items.length} échantillon{sys.items.length > 1 ? 's' : ''}
+                </span>
+                <i className={`ti ti-chevron-down labo-tube-chevron${estOuvert ? ' ouvert' : ''}`}></i>
+              </button>
+
+              {estOuvert && (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {sys.items.map((row, j) => (
+                    <div key={j} style={{
+                      padding: '10px 16px',
+                      borderTop: '1px solid var(--border)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 4,
+                    }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{row.echantillon}</span>
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+                        <i className="ti ti-truck" style={{ fontSize: 12, color: 'var(--primary)', marginTop: 2, flexShrink: 0 }}></i>
+                        <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{row.transport}</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+                        <i className="ti ti-info-circle" style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 2, flexShrink: 0 }}></i>
+                        <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>{row.notes}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            {sys.items.map((row, j) => (
-              <div key={j} className="labo-ref-ligne labo-ref-ligne--3col-prelevement">
-                <span style={{ fontWeight: 600 }}>{row.echantillon}</span>
-                <span>{row.transport}</span>
-                <span>{row.notes}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
+          )
+        })}
+      </div>
 
       <div className="labo-ref-section">
         <h2 className="labo-ref-titre">Bonnes pratiques pré-analytiques</h2>

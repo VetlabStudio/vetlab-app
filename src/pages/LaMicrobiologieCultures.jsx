@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const RESULTATS = [
   { resultat: 'Croissance absente', interpretation: 'Absence de bactéries cultivables. Peut indiquer une infection virale, fongique, ou un prélèvement sous antibiotiques.', couleur: 'var(--primary)' },
   { resultat: 'Croissance légère (moins de 10³ UFC/mL)', interpretation: 'Souvent considéré comme contaminant pour les urines. Peut être significatif pour des prélèvements stériles (LCR, sang).', couleur: 'var(--accent-gold)' },
@@ -81,6 +83,8 @@ const MILIEUX = [
 ]
 
 export default function LaMicrobiologieCultures() {
+  const [ouvert, setOuvert] = useState(null)
+
   return (
     <div className="labo-detail-page">
 
@@ -100,27 +104,35 @@ export default function LaMicrobiologieCultures() {
       {/* ─── MILIEUX ────────────────────────── */}
       <div className="labo-ref-section">
         <h2 className="labo-ref-titre">Milieux de culture et interprétation</h2>
-        <div className="labo-ref-tableau">
-          <div className="labo-ref-header labo-ref-header--3col-cultures">
-            <span>Milieu</span>
-            <span>Objectif et inoculation</span>
-            <span>Réactions et interprétation</span>
-          </div>
-          {MILIEUX.map((m, i) => (
-            <div key={i} className="labo-ref-ligne labo-ref-ligne--3col-cultures">
-              <span style={{ fontWeight: 700 }}>{m.milieu}</span>
-              <span>{m.objectif}</span>
-              <span>
-                {Array.isArray(m.reactions) ? (
-                  <ul style={{ margin: 0, paddingLeft: 14 }}>
-                    {m.reactions.map((r, j) => (
-                      <li key={j} style={{ marginBottom: 3 }}>{r}</li>
-                    ))}
-                  </ul>
-                ) : m.reactions}
-              </span>
-            </div>
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {MILIEUX.map((m, i) => {
+            const estOuvert = ouvert === i
+            return (
+              <div key={i} className="labo-tube-card">
+                <button
+                  className={`labo-tube-header${estOuvert ? ' ouvert' : ''}`}
+                  onClick={() => setOuvert(estOuvert ? null : i)}
+                >
+                  <span className="labo-tube-nom">{m.milieu}</span>
+                  <i className={`ti ti-chevron-down labo-tube-chevron${estOuvert ? ' ouvert' : ''}`}></i>
+                </button>
+
+                {estOuvert && (
+                  <div style={{ padding: '10px 16px 12px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>{m.objectif}</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {m.reactions.map((r, j) => (
+                        <div key={j} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                          <i className="ti ti-circle-dot" style={{ fontSize: 12, color: 'var(--primary)', marginTop: 2, flexShrink: 0 }}></i>
+                          <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{r}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
 

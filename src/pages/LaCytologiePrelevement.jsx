@@ -1,7 +1,9 @@
+import { useState } from 'react'
+
 const TECHNIQUES = [
   {
     titre: 'Aspiration à l\'aiguille fine (AAF)',
-    icone: 'ti-needle',
+    icone: '/icone-seringue.svg',
     indication: 'Masses solides, ganglions, organes internes (avec guidage échographique)',
     etapes: [
       'Stabiliser la masse avec une main. Insérer une aiguille 22–25G sans seringue dans la lésion.',
@@ -13,7 +15,7 @@ const TECHNIQUES = [
   },
   {
     titre: 'Impression directe (contact)',
-    icone: 'ti-hand-stop',
+    icone: '/lame-microscope.svg',
     indication: 'Lésions cutanées érosives ou ulcérées, biopsies fraîches, masses exposées',
     etapes: [
       'Sécher délicatement la surface de la lésion avec une compresse pour retirer l\'excès de sang.',
@@ -25,7 +27,7 @@ const TECHNIQUES = [
   },
   {
     titre: 'Écouvillonnage',
-    icone: 'ti-cotton-bud',
+    icone: '/ecouvillon.svg',
     indication: 'Conduit auditif, fistules, surfaces muqueuses, vagin',
     etapes: [
       'Insérer délicatement l\'écouvillon dans la zone à prélever.',
@@ -37,7 +39,7 @@ const TECHNIQUES = [
   },
   {
     titre: 'Grattage cutané',
-    icone: 'ti-tool',
+    icone: '/lame-scalpel.svg',
     indication: 'Lésions cutanées squameuses, suspicion de dermatophytose ou gale',
     etapes: [
       'Huiler légèrement la zone avec de l\'huile minérale si recherche d\'acariens.',
@@ -56,53 +58,63 @@ const FIXATION = [
 ]
 
 export default function LaCytologiePrelevement() {
+  const [ouvert, setOuvert] = useState(null)
+
   return (
     <div className="labo-detail-page">
 
       {/* ─── TECHNIQUES ─────────────────────── */}
-      <div className="labo-ref-section">
-        <h2 className="labo-ref-titre">Techniques de prélèvement</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+        {TECHNIQUES.map((t, i) => {
+          const estOuvert = ouvert === i
+          return (
+            <div key={i} className="labo-tube-card">
+              <button
+                className={`labo-tube-header${estOuvert ? ' ouvert' : ''}`}
+                onClick={() => setOuvert(estOuvert ? null : i)}
+              >
+                <img src={t.icone} alt="" style={{ width: 22, height: 22, flexShrink: 0 }} />
+                <div style={{ flex: 1, textAlign: 'left' }}>
+                  <div className="labo-tube-nom">{t.titre}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 2, fontWeight: 400 }}>{t.indication}</div>
+                </div>
+                <i className={`ti ti-chevron-down labo-tube-chevron${estOuvert ? ' ouvert' : ''}`}></i>
+              </button>
+
+              {estOuvert && (
+                <>
+                  {t.etapes.map((etape, j) => (
+                    <div key={j} style={{ display: 'flex', gap: 10, padding: '8px 14px', borderTop: '1px solid var(--border)', alignItems: 'flex-start' }}>
+                      <span style={{
+                        background: 'var(--primary)',
+                        color: 'white',
+                        borderRadius: '50%',
+                        width: 20,
+                        height: 20,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 11,
+                        fontWeight: 700,
+                        flexShrink: 0,
+                        marginTop: 1,
+                      }}>{j + 1}</span>
+                      <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>{etape}</p>
+                    </div>
+                  ))}
+
+                  {t.conseils && (
+                    <div style={{ padding: '8px 14px', borderTop: '1px solid var(--border)', background: 'var(--bg)', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                      <i className="ti ti-bulb" style={{ color: 'var(--accent-gold)', flexShrink: 0, marginTop: 1 }}></i>
+                      <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>{t.conseils}</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )
+        })}
       </div>
-
-      {TECHNIQUES.map((t, i) => (
-        <div key={i} className="labo-etape-card">
-          <div style={{ padding: '12px 14px 0' }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--primary)', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <i className={`ti ${t.icone}`}></i> {t.titre}
-            </h3>
-            <p style={{ fontSize: 12, color: 'var(--text-hint)', margin: '0 0 12px 0' }}>
-              <strong>Indication :</strong> {t.indication}
-            </p>
-          </div>
-
-          {t.etapes.map((etape, j) => (
-            <div key={j} style={{ display: 'flex', gap: 10, padding: '8px 14px', borderTop: '1px solid var(--border)', alignItems: 'flex-start' }}>
-              <span style={{
-                background: 'var(--primary)',
-                color: 'white',
-                borderRadius: '50%',
-                width: 20,
-                height: 20,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 11,
-                fontWeight: 700,
-                flexShrink: 0,
-                marginTop: 1,
-              }}>{j + 1}</span>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>{etape}</p>
-            </div>
-          ))}
-
-          {t.conseils && (
-            <div style={{ padding: '8px 14px', borderTop: '1px solid var(--border)', background: 'var(--bg)', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              <i className="ti ti-bulb" style={{ color: 'var(--accent-gold)', flexShrink: 0, marginTop: 1 }}></i>
-              <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>{t.conseils}</p>
-            </div>
-          )}
-        </div>
-      ))}
 
       {/* ─── FIXATION ───────────────────────── */}
       <div className="labo-ref-section">

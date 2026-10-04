@@ -111,15 +111,15 @@ function TestAccordeon({ test, ouvert, onToggle }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <div style={{ background: 'var(--bg)', borderRadius: 8, padding: '8px 10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                <img src="/icone-chien.svg" alt="chien" style={{ width: 16, height: 16 }} />
-                <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>Chien</span>
+                <img src="/icone-chien.svg" alt="chien" style={{ width: 20, height: 20 }} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Chien</span>
               </div>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{test.ref.chien}</span>
             </div>
             <div style={{ background: 'var(--bg)', borderRadius: 8, padding: '8px 10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                <img src="/icone-chat.svg" alt="chat" style={{ width: 16, height: 16 }} />
-                <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>Chat</span>
+                <img src="/icone-chat.svg" alt="chat" style={{ width: 20, height: 20 }} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Chat</span>
               </div>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{test.ref.chat}</span>
             </div>
