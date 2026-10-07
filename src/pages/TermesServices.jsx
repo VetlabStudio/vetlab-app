@@ -85,9 +85,7 @@ export default function TermesServices() {
               key={i}
               className={`cgu-dot${i === page ? ' actif' : ''}`}
               onClick={() => setPage(i)}
-            >
-              {i + 1}
-            </button>
+            />
           ))}
         </div>
       </div>

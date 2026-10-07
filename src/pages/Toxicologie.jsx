@@ -682,7 +682,7 @@ const RESSOURCES = [
 function couleurToxicite(toxicite) {
   const t = toxicite.toLowerCase()
   if (t.includes('mortelle') || t.includes('très élevée')) return 'var(--accent-red)'
-  if (t.includes('élevée')) return '#c0392b'
+  if (t.includes('élevée')) return 'var(--accent-red)'
   if (t.includes('modérée')) return 'var(--accent-gold)'
   return 'var(--primary)'
 }

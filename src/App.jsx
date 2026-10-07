@@ -14,6 +14,7 @@ const Disclaimer = lazy(() => import('./pages/Disclaimer'))
 const PolitiqueConfidentialite = lazy(() => import('./pages/PolitiqueConfidentialite'))
 const TermesServices = lazy(() => import('./pages/TermesServices'))
 const Aide = lazy(() => import('./pages/Aide'))
+const Tutoriels = lazy(() => import('./pages/Tutoriels'))
 const DroguesAnesthesiques = lazy(() => import('./pages/DroguesAnesthesiques'))
 const DroguesAntagonistes = lazy(() => import('./pages/DroguesAntagonistes'))
 const DroguesAntibiotiques = lazy(() => import('./pages/DroguesAntibiotiques'))
@@ -413,6 +414,7 @@ export default function App() {
         <Route path="/politique-confidentialite" element={<RouteProtegee session={session}><PolitiqueConfidentialite /></RouteProtegee>} />
         <Route path="/termes-services" element={<RouteProtegee session={session}><TermesServices /></RouteProtegee>} />
         <Route path="/aide" element={<RouteProtegee session={session}><Aide /></RouteProtegee>} />
+        <Route path="/tutoriels" element={<RouteProtegee session={session}><Tutoriels /></RouteProtegee>} />
 
         {/* ADMIN */}
         <Route path="/admin" element={<RouteProtegeeAdmin session={session}><AdminAccueil /></RouteProtegeeAdmin>} />

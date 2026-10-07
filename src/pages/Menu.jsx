@@ -13,6 +13,7 @@ const SECTIONS = [
     titre: 'Ressources',
     items: [
       { id: 'sources', label: 'Sources et références', icone: 'ti-books', route: '/sources-references' },
+      { id: 'tutoriels', label: 'Tutoriels', icone: 'ti-school', route: '/tutoriels' },
       { id: 'aide', label: 'Aide', icone: 'ti-help-circle', route: '/aide' },
     ],
   },
