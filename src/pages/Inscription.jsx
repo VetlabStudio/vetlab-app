@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate, Link } from 'react-router-dom'
 
@@ -19,7 +19,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Utilisation du service',
-        texte: 'ADJUVET est fourni à titre strictement informatif et éducatif. Il ne constitue pas un avis médical vétérinaire et ne remplace en aucun cas le jugement clinique d\'un médecin vétérinaire. VetLab Studio décline toute responsabilité pour les erreurs, omissions, inexactitudes ou défaillances techniques pouvant affecter les informations présentées dans l\'application. L\'utilisateur reconnaît assumer l\'entière responsabilité de toute décision clinique ou thérapeutique prise à partir des données de l\'application, et exonère expressément VetLab Studio de toute responsabilité en cas de préjudice, incluant toute erreur de traitement médical, résultant de son utilisation.',
+        texte: 'ADJUVET est fourni à titre informatif uniquement et ne remplace pas le jugement clinique d\'un vétérinaire. VetLab Studio décline toute responsabilité pour les décisions thérapeutiques prises à partir de l\'application.',
       },
     ],
   },
@@ -45,6 +45,8 @@ const CGU_PAGES = [
   },
 ]
 
+const MSG_COMPTE_EXISTANT = 'Un compte existe déjà avec ce courriel. Connectez-vous plutôt.'
+
 export default function Inscription() {
   const [nom, setNom] = useState('')
   const [email, setEmail] = useState('')
@@ -53,42 +55,77 @@ export default function Inscription() {
   const [erreur, setErreur] = useState(null)
   const [succes, setSucces] = useState(false)
   const [chargement, setChargement] = useState(false)
-  const [etapeCgu, setEtapeCgu] = useState(null)
+  // 'form' ou l'index de la page CGU affichée
+  const [vue, setVue] = useState('form')
+  const [transition, setTransition] = useState(null)
   const [voirMdp, setVoirMdp] = useState(false)
   const [voirConfirm, setVoirConfirm] = useState(false)
   const [logoSrc] = useState(() => `/adjuvet-logo-anime.svg?v=${Date.now()}`)
+  const touchStartX = useRef(null)
   const navigate = useNavigate()
 
-  const handleInscription = (e) => {
+  const allerVue = (prochaine, direction) => {
+    if (prochaine === vue) return
+    setTransition({ depuis: vue, direction })
+    setVue(prochaine)
+  }
+
+  const handleInscription = async (e) => {
     e.preventDefault()
     setErreur(null)
     if (motDePasse !== confirmation) {
       setErreur('Les mots de passe ne correspondent pas.')
       return
     }
-    setEtapeCgu(0)
-  }
 
-  const handleValider = async () => {
-    if (etapeCgu < CGU_PAGES.length - 1) {
-      setEtapeCgu(e => e + 1)
+    setChargement(true)
+    const { data: existe, error } = await supabase.rpc('email_existe', { p_email: email.trim() })
+    setChargement(false)
+
+    if (error) console.error('Vérification du courriel impossible:', error)
+    if (existe === true) {
+      setErreur(MSG_COMPTE_EXISTANT)
       return
     }
 
+    allerVue(0, 'forward')
+  }
+
+  const handleSwipeStart = (e) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleSwipeEnd = (e) => {
+    if (touchStartX.current === null || vue === 'form') return
+    const delta = e.changedTouches[0].clientX - touchStartX.current
+    touchStartX.current = null
+    if (delta < -50 && vue < CGU_PAGES.length - 1) {
+      allerVue(vue + 1, 'forward')
+    } else if (delta > 50 && vue > 0) {
+      allerVue(vue - 1, 'back')
+    }
+  }
+
+  const handleAccepter = async () => {
     setChargement(true)
-    const { error } = await supabase.auth.signUp({
-      email,
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
       password: motDePasse,
       options: { data: { nom: nom.trim() } },
     })
-
-    if (error) {
-      setEtapeCgu(null)
-      setErreur("Erreur lors de l'inscription. Vérifiez votre courriel.")
-    } else {
-      setSucces(true)
-    }
     setChargement(false)
+
+    const dejaInscrit = error
+      ? /already|registered|exists/i.test(error.message || '')
+      : data?.user?.identities?.length === 0
+
+    if (error || dejaInscrit) {
+      setErreur(dejaInscrit ? MSG_COMPTE_EXISTANT : "Erreur lors de l'inscription. Vérifiez votre courriel.")
+      allerVue('form', 'back')
+      return
+    }
+
+    setSucces(true)
   }
 
   if (succes) {
@@ -108,8 +145,9 @@ export default function Inscription() {
     )
   }
 
-  if (etapeCgu !== null) {
-    const { fond, animal, sections } = CGU_PAGES[etapeCgu]
+  const renderCgu = (index) => {
+    const { fond, animal, sections } = CGU_PAGES[index]
+    const estDernier = index === CGU_PAGES.length - 1
     return (
       <div className="cgu-page" style={{ backgroundImage: `url('${fond}')` }}>
         <div className="cgu-contenu">
@@ -123,18 +161,19 @@ export default function Inscription() {
               </div>
             ))}
           </div>
-          <button className="cgu-btn" onClick={handleValider} disabled={chargement}>
-            {chargement ? 'Création...' : etapeCgu < CGU_PAGES.length - 1 ? 'Valider' : "J'accepte et je crée mon compte"}
-          </button>
+          {estDernier && (
+            <button className="cgu-btn" onClick={handleAccepter} disabled={chargement}>
+              {chargement ? 'Création...' : "J'accepte"}
+            </button>
+          )}
           <div className="cgu-dots">
             {CGU_PAGES.map((_, i) => (
               <button
                 key={i}
-                className={`cgu-dot${i === etapeCgu ? ' actif' : ''}`}
-                onClick={() => i < etapeCgu && setEtapeCgu(i)}
-              >
-                {i + 1}
-              </button>
+                className={`cgu-dot${i === index ? ' actif' : ''}`}
+                onClick={() => allerVue(i, i > index ? 'forward' : 'back')}
+                aria-label={`Page ${i + 1}`}
+              />
             ))}
           </div>
         </div>
@@ -145,7 +184,7 @@ export default function Inscription() {
     )
   }
 
-  return (
+  const renderFormulaire = () => (
     <div className="auth2-page">
       <div className="auth2-contenu">
         <div className="auth2-logo-zone">
@@ -200,8 +239,8 @@ export default function Inscription() {
             </button>
           </div>
           {erreur && <p className="erreur" style={{ textAlign: 'center' }}>{erreur}</p>}
-          <button type="submit" className="auth2-btn">
-            Créer mon compte
+          <button type="submit" className="auth2-btn" disabled={chargement}>
+            {chargement ? 'Vérification...' : 'Créer mon compte'}
           </button>
         </form>
 
@@ -209,6 +248,36 @@ export default function Inscription() {
           Déjà un compte ?{' '}
           <Link to="/connexion">Se connecter</Link>
         </p>
+      </div>
+    </div>
+  )
+
+  const renderVue = (v) => (v === 'form' ? renderFormulaire() : renderCgu(v))
+
+  // Même mécanique que les pages intérieures (App.jsx) : la page sortante
+  // reste affichée dessous pendant que la nouvelle glisse par-dessus.
+  return (
+    <div
+      style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh' }}
+      onTouchStart={handleSwipeStart}
+      onTouchEnd={handleSwipeEnd}
+    >
+      {transition && (
+        <div
+          className={`page-exit-${transition.direction}`}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 1 }}
+          aria-hidden="true"
+        >
+          {renderVue(transition.depuis)}
+        </div>
+      )}
+      <div
+        key={String(vue)}
+        className={transition ? `page-enter-${transition.direction}` : undefined}
+        style={{ position: 'relative', zIndex: 2 }}
+        onAnimationEnd={(e) => { if (e.target === e.currentTarget) setTransition(null) }}
+      >
+        {renderVue(vue)}
       </div>
     </div>
   )
