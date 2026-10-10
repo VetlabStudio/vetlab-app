@@ -141,14 +141,15 @@ export default function Profil() {
   async function supprimerCompte() {
     setSaving(true)
     setErreur('')
-    const { error } = await supabase.functions.invoke('delete-account')
+    const { data, error } = await supabase.functions.invoke('delete-account')
     if (error) {
       const code = await lireCodeErreur(error)
       setSaving(false)
       return setErreur(MESSAGES_SUPPRESSION[code] || 'Erreur : ' + (code || error.message))
     }
-    await supabase.auth.signOut()
-    navigate('/connexion')
+    // Naviguer avant signOut : sinon la route protégée /profil redirige vers /connexion.
+    navigate('/compte-supprime', { replace: true, state: { abonnementsAnnules: data?.abonnementsAnnules || 0 } })
+    await supabase.auth.signOut({ scope: 'local' })
   }
 
   // Le cas du propriétaire passe par la même fonction : c'est

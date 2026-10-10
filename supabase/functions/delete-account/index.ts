@@ -90,11 +90,15 @@ Deno.serve(async (req) => {
   let abonnements: Stripe.Subscription[] = []
   if (profil?.stripe_customer_id) {
     try {
-      const [actifs, essais] = await Promise.all([
-        stripe.subscriptions.list({ customer: profil.stripe_customer_id, status: 'active' }),
-        stripe.subscriptions.list({ customer: profil.stripe_customer_id, status: 'trialing' }),
-      ])
-      abonnements = [...actifs.data, ...essais.data]
+      /* Tout ce qui n'est pas terminé, pas seulement active/trialing :
+         un abonnement past_due ou unpaid continue de tenter des
+         prélèvements sur la carte. */
+      const tous = await stripe.subscriptions.list({
+        customer: profil.stripe_customer_id,
+        status: 'all',
+        limit: 100,
+      })
+      abonnements = tous.data.filter(s => s.status !== 'canceled' && s.status !== 'incomplete_expired')
     } catch (err) {
       console.error('delete-account: lecture des abonnements impossible', err)
       if (!verification) return json({ error: 'stripe_indisponible' }, 502)

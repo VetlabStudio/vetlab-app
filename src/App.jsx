@@ -5,6 +5,7 @@ import { ProfilProvider } from './context/ProfilContext'
 
 const Connexion = lazy(() => import('./pages/Connexion'))
 const Inscription = lazy(() => import('./pages/Inscription'))
+const CompteSupprime = lazy(() => import('./pages/CompteSupprime'))
 const Accueil = lazy(() => import('./pages/Accueil'))
 const Calculateurs = lazy(() => import('./pages/Calculateurs'))
 const Profil = lazy(() => import('./pages/Profil'))
@@ -288,6 +289,7 @@ export default function App() {
         {/* AUTH */}
         <Route path="/connexion" element={<Suspense fallback={null}><Connexion /></Suspense>} />
         <Route path="/inscription" element={<Suspense fallback={null}><Inscription /></Suspense>} />
+        <Route path="/compte-supprime" element={<Suspense fallback={null}><CompteSupprime /></Suspense>} />
 
         {/* ACCUEIL */}
         <Route path="/accueil" element={<RouteProtegee session={session}><Accueil /></RouteProtegee>} />
