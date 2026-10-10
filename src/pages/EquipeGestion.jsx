@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
 
@@ -105,6 +105,8 @@ export default function EquipeGestion() {
   const [transfertEnCours, setTransfertEnCours] = useState(false)
   const [erreurTransfert, setErreurTransfert] = useState('')
   const [transfertEnAttente, setTransfertEnAttente] = useState(null)
+  const location = useLocation()
+  const [aideTransfert, setAideTransfert] = useState(Boolean(location.state?.aideTransfert))
 
   const [editNomClinique, setEditNomClinique] = useState(false)
   const [nouveauNomClinique, setNouveauNomClinique] = useState('')
@@ -482,6 +484,18 @@ export default function EquipeGestion() {
         </span>
         <span className="equipe-bandeau-nom">{equipe?.nom || 'Clinique'}</span>
       </div>
+
+      {/* ═══ AIDE AU TRANSFERT (depuis la suppression du compte) ═══ */}
+      {estProprietaire && aideTransfert && !transfertEnAttente && (
+        <div className="equipe-avertissement">
+          <span className="equipe-carte-titre">Transférer la clinique</span>
+          <p>
+            Sélectionnez la personne qui deviendra propriétaire dans la liste, puis choisissez « Transférer la propriété ». Une fois
+            le transfert terminé, vous pourrez supprimer votre compte sans toucher aux données de la clinique.
+          </p>
+          <button className="equipe-lien" onClick={() => setAideTransfert(false)}>Compris</button>
+        </div>
+      )}
 
       {/* ═══ TRANSFERT EN ATTENTE ═══ */}
       {estProprietaire && transfertEnAttente && (

@@ -369,7 +369,7 @@ export default function Profil() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <button
                     className="profil-portal-btn"
-                    onClick={() => { setModalSupprimerProprietaire(false); navigate('/equipe') }}
+                    onClick={() => { setModalSupprimerProprietaire(false); navigate('/equipe/gestion', { state: { aideTransfert: true } }) }}
                   >
                     <i className="ti ti-arrow-right-circle"></i>
                     Transférer la propriété d'abord
