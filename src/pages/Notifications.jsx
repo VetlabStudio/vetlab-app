@@ -39,6 +39,7 @@ export default function Notifications() {
   function naviguerNotif(notif) {
     if (notif.reference_type === 'babillard') navigate('/equipe?tab=babillard')
     else if (notif.reference_type === 'tache') navigate('/equipe?tab=taches')
+    else if (notif.reference_type === 'transfert') navigate('/equipe/transfert')
   }
 
   if (loading) return <div className="admin-loading">Chargement...</div>

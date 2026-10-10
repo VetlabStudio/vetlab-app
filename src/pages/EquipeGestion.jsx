@@ -66,8 +66,18 @@ async function preparerLogo(fichier) {
   return { blob, extension: 'png', contentType: 'image/png' }
 }
 
+const JOURS_VALIDITE_TRANSFERT = 7
+
+function finTransfert(transfert) {
+  return new Date(new Date(transfert.cree_le).getTime() + JOURS_VALIDITE_TRANSFERT * 86400000)
+}
+
+function formaterDateLongue(date) {
+  return date.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
 export default function EquipeGestion() {
-  const { teamId, roleEquipe, chargement, chargerProfil } = useProfil()
+  const { teamId, roleEquipe, chargement } = useProfil()
   const navigate = useNavigate()
 
   const [membres, setMembres] = useState([])
@@ -94,6 +104,7 @@ export default function EquipeGestion() {
   const [cibleTransfert, setCibleTransfert] = useState(null)
   const [transfertEnCours, setTransfertEnCours] = useState(false)
   const [erreurTransfert, setErreurTransfert] = useState('')
+  const [transfertEnAttente, setTransfertEnAttente] = useState(null)
 
   const [editNomClinique, setEditNomClinique] = useState(false)
   const [nouveauNomClinique, setNouveauNomClinique] = useState('')
@@ -123,10 +134,11 @@ export default function EquipeGestion() {
     if (!user) { setLoading(false); return }
     setUserId(user.id)
 
-    const [{ data: eq, error: eqErreur }, { data: mems, error: memErreur }, { data: invits }] = await Promise.all([
+    const [{ data: eq, error: eqErreur }, { data: mems, error: memErreur }, { data: invits }, { data: transfert }] = await Promise.all([
       supabase.from('equipes').select('*').eq('id', teamId).single(),
       supabase.from('membres_equipe').select('*, profiles(nom, email, avatar_url)').eq('equipe_id', teamId),
       supabase.from('team_invitations').select('*').eq('team_id', teamId).eq('status', 'pending').order('created_at', { ascending: false }),
+      supabase.from('transferts_propriete').select('id, cible_id, cree_le').eq('equipe_id', teamId).eq('statut', 'en_attente').maybeSingle(),
     ])
 
     if (eqErreur || memErreur) signaler('erreur', "Impossible de charger l'équipe. Vérifiez votre connexion.")
@@ -134,6 +146,7 @@ export default function EquipeGestion() {
     setEquipe(eq || null)
     setMembres(mems || [])
     setInvitations(invits || [])
+    setTransfertEnAttente(transfert && finTransfert(transfert) > new Date() ? transfert : null)
     setLoading(false)
   }
 
@@ -368,21 +381,35 @@ export default function EquipeGestion() {
     setErreurTransfert('')
 
     const { data, error } = await supabase.functions.invoke('transferer-propriete', {
-      body: { equipe_id: teamId, nouveau_proprio_user_id: cibleTransfert.user_id },
+      body: { action: 'demander', equipe_id: teamId, cible_id: cibleTransfert.user_id },
     })
 
     if (error || data?.error) {
-      setErreurTransfert(data?.error || 'Une erreur est survenue. Veuillez réessayer.')
+      const corps = error ? await error.context?.json?.().catch(() => null) : null
+      setErreurTransfert(data?.error || corps?.error || 'Une erreur est survenue. Veuillez réessayer.')
       setTransfertEnCours(false)
       return
     }
 
+    const nom = cibleTransfert.profiles?.nom || 'Ce membre'
+    setTransfertEnAttente(data.transfert)
     setShowTransfertModal(false)
     setCibleTransfert(null)
     setMembreGere(null)
     setTransfertEnCours(false)
-    await charger()
-    if (chargerProfil) chargerProfil()
+    signaler('succes', `Demande envoyée à ${nom}. Le transfert se fera dès que ${nom} aura entré sa carte de crédit.`)
+  }
+
+  async function annulerTransfert() {
+    const { error } = await supabase.functions.invoke('transferer-propriete', {
+      body: { action: 'annuler', equipe_id: teamId },
+    })
+    if (error) {
+      signaler('erreur', "La demande n'a pas pu être annulée. Réessayez.")
+      return
+    }
+    setTransfertEnAttente(null)
+    signaler('succes', 'Demande de transfert annulée.')
   }
 
   /* ─── LISTE UNIFIÉE ───────────────────────────────────────
@@ -455,6 +482,18 @@ export default function EquipeGestion() {
         </span>
         <span className="equipe-bandeau-nom">{equipe?.nom || 'Clinique'}</span>
       </div>
+
+      {/* ═══ TRANSFERT EN ATTENTE ═══ */}
+      {estProprietaire && transfertEnAttente && (
+        <div className="equipe-avertissement">
+          <span className="equipe-carte-titre">Transfert en attente</span>
+          <p>
+            Demande envoyée à {membres.find(m => m.user_id === transfertEnAttente.cible_id)?.profiles?.nom || 'un membre'}.
+            Le transfert se fera dès que cette personne aura entré sa carte. La demande expire le {formaterDateLongue(finTransfert(transfertEnAttente))}.
+          </p>
+          <button className="equipe-lien danger" onClick={annulerTransfert}>Annuler la demande</button>
+        </div>
+      )}
 
       {/* ═══ SIÈGES ═══ */}
       {equipe?.max_membres && (
@@ -828,15 +867,18 @@ export default function EquipeGestion() {
               <div className="equipe-centre">
                 <i className="ti ti-arrows-exchange equipe-icone-grande"></i>
                 <p className="equipe-centre-titre">Transférer à {cibleTransfert.profiles?.nom}?</p>
-                <p className="equipe-aide">Vous deviendrez admin. Cette action est irréversible.</p>
+                <p className="equipe-aide">
+                  {cibleTransfert.profiles?.nom} recevra une demande par courriel et dans l'application.
+                  Elle expire dans 7 jours.
+                </p>
               </div>
 
               <div className="equipe-avertissement">
                 <span className="equipe-carte-titre">Facturation</span>
                 <p>
-                  Le renouvellement sera chargé sur la carte de crédit actuellement enregistrée jusqu'à ce
-                  que {cibleTransfert.profiles?.nom} mette à jour ses informations de paiement dans
-                  Abonnement, puis Gérer ma facturation.
+                  Le transfert se fera seulement quand {cibleTransfert.profiles?.nom} aura entré sa propre
+                  carte de crédit. L'abonnement de la clinique passera alors à son nom, et le vôtre
+                  s'arrêtera à la fin de la période déjà payée, sans autre prélèvement. Vous deviendrez admin.
                 </p>
               </div>
 
@@ -851,7 +893,7 @@ export default function EquipeGestion() {
                   Annuler
                 </button>
                 <button className="equipe-btn-primaire" style={{ flex: 1 }} onClick={effectuerTransfert} disabled={transfertEnCours}>
-                  {transfertEnCours ? 'Transfert...' : 'Confirmer'}
+                  {transfertEnCours ? 'Envoi...' : 'Envoyer la demande'}
                 </button>
               </div>
             </div>
