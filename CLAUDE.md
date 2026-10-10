@@ -26,3 +26,7 @@ Ne jamais utiliser de tiret cadratin (—) dans le texte généré. Utiliser un 
 2. Appliquer uniquement les modifications demandées
 3. Vérifier avec `git diff origin/master <fichier>` que seules les modifications demandées sont présentes
 4. Livrer via `SendUserFile`
+
+## Fichiers index.ts
+
+Les Edge Functions s'appellent toutes `index.ts`. Avant de livrer, toujours copier chaque `index.ts` sous un nom distinct `<nom-de-la-fonction>__index.ts` (ex. `stripe-webhook__index.ts`) et livrer cette copie, en indiquant le dossier de destination `supabase/functions/<nom-de-la-fonction>/index.ts`.

@@ -124,7 +124,8 @@ Deno.serve(async (req) => {
      Stripe est lisible. Après, il est perdu pour de bon. */
   for (const sub of abonnements) {
     try {
-      await stripe.subscriptions.cancel(sub.id)
+      // Le webhook reconnaît ce marqueur et n'envoie pas le courriel « abonnement terminé ».
+      await stripe.subscriptions.cancel(sub.id, { cancellation_details: { comment: 'suppression_compte' } })
     } catch (err) {
       console.error(`delete-account: annulation de ${sub.id} impossible, suppression interrompue`, err)
       return json({ error: 'annulation_impossible' }, 502)

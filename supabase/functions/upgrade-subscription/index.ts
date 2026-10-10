@@ -5,10 +5,23 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '202
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || ''
 const FROM = 'Adjuvet <noreply@adjuvet.app>'
 
+const PRICE_EQUIPE = Deno.env.get('STRIPE_PRICE_EQUIPE') || ''
+const SIEGES_MIN = 2
+const SIEGES_MAX = 200
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
+
+function json(body: object, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  })
+}
+
+const MSG_PAIEMENT_REFUSE =
+  "Le paiement n'a pas pu être effectué. Aucun changement n'a été appliqué. Vérifiez votre carte dans le portail de facturation."
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
@@ -18,11 +31,30 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   )
 
-  const authHeader = req.headers.get('Authorization')!
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader) return json({ error: 'Non autorisé' }, 401)
   const { data: { user } } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''))
-  if (!user) return new Response('Non autorisé', { status: 401 })
+  if (!user) return json({ error: 'Non autorisé' }, 401)
 
-  const { newPriceId, quantity = 1 } = await req.json()
+  let newPriceId: unknown
+  let quantiteDemandee: unknown
+  try {
+    const corps = await req.json()
+    newPriceId = corps?.newPriceId
+    quantiteDemandee = corps?.quantity
+  } catch {
+    return json({ error: 'Requête invalide.' }, 400)
+  }
+
+  // ─── Le prix et la quantité viennent du navigateur : on les valide ici.
+  // Le seul changement offert par l'app est le passage à Équipe ou l'ajustement des sièges.
+  if (!PRICE_EQUIPE || newPriceId !== PRICE_EQUIPE) {
+    return json({ error: "Ce changement de forfait n'est pas disponible." }, 400)
+  }
+  const quantity = Number(quantiteDemandee)
+  if (!Number.isInteger(quantity) || quantity < SIEGES_MIN || quantity > SIEGES_MAX) {
+    return json({ error: `Le nombre de sièges doit être entre ${SIEGES_MIN} et ${SIEGES_MAX}.` }, 400)
+  }
 
   const { data: profil } = await supabase
     .from('profiles')
@@ -30,44 +62,70 @@ Deno.serve(async (req) => {
     .eq('id', user.id)
     .single()
 
-  if (!profil?.stripe_customer_id) {
-    return new Response(
-      JSON.stringify({ error: 'Aucun abonnement actif trouvé.' }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
-  }
+  if (!profil?.stripe_customer_id) return json({ error: 'Aucun abonnement actif trouvé.' }, 400)
 
   if (!['pro', 'equipe'].includes(profil.plan)) {
-    return new Response(
-      JSON.stringify({ error: 'Un abonnement actif est requis pour modifier le forfait.' }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    return json({ error: 'Un abonnement actif est requis pour modifier le forfait.' }, 400)
+  }
+
+  /* Un membre a aussi plan = 'equipe'. Sans cette vérification, un
+     membre qui avait encore son ancien abonnement Pro pouvait le
+     transformer en abonnement Équipe facturé qui ne lui donne rien. */
+  const { data: equipe } = await supabase
+    .from('equipes').select('id').eq('proprietaire_id', user.id).maybeSingle()
+
+  if (profil.plan === 'equipe' && !equipe) {
+    return json({ error: 'Seul le propriétaire de la clinique peut modifier les sièges.' }, 403)
+  }
+
+  if (equipe) {
+    const { count } = await supabase
+      .from('membres_equipe')
+      .select('*', { count: 'exact', head: true })
+      .eq('equipe_id', equipe.id)
+    if (count !== null && quantity < count) {
+      return json({
+        error: `Votre équipe compte ${count} membres. Retirez des membres avant de réduire à ${quantity} sièges.`,
+      }, 400)
+    }
   }
 
   const subscriptions = await stripe.subscriptions.list({
     customer: profil.stripe_customer_id,
     status: 'active',
-    limit: 1,
+    limit: 10,
   })
 
-  if (!subscriptions.data.length) {
-    return new Response(
-      JSON.stringify({ error: 'Aucun abonnement actif trouvé dans Stripe.' }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+  const subscription = profil.plan === 'equipe'
+    ? subscriptions.data.find(s => s.items.data.some(i => i.price?.id === PRICE_EQUIPE))
+    : subscriptions.data[0]
+
+  if (!subscription) return json({ error: 'Aucun abonnement actif trouvé dans Stripe.' }, 400)
+
+  const currentItem = subscription.items.data[0]
+  const nomPlan = `Équipe (${quantity} sièges)`
+
+  /* pending_if_incomplete : le changement n'est appliqué que si le
+     paiement passe. Avant, une carte refusée faisait passer
+     l'abonnement en défaut de paiement, le webhook remettait le
+     propriétaire ET toute son équipe au gratuit, et le courriel
+     annonçait quand même « Forfait activé ». */
+  let miseAJour: Stripe.Subscription
+  try {
+    miseAJour = await stripe.subscriptions.update(subscription.id, {
+      items: [{ id: currentItem.id, price: PRICE_EQUIPE, quantity }],
+      proration_behavior: 'always_invoice',
+      payment_behavior: 'pending_if_incomplete',
+    })
+  } catch (err) {
+    console.error('upgrade-subscription: mise à jour refusée par Stripe', err)
+    return json({ error: MSG_PAIEMENT_REFUSE }, 402)
   }
 
-  const subscription = subscriptions.data[0]
-  const currentItem = subscription.items.data[0]
-
-  const PRICE_EQUIPE = Deno.env.get('STRIPE_PRICE_EQUIPE') || ''
-  const isEquipe = PRICE_EQUIPE && newPriceId === PRICE_EQUIPE
-  const nomPlan = isEquipe ? `Équipe (${quantity} sièges)` : 'Pro'
-
-  await stripe.subscriptions.update(subscription.id, {
-    items: [{ id: currentItem.id, price: newPriceId, quantity }],
-    proration_behavior: 'always_invoice',
-  })
+  if (miseAJour.pending_update) {
+    console.warn(`upgrade-subscription: paiement non confirmé pour ${user.id}, changement en attente non appliqué`)
+    return json({ error: MSG_PAIEMENT_REFUSE }, 402)
+  }
 
   if (RESEND_API_KEY && profil.email) {
     const prenom = profil.nom ? profil.nom.split(' ')[0] : ''
