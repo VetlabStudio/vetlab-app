@@ -135,6 +135,20 @@ Deno.serve(async (req) => {
     console.log(`delete-account: ${abonnements.length} abonnement(s) annulé(s) pour ${user.id}`)
   }
 
+  /* Retirer les cartes enregistrées chez Stripe. Le client et ses
+     factures restent (obligations comptables), mais plus aucun moyen
+     de paiement n'y est attaché. Un échec ne bloque pas : les
+     abonnements sont déjà annulés, plus rien ne peut être prélevé. */
+  if (profil?.stripe_customer_id) {
+    try {
+      const moyens = await stripe.paymentMethods.list({ customer: profil.stripe_customer_id, limit: 100 })
+      for (const pm of moyens.data) await stripe.paymentMethods.detach(pm.id)
+      if (moyens.data.length) console.log(`delete-account: ${moyens.data.length} moyen(s) de paiement retiré(s)`)
+    } catch (err) {
+      console.error('delete-account: retrait des moyens de paiement impossible, à faire à la main dans Stripe', err)
+    }
+  }
+
   // ─── RÉTROGRADER LES MEMBRES AVANT DE DISSOUDRE ───────────
 
   if (autresMembres.length) {
@@ -173,6 +187,20 @@ Deno.serve(async (req) => {
   /* Le profil, les appartenances, favoris, notes, etc. partent en
      cascade avec l'utilisateur. Si cette étape échoue, le compte
      reste entier au lieu d'être à moitié supprimé. */
+  /* La photo de profil est publique (bucket avatars, nommée
+     <id>.<extension>) : sans ce nettoyage, elle restait en ligne
+     après la suppression du compte. */
+  const { data: fichiers, error: listeErr } = await supabase.storage.from('avatars').list('', { search: user.id })
+  if (listeErr) {
+    console.error('delete-account: lecture des avatars impossible', listeErr)
+  } else {
+    const aSupprimer = (fichiers || []).map(f => f.name).filter(n => n.startsWith(`${user.id}.`))
+    if (aSupprimer.length) {
+      const { error: avatarErr } = await supabase.storage.from('avatars').remove(aSupprimer)
+      if (avatarErr) console.error('delete-account: suppression de la photo de profil impossible', avatarErr)
+    }
+  }
+
   const { error } = await supabase.auth.admin.deleteUser(user.id)
   if (error) {
     console.error('delete-account: suppression de l\'utilisateur impossible', error)

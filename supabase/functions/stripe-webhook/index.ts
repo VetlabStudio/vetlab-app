@@ -308,6 +308,33 @@ async function envoyerAnnulationProgrammee(sub: Stripe.Subscription) {
   await envoyerCourriel(dest.email, `Votre abonnement Adjuvet ${nom} prendra fin le ${fin}`, html)
 }
 
+async function envoyerPaiementRefuse(sub: Stripe.Subscription, accesMaintenu: boolean) {
+  if (!RESEND_API_KEY) return
+  const dest = await lireDestinataire(sub.customer as string)
+  if (!dest) return
+
+  const { nom, equipe } = decrirePlan(sub)
+  const membres = !equipe
+    ? ''
+    : accesMaintenu
+      ? '<br /><br />Si le paiement n&rsquo;aboutit pas, les membres de votre clinique perdront aussi l&rsquo;acc&egrave;s.'
+      : '<br /><br />Les membres de votre clinique n&rsquo;ont plus acc&egrave;s non plus en attendant le paiement.'
+  const situation = accesMaintenu
+    ? `Vous gardez l&rsquo;acc&egrave;s pour l&rsquo;instant&nbsp;: une nouvelle tentative sera faite automatiquement au cours des prochains jours.<br /><br />Si le paiement n&rsquo;aboutit pas, votre abonnement sera annul&eacute; et votre compte passera au forfait gratuit.`
+    : `Votre acc&egrave;s ${nom} est suspendu jusqu&rsquo;&agrave; ce que le paiement passe. Une nouvelle tentative sera faite automatiquement au cours des prochains jours, et votre acc&egrave;s reviendra d&egrave;s que le paiement aboutira.`
+
+  const html = gabaritCourriel({
+    titre: `Paiement refusé pour votre abonnement Adjuvet ${nom}`,
+    apercu: accesMaintenu ? 'Mettez à jour votre carte pour garder votre accès.' : 'Mettez à jour votre carte pour retrouver votre accès.',
+    titreHtml: 'Paiement refus&eacute;',
+    corpsHtml: `${dest.salutation}<br /><br />Le paiement de votre abonnement <strong>Adjuvet ${nom}</strong> n&rsquo;a pas pu &ecirc;tre effectu&eacute;. ${situation}${membres}`,
+    boutonTexte: 'Mettre &agrave; jour ma carte',
+    boutonUrl: 'https://adjuvet.app/abonnement',
+    noteHtml: 'Votre carte a peut-&ecirc;tre expir&eacute; ou a &eacute;t&eacute; refus&eacute;e par votre banque.',
+  })
+  await envoyerCourriel(dest.email, `Paiement refusé pour votre abonnement Adjuvet ${nom}`, html)
+}
+
 async function envoyerFinAbonnement(sub: Stripe.Subscription) {
   if (!RESEND_API_KEY) return
   const dest = await lireDestinataire(sub.customer as string)
@@ -346,9 +373,36 @@ function estPrixPro(priceId?: string): boolean {
    pas l'ordre d'arrivée. Un vieil « updated: active » reçu après
    « deleted » redonnait Pro gratuitement. On relit plutôt l'état
    réel de tous les abonnements du client à chaque événement. */
+/* Paiement refusé : Stripe réessaie pendant quelques jours et
+   l'abonnement passe en past_due. On garde l'accès pendant ces
+   tentatives. C'est le réglage Stripe « Manage failed payments »
+   (annuler l'abonnement après la dernière tentative) qui y met fin.
+   Cette limite n'est qu'un filet : elle s'applique au prochain
+   événement Stripe reçu, si l'abonnement traîne en past_due.
+
+   Le délai n'est accordé qu'à un client qui a déjà payé un montant
+   réel pour cet abonnement. Une fin d'essai gratuit ou une période
+   offerte par un code promo à 100 % ne compte pas : si le premier
+   vrai paiement échoue, l'accès est suspendu tout de suite. */
+const GRACE_PAIEMENT_JOURS = 21
+
+async function aDejaPayeMontantReel(subId: string): Promise<boolean> {
+  const factures = await stripe.invoices.list({ subscription: subId, status: 'paid', limit: 100 })
+  return factures.data.some(f => f.amount_paid > 0)
+}
+
+async function enPeriodeDeGrace(s: Stripe.Subscription): Promise<boolean> {
+  if (s.status !== 'past_due') return false
+  if (Date.now() >= (s.current_period_start + GRACE_PAIEMENT_JOURS * 86400) * 1000) return false
+  return await aDejaPayeMontantReel(s.id)
+}
+
 async function lireEtatStripe(customerId: string): Promise<{ plan: 'equipe' | 'pro' | 'free'; quantity: number }> {
   const subs = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 100 })
-  const actifs = subs.data.filter(s => s.status === 'active' || s.status === 'trialing')
+  const actifs: Stripe.Subscription[] = []
+  for (const s of subs.data) {
+    if (s.status === 'active' || s.status === 'trialing' || await enPeriodeDeGrace(s)) actifs.push(s)
+  }
 
   for (const s of actifs) {
     const item = s.items.data.find(i => PRICE_EQUIPE && i.price?.id === PRICE_EQUIPE)
@@ -438,6 +492,11 @@ Deno.serve(async (req) => {
           ('cancel_at' in avant && !avant.cancel_at && Boolean(sub.cancel_at))
         if (etat && annulationActivee && (sub.status === 'active' || sub.status === 'trialing')) {
           await envoyerAnnulationProgrammee(sub)
+        }
+
+        // Premier refus de paiement : l'abonnement vient de passer en past_due.
+        if (etat && 'status' in avant && avant.status !== 'past_due' && sub.status === 'past_due') {
+          await envoyerPaiementRefuse(sub, await enPeriodeDeGrace(sub))
         }
         break
       }

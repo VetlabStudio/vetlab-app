@@ -63,12 +63,15 @@ Deno.serve(async (req) => {
     })
   }
 
-  // Récupérer les abonnements actifs ET en période d'essai
-  const [activeList, trialingList] = await Promise.all([
-    stripe.subscriptions.list({ customer: profil.stripe_customer_id, status: 'active' }),
-    stripe.subscriptions.list({ customer: profil.stripe_customer_id, status: 'trialing' }),
-  ])
-  const tous = [...activeList.data, ...trialingList.data]
+  /* Tout abonnement qui n'est pas terminé, pas seulement active et
+     trialing : un abonnement past_due ou unpaid continue de tenter
+     des prélèvements sur la carte. */
+  const liste = await stripe.subscriptions.list({
+    customer: profil.stripe_customer_id,
+    status: 'all',
+    limit: 100,
+  })
+  const tous = liste.data.filter(s => s.status !== 'canceled' && s.status !== 'incomplete_expired')
 
   const estEquipe = (sub: Stripe.Subscription) =>
     Boolean(PRICE_EQUIPE) && sub.items.data.some(i => i.price?.id === PRICE_EQUIPE)
@@ -79,7 +82,11 @@ Deno.serve(async (req) => {
   const echecs: string[] = []
   for (const sub of aAnnuler) {
     try {
-      if (aFinDePeriode) {
+      /* La fin de période n'a de sens que pour une période payée.
+         Un abonnement impayé est annulé tout de suite, sinon Stripe
+         continuerait de réessayer le prélèvement jusqu'à la fin. */
+      const periodePayee = sub.status === 'active' || sub.status === 'trialing'
+      if (aFinDePeriode && periodePayee) {
         await stripe.subscriptions.update(sub.id, { cancel_at_period_end: true })
       } else {
         await stripe.subscriptions.cancel(sub.id)
