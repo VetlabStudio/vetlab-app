@@ -8546,18 +8546,16 @@ input[type="number"] {
   transition: all 0.15s;
 }
 
-.profil-stripe-btn:hover {
+@media (hover: hover) {
+  .profil-stripe-btn:not(.actif):hover {
+    border-color: var(--text-hint);
+  }
+}
+
+.profil-stripe-btn.actif {
   border-color: var(--primary);
-  background: rgba(37, 77, 86, 0.04);
-}
-
-.profil-stripe-btn--annuel {
-  border-color: var(--accent-gold);
-  background: rgba(215, 163, 92, 0.05);
-}
-
-.profil-stripe-btn--annuel:hover {
-  background: rgba(215, 163, 92, 0.1);
+  background: rgba(37, 77, 86, 0.06);
+  box-shadow: 0 0 0 3px rgba(37, 77, 86, 0.12);
 }
 
 .profil-stripe-prix {
@@ -8785,7 +8783,7 @@ input[type="number"] {
 .abonnement-toggle-btn {
   padding: 10px 16px;
   border: none;
-  border-radius: 9px;
+  border-radius: var(--radius-lg);
   background: transparent;
   font-size: 14px;
   font-weight: 600;

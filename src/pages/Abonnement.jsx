@@ -372,24 +372,23 @@ export default function Abonnement() {
                 padding: '3px 10px', borderRadius: 999,
               }}>Plan actuel</span>
             ) : !estEquipe ? (
-              <div className="profil-stripe-choix" style={{ marginBottom: 12 }}>
-                <button
-                  className="profil-stripe-btn"
-                  onClick={() => setPeriode('mensuel')}
-                  style={periode === 'mensuel' ? { borderColor: 'var(--primary)', background: 'rgba(37,77,86,0.05)' } : {}}
-                >
-                  <span className="profil-stripe-prix">7,99 $</span>
-                  <span className="profil-stripe-periode">par mois</span>
-                </button>
-                <button
-                  className="profil-stripe-btn profil-stripe-btn--annuel"
-                  onClick={() => setPeriode('annuel')}
-                >
-                  <span className="profil-stripe-economie">ÉCONOMISE 37 %</span>
-                  <span className="profil-stripe-prix">59 $</span>
-                  <span className="profil-stripe-periode">par année</span>
-                </button>
-              </div>
+             <div className="profil-stripe-choix" style={{ marginBottom: 12 }}>
+  <button
+    className={`profil-stripe-btn${periode === 'mensuel' ? ' actif' : ''}`}
+    onClick={() => setPeriode('mensuel')}
+  >
+    <span className="profil-stripe-prix">7,99 $</span>
+    <span className="profil-stripe-periode">par mois</span>
+  </button>
+  <button
+    className={`profil-stripe-btn profil-stripe-btn--annuel${periode === 'annuel' ? ' actif' : ''}`}
+    onClick={() => setPeriode('annuel')}
+  >
+    <span className="profil-stripe-economie">ÉCONOMISE 37 %</span>
+    <span className="profil-stripe-prix">59 $</span>
+    <span className="profil-stripe-periode">par année</span>
+  </button>
+</div>
             ) : (
               <span style={{
                 display: 'inline-block', fontSize: 11, fontWeight: 700, marginBottom: 4,

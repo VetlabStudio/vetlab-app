@@ -147,19 +147,32 @@ Deno.serve(async (req) => {
 
   // ─── SUPPRESSION ──────────────────────────────────────────
 
-  const { error: membresErr } = await supabase.from('membres_equipe').delete().eq('user_id', user.id)
-  if (membresErr) console.error('delete-account: retrait des appartenances', membresErr)
+  /* Examens et chartes personnels : supprimés. Ceux d'une clinique
+     restent à la clinique, leur user_id passe à null (SET NULL). */
+  for (const table of ['examens_physiques', 'chartes_radio']) {
+    const { error: persoErr } = await supabase.from(table).delete().eq('user_id', user.id).is('equipe_id', null)
+    if (persoErr) {
+      console.error(`delete-account: suppression de ${table} impossible, suppression interrompue`, persoErr)
+      return json({ error: 'donnees_personnelles_impossible' }, 500)
+    }
+  }
 
   if (equipePossedee) {
     const { error: equipeErr } = await supabase.from('equipes').delete().eq('id', equipePossedee.id)
-    if (equipeErr) console.error("delete-account: suppression de l'équipe", equipeErr)
+    if (equipeErr) {
+      console.error("delete-account: suppression de l'équipe impossible, suppression interrompue", equipeErr)
+      return json({ error: 'equipe_impossible' }, 500)
+    }
   }
 
-  const { error: profilErr } = await supabase.from('profiles').delete().eq('id', user.id)
-  if (profilErr) console.error('delete-account: suppression du profil', profilErr)
-
+  /* Le profil, les appartenances, favoris, notes, etc. partent en
+     cascade avec l'utilisateur. Si cette étape échoue, le compte
+     reste entier au lieu d'être à moitié supprimé. */
   const { error } = await supabase.auth.admin.deleteUser(user.id)
-  if (error) return json({ error: error.message }, 500)
+  if (error) {
+    console.error('delete-account: suppression de l\'utilisateur impossible', error)
+    return json({ error: error.message }, 500)
+  }
 
   console.log(`delete-account: compte ${user.id} supprimé`)
 

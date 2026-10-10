@@ -69,6 +69,8 @@ export default function Profil() {
     stripe_indisponible: "Impossible de joindre Stripe en ce moment. Rien n'a été supprimé, réessayez dans quelques minutes.",
     annulation_impossible: "Votre abonnement n'a pas pu être annulé. Rien n'a été supprimé pour éviter que la facturation continue sans compte. Réessayez, ou écrivez-nous.",
     retrogradation_impossible: "Les membres de votre clinique n'ont pas pu être rétrogradés. Rien n'a été supprimé.",
+    donnees_personnelles_impossible: "Vos examens et chartes personnels n'ont pas pu être supprimés. Votre compte est intact, réessayez.",
+    equipe_impossible: "Votre clinique n'a pas pu être supprimée. Votre compte est intact, réessayez.",
   }
 
   function afficherSucces(msg) {
@@ -143,7 +145,7 @@ export default function Profil() {
     if (error) {
       const code = await lireCodeErreur(error)
       setSaving(false)
-      return setErreur(MESSAGES_SUPPRESSION[code] || 'Erreur : ' + error.message)
+      return setErreur(MESSAGES_SUPPRESSION[code] || 'Erreur : ' + (code || error.message))
     }
     await supabase.auth.signOut()
     navigate('/connexion')
