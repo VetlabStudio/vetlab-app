@@ -106,7 +106,8 @@ export default function EquipeGestion() {
   const [erreurTransfert, setErreurTransfert] = useState('')
   const [transfertEnAttente, setTransfertEnAttente] = useState(null)
   const location = useLocation()
-  const [aideTransfert, setAideTransfert] = useState(Boolean(location.state?.aideTransfert))
+  const [aideTransfert] = useState(Boolean(location.state?.aideTransfert))
+  const sectionPropriete = useRef(null)
 
   const [editNomClinique, setEditNomClinique] = useState(false)
   const [nouveauNomClinique, setNouveauNomClinique] = useState('')
@@ -119,6 +120,11 @@ export default function EquipeGestion() {
     charger()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamId])
+
+  // Arrivée depuis la suppression du compte : on amène directement à la section.
+  useEffect(() => {
+    if (aideTransfert && !loading) sectionPropriete.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [aideTransfert, loading])
 
   useEffect(() => {
     if (!message) return
@@ -402,6 +408,12 @@ export default function EquipeGestion() {
     signaler('succes', `Demande envoyée à ${nom}. Le transfert se fera dès que ${nom} aura entré sa carte de crédit.`)
   }
 
+  function fermerTransfert() {
+    setShowTransfertModal(false)
+    setCibleTransfert(null)
+    setErreurTransfert('')
+  }
+
   async function annulerTransfert() {
     const { error } = await supabase.functions.invoke('transferer-propriete', {
       body: { action: 'annuler', equipe_id: teamId },
@@ -484,30 +496,6 @@ export default function EquipeGestion() {
         </span>
         <span className="equipe-bandeau-nom">{equipe?.nom || 'Clinique'}</span>
       </div>
-
-      {/* ═══ AIDE AU TRANSFERT (depuis la suppression du compte) ═══ */}
-      {estProprietaire && aideTransfert && !transfertEnAttente && (
-        <div className="equipe-avertissement">
-          <span className="equipe-carte-titre">Transférer la clinique</span>
-          <p>
-            Sélectionnez la personne qui deviendra propriétaire dans la liste, puis choisissez « Transférer la propriété ». Une fois
-            le transfert terminé, vous pourrez supprimer votre compte sans toucher aux données de la clinique.
-          </p>
-          <button className="equipe-lien" onClick={() => setAideTransfert(false)}>Compris</button>
-        </div>
-      )}
-
-      {/* ═══ TRANSFERT EN ATTENTE ═══ */}
-      {estProprietaire && transfertEnAttente && (
-        <div className="equipe-avertissement">
-          <span className="equipe-carte-titre">Transfert en attente</span>
-          <p>
-            Demande envoyée à {membres.find(m => m.user_id === transfertEnAttente.cible_id)?.profiles?.nom || 'un membre'}.
-            Le transfert se fera dès que cette personne aura entré sa carte. La demande expire le {formaterDateLongue(finTransfert(transfertEnAttente))}.
-          </p>
-          <button className="equipe-lien danger" onClick={annulerTransfert}>Annuler la demande</button>
-        </div>
-      )}
 
       {/* ═══ SIÈGES ═══ */}
       {equipe?.max_membres && (
@@ -727,6 +715,50 @@ export default function EquipeGestion() {
         </button>
       )}
 
+      {/* ═══ PROPRIÉTÉ DE LA CLINIQUE ═══ */}
+      {estProprietaire && (
+        <div ref={sectionPropriete} className="equipe-carte" style={{ marginTop: 10 }}>
+          <span className="equipe-carte-titre">Propriété de la clinique</span>
+          <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0 }}>
+            Propriétaire : <strong>vous</strong>
+          </p>
+
+          {aideTransfert && !transfertEnAttente && (
+            <div className="equipe-avertissement">
+              <p>
+                Pour supprimer votre compte sans toucher aux données de la clinique, transférez
+                d'abord la propriété à un membre de l'équipe.
+              </p>
+            </div>
+          )}
+
+          {transfertEnAttente ? (
+            <div className="equipe-avertissement">
+              <span className="equipe-carte-titre">Transfert en attente</span>
+              <p>
+                {membres.find(m => m.user_id === transfertEnAttente.cible_id)?.profiles?.nom || 'Le membre choisi'} doit
+                accepter et entrer sa carte de crédit. La demande expire le {formaterDateLongue(finTransfert(transfertEnAttente))}.
+              </p>
+              <button className="equipe-lien danger" onClick={annulerTransfert}>Annuler la demande</button>
+            </div>
+          ) : membres.some(m => m.user_id !== userId) ? (
+            <>
+              <p className="equipe-aide" style={{ margin: 0 }}>
+                La personne choisie entrera sa propre carte : l'abonnement passera à son nom et le
+                vôtre s'arrêtera à la fin de la période déjà payée. Vous resterez dans l'équipe comme admin.
+              </p>
+              <button className="equipe-btn-secondaire" onClick={() => setShowTransfertModal(true)}>
+                <i className="ti ti-arrows-exchange"></i> Transférer la propriété
+              </button>
+            </>
+          ) : (
+            <p className="equipe-aide" style={{ margin: 0 }}>
+              Pour transférer la propriété, invitez d'abord la personne qui deviendra propriétaire.
+            </p>
+          )}
+        </div>
+      )}
+
       {/* ═══ POPUP GESTION D'UN MEMBRE ═══ */}
       {membreGere && (
         <div className="popup-overlay" onClick={() => setMembreGere(null)}>
@@ -754,15 +786,6 @@ export default function EquipeGestion() {
                   </button>
                 </div>
               </div>
-
-              {estProprietaire && (
-                <button
-                  className="equipe-btn-secondaire"
-                  onClick={() => { setCibleTransfert(membreGere); setShowTransfertModal(true) }}
-                >
-                  <i className="ti ti-arrows-exchange"></i> Transférer la propriété
-                </button>
-              )}
 
               <button className="equipe-btn-danger" onClick={() => setConfirmRevoquer(membreGere)}>
                 <i className="ti ti-user-x"></i> Révoquer l'accès
@@ -869,48 +892,75 @@ export default function EquipeGestion() {
       )}
 
       {/* ═══ POPUP TRANSFERT ═══ */}
-      {showTransfertModal && cibleTransfert && (
-        <div className="popup-overlay" onClick={() => { if (!transfertEnCours) { setShowTransfertModal(false); setCibleTransfert(null); setErreurTransfert('') } }}>
+      {showTransfertModal && (
+        <div className="popup-overlay" onClick={() => { if (!transfertEnCours) fermerTransfert() }}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
               <span>Transférer la propriété</span>
-              <button className="popup-close" onClick={() => { setShowTransfertModal(false); setCibleTransfert(null); setErreurTransfert('') }} disabled={transfertEnCours}>✕</button>
+              <button className="popup-close" onClick={fermerTransfert} disabled={transfertEnCours}>✕</button>
             </div>
 
-            <div className="equipe-gestion">
-              <div className="equipe-centre">
-                <i className="ti ti-arrows-exchange equipe-icone-grande"></i>
-                <p className="equipe-centre-titre">Transférer à {cibleTransfert.profiles?.nom}?</p>
-                <p className="equipe-aide">
-                  {cibleTransfert.profiles?.nom} recevra une demande par courriel et dans l'application.
-                  Elle expire dans 7 jours.
-                </p>
-              </div>
-
-              <div className="equipe-avertissement">
-                <span className="equipe-carte-titre">Facturation</span>
-                <p>
-                  Le transfert se fera seulement quand {cibleTransfert.profiles?.nom} aura entré sa propre
-                  carte de crédit. L'abonnement de la clinique passera alors à son nom, et le vôtre
-                  s'arrêtera à la fin de la période déjà payée, sans autre prélèvement. Vous deviendrez admin.
-                </p>
-              </div>
-
-              {erreurTransfert && (
-                <div className="equipe-message erreur">
-                  <i className="ti ti-alert-circle"></i><span>{erreurTransfert}</span>
+            {!cibleTransfert ? (
+              <div className="equipe-gestion">
+                <p className="equipe-aide" style={{ margin: 0 }}>Qui deviendra propriétaire de la clinique ?</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {membres.filter(m => m.user_id !== userId).map(m => (
+                    <button
+                      key={m.user_id}
+                      className="equipe-membre"
+                      onClick={() => setCibleTransfert(m)}
+                      style={{ width: '100%', textAlign: 'left', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}
+                    >
+                      <div className="equipe-membre-avatar">
+                        {m.profiles?.avatar_url
+                          ? <img src={m.profiles.avatar_url} alt="" />
+                          : (m.profiles?.nom || '?').trim().charAt(0).toUpperCase()}
+                      </div>
+                      <div className="equipe-membre-textes">
+                        <span className="equipe-membre-nom">{m.profiles?.nom || 'Sans nom'}</span>
+                        {m.profiles?.email && <span className="equipe-membre-mail">{m.profiles.email}</span>}
+                      </div>
+                      <i className="ti ti-chevron-right" style={{ marginLeft: 'auto', color: 'var(--text-hint)' }}></i>
+                    </button>
+                  ))}
                 </div>
-              )}
-
-              <div className="popup-actions-centrees">
-                <button className="equipe-btn-secondaire" style={{ flex: 1 }} onClick={() => { setShowTransfertModal(false); setCibleTransfert(null); setErreurTransfert('') }} disabled={transfertEnCours}>
-                  Annuler
-                </button>
-                <button className="equipe-btn-primaire" style={{ flex: 1 }} onClick={effectuerTransfert} disabled={transfertEnCours}>
-                  {transfertEnCours ? 'Envoi...' : 'Envoyer la demande'}
-                </button>
               </div>
-            </div>
+            ) : (
+              <div className="equipe-gestion">
+                <div className="equipe-centre">
+                  <i className="ti ti-arrows-exchange equipe-icone-grande"></i>
+                  <p className="equipe-centre-titre">Transférer à {cibleTransfert.profiles?.nom}?</p>
+                  <p className="equipe-aide">
+                    {cibleTransfert.profiles?.nom} recevra une demande par courriel et dans l'application.
+                    Elle expire dans 7 jours.
+                  </p>
+                </div>
+
+                <div className="equipe-avertissement">
+                  <span className="equipe-carte-titre">Facturation</span>
+                  <p>
+                    Le transfert se fera seulement quand {cibleTransfert.profiles?.nom} aura entré sa propre
+                    carte de crédit. L'abonnement de la clinique passera alors à son nom, et le vôtre
+                    s'arrêtera à la fin de la période déjà payée, sans autre prélèvement. Vous deviendrez admin.
+                  </p>
+                </div>
+
+                {erreurTransfert && (
+                  <div className="equipe-message erreur">
+                    <i className="ti ti-alert-circle"></i><span>{erreurTransfert}</span>
+                  </div>
+                )}
+
+                <div className="popup-actions-centrees">
+                  <button className="equipe-btn-secondaire" style={{ flex: 1 }} onClick={() => { setCibleTransfert(null); setErreurTransfert('') }} disabled={transfertEnCours}>
+                    Retour
+                  </button>
+                  <button className="equipe-btn-primaire" style={{ flex: 1 }} onClick={effectuerTransfert} disabled={transfertEnCours}>
+                    {transfertEnCours ? 'Envoi...' : 'Envoyer la demande'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

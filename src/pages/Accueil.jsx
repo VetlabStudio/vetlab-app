@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import BadgePro from '../components/BadgePro'
 import PopupPro from '../components/PopupPro'
+import ModalInstallation from '../components/ModalInstallation'
 import { useProfil } from '../context/ProfilContext'
 
 function ClocheMiniAccueil() {
@@ -185,6 +186,7 @@ export default function Accueil() {
 
       <div style={{ height: 32 }} />
       {showProMsg && <PopupPro onClose={() => setShowProMsg(false)} />}
+      <ModalInstallation />
     </div>
   )
 }

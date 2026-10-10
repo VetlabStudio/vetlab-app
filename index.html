@@ -9,6 +9,10 @@
     <link rel="manifest" href="/manifest.json" />
 <meta name="theme-color" content="#BCAADC" />
 <link rel="apple-touch-icon" href="/icon-192.png" />
+    <script>
+      // Chrome envoie l'invitation d'installation au chargement, avant que React soit prêt.
+      window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__adjuvetInstall = e; });
+    </script>
   </head>
   <body>
     <div id="root"></div>
