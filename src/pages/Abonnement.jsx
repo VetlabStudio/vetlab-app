@@ -8,7 +8,7 @@ import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 const PRICE_MONTHLY = import.meta.env.VITE_STRIPE_PRICE_MONTHLY
 const PRICE_ANNUAL = import.meta.env.VITE_STRIPE_PRICE_ANNUAL
-const PRICE_EQUIPE = 'price_1TqBCwGqH2jbhVzIiUeTmlSW'
+const PRICE_EQUIPE = import.meta.env.VITE_STRIPE_PRICE_EQUIPE
 
 const TIERS_EQUIPE = [
   { min: 1,  max: 5,    prix: 49 },
@@ -78,7 +78,7 @@ function DividerFeatures() {
 export default function Abonnement() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { profil, estPro, estEquipe, teamId, chargerProfil } = useProfil()
+  const { profil, estPro, estEquipe, roleEquipe, teamId, chargerProfil } = useProfil()
 
   const [onglet, setOnglet] = useState('personnel')
   const [periode, setPeriode] = useState('annuel')
@@ -201,10 +201,13 @@ export default function Abonnement() {
           body: JSON.stringify({ priceId, quantity }),
         }
       )
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Erreur de connexion')
-      setClientSecret(data.clientSecret)
-      setModalCheckout(true)
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        setErreur(data.error || "Impossible d'ouvrir le formulaire de paiement. Réessaie.")
+      } else {
+        setClientSecret(data.clientSecret)
+        setModalCheckout(true)
+      }
     } catch {
       setErreur("Impossible d'ouvrir le formulaire de paiement. Réessaie.")
     }
@@ -440,13 +443,19 @@ export default function Abonnement() {
                   {subDetails.quantity} siège{subDetails.quantity > 1 ? 's' : ''} inclus — {calculerPrixEquipe(subDetails.quantity)} $ / année
                 </p>
               )}
-              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <button className="profil-portal-btn" style={{ flex: 1 }}
-                  onClick={() => setModalSieges(true)}>
-                  <i className="ti ti-users-plus"></i>
-                  Modifier les sièges
-                </button>
-              </div>
+              {roleEquipe === 'proprietaire' ? (
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  <button className="profil-portal-btn" style={{ flex: 1 }}
+                    onClick={() => setModalSieges(true)}>
+                    <i className="ti ti-users-plus"></i>
+                    Modifier les sièges
+                  </button>
+                </div>
+              ) : (
+                <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>
+                  Les sièges sont gérés par le propriétaire de la clinique.
+                </p>
+              )}
             </>
           ) : estPro ? (
             <>
