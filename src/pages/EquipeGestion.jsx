@@ -356,14 +356,7 @@ export default function EquipeGestion() {
       setConfirmRevoquer(null)
       return
     }
-    const { error: erreurProfil } = await supabase.from('profiles')
-      .update({ plan: 'free', equipe_id: null, role: null })
-      .eq('id', membre.user_id)
-    if (erreurProfil) {
-      signaler('erreur', "Accès révoqué, mais le forfait du membre n'a pas pu être rétrogradé.")
-    } else {
-      signaler('succes', 'Accès révoqué.')
-    }
+    signaler('succes', 'Accès révoqué.')
     setMembres(prev => prev.filter(m => m.id !== membre.id))
     setConfirmRevoquer(null)
     setMembreGere(null)

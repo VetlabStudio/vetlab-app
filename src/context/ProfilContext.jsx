@@ -78,7 +78,7 @@ export function ProfilProvider({ children }) {
       // Profil vraiment absent - création initiale seulement
       const { data: nouveauProfil } = await supabase
         .from('profiles')
-        .insert({ id: user.id, plan: 'free', email: user.email })
+        .insert({ id: user.id, email: user.email })
         .select('*')
         .single()
       profilData = nouveauProfil
