@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate, Link } from 'react-router-dom'
+import PopupTexteLegal from '../components/PopupTexteLegal'
+import { CONDITIONS_COMPLETES_SECTIONS, CONFIDENTIALITE_SECTIONS } from '../data/textesLegaux'
 
 const CGU_PAGES = [
   {
@@ -45,7 +47,19 @@ const CGU_PAGES = [
   },
 ]
 
+const TEXTES_LEGAUX = {
+  conditions: { titre: "Conditions d'utilisation", sections: CONDITIONS_COMPLETES_SECTIONS },
+  confidentialite: { titre: 'Politique de confidentialité', sections: CONFIDENTIALITE_SECTIONS },
+}
+
+const FORMAT_COURRIEL = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i
+
 const MSG_COMPTE_EXISTANT = 'Un compte existe déjà avec ce courriel. Connectez-vous plutôt.'
+
+const LIEN_STYLE = {
+  background: 'none', border: 'none', padding: 0, font: 'inherit',
+  color: 'inherit', fontWeight: 600, textDecoration: 'underline', cursor: 'pointer',
+}
 
 export default function Inscription() {
   const [nom, setNom] = useState('')
@@ -58,6 +72,7 @@ export default function Inscription() {
   // 'form' ou l'index de la page CGU affichée
   const [vue, setVue] = useState('form')
   const [transition, setTransition] = useState(null)
+  const [texteLegal, setTexteLegal] = useState(null)
   const [voirMdp, setVoirMdp] = useState(false)
   const [voirConfirm, setVoirConfirm] = useState(false)
   const [logoSrc] = useState(() => `/adjuvet-logo-anime.svg?v=${Date.now()}`)
@@ -73,6 +88,18 @@ export default function Inscription() {
   const handleInscription = async (e) => {
     e.preventDefault()
     setErreur(null)
+    if (!nom.trim()) {
+      setErreur('Veuillez entrer votre nom.')
+      return
+    }
+    if (!FORMAT_COURRIEL.test(email.trim())) {
+      setErreur('Format de courriel invalide (ex. nom@domaine.com).')
+      return
+    }
+    if (motDePasse.length < 6) {
+      setErreur('Le mot de passe doit contenir au moins 6 caractères.')
+      return
+    }
     if (motDePasse !== confirmation) {
       setErreur('Les mots de passe ne correspondent pas.')
       return
@@ -96,7 +123,7 @@ export default function Inscription() {
   }
 
   const handleSwipeEnd = (e) => {
-    if (touchStartX.current === null || vue === 'form') return
+    if (touchStartX.current === null || vue === 'form' || texteLegal) return
     const delta = e.changedTouches[0].clientX - touchStartX.current
     touchStartX.current = null
     if (delta < -50 && vue < CGU_PAGES.length - 1) {
@@ -162,6 +189,14 @@ export default function Inscription() {
             ))}
           </div>
           {estDernier && (
+            <p style={{ fontSize: 14, color: '#213058', textAlign: 'center', lineHeight: 1.5, margin: '0 0 12px' }}>
+              Lire les{' '}
+              <button type="button" style={LIEN_STYLE} onClick={() => setTexteLegal('conditions')}>conditions complètes</button>
+              {' '}et la{' '}
+              <button type="button" style={LIEN_STYLE} onClick={() => setTexteLegal('confidentialite')}>politique de confidentialité</button>
+            </p>
+          )}
+          {estDernier && (
             <button className="cgu-btn" onClick={handleAccepter} disabled={chargement}>
               {chargement ? 'Création...' : "J'accepte"}
             </button>
@@ -194,7 +229,7 @@ export default function Inscription() {
 
         <p className="auth2-section-titre">Créer un compte</p>
 
-        <form onSubmit={handleInscription} className="auth2-form">
+        <form onSubmit={handleInscription} className="auth2-form" noValidate>
           <input
             type="text"
             className="auth2-input"
@@ -238,7 +273,7 @@ export default function Inscription() {
               <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`}></i>
             </button>
           </div>
-          {erreur && <p className="erreur" style={{ textAlign: 'center' }}>{erreur}</p>}
+          {erreur && <p className="erreur" style={{ textAlign: 'center', color: '#FFFFFF' }}>{erreur}</p>}
           <button type="submit" className="auth2-btn" disabled={chargement}>
             {chargement ? 'Vérification...' : 'Créer mon compte'}
           </button>
@@ -279,6 +314,13 @@ export default function Inscription() {
       >
         {renderVue(vue)}
       </div>
+      {texteLegal && (
+        <PopupTexteLegal
+          titre={TEXTES_LEGAUX[texteLegal].titre}
+          sections={TEXTES_LEGAUX[texteLegal].sections}
+          onFermer={() => setTexteLegal(null)}
+        />
+      )}
     </div>
   )
 }
