@@ -108,8 +108,17 @@ export default function Pharmacologie() {
         ))}
       </div>
 
-      <button className="btn-fab" onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}>
-        {estPro ? '+' : <i className="ti ti-lock" style={{ fontSize: 20 }}></i>}
+      <button
+        className="btn-fab"
+        aria-label={estPro ? 'Ajouter un médicament' : 'Ajouter un médicament (fonctionnalité Pro)'}
+        onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}
+      >
+        +
+        {!estPro && (
+          <span aria-hidden="true" style={{ position: 'absolute', top: -3, right: -3, width: 22, height: 22, borderRadius: '50%', background: 'var(--primary)', color: '#fff', border: '2px solid var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <i className="ti ti-lock" style={{ fontSize: 12 }}></i>
+          </span>
+        )}
       </button>
 
       {showProMsg && <PopupPro onClose={() => setShowProMsg(false)} />}

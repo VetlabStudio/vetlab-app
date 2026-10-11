@@ -25,6 +25,7 @@
   --accent-mauve:   #BCAADC;
   --accent-red:     #c16c75;
   --accent-light:   #ebe8f7;
+  --accent-gold:    #A87228;
   --primary:        #213058;
   --primary-light:  #BBE6D5;
   --yellow:         #F8F6B8;
@@ -8867,6 +8868,336 @@ input[type="number"] {
 
 .abonnement-btn-abonner:hover:not(:disabled) {
   opacity: 0.9;
+}
+
+/* ─── ABONNEMENT : PRÉSENTATION DES FORFAITS ─── */
+
+.abo-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+  padding: 30px 20px 22px;
+  text-align: center;
+  background: var(--bg-card);
+  border: 2px solid var(--accent-gold);
+  border-radius: var(--radius-lg);
+}
+
+.abo-hero--equipe {
+  border-color: var(--primary);
+}
+
+.abo-ruban {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-gold);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.abo-hero--equipe .abo-ruban {
+  background: var(--primary);
+}
+
+.abo-hero-icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(215, 163, 92, 0.18);
+  color: var(--accent-gold);
+  font-size: 26px;
+}
+
+.abo-hero--equipe .abo-hero-icone {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.abo-hero-titre {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-wrap: balance;
+}
+
+.abo-hero-sous {
+  margin: -6px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-hint);
+}
+
+.abo-periode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  width: 100%;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-secondary);
+}
+
+.abo-periode button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 8px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-hint);
+  cursor: pointer;
+}
+
+.abo-periode button.actif {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: 0 1px 4px rgba(33, 48, 88, 0.12);
+}
+
+.abo-periode-eco {
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-gold);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.abo-prix {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+}
+
+.abo-prix-montant {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.abo-prix-unite {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-hint);
+}
+
+.abo-prix-detail {
+  margin: -8px 0 0;
+  font-size: 13px;
+  color: var(--text-hint);
+}
+
+.abo-prix-detail strong {
+  color: var(--accent-gold);
+}
+
+.abo-hero--equipe .abo-prix-detail strong {
+  color: var(--primary);
+}
+
+.abo-avantages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.abo-avantages li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.abo-avantage-icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--primary);
+  font-size: 17px;
+}
+
+.abo-avantage-titre {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.abo-avantage-texte {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-hint);
+}
+
+.abonnement-btn-abonner.abo-cta {
+  margin-top: 4px;
+}
+
+.abo-rassurance {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--text-hint);
+}
+
+.abo-rassurance span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.abo-badge-actuel {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-secondary);
+  color: var(--text-hint);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.abo-gratuit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+}
+
+.abo-gratuit-titre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.abo-gratuit-texte {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-hint);
+}
+
+.abo-sieges {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.abo-sieges-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-hint);
+}
+
+.abo-sieges-controle {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.abo-sieges-controle button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg-card);
+  font-size: 22px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.abo-sieges-controle button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.abo-sieges-nombre {
+  min-width: 48px;
+  font-size: 30px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.abo-paliers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+
+.abo-palier {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 4px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-size: 11.5px;
+  color: var(--text-hint);
+}
+
+.abo-palier strong {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.abo-palier.actif {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
 /* ─── DESKTOP ─────────────────────────────────── */
