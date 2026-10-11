@@ -25,8 +25,9 @@ const norm = (e?: string | null) => (e || '').trim().toLowerCase()
 
 /* Annule l'abonnement Pro de la personne qui rejoint l'équipe.
 
-   En fin de période : aucune refacturation, aucun jour perdu,
-   aucun remboursement au prorata à traiter.
+   Tout de suite, avec remboursement au prorata de la portion non
+   utilisée : quelqu'un qui paie un an de Pro et rejoint une clinique
+   après un mois ne doit pas avoir payé onze mois pour rien.
 
    En excluant le prix Équipe : sans ce garde-fou, quelqu'un qui
    possède déjà une clinique verrait l'abonnement de toute son
@@ -43,14 +44,14 @@ async function annulerAbonnementPro(authHeader: string, userId: string) {
     const res = await fetch(url, {
       method: 'POST',
       headers: { Authorization: authHeader, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ aFinDePeriode: true, exclureEquipe: true }),
+      body: JSON.stringify({ rembourserProrata: true, exclureEquipe: true }),
     })
     const corps = await res.json().catch(() => ({}))
     if (!res.ok || corps?.ok === false) {
       console.error(`FACTURATION À VÉRIFIER: l'abonnement de ${userId} n'a pas pu être annulé.`, corps)
       return
     }
-    console.log(`accept-invitation: ${corps?.annules ?? 0} abonnement(s) programmés en fin de période pour ${userId}`)
+    console.log(`accept-invitation: ${corps?.annules ?? 0} abonnement(s) annulé(s), ${(corps?.rembourse ?? 0) / 100} $ remboursés au prorata pour ${userId}`)
   } catch (err) {
     console.error(`FACTURATION À VÉRIFIER: l'abonnement de ${userId} n'a pas pu être annulé.`, err)
   }

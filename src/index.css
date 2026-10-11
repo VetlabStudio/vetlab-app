@@ -446,6 +446,31 @@ input {
   filter: brightness(0) invert(1);
 }
 
+.bottom-nav-v2-icone-zone {
+  position: relative;
+  display: inline-flex;
+}
+
+/* Notifications non lues sur l'onglet Équipe */
+.bottom-nav-v2-pastille {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-red);
+  border: 2px solid var(--primary);
+  box-sizing: border-box;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  white-space: nowrap;
+}
+
 /* ===========================
    PAGE TRANSITIONS
    =========================== */
@@ -9799,6 +9824,216 @@ input[type="number"] {
   font-size: 18px;
   flex-shrink: 0;
   margin-top: 1px;
+}
+
+/* ─── CENTRE D'AIDE ─────────────────────────────────────── */
+.aide-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 16px 100px;
+}
+
+.aide-recherche {
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.aide-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aide-section-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-family: var(--font);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.aide-section-icone {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+  color: var(--primary);
+}
+
+.aide-section-titre {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.aide-section-compte {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-hint);
+}
+
+.aide-section-entete > .ti-chevron-up,
+.aide-section-entete > .ti-chevron-down {
+  color: var(--text-hint);
+}
+
+.aide-resultats-titre {
+  margin: 8px 4px 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-hint);
+}
+
+.aide-fiches {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 12px;
+}
+
+.aide-fiche {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.aide-fiche.ouverte {
+  border-color: var(--primary);
+}
+
+.aide-fiche-titre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.aide-fiche-titre > span:first-child {
+  flex: 1;
+}
+
+.aide-fiche-titre > .ti {
+  color: var(--text-hint);
+  flex-shrink: 0;
+}
+
+.aide-etiquette {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.aide-etiquette.pro {
+  background: rgba(148, 100, 31, 0.12);
+  color: var(--accent-gold);
+}
+
+.aide-etiquette.equipe {
+  background: var(--accent-light);
+  color: var(--primary);
+}
+
+.aide-fiche-corps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 14px 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-primary);
+}
+
+.aide-fiche-corps p {
+  margin: 0;
+}
+
+.aide-fiche-corps ol {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.aide-fiche-lien {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+
+.aide-vide {
+  margin: 24px 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--text-hint);
+}
+
+.aide-contact {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--accent-light);
+  text-align: center;
+}
+
+.aide-contact h2 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.aide-contact p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.aide-contact-lien {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
 }
 
 /* Force du mot de passe (inscription, profil, invitation) */

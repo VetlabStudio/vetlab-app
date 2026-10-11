@@ -70,7 +70,7 @@ export const CONFIDENTIALITE_SECTIONS = [
     titre: 'Vos droits',
     icone: 'ti-user-check',
     paragraphes: [
-      'Vous pouvez modifier ou supprimer votre compte et vos données à tout moment depuis la page Profil. Pour toute question, écrivez-nous à info@vetlabstudio.ca.',
+      'Vous pouvez modifier ou supprimer votre compte et vos données à tout moment depuis la page Profil. Pour toute question, écrivez-nous à confidentialite@vetlabstudio.ca.',
     ],
   },
   {
@@ -78,7 +78,7 @@ export const CONFIDENTIALITE_SECTIONS = [
     icone: 'ti-id-badge',
     paragraphes: [
       'Conformément à la Loi sur la protection des renseignements personnels dans le secteur privé du Québec (Loi 25), VetLab Studio a désigné une personne responsable de la protection des renseignements personnels.',
-      'Pour une question, une demande d\'accès ou de correction, une plainte, ou pour signaler un incident de confidentialité, écrivez à : Responsable de la protection des renseignements personnels, VetLab Studio, info@vetlabstudio.ca.',
+      'Pour une question, une demande d\'accès ou de correction, une plainte, ou pour signaler un incident de confidentialité, écrivez à : Responsable de la protection des renseignements personnels, VetLab Studio, confidentialite@vetlabstudio.ca.',
     ],
   },
   {
@@ -163,7 +163,7 @@ export const CONDITIONS_COMPLETES_SECTIONS = [
     ],
     liste: [
       'Annulation : vous pouvez annuler à tout moment depuis la page Abonnement. Vous gardez l\'accès jusqu\'à la fin de la période déjà payée, puis votre compte passe au forfait gratuit.',
-      'Remboursement : aucun remboursement n\'est offert pour une période partiellement utilisée.',
+      'Remboursement : aucun remboursement n\'est offert pour une période partiellement utilisée, sauf dans le cas prévu à la section Forfait Équipe (abonnement Pro remplacé par l\'adhésion à une clinique).',
       'Paiement refusé : si un renouvellement échoue, de nouvelles tentatives sont faites automatiquement pendant quelques jours. Si vous avez déjà payé votre abonnement, vous gardez l\'accès pendant ces tentatives, pour un maximum de 21 jours. Sinon, l\'accès est suspendu jusqu\'à ce que le paiement passe. Si le paiement n\'aboutit pas, l\'abonnement est annulé.',
       'Essais gratuits et codes promotionnels : ils peuvent être offerts à certaines conditions. À la fin d\'un essai, l\'abonnement devient payant, sauf s\'il est annulé avant.',
       'Changement de tarif : VetLab Studio peut modifier ses tarifs. Un changement s\'applique au renouvellement suivant et vous est communiqué à l\'avance.',
@@ -179,7 +179,7 @@ export const CONDITIONS_COMPLETES_SECTIONS = [
       'Le propriétaire de la clinique paie l\'abonnement et choisit le nombre de sièges. Les membres n\'ont aucuns frais.',
       'Le propriétaire et les admins invitent et retirent les membres. Une invitation expire après 7 jours.',
       'Un membre peut quitter l\'équipe à tout moment depuis la page Abonnement. Il repasse alors au forfait gratuit.',
-      'Une personne qui a un abonnement Pro et rejoint une clinique voit son abonnement Pro s\'arrêter à la fin de la période déjà payée.',
+      'Une personne qui a un abonnement Pro et rejoint une clinique voit son abonnement Pro annulé. La portion non utilisée lui est remboursée au prorata, sur le moyen de paiement d\'origine.',
       'Transfert de propriété : le nouveau propriétaire doit accepter et entrer sa propre carte. L\'abonnement de l\'ancien propriétaire s\'arrête à la fin de la période déjà payée, et celui-ci reste dans l\'équipe comme admin. Une demande de transfert expire après 7 jours.',
       'Si l\'abonnement Équipe prend fin, tous les membres repassent au forfait gratuit. Les données de la clinique sont conservées et redeviennent accessibles si l\'abonnement est réactivé.',
       'Les données partagées appartiennent à la clinique : un membre qui quitte l\'équipe n\'y a plus accès.',

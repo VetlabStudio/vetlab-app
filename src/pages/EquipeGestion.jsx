@@ -88,7 +88,6 @@ export default function EquipeGestion() {
   const [message, setMessage] = useState(null) // { type, texte }
   const [recherche, setRecherche] = useState('')
   const [reglagesOuverts, setReglagesOuverts] = useState(false)
-  const [portalLoading, setPortalLoading] = useState(false)
 
   const [emailsInput, setEmailsInput] = useState('')
   const [roleInvit, setRoleInvit] = useState('membre')
@@ -212,27 +211,6 @@ export default function EquipeGestion() {
     } finally {
       setEnvoiLogo(false)
     }
-  }
-
-  /* ─── PORTAIL STRIPE ─────────────────────────────────── */
-  async function ouvrirPortail() {
-    setPortalLoading(true)
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const response = await fetch(
-        'https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/create-portal-session',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
-        }
-      )
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Erreur')
-      window.location.href = data.url
-    } catch {
-      signaler('erreur', "Impossible d'ouvrir le portail de facturation.")
-    }
-    setPortalLoading(false)
   }
 
   /* ─── NOM DE LA CLINIQUE ──────────────────────────────── */
@@ -701,19 +679,6 @@ export default function EquipeGestion() {
           </div>
         )}
       </div>
-
-      {/* ═══ FACTURATION ═══ */}
-      {estProprietaire && (
-        <button
-          className="equipe-btn-secondaire"
-          style={{ marginTop: 10 }}
-          onClick={ouvrirPortail}
-          disabled={portalLoading}
-        >
-          <i className="ti ti-credit-card"></i>
-          {portalLoading ? 'Chargement...' : 'Gérer la facturation'}
-        </button>
-      )}
 
       {/* ═══ PROPRIÉTÉ DE LA CLINIQUE ═══ */}
       {estProprietaire && (
