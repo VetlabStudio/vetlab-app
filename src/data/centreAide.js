@@ -29,7 +29,7 @@ export const SECTIONS_AIDE = [
       },
       {
         titre: "Se déplacer dans l'app",
-        texte: "La barre du bas donne accès à l'essentiel : Accueil, Calcul rapide, Médicaments favoris, Notes (ou Équipe avec le forfait Équipe) et Plus. Le bouton en haut à gauche ramène à la page précédente.",
+        texte: "La barre du bas donne accès à l'essentiel : Accueil, Calcul rapide, Notes, Équipe (avec le forfait Équipe) et Plus. Le bouton en haut à gauche ramène à la page précédente.",
         etapes: [
           "Accueil : tous les calculateurs et les sections de référence.",
           'Plus : votre profil, votre abonnement, cette aide et les textes légaux.',
@@ -50,7 +50,7 @@ export const SECTIONS_AIDE = [
         etapes: [
           "Ouvrez la fiche du médicament.",
           "Appuyez sur l'étoile en haut de la fiche.",
-          'Retrouvez vos favoris dans « Médicaments favoris », dans la barre du bas.',
+          'Retrouvez vos favoris avec le bouton « Mes médicaments favoris », en haut de la page Pharmacologie et de Calcul rapide.',
         ],
       },
       {
@@ -243,7 +243,7 @@ export const SECTIONS_AIDE = [
       {
         titre: "Ouvrir la gestion de l'équipe",
         equipe: true,
-        texte: "Allez dans Plus > Abonnement, puis appuyez sur « Gérer l'équipe ». Cette page est réservée au propriétaire et aux admins.",
+        texte: "Sur la page Équipe, appuyez sur « Gérer l'équipe », en haut à droite à côté de l'onglet Tâches. Ce bouton est réservé au propriétaire et aux admins.",
         lien: { route: '/equipe/gestion', label: "Ouvrir la gestion de l'équipe" },
       },
       {
@@ -343,12 +343,12 @@ export const SECTIONS_AIDE = [
       },
       {
         titre: 'Notes personnelles',
-        texte: "Vos notes sont visibles par vous seulement, même avec le forfait Équipe. Avec le forfait Équipe, elles se trouvent dans l'onglet « Notes perso » de la page Équipe.",
+        texte: "Vos notes sont visibles par vous seulement, même avec le forfait Équipe. Elles se trouvent dans l'onglet Notes de la barre du bas.",
         lien: { route: '/notes', label: 'Ouvrir les notes' },
       },
       {
         titre: 'Renseignements sur les clients',
-        texte: "Par sécurité, n'inscrivez pas de renseignements personnels sur les clients (nom, téléphone, adresse) dans les notes, le babillard ou les tâches. Utilisez plutôt le nom de l'animal ou un numéro de dossier.",
+        texte: "Par sécurité, n'inscrivez pas de données personnelles de vos clients (nom, téléphone, adresse) dans les notes, le babillard ou les tâches. Utilisez plutôt un numéro de dossier.",
       },
       {
         titre: "Quitter l'équipe",

@@ -47,7 +47,7 @@ function Fiche({ fiche, ouverte, onBasculer }) {
 export default function Aide() {
   const [recherche, setRecherche] = useState('')
   const [ouverte, setOuverte] = useState(null)
-  const [sectionOuverte, setSectionOuverte] = useState('demarrer')
+  const [sectionOuverte, setSectionOuverte] = useState('null')
 
   const resultats = useMemo(() => {
     const q = normaliser(recherche.trim())

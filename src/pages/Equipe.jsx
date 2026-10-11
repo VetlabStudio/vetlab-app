@@ -6,287 +6,11 @@ import AvisRenseignementsClients from '../components/AvisRenseignementsClients'
 
 const COULEURS = ['#F8F6B8', '#BBE6D5', '#BCAADC', '#B8D4F5', '#EDECE9', '#F5C9B8']
 
+// Les notes personnelles sont dans la barre du bas (onglet Notes).
 const SOUS_ONGLETS = [
-  { id: 'notes', label: 'Notes perso', icone: 'ti-notes' },
   { id: 'babillard', label: 'Babillard', icone: 'ti-messages' },
   { id: 'taches', label: 'Tâches', icone: 'ti-checklist' },
 ]
-
-// ─── POPUP FORMULAIRE NOTE (partagé) ─────────────────────
-function PopupNoteForm({ titre: titrePop, valeurs, setValeurs, onSauvegarder, onAnnuler, onSupprimer, labelBtn, saving, categories = [] }) {
-  const inputStyle = {
-    border: '1px solid var(--border)', borderRadius: 10, padding: '10px 12px',
-    fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-    outline: 'none', width: '100%', boxSizing: 'border-box',
-  }
-  return (
-    <div className="popup-overlay" onClick={onAnnuler}>
-      <div className="popup-card" onClick={e => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{titrePop}</p>
-          {onSupprimer && (
-            <button onClick={onSupprimer} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent-red)', fontSize: 18 }}>
-              <i className="ti ti-trash"></i>
-            </button>
-          )}
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <input placeholder="Titre (optionnel)" value={valeurs.titre} onChange={e => setValeurs(v => ({ ...v, titre: e.target.value }))} style={inputStyle} />
-          <textarea
-            placeholder="Contenu…"
-            value={valeurs.contenu}
-            onChange={e => setValeurs(v => ({ ...v, contenu: e.target.value }))}
-            rows={5}
-            style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
-          />
-          <input
-            placeholder="Catégorie (optionnel)"
-            value={valeurs.categorie}
-            onChange={e => setValeurs(v => ({ ...v, categorie: e.target.value }))}
-            style={inputStyle}
-            list="notes-perso-cats"
-          />
-          <datalist id="notes-perso-cats">
-            {categories.map(c => <option key={c} value={c} />)}
-          </datalist>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>Couleur :</span>
-            {COULEURS.map(c => (
-              <button key={c} onClick={() => setValeurs(v => ({ ...v, couleur: c }))} style={{
-                width: 24, height: 24, borderRadius: '50%', background: c, border: 'none', cursor: 'pointer',
-                outline: valeurs.couleur === c ? '2px solid var(--primary)' : 'none', outlineOffset: 2,
-              }} />
-            ))}
-          </div>
-        </div>
-        <div className="popup-actions-centrees" style={{ marginTop: 16 }}>
-          <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={onAnnuler}>Annuler</button>
-          <button
-            style={{
-              flex: 1, background: 'var(--primary)', color: '#fff', border: 'none',
-              borderRadius: 10, padding: '12px 0', fontSize: 14, fontWeight: 700,
-              cursor: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 'pointer' : 'not-allowed',
-              opacity: (valeurs.contenu.trim() || valeurs.titre.trim()) ? 1 : 0.5,
-            }}
-            onClick={onSauvegarder}
-            disabled={!valeurs.contenu.trim() && !valeurs.titre.trim() || saving}
-          >
-            {saving ? '...' : labelBtn}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── NOTES PERSO ─────────────────────────────────────────
-function NotesPerso() {
-  const [notes, setNotes] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [filtreCategorie, setFiltreCategorie] = useState('Toutes')
-  const [showForm, setShowForm] = useState(false)
-  const [noteActive, setNoteActive] = useState(null)
-  const [editForm, setEditForm] = useState(null)
-  const [confirmSupprimer, setConfirmSupprimer] = useState(null)
-  const [form, setForm] = useState({ titre: '', contenu: '', couleur: COULEURS[0], categorie: '' })
-  const [saving, setSaving] = useState(false)
-
-  useEffect(() => { chargerNotes() }, [])
-
-  async function chargerNotes() {
-    setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase.from('notes').select('*').eq('user_id', user.id).order('updated_at', { ascending: false })
-    setNotes(data || [])
-    setLoading(false)
-  }
-
-  async function creerNote() {
-    if (!form.contenu.trim() && !form.titre.trim()) return
-    setSaving(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase.from('notes').insert({
-      user_id: user.id,
-      titre: form.titre.trim() || null,
-      contenu: form.contenu.trim(),
-      couleur: form.couleur,
-      categorie: form.categorie.trim() || null,
-    }).select().single()
-    if (data) setNotes(prev => [data, ...prev])
-    setForm({ titre: '', contenu: '', couleur: COULEURS[0], categorie: '' })
-    setShowForm(false)
-    setSaving(false)
-  }
-
-  function ouvrirEdit(note) {
-    setNoteActive(note)
-    setEditForm(null)
-  }
-
-  function passerEnEdition(note) {
-    setEditForm({ titre: note.titre || '', contenu: note.contenu || '', couleur: note.couleur || COULEURS[0], categorie: note.categorie || '' })
-  }
-
-  async function sauvegarderEdit() {
-    setSaving(true)
-    await supabase.from('notes').update({
-      titre: editForm.titre.trim() || null,
-      contenu: editForm.contenu.trim(),
-      couleur: editForm.couleur,
-      categorie: editForm.categorie.trim() || null,
-      updated_at: new Date().toISOString(),
-    }).eq('id', noteActive.id)
-    setNotes(prev => prev.map(n => n.id === noteActive.id ? { ...n, ...editForm } : n))
-    setNoteActive(null)
-    setEditForm(null)
-    setSaving(false)
-  }
-
-  async function supprimerNote(id) {
-    await supabase.from('notes').delete().eq('id', id)
-    setNotes(prev => prev.filter(n => n.id !== id))
-    setConfirmSupprimer(null)
-    setNoteActive(null)
-    setEditForm(null)
-  }
-
-  const categories = ['Toutes', ...new Set(notes.map(n => n.categorie).filter(Boolean))]
-  const notesFiltrees = filtreCategorie === 'Toutes' ? notes : notes.filter(n => n.categorie === filtreCategorie)
-  const catsOptions = categories.filter(c => c !== 'Toutes')
-
-  return (
-    <div style={{ padding: '16px 16px 80px' }}>
-      <AvisRenseignementsClients />
-
-      {categories.length > 1 && (
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
-          {categories.map(c => (
-            <button key={c} onClick={() => setFiltreCategorie(c)} style={{
-              fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 999, cursor: 'pointer',
-              border: '1px solid var(--border)',
-              background: filtreCategorie === c ? 'var(--primary)' : 'var(--bg-card)',
-              color: filtreCategorie === c ? '#fff' : 'var(--text-secondary)',
-            }}>{c}</button>
-          ))}
-        </div>
-      )}
-
-      {loading && <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Chargement...</p>}
-
-      {!loading && notes.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '40px 0' }}>
-          <i className="ti ti-notes" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }}></i>
-          <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune note pour l'instant.</p>
-        </div>
-      )}
-
-      <div className="notes-grille" style={{ width: '100%' }}>
-        {notesFiltrees.map(note => (
-          <div key={note.id} className="note-tuile" style={{ background: note.couleur || '#FFF9C4', cursor: 'pointer' }} onClick={() => ouvrirEdit(note)}>
-            <div className="note-tuile-header">
-              <p className="note-tuile-titre">{note.titre || '(sans titre)'}</p>
-            </div>
-            {note.categorie && (
-              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start' }}>
-                {note.categorie}
-              </span>
-            )}
-            <p className="note-tuile-apercu" style={{ flex: 1 }}>
-              {note.contenu?.length > 80 ? note.contenu.slice(0, 80) + '...' : note.contenu}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <button className="btn-fab" onClick={() => setShowForm(true)}>+</button>
-
-      {showForm && (
-        <PopupNoteForm
-          titrePop="Nouvelle note"
-          valeurs={form}
-          setValeurs={setForm}
-          onSauvegarder={creerNote}
-          onAnnuler={() => setShowForm(false)}
-          labelBtn="Créer"
-          saving={saving}
-          categories={catsOptions}
-        />
-      )}
-
-      {/* Popup: lecture */}
-      {noteActive && !editForm && (
-        <div className="popup-overlay" onClick={() => setNoteActive(null)}>
-          <div className="popup-card" style={{ background: noteActive.couleur || '#FFF9C4' }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                {noteActive.categorie && (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999,
-                    background: 'rgba(0,0,0,0.1)', color: '#444', display: 'inline-block', marginBottom: 6,
-                  }}>{noteActive.categorie}</span>
-                )}
-                {noteActive.titre && (
-                  <p style={{ fontSize: 16, fontWeight: 700, color: '#333', margin: '0 0 4px' }}>{noteActive.titre}</p>
-                )}
-              </div>
-              <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 8 }}>
-                <button onClick={() => passerEnEdition(noteActive)} style={{
-                  background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
-                  padding: '6px 10px', cursor: 'pointer', color: '#555', fontSize: 14,
-                }}>
-                  <i className="ti ti-pencil"></i>
-                </button>
-                <button onClick={() => setConfirmSupprimer(noteActive.id)} style={{
-                  background: 'rgba(0,0,0,0.08)', border: 'none', borderRadius: 8,
-                  padding: '6px 10px', cursor: 'pointer', color: '#555', fontSize: 14,
-                }}>
-                  <i className="ti ti-trash"></i>
-                </button>
-              </div>
-            </div>
-            <p style={{ fontSize: 14, color: '#333', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>
-              {noteActive.contenu}
-            </p>
-            <div style={{ marginTop: 16 }}>
-              <button className="labo-btn-secondary" style={{ width: '100%' }} onClick={() => setNoteActive(null)}>Fermer</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Popup: édition */}
-      {noteActive && editForm && (
-        <PopupNoteForm
-          titrePop="Modifier la note"
-          valeurs={editForm}
-          setValeurs={setEditForm}
-          onSauvegarder={sauvegarderEdit}
-          onAnnuler={() => setEditForm(null)}
-          onSupprimer={() => setConfirmSupprimer(noteActive.id)}
-          labelBtn="Sauvegarder"
-          saving={saving}
-          categories={catsOptions}
-        />
-      )}
-
-      {confirmSupprimer && (
-        <div className="popup-overlay" onClick={() => setConfirmSupprimer(null)}>
-          <div className="popup-card" onClick={e => e.stopPropagation()}>
-            <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
-              <i className="ti ti-trash" style={{ fontSize: 36, color: 'var(--accent-red)', marginBottom: 10, display: 'block' }}></i>
-              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Supprimer cette note?</p>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Cette action est irréversible.</p>
-            </div>
-            <div className="popup-actions-centrees">
-              <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setConfirmSupprimer(null)}>Annuler</button>
-              <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => supprimerNote(confirmSupprimer)}>Supprimer</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
 
 function grouperParJour(notes) {
   const auj = new Date(); auj.setHours(0, 0, 0, 0)
@@ -1520,13 +1244,14 @@ function ClocheMini() {
 export default function Equipe() {
   const [searchParams] = useSearchParams()
   const tabParam = searchParams.get('tab')
-  const [sousOnglet, setSousOnglet] = useState(tabParam || 'notes')
+  // Un ancien lien vers ?tab=notes retombe sur le babillard.
+  const [sousOnglet, setSousOnglet] = useState(tabParam === 'taches' ? 'taches' : 'babillard')
   const { estEquipe, chargement, roleEquipe } = useProfil()
   const navigate = useNavigate()
 
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab) setSousOnglet(tab)
+    if (tab === 'babillard' || tab === 'taches') setSousOnglet(tab)
   }, [searchParams])
 
   if (chargement) return null
@@ -1566,6 +1291,13 @@ export default function Equipe() {
             </button>
           ))}
         </div>
+        {/* Accès à la gestion, pour le propriétaire et les admins seulement */}
+        {(roleEquipe === 'proprietaire' || roleEquipe === 'admin') && (
+          <button className="equipe-gerer-btn" onClick={() => navigate('/equipe/gestion')}>
+            <i className="ti ti-users-group" aria-hidden="true"></i>
+            Gérer l'équipe
+          </button>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', background: 'var(--primary)', borderRadius: '0 0 0 12px', marginTop: -14 }}>
           <ClocheMini />
         </div>
@@ -1573,7 +1305,6 @@ export default function Equipe() {
 
       {/* Contenu */}
       <div style={{ flex: 1, overflow: 'auto' }}>
-        {sousOnglet === 'notes' && <NotesPerso />}
         {sousOnglet === 'babillard' && <Babillard />}
         {sousOnglet === 'taches' && <Taches />}
       </div>

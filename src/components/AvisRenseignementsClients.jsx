@@ -4,10 +4,7 @@ export default function AvisRenseignementsClients() {
   return (
     <p className="avis-renseignements">
       <i className="ti ti-shield-lock" aria-hidden="true"></i>
-      <span>
-        Par sécurité, n'inscrivez pas de renseignements personnels sur les clients (nom, téléphone, adresse).
-        Utilisez plutôt le nom de l'animal ou un numéro de dossier.
-      </span>
+      <span>Par sécurité, n'inscrivez pas de données personnelles de vos clients. Utilisez plutôt un numéro de dossier.</span>
     </p>
   )
 }

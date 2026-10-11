@@ -4,17 +4,17 @@ import { NavGuardContext, NavDirectionContext } from '../App'
 import { useProfil } from '../context/ProfilContext'
 import useNotificationsNonLues from '../hooks/useNotificationsNonLues'
 
+// Les favoris sont accessibles depuis Pharmacologie et Calcul rapide.
 const ONGLETS_BASE = [
   { id: 'accueil',      label: 'Accueil',            svg: '/icone-accueil-nav.svg', route: '/accueil' },
   { id: 'calculateurs', label: 'Calcul rapide',       svg: '/icone-calc-nav.svg',    route: '/calculateurs' },
-  { id: 'drogues',      label: 'Médicaments favoris', svg: '/icone-pill-nav.svg',    route: '/drogues/mes-drogues' },
   { id: 'notes',        label: 'Notes',               svg: '/icone-note-nav.svg',    route: '/notes' },
 ]
 
 const ONGLETS_EQUIPE = [
   { id: 'accueil',      label: 'Accueil',            svg: '/icone-accueil-nav.svg', route: '/accueil' },
   { id: 'calculateurs', label: 'Calcul rapide',       svg: '/icone-calc-nav.svg',    route: '/calculateurs' },
-  { id: 'drogues',      label: 'Médicaments favoris', svg: '/icone-pill-nav.svg',    route: '/drogues/mes-drogues' },
+  { id: 'notes',        label: 'Notes',               svg: '/icone-note-nav.svg',    route: '/notes' },
   { id: 'equipe',       label: 'Équipe',              svg: '/icone-equipe-nav.svg',  route: '/equipe' },
 ]
 
@@ -36,7 +36,6 @@ export default function BottomNav() {
   function estActif(route) {
     if (route === '/accueil') return location.pathname === '/accueil'
     if (route === '/calculateurs') return location.pathname === '/calculateurs'
-    if (route === '/drogues/mes-drogues') return location.pathname === '/drogues/mes-drogues'
     if (route === '/notes') return location.pathname.startsWith('/notes')
     if (route === '/equipe') return location.pathname.startsWith('/equipe')
     return false

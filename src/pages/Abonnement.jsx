@@ -322,14 +322,6 @@ export default function Abonnement() {
                 )}
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              {estEquipe && (
-                <button className="profil-portal-btn" onClick={() => navigate('/equipe/gestion')}
-                  style={{ fontSize: 12, padding: '6px 14px' }}>
-                  Gérer l'équipe
-                </button>
-              )}
-            </div>
           </div>
 
           {/* Le désabonnement doit se trouver sans chercher : même

@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import BadgePro from '../components/BadgePro'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
+import LienFavoris from '../components/LienFavoris'
 
 const DROGUES = [
   { id: 'anesthesiques',     label: 'Anesthésiques /\nAnalgésiques', route: '/drogues/anesthesiques', accent: false },
@@ -91,6 +92,8 @@ export default function Pharmacologie() {
           </div>
         )}
       </div>
+
+      <LienFavoris />
 
       {/* ─── LISTE CATÉGORIES ──────────────────── */}
       <div className="menu-page-section-liste">

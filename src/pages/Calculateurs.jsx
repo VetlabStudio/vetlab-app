@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import LienFavoris from '../components/LienFavoris'
 
 // ─── DÉMARCHE DE CALCUL ───────────────────────────────────
 function DemarcheCollapsible({ resultat, poids, unitePoids }) {
@@ -109,6 +110,8 @@ export default function Calculateurs() {
 
   return (
     <div className="page-calculateurs">
+      <LienFavoris />
+
       <div className="calc-form">
 
         {/* Poids */}
