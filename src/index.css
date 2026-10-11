@@ -23,9 +23,9 @@
 /* ─── VARIABLES DE MARQUE ─────────────────────── */
 :root {
   --accent-mauve:   #BCAADC;
-  --accent-red:     #c16c75;
+  --accent-red:     #A84855;
   --accent-light:   #ebe8f7;
-  --accent-gold:    #A87228;
+  --accent-gold:    #9C6A22;
   --primary:        #213058;
   --primary-light:  #BBE6D5;
   --yellow:         #F8F6B8;
@@ -35,7 +35,7 @@
   --border:         rgba(33, 48, 88, 0.15);
   --text-primary:   #213058;
   --text-secondary: #213058;
-  --text-hint:      rgba(33, 48, 88, 0.45);
+  --text-hint:      #56617E;
   --font:           'Gilroy', system-ui, sans-serif;
   --radius-sm:      22px;
   --radius-md:      22px;
@@ -5303,7 +5303,7 @@ input[type="number"] {
   gap: 6px;
   font-size: 13px;
   font-weight: 700;
-  color: #d97706;
+  color: #9a5204;
 }
 
 .depannage-avertissement p {
@@ -5996,7 +5996,7 @@ input[type="number"] {
 .note-tuile-supprimer {
   background: none;
   border: none;
-  color: #999;
+  color: var(--text-hint);
   cursor: pointer;
   padding: 0;
   font-size: 22px;
@@ -6013,7 +6013,7 @@ input[type="number"] {
 
 .note-tuile-date {
   font-size: 11px;
-  color: #888;
+  color: var(--text-hint);
   margin: 0;
 }
 

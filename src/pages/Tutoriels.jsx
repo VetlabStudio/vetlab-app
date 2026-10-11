@@ -13,7 +13,7 @@ const BADGE_EQUIPE = (
   <span style={{
     fontSize: 10, fontWeight: 700, padding: '2px 7px',
     borderRadius: 20, background: 'rgba(99,102,241,0.12)',
-    color: '#6366f1', border: '1px solid rgba(99,102,241,0.3)',
+    color: '#4f46e5', border: '1px solid rgba(99,102,241,0.3)',
     flexShrink: 0, letterSpacing: 0.3,
   }}>ÉQUIPE</span>
 )

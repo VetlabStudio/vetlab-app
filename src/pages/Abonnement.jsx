@@ -287,7 +287,7 @@ export default function Abonnement() {
         <div style={{
           background: 'rgba(46,158,91,0.1)', border: '1px solid rgba(46,158,91,0.3)',
           borderRadius: 12, padding: '12px 16px', marginBottom: 0,
-          color: '#2e9e5b', fontSize: 14, fontWeight: 500,
+          color: '#1f7a45', fontSize: 14, fontWeight: 500,
         }}>
           {succes}
         </div>

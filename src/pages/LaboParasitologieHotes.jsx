@@ -50,7 +50,7 @@ function Badge({ statut, espece }) {
   const styles = {
     oui:      { background: 'rgba(39,174,96,0.12)',  color: '#1a7a40',  label: '✓' },
     non:      { background: 'var(--bg)',              color: 'var(--text-hint)', label: '—' },
-    partiel:  { background: 'rgba(243,156,18,0.12)', color: '#b8780a',  label: '(✓)' },
+    partiel:  { background: 'rgba(243,156,18,0.12)', color: '#8f5d07',  label: '(✓)' },
     definitif:{ background: 'rgba(39,174,96,0.12)',  color: '#1a7a40',  label: 'hôte déf.' },
   }
   const s = styles[statut] || styles.non

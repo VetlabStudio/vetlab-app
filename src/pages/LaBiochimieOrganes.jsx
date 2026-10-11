@@ -125,11 +125,11 @@ function TestAccordeon({ test, ouvert, onToggle }) {
             </div>
           </div>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#E74C3C', display: 'block', marginBottom: 2 }}>↑ Élevé</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#C0392B', display: 'block', marginBottom: 2 }}>↑ Élevé</span>
             <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{test.eleve}</span>
           </div>
           <div>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#3498DB', display: 'block', marginBottom: 2 }}>↓ Bas</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#1F6FA8', display: 'block', marginBottom: 2 }}>↓ Bas</span>
             <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{test.bas}</span>
           </div>
         </div>

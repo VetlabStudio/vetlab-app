@@ -367,7 +367,7 @@ export default function RejoindreEquipe() {
 
         {statut === 'accepte' && (
           <>
-            <i className="ti ti-circle-check" style={{ fontSize: 40, color: '#4CAF50', display: 'block', marginBottom: 16 }}></i>
+            <i className="ti ti-circle-check" style={{ fontSize: 40, color: '#2E8B57', display: 'block', marginBottom: 16 }}></i>
             <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Bienvenue dans l'équipe!</p>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 20 }}>
               Votre forfait équipe est maintenant actif.
