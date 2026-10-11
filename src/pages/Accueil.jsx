@@ -44,6 +44,7 @@ function ClocheMiniAccueil() {
 
   return (
     <button
+      aria-label={count > 0 ? `Notifications, ${count} non lue${count > 1 ? 's' : ''}` : 'Notifications'}
       onClick={() => navigate('/notifications')}
       style={{
         background: 'var(--primary)', border: 'none', cursor: 'pointer',
@@ -52,7 +53,7 @@ function ClocheMiniAccueil() {
         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
       }}
     >
-      <i className="ti ti-bell"></i>
+      <i className="ti ti-bell" aria-hidden="true"></i>
       {count > 0 && (
         <span style={{
           position: 'absolute', top: 2, right: 2, background: 'var(--accent-red)',
@@ -131,7 +132,7 @@ export default function Accueil() {
           <div>
            
             <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: 0 }}>Bonjour</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{prenom || 'Bienvenue'}</p>
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{prenom || 'Bienvenue'}</h1>
              {estEquipe && nomClinique && (
               <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 2px 0' }}>{nomClinique}</p>
             )}
@@ -157,7 +158,7 @@ export default function Accueil() {
               onClick={() => c.pro && !estPro ? setShowProMsg(true) : navigate(c.route)}
               style={{ position: 'relative' }}
             >
-              <img src={c.icone} alt={c.label} className="accueil-v2-calc-icone" />
+              <img src={c.icone} alt="" className="accueil-v2-calc-icone" />
               <span className="accueil-v2-calc-label">{c.label}</span>
               {c.pro && <BadgePro />}
             </button>
@@ -176,7 +177,7 @@ export default function Accueil() {
               onClick={() => r.pro && !estPro ? setShowProMsg(true) : navigate(r.route)}
               style={{ position: 'relative' }}
             >
-              <img src={r.icone} alt={r.label} className="accueil-v2-calc-icone accueil-v2-calc-icone--ref" />
+              <img src={r.icone} alt="" className="accueil-v2-calc-icone accueil-v2-calc-icone--ref" />
               <span className="accueil-v2-calc-label">{r.label}</span>
               {r.pro && <BadgePro />}
             </button>

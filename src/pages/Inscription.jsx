@@ -157,10 +157,10 @@ export default function Inscription() {
 
   if (succes) {
     return (
-      <div className="auth2-page">
+      <main className="auth2-page">
         <div className="auth2-contenu" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <i className="ti ti-circle-check" style={{ fontSize: 64, color: '#213058', marginBottom: 20 }}></i>
-          <p className="auth2-section-titre" style={{ textAlign: 'center', fontSize: 22 }}>Vérifiez votre courriel</p>
+          <h1 className="auth2-section-titre" style={{ textAlign: 'center', fontSize: 22 }}>Vérifiez votre courriel</h1>
           <p style={{ fontSize: 15, color: '#213058', textAlign: 'center', marginBottom: 28, lineHeight: 1.6 }}>
             Un lien de confirmation vous a été envoyé. Cliquez dessus pour activer votre compte.
           </p>
@@ -168,7 +168,7 @@ export default function Inscription() {
             Retour à la connexion
           </Link>
         </div>
-      </div>
+      </main>
     )
   }
 
@@ -227,7 +227,7 @@ export default function Inscription() {
           <p className="auth2-tagline">Copilote en santé animale</p>
         </div>
 
-        <p className="auth2-section-titre">Créer un compte</p>
+        <h1 className="auth2-section-titre">Créer un compte</h1>
 
         <form onSubmit={handleInscription} className="auth2-form" noValidate>
           <input
@@ -256,8 +256,8 @@ export default function Inscription() {
               minLength={6}
               required
             />
-            <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)}>
-              <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`}></i>
+            <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
+              <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>
           </div>
           <div className="auth2-input-wrap">
@@ -269,8 +269,8 @@ export default function Inscription() {
               placeholder="Confirmer le mot de passe"
               required
             />
-            <button type="button" className="auth2-oeil" onClick={() => setVoirConfirm(v => !v)}>
-              <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`}></i>
+            <button type="button" className="auth2-oeil" onClick={() => setVoirConfirm(v => !v)} aria-label={voirConfirm ? 'Masquer la confirmation' : 'Afficher la confirmation'}>
+              <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>
           </div>
           {erreur && <p className="erreur" style={{ textAlign: 'center', color: '#FFFFFF' }}>{erreur}</p>}
@@ -292,7 +292,7 @@ export default function Inscription() {
   // Même mécanique que les pages intérieures (App.jsx) : la page sortante
   // reste affichée dessous pendant que la nouvelle glisse par-dessus.
   return (
-    <div
+    <main
       style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh' }}
       onTouchStart={handleSwipeStart}
       onTouchEnd={handleSwipeEnd}
@@ -321,6 +321,6 @@ export default function Inscription() {
           onFermer={() => setTexteLegal(null)}
         />
       )}
-    </div>
+    </main>
   )
 }

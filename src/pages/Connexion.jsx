@@ -41,7 +41,7 @@ export default function Connexion() {
   }
 
   return (
-    <div className="auth2-page">
+    <main className="auth2-page">
 
       <div className="auth2-contenu">
         <div className="auth2-logo-zone">
@@ -49,7 +49,7 @@ export default function Connexion() {
           <p className="auth2-tagline">Copilote en santé animale</p>
         </div>
 
-        <p className="auth2-section-titre">Connexion</p>
+        <h1 className="auth2-section-titre">Connexion</h1>
 
         {confirmé && (
           <div className="auth2-confirme">
@@ -76,8 +76,8 @@ export default function Connexion() {
               placeholder="Mot de passe"
               required
             />
-            <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)}>
-              <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`}></i>
+            <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
+              <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>
           </div>
           {erreur && <p className="erreur" style={{ textAlign: 'center' }}>{erreur}</p>}
@@ -97,6 +97,6 @@ export default function Connexion() {
       <div className="auth2-photo">
         <img src="/Chien_10.png" alt="" />
       </div>
-    </div>
+    </main>
   )
 }

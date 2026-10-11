@@ -95,6 +95,8 @@ const titres = {
   '/labo/radiologie/charte': 'Charte radiographique',
   '/equipe': 'Équipe',
   '/equipe/gestion': 'Gestion de l\'équipe',
+  '/equipe/transfert': 'Transfert de propriété',
+  '/tutoriels': 'Tutoriels',
   '/menu': 'Plus',
   '/nutrition': 'Nutrition',
   '/nutrition/geriatrique': 'Animaux gériatriques',
@@ -139,11 +141,11 @@ export default function Header() {
   }
 
   return (
-    <div className="header">
-      <button className="header-back" onClick={retour}>
-        <i className="ti ti-arrow-left"></i>
+    <header className="header">
+      <button className="header-back" onClick={retour} aria-label="Retour">
+        <i className="ti ti-arrow-left" aria-hidden="true"></i>
       </button>
       <h1 style={{ textAlign: 'center', maxWidth: 'calc(100% - 80px)', lineHeight: 1.3, margin: 0, fontSize: 20 }}>{titre}</h1>
-    </div>
+    </header>
   )
 }

@@ -25,7 +25,7 @@
   --accent-mauve:   #BCAADC;
   --accent-red:     #A84855;
   --accent-light:   #ebe8f7;
-  --accent-gold:    #9C6A22;
+  --accent-gold:    #94641F;
   --primary:        #213058;
   --primary-light:  #BBE6D5;
   --yellow:         #F8F6B8;
@@ -2403,7 +2403,7 @@ input[type="number"] {
   font-family: var(--font);
   font-size: 13px;
   font-weight: 600;
-  color: var(--primary-light);
+  color: var(--primary);
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
@@ -11138,4 +11138,60 @@ input[type="number"] {
   flex-shrink: 0;
   font-size: 17px;
   margin-top: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACCESSIBILITÉ
+   ═══════════════════════════════════════════════════════════ */
+
+/* Focus visible. Les boutons et liens n'affichent le contour qu'au
+   clavier (:focus-visible). */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Champs actifs : la bordure arrondie du champ devient bleu marine,
+   au lieu d'un contour rectangulaire sur le texte à l'intérieur. */
+.recherche-wrapper:focus-within,
+.labo-search-bar:focus-within,
+.equipe-recherche:focus-within,
+.input-avec-unite:focus-within,
+.champ-input:focus-within,
+.champ select:focus,
+.auth-form .champ input:focus,
+.form-scroll .form-select-unite:focus,
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.labo-etape-titre-input:focus,
+.labo-etape-desc-input:focus {
+  border-bottom-color: var(--primary);
+}
+
+/* Champs blancs sans bordure (connexion, inscription) : un anneau qui
+   suit l'arrondi. */
+.auth2-input:focus {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+/* Réglage « Réduire les animations » du téléphone : les glissements de
+   page et les animations deviennent instantanés. La durée reste non
+   nulle pour que les événements de fin d'animation se déclenchent. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
