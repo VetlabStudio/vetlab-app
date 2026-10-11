@@ -242,7 +242,14 @@ function Babillard() {
 
   function RenduContenu({ texte }) {
     if (!texte) return null
-    const regex = /@([\w]+(?:\s[\w]+)*)/g
+    /* Les noms des membres d'abord, les plus longs en premier, pour garder
+       en entier « Jean-Maxime », « PèreNoëlSecret » ou « Marie Tremblay ».
+       \w ne connaît ni les accents ni les traits d'union : un ancien membre
+       retombe sur un seul mot, accents compris. */
+    const noms = ['equipe', ...membres.map(m => m.profiles?.nom).filter(Boolean)]
+      .sort((a, b) => b.length - a.length)
+      .map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    const regex = new RegExp(`(?<![\\p{L}\\p{N}])@(?:(?:${noms.join('|')})(?![\\p{L}\\p{N}_-])|[\\p{L}\\p{N}_-]+)`, 'gu')
     const parts = []
     let lastIndex = 0
     let match

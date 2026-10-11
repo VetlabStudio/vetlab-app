@@ -278,7 +278,7 @@ export const SECTIONS_AIDE = [
       {
         titre: 'Nom et logo de la clinique',
         equipe: true,
-        texte: "Dans la gestion de l'équipe, ouvrez « Réglages de la clinique ». Le logo remplace le symbole Adjuvet en haut de vos rapports PDF (PNG, JPG ou SVG, 2 Mo maximum).",
+        texte: "Dans la gestion de l'équipe, appuyez sur l'engrenage à côté du nom de la clinique. Le logo remplace le symbole Adjuvet en haut de vos rapports PDF (PNG, JPG ou SVG, 2 Mo maximum).",
       },
       {
         titre: 'Ajouter ou retirer des sièges',
@@ -294,7 +294,8 @@ export const SECTIONS_AIDE = [
         equipe: true,
         texte: "Le nouveau propriétaire doit déjà faire partie de l'équipe. Il accepte la demande et entre sa propre carte. Votre abonnement s'arrête alors à la fin de la période déjà payée, et vous restez dans l'équipe comme admin. La demande expire après 7 jours.",
         etapes: [
-          "Dans la gestion de l'équipe, section « Propriété de la clinique », appuyez sur « Transférer la propriété ».",
+          "Dans la gestion de l'équipe, appuyez sur l'engrenage à côté du nom de la clinique.",
+          "Dans la section « Propriété de la clinique », appuyez sur « Transférer la propriété ».",
           'Sélectionnez la personne, puis envoyez la demande.',
         ],
       },

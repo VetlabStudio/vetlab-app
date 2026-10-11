@@ -87,7 +87,6 @@ export default function EquipeGestion() {
   const [userId, setUserId] = useState(null)
   const [message, setMessage] = useState(null) // { type, texte }
   const [recherche, setRecherche] = useState('')
-  const [reglagesOuverts, setReglagesOuverts] = useState(false)
 
   const [emailsInput, setEmailsInput] = useState('')
   const [roleInvit, setRoleInvit] = useState('membre')
@@ -106,6 +105,8 @@ export default function EquipeGestion() {
   const [transfertEnAttente, setTransfertEnAttente] = useState(null)
   const location = useLocation()
   const [aideTransfert] = useState(Boolean(location.state?.aideTransfert))
+  // Arrivée depuis « Supprimer le compte » : les réglages s'ouvrent sur le transfert.
+  const [reglagesOuverts, setReglagesOuverts] = useState(aideTransfert)
   const sectionPropriete = useRef(null)
 
   const [editNomClinique, setEditNomClinique] = useState(false)
@@ -463,9 +464,9 @@ export default function EquipeGestion() {
       )}
 
       {/* ═══ BANDEAU DE LA CLINIQUE ═══
-           Une étiquette, pas une commande : le titre de la page ne
-           dit pas de quelle clinique il s'agit. Les réglages
-           s'ouvrent depuis le bas, et un seul endroit les ouvre. */}
+           Le titre de la page ne dit pas de quelle clinique il s'agit.
+           L'engrenage ouvre les réglages juste en dessous : nom, logo
+           et, pour le propriétaire, le transfert de propriété. */}
       <div className="equipe-bandeau">
         <span className="equipe-bandeau-logo">
           {equipe?.logo_url
@@ -473,7 +474,127 @@ export default function EquipeGestion() {
             : <i className="ti ti-building-hospital"></i>}
         </span>
         <span className="equipe-bandeau-nom">{equipe?.nom || 'Clinique'}</span>
+        <button
+          type="button"
+          className={`equipe-bandeau-reglages ${reglagesOuverts ? 'ouvert' : ''}`}
+          onClick={() => setReglagesOuverts(o => !o)}
+          aria-expanded={reglagesOuverts}
+          aria-controls="reglages-clinique"
+          aria-label="Réglages de la clinique"
+          title="Réglages de la clinique"
+        >
+          <i className="ti ti-settings" aria-hidden="true"></i>
+        </button>
       </div>
+
+      {/* ═══ RÉGLAGES DE LA CLINIQUE (sous le bandeau) ═══ */}
+      {reglagesOuverts && (
+        <div className="equipe-reglages" id="reglages-clinique">
+          <div className="equipe-reglages-section">
+            <span className="equipe-carte-titre">Nom et logo</span>
+            <div className="equipe-clinique">
+              <div className="equipe-logo">
+                {equipe?.logo_url
+                  ? <img src={equipe.logo_url} alt="Logo de la clinique" />
+                  : <i className="ti ti-building-hospital"></i>}
+              </div>
+
+              <div className="equipe-clinique-textes">
+                {editNomClinique ? (
+                  <div className="equipe-edition-nom">
+                    <input
+                      className="form-input"
+                      value={nouveauNomClinique}
+                      onChange={e => setNouveauNomClinique(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') sauvegarderNomClinique()
+                        if (e.key === 'Escape') setEditNomClinique(false)
+                      }}
+                      autoFocus
+                    />
+                    <button className="equipe-lien" onClick={sauvegarderNomClinique}>Enregistrer</button>
+                    <button className="equipe-lien discret" onClick={() => setEditNomClinique(false)}>Annuler</button>
+                  </div>
+                ) : (
+                  <>
+                    <span className="equipe-clinique-nom">{equipe?.nom || 'Clinique'}</span>
+                    <button className="equipe-lien" onClick={() => { setNouveauNomClinique(equipe?.nom || ''); setEditNomClinique(true) }}>
+                      Renommer
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <p className="equipe-aide">
+              Le logo remplace le symbole Adjuvet en haut de vos PDF. Utilisez un PNG, JPG ou SVG, 2 Mo maximum.
+              Un logo carré sur fond blanc ou transparent donne le meilleur résultat.
+            </p>
+
+            <div className="equipe-actions-logo">
+              <input
+                ref={champLogo}
+                type="file"
+                accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                onChange={choisirLogo}
+                style={{ display: 'none' }}
+              />
+              <button className="equipe-btn-secondaire" onClick={() => champLogo.current?.click()} disabled={envoiLogo}>
+                <i className="ti ti-upload"></i>
+                {envoiLogo ? 'Envoi...' : equipe?.logo_url ? 'Remplacer le logo' : 'Ajouter un logo'}
+              </button>
+              {equipe?.logo_url && (
+                <button className="equipe-lien danger" onClick={() => setConfirmRetraitLogo(true)} disabled={envoiLogo}>
+                  Retirer
+                </button>
+              )}
+            </div>
+          </div>
+
+          {estProprietaire && (
+            <div ref={sectionPropriete} className="equipe-reglages-section">
+              <span className="equipe-carte-titre">Propriété de la clinique</span>
+              <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0 }}>
+                Propriétaire : <strong>vous</strong>
+              </p>
+
+              {aideTransfert && !transfertEnAttente && (
+                <div className="equipe-avertissement">
+                  <p>
+                    Pour supprimer votre compte sans toucher aux données de la clinique, transférez
+                    d'abord la propriété à un membre de l'équipe.
+                  </p>
+                </div>
+              )}
+
+              {transfertEnAttente ? (
+                <div className="equipe-avertissement">
+                  <span className="equipe-carte-titre">Transfert en attente</span>
+                  <p>
+                    {membres.find(m => m.user_id === transfertEnAttente.cible_id)?.profiles?.nom || 'Le membre choisi'} doit
+                    accepter et entrer sa carte de crédit. La demande expire le {formaterDateLongue(finTransfert(transfertEnAttente))}.
+                  </p>
+                  <button className="equipe-lien danger" onClick={annulerTransfert}>Annuler la demande</button>
+                </div>
+              ) : membres.some(m => m.user_id !== userId) ? (
+                <>
+                  <p className="equipe-aide" style={{ margin: 0 }}>
+                    La personne choisie entrera sa propre carte : l'abonnement passera à son nom et le
+                    vôtre s'arrêtera à la fin de la période déjà payée. Vous resterez dans l'équipe comme admin.
+                  </p>
+                  <button className="equipe-btn-secondaire" onClick={() => setShowTransfertModal(true)}>
+                    <i className="ti ti-arrows-exchange"></i> Transférer la propriété
+                  </button>
+                </>
+              ) : (
+                <p className="equipe-aide" style={{ margin: 0 }}>
+                  Pour transférer la propriété, invitez d'abord la personne qui deviendra propriétaire.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ═══ SIÈGES ═══ */}
       {equipe?.max_membres && (
@@ -603,126 +724,6 @@ export default function EquipeGestion() {
         Un admin peut inviter, retirer et changer les rôles. Un membre consulte les protocoles et les
         monographies de l'équipe sans pouvoir les modifier.
       </p>
-
-      {/* ═══ RÉGLAGES DE LA CLINIQUE ═══ */}
-      <div className="bloc-repli" style={{ marginTop: 18 }}>
-        <button
-          type="button"
-          className={`bloc-repli-entete ${reglagesOuverts ? 'ouvert' : ''}`}
-          onClick={() => setReglagesOuverts(o => !o)}
-          aria-expanded={reglagesOuverts}
-        >
-          <i className="ti ti-settings bloc-repli-icone"></i>
-          <span className="bloc-repli-label">Réglages de la clinique</span>
-          <i className={`ti ti-chevron-${reglagesOuverts ? 'up' : 'down'}`}></i>
-        </button>
-
-        {reglagesOuverts && (
-          <div className="bloc-repli-contenu">
-            <div className="equipe-clinique">
-              <div className="equipe-logo">
-                {equipe?.logo_url
-                  ? <img src={equipe.logo_url} alt="Logo de la clinique" />
-                  : <i className="ti ti-building-hospital"></i>}
-              </div>
-
-              <div className="equipe-clinique-textes">
-                {editNomClinique ? (
-                  <div className="equipe-edition-nom">
-                    <input
-                      className="form-input"
-                      value={nouveauNomClinique}
-                      onChange={e => setNouveauNomClinique(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') sauvegarderNomClinique()
-                        if (e.key === 'Escape') setEditNomClinique(false)
-                      }}
-                      autoFocus
-                    />
-                    <button className="equipe-lien" onClick={sauvegarderNomClinique}>Enregistrer</button>
-                    <button className="equipe-lien discret" onClick={() => setEditNomClinique(false)}>Annuler</button>
-                  </div>
-                ) : (
-                  <>
-                    <span className="equipe-clinique-nom">{equipe?.nom || 'Clinique'}</span>
-                    <button className="equipe-lien" onClick={() => { setNouveauNomClinique(equipe?.nom || ''); setEditNomClinique(true) }}>
-                      Renommer
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <p className="equipe-aide">
-              Le logo remplace le symbole Adjuvet en haut de vos PDF. PNG, JPG ou SVG, 2 Mo maximum.
-              Un logo horizontal sur fond transparent donne le meilleur résultat.
-            </p>
-
-            <div className="equipe-actions-logo">
-              <input
-                ref={champLogo}
-                type="file"
-                accept="image/png,image/jpeg,image/svg+xml,image/webp"
-                onChange={choisirLogo}
-                style={{ display: 'none' }}
-              />
-              <button className="equipe-btn-secondaire" onClick={() => champLogo.current?.click()} disabled={envoiLogo}>
-                <i className="ti ti-upload"></i>
-                {envoiLogo ? 'Envoi...' : equipe?.logo_url ? 'Remplacer le logo' : 'Ajouter un logo'}
-              </button>
-              {equipe?.logo_url && (
-                <button className="equipe-lien danger" onClick={() => setConfirmRetraitLogo(true)} disabled={envoiLogo}>
-                  Retirer
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ═══ PROPRIÉTÉ DE LA CLINIQUE ═══ */}
-      {estProprietaire && (
-        <div ref={sectionPropriete} className="equipe-carte" style={{ marginTop: 10 }}>
-          <span className="equipe-carte-titre">Propriété de la clinique</span>
-          <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: 0 }}>
-            Propriétaire : <strong>vous</strong>
-          </p>
-
-          {aideTransfert && !transfertEnAttente && (
-            <div className="equipe-avertissement">
-              <p>
-                Pour supprimer votre compte sans toucher aux données de la clinique, transférez
-                d'abord la propriété à un membre de l'équipe.
-              </p>
-            </div>
-          )}
-
-          {transfertEnAttente ? (
-            <div className="equipe-avertissement">
-              <span className="equipe-carte-titre">Transfert en attente</span>
-              <p>
-                {membres.find(m => m.user_id === transfertEnAttente.cible_id)?.profiles?.nom || 'Le membre choisi'} doit
-                accepter et entrer sa carte de crédit. La demande expire le {formaterDateLongue(finTransfert(transfertEnAttente))}.
-              </p>
-              <button className="equipe-lien danger" onClick={annulerTransfert}>Annuler la demande</button>
-            </div>
-          ) : membres.some(m => m.user_id !== userId) ? (
-            <>
-              <p className="equipe-aide" style={{ margin: 0 }}>
-                La personne choisie entrera sa propre carte : l'abonnement passera à son nom et le
-                vôtre s'arrêtera à la fin de la période déjà payée. Vous resterez dans l'équipe comme admin.
-              </p>
-              <button className="equipe-btn-secondaire" onClick={() => setShowTransfertModal(true)}>
-                <i className="ti ti-arrows-exchange"></i> Transférer la propriété
-              </button>
-            </>
-          ) : (
-            <p className="equipe-aide" style={{ margin: 0 }}>
-              Pour transférer la propriété, invitez d'abord la personne qui deviendra propriétaire.
-            </p>
-          )}
-        </div>
-      )}
 
       {/* ═══ POPUP GESTION D'UN MEMBRE ═══ */}
       {membreGere && (
