@@ -297,44 +297,50 @@ export default function Abonnement() {
       {/* FORFAIT ACTUEL (seulement pour un forfait payant) */}
       {!estGratuit && (
         <div className="abonnement-plan-actuel">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: '50%', background: bgForfait,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            }}>
-              <i className={`ti ${estEquipe ? 'ti-users' : 'ti-crown'}`} style={{ fontSize: 18, color: couleurForfait }}></i>
+          <div className="abo-plan-ligne">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: '50%', background: bgForfait,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}>
+                <i className={`ti ${estEquipe ? 'ti-users' : 'ti-crown'}`} style={{ fontSize: 18, color: couleurForfait }}></i>
+              </div>
+              <div>
+                <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 2 }}>Forfait actuel</p>
+                <p style={{ fontSize: 16, fontWeight: 700, color: couleurForfait, marginBottom: subDetails ? 3 : 0 }}>{nomForfait}</p>
+                {subDetails && (
+                  <p style={{ fontSize: 12, color: 'var(--text-hint)', lineHeight: 1.4 }}>
+                    {estEquipe && subDetails.quantity > 1 && (
+                      <span>{subDetails.quantity} sièges · </span>
+                    )}
+                    {subDetails.statut === 'past_due'
+                      ? 'Paiement en retard : mettez à jour votre carte'
+                      : subDetails.fin_programmee
+                        ? `Se termine le ${formaterDate(subDetails.fin_programmee)}`
+                        : `Renouvellement le ${formaterDate(subDetails.current_period_end)}`}
+                  </p>
+                )}
+              </div>
             </div>
-            <div>
-              <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 2 }}>Forfait actuel</p>
-              <p style={{ fontSize: 16, fontWeight: 700, color: couleurForfait, marginBottom: subDetails ? 3 : 0 }}>{nomForfait}</p>
-              {subDetails && (
-                <p style={{ fontSize: 12, color: 'var(--text-hint)', lineHeight: 1.4 }}>
-                  {estEquipe && subDetails.quantity > 1 && (
-                    <span>{subDetails.quantity} sièges · </span>
-                  )}
-                  {subDetails.statut === 'past_due'
-                    ? 'Paiement en retard : mettez à jour votre carte'
-                    : subDetails.fin_programmee
-                      ? `Se termine le ${formaterDate(subDetails.fin_programmee)}`
-                      : `Renouvellement le ${formaterDate(subDetails.current_period_end)}`}
-                </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              {estEquipe && (
+                <button className="profil-portal-btn" onClick={() => navigate('/equipe/gestion')}
+                  style={{ fontSize: 12, padding: '6px 14px' }}>
+                  Gérer l'équipe
+                </button>
               )}
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {estEquipe && (
-              <button className="profil-portal-btn" onClick={() => navigate('/equipe/gestion')}
-                style={{ fontSize: 12, padding: '6px 14px' }}>
-                Gérer
-              </button>
-            )}
-            {estPro && !estEquipe && (
-              <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}
-                style={{ fontSize: 12, padding: '6px 14px' }}>
-                {checkoutLoading ? '...' : 'Gérer'}
-              </button>
-            )}
-          </div>
+
+          {/* Le désabonnement doit se trouver sans chercher : même
+             bouton pour le Pro et pour le propriétaire de la clinique. */}
+          {aSonAbonnement && (
+            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}
+              style={{ justifyContent: 'center' }}>
+              <i className="ti ti-receipt" aria-hidden="true"></i>
+              {checkoutLoading ? 'Ouverture...' : 'Gérer la facturation / Se désabonner'}
+            </button>
+          )}
         </div>
       )}
 

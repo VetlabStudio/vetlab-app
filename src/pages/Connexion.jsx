@@ -59,23 +59,29 @@ export default function Connexion() {
         )}
 
         <form onSubmit={handleConnexion} className="auth2-form">
-          <input
-            type="email"
-            className="auth2-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Courriel"
-            required
-          />
-          <div className="auth2-input-wrap">
+          <label className="auth2-flottant">
             <input
-              type={voirMdp ? 'text' : 'password'}
+              type="email"
               className="auth2-input"
-              value={motDePasse}
-              onChange={(e) => setMotDePasse(e.target.value)}
-              placeholder="Mot de passe"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder=" "
               required
             />
+            <span className="auth2-flottant-texte">Courriel</span>
+          </label>
+          <div className="auth2-input-wrap">
+            <label className="auth2-flottant">
+              <input
+                type={voirMdp ? 'text' : 'password'}
+                className="auth2-input"
+                value={motDePasse}
+                onChange={(e) => setMotDePasse(e.target.value)}
+                placeholder=" "
+                required
+              />
+              <span className="auth2-flottant-texte">Mot de passe</span>
+            </label>
             <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
               <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
+import { verifierMotDePasse } from '../lib/motDePasse'
 
 const JOURS_VALIDITE = 7
 
@@ -118,7 +120,8 @@ export default function RejoindreEquipe() {
     setErreurInscription('')
 
     if (!nom.trim()) return setErreurInscription('Le nom est requis.')
-    if (motDePasse.length < 6) return setErreurInscription('Le mot de passe doit faire au moins 6 caractères.')
+    const evaluation = await verifierMotDePasse(motDePasse, { email: invitation?.email, nom })
+    if (!evaluation.valide) return setErreurInscription(evaluation.message)
     if (motDePasse !== confirmation) return setErreurInscription('Les deux mots de passe ne correspondent pas.')
 
     setLoading(true)
@@ -140,6 +143,7 @@ export default function RejoindreEquipe() {
       if (data.error === 'plein') { setStatut('plein'); return }
       if (data.error === 'expiree') { setStatut('expiree'); return }
       if (data.error === 'invalide') { setStatut('invalide'); return }
+      if (data.error === 'mot_de_passe_faible') return setErreurInscription('Le mot de passe doit contenir entre 12 et 72 caractères.')
       return setErreurInscription("La création du compte a échoué. Réessayez dans un instant.")
     }
 
@@ -250,10 +254,11 @@ export default function RejoindreEquipe() {
                     <input
                       style={styleChamp}
                       type="password"
-                      placeholder="Mot de passe, 6 caractères minimum"
+                      placeholder="Mot de passe"
                       value={motDePasse}
                       onChange={e => { setMotDePasse(e.target.value); setErreurInscription('') }}
                     />
+                    <IndicateurMotDePasse motDePasse={motDePasse} email={invitation?.email} nom={nom} />
                     <input
                       style={styleChamp}
                       type="password"

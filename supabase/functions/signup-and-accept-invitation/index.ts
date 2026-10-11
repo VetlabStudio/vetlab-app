@@ -15,6 +15,11 @@ const norm = (e?: string | null) => (e || '').trim().toLowerCase()
 
 const JOURS_VALIDITE = 7
 
+// Même longueur que l'app (src/lib/motDePasse.js) : la création par
+// l'API admin ne passe pas forcément par la politique de Supabase.
+const motDePasseValide = (mdp: unknown) =>
+  typeof mdp === 'string' && mdp.length >= 12 && mdp.length <= 72
+
 function invitationExpiree(creeLe: string | null): boolean {
   if (!creeLe) return false
   return Date.now() - new Date(creeLe).getTime() > JOURS_VALIDITE * 86400000
@@ -32,6 +37,7 @@ Deno.serve(async (req) => {
 
   const { token, email, password, nom } = await req.json()
   if (!token || !email || !password) return json({ error: 'invalide' }, 400)
+  if (!motDePasseValide(password)) return json({ error: 'mot_de_passe_faible' })
 
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,

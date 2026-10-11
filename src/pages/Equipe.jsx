@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
+import AvisRenseignementsClients from '../components/AvisRenseignementsClients'
 
 const COULEURS = ['#F8F6B8', '#BBE6D5', '#BCAADC', '#B8D4F5', '#EDECE9', '#F5C9B8']
 
@@ -155,6 +156,8 @@ function NotesPerso() {
 
   return (
     <div style={{ padding: '16px 16px 80px' }}>
+      <AvisRenseignementsClients />
+
       {categories.length > 1 && (
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
           {categories.map(c => (
@@ -564,6 +567,8 @@ function Babillard() {
 
   return (
     <div style={{ padding: '16px 16px 80px', position: 'relative' }}>
+      <AvisRenseignementsClients />
+
       {/* Barre de recherche par membre */}
       <div style={{ position: 'relative', marginBottom: 10 }}>
         <i className="ti ti-search" style={{

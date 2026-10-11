@@ -2181,6 +2181,7 @@ select.form-input {
   color: var(--primary);
   border: none;
   font-size: 28px;
+  margin-bottom: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8767,9 +8768,16 @@ input[type="number"] {
   border-radius: var(--radius-lg);
   padding: 14px 16px;
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--border);
+}
+
+.abo-plan-ligne {
+  display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid var(--border);
+  gap: 10px;
 }
 
 .abonnement-toggle {
@@ -9737,6 +9745,96 @@ input[type="number"] {
 
 .auth2-input::placeholder {
   color: rgba(33, 48, 88, 0.4);
+}
+
+/* Libellé flottant : le nom du champ est à l'intérieur et remonte en
+   petit quand on tape, au lieu de disparaître comme un placeholder. */
+.auth2-flottant {
+  position: relative;
+  display: block;
+  flex: 1;
+}
+
+.auth2-flottant .auth2-input {
+  padding-top: 24px;
+  padding-bottom: 8px;
+}
+
+.auth2-flottant-texte {
+  position: absolute;
+  top: 50%;
+  left: 24px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--text-hint);
+  pointer-events: none;
+  transition: top 0.15s, font-size 0.15s, transform 0.15s;
+}
+
+.auth2-flottant .auth2-input:focus + .auth2-flottant-texte,
+.auth2-flottant .auth2-input:not(:placeholder-shown) + .auth2-flottant-texte,
+.auth2-flottant .auth2-input:-webkit-autofill + .auth2-flottant-texte {
+  top: 9px;
+  transform: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Rappel : pas de renseignements sur les clients (notes, babillard) */
+.avis-renseignements {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--accent-light);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.avis-renseignements i {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Force du mot de passe (inscription, profil, invitation) */
+.mdp-force {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 8px;
+}
+
+.form-groupe .mdp-force {
+  padding: 2px 0 0;
+}
+
+.mdp-force-barre {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.mdp-force-barre span {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(33, 48, 88, 0.18);
+  transition: background 0.2s;
+}
+
+.mdp-force.niveau-1 .mdp-force-barre .rempli { background: var(--accent-red); }
+.mdp-force.niveau-2 .mdp-force-barre .rempli { background: var(--accent-gold); }
+.mdp-force.niveau-3 .mdp-force-barre .rempli { background: #2E7A57; }
+
+.mdp-force-texte {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-primary);
 }
 
 .auth2-input-wrap {

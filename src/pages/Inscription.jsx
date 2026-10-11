@@ -2,6 +2,8 @@ import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate, Link } from 'react-router-dom'
 import PopupTexteLegal from '../components/PopupTexteLegal'
+import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
+import { verifierMotDePasse } from '../lib/motDePasse'
 import { CONDITIONS_COMPLETES_SECTIONS, CONFIDENTIALITE_SECTIONS } from '../data/textesLegaux'
 
 const CGU_PAGES = [
@@ -96,8 +98,9 @@ export default function Inscription() {
       setErreur('Format de courriel invalide (ex. nom@domaine.com).')
       return
     }
-    if (motDePasse.length < 6) {
-      setErreur('Le mot de passe doit contenir au moins 6 caractères.')
+    const evaluation = await verifierMotDePasse(motDePasse, { email, nom })
+    if (!evaluation.valide) {
+      setErreur(evaluation.message)
       return
     }
     if (motDePasse !== confirmation) {
@@ -230,45 +233,58 @@ export default function Inscription() {
         <h1 className="auth2-section-titre">Créer un compte</h1>
 
         <form onSubmit={handleInscription} className="auth2-form" noValidate>
-          <input
-            type="text"
-            className="auth2-input"
-            value={nom}
-            onChange={(e) => setNom(e.target.value)}
-            placeholder="Nom complet"
-            required
-          />
-          <input
-            type="email"
-            className="auth2-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Courriel"
-            required
-          />
-          <div className="auth2-input-wrap">
+          <label className="auth2-flottant">
             <input
-              type={voirMdp ? 'text' : 'password'}
+              type="text"
               className="auth2-input"
-              value={motDePasse}
-              onChange={(e) => setMotDePasse(e.target.value)}
-              placeholder="Mot de passe"
-              minLength={6}
+              value={nom}
+              onChange={(e) => setNom(e.target.value)}
+              placeholder=" "
               required
             />
+            <span className="auth2-flottant-texte">Nom complet</span>
+          </label>
+          <label className="auth2-flottant">
+            <input
+              type="email"
+              className="auth2-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder=" "
+              required
+            />
+            <span className="auth2-flottant-texte">Courriel</span>
+          </label>
+          <div className="auth2-input-wrap">
+            <label className="auth2-flottant">
+              <input
+                type={voirMdp ? 'text' : 'password'}
+                className="auth2-input"
+                value={motDePasse}
+                onChange={(e) => setMotDePasse(e.target.value)}
+                placeholder=" "
+                minLength={12}
+                required
+              />
+              <span className="auth2-flottant-texte">Mot de passe</span>
+            </label>
             <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
               <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>
           </div>
+          <IndicateurMotDePasse motDePasse={motDePasse} email={email} nom={nom} />
           <div className="auth2-input-wrap">
-            <input
-              type={voirConfirm ? 'text' : 'password'}
-              className="auth2-input"
-              value={confirmation}
-              onChange={(e) => setConfirmation(e.target.value)}
-              placeholder="Confirmer le mot de passe"
-              required
-            />
+            <label className="auth2-flottant">
+              <input
+                type={voirConfirm ? 'text' : 'password'}
+                className="auth2-input"
+                value={confirmation}
+                onChange={(e) => setConfirmation(e.target.value)}
+                placeholder=" "
+                required
+              />
+              <span className="auth2-flottant-texte">Confirmer le mot de passe</span>
+            </label>
             <button type="button" className="auth2-oeil" onClick={() => setVoirConfirm(v => !v)} aria-label={voirConfirm ? 'Masquer la confirmation' : 'Afficher la confirmation'}>
               <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>

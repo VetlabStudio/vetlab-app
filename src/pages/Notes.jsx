@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import AvisRenseignementsClients from '../components/AvisRenseignementsClients'
 
 const COULEURS = ['#F8F6B8', '#BBE6D5', '#BCAADC', '#B8D4F5', '#EDECE9', '#F5C9B8']
 
@@ -152,6 +153,8 @@ export default function Notes() {
 
   return (
     <div className="notes-page">
+
+      <AvisRenseignementsClients />
 
       {categories.length > 1 && (
         <div className="notes-filtres">

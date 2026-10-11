@@ -74,6 +74,14 @@ export const CONFIDENTIALITE_SECTIONS = [
     ],
   },
   {
+    titre: 'Responsable de la protection des renseignements personnels',
+    icone: 'ti-id-badge',
+    paragraphes: [
+      'Conformément à la Loi sur la protection des renseignements personnels dans le secteur privé du Québec (Loi 25), VetLab Studio a désigné une personne responsable de la protection des renseignements personnels.',
+      'Pour une question, une demande d\'accès ou de correction, une plainte, ou pour signaler un incident de confidentialité, écrivez à : Responsable de la protection des renseignements personnels, VetLab Studio, info@vetlabstudio.ca.',
+    ],
+  },
+  {
     titre: 'Conservation et suppression des données',
     icone: 'ti-trash',
     paragraphes: [
@@ -133,6 +141,7 @@ export const CONDITIONS_COMPLETES_SECTIONS = [
     liste: [
       'Le contenu d\'ADJUVET ne peut pas être copié, redistribué ou revendu sans l\'autorisation écrite de VetLab Studio.',
       'Il est interdit de contourner les limites des forfaits ou de tenter d\'accéder aux données d\'autres utilisateurs ou d\'autres cliniques.',
+      'N\'inscrivez pas de renseignements personnels sur les clients de votre clinique (nom, téléphone, adresse, etc.) dans les notes, le babillard ou les tâches. Utilisez plutôt le nom de l\'animal ou un numéro de dossier.',
       'VetLab Studio peut suspendre ou fermer un compte qui ne respecte pas ces conditions.',
     ],
   },

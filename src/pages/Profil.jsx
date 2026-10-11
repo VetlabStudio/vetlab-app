@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
+import { verifierMotDePasse } from '../lib/motDePasse'
 
 export default function Profil() {
   const navigate = useNavigate()
@@ -106,7 +108,8 @@ export default function Profil() {
   // ─── MODIFIER MOT DE PASSE ────────────────────
   async function sauvegarderMdp() {
     if (!nouveauMdp) return setErreur('Le mot de passe ne peut pas être vide.')
-    if (nouveauMdp.length < 6) return setErreur('Minimum 6 caractères.')
+    const evaluation = await verifierMotDePasse(nouveauMdp, { email: profil?.email, nom: profil?.nom })
+    if (!evaluation.valide) return setErreur(evaluation.message)
     if (nouveauMdp !== confirmMdp) return setErreur('Les mots de passe ne correspondent pas.')
     setSaving(true)
     const { error } = await supabase.auth.updateUser({ password: nouveauMdp })
@@ -269,7 +272,8 @@ export default function Profil() {
               <button className="popup-close" onClick={() => setModalNom(false)}>✕</button>
             </div>
             <div className="form-groupe">
-              <input className="form-input" placeholder="Nom complet" value={nouveauNom} onChange={e => setNouveauNom(e.target.value)} autoFocus />
+              <label className="form-label" htmlFor="profil-nom">Nom complet</label>
+              <input id="profil-nom" className="form-input" placeholder="ex. Marie Tremblay" value={nouveauNom} onChange={e => setNouveauNom(e.target.value)} autoFocus />
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderNom} disabled={saving}>
@@ -288,7 +292,8 @@ export default function Profil() {
               <button className="popup-close" onClick={() => setModalEmail(false)}>✕</button>
             </div>
             <div className="form-groupe">
-              <input className="form-input" placeholder="Nouveau courriel" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} autoFocus />
+              <label className="form-label" htmlFor="profil-courriel">Nouveau courriel</label>
+              <input id="profil-courriel" className="form-input" placeholder="ex. nom@clinique.ca" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} autoFocus />
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderEmail} disabled={saving}>
@@ -306,9 +311,16 @@ export default function Profil() {
               <span>Modifier le mot de passe</span>
               <button className="popup-close" onClick={() => setModalMdp(false)}>✕</button>
             </div>
-            <div className="form-groupe" style={{ gap: 8, display: 'flex', flexDirection: 'column' }}>
-              <input className="form-input" placeholder="Nouveau mot de passe" type="password" value={nouveauMdp} onChange={e => setNouveauMdp(e.target.value)} autoFocus />
-              <input className="form-input" placeholder="Confirmer le mot de passe" type="password" value={confirmMdp} onChange={e => setConfirmMdp(e.target.value)} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div className="form-groupe">
+                <label className="form-label" htmlFor="profil-mdp">Nouveau mot de passe</label>
+                <input id="profil-mdp" className="form-input" type="password" value={nouveauMdp} onChange={e => setNouveauMdp(e.target.value)} autoFocus />
+                <IndicateurMotDePasse motDePasse={nouveauMdp} email={profil?.email} nom={profil?.nom} />
+              </div>
+              <div className="form-groupe">
+                <label className="form-label" htmlFor="profil-mdp-confirmation">Confirmer le mot de passe</label>
+                <input id="profil-mdp-confirmation" className="form-input" placeholder="Retapez le mot de passe" type="password" value={confirmMdp} onChange={e => setConfirmMdp(e.target.value)} />
+              </div>
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderMdp} disabled={saving}>
