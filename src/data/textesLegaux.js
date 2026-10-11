@@ -1,49 +1,3 @@
-export const CONDITIONS_PAGES = [
-  {
-    fond:   '/fond-jaune.jpg',
-    animal: '/Chat08.png',
-    sections: [
-      {
-        titre: 'Acceptation des termes',
-        icone: 'ti-circle-check',
-        texte: 'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et VetLab Studio.',
-      },
-      {
-        titre: 'Utilisation du service',
-        icone: 'ti-device-mobile',
-        texte: 'ADJUVET est destiné aux professionnels et étudiants du domaine vétérinaire à titre d\'outil de référence et de calcul. Le contenu est fourni sans garantie d\'exactitude complète. Vous êtes responsable de l\'usage que vous faites des informations fournies. La redistribution ou revente du contenu est interdite sans autorisation.',
-      },
-    ],
-  },
-  {
-    fond:   '/fond-vert.jpg',
-    animal: '/perroquet01.png',
-    sections: [
-      {
-        titre: 'Abonnement et facturation',
-        icone: 'ti-credit-card',
-        texte: 'Le forfait Pro est un abonnement payant - mensuel ou annuel - géré via Stripe. Vous pouvez gérer ou annuler votre abonnement à tout moment depuis la page Profil. Aucun remboursement n\'est offert pour les périodes partiellement utilisées.',
-      },
-    ],
-  },
-  {
-    fond:   '/fond-gris.jpg',
-    animal: '/Lapin01.png',
-    sections: [
-      {
-        titre: 'Modifications',
-        icone: 'ti-edit',
-        texte: 'Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants vous seront communiqués via l\'application. En continuant à utiliser ADJUVET après une mise à jour, vous acceptez les nouvelles conditions.',
-      },
-      {
-        titre: 'Contact',
-        icone: 'ti-mail',
-        texte: 'Pour toute question concernant ces conditions, écrivez-nous à info@vetlabstudio.ca. Nous répondons généralement dans un délai de 2 à 3 jours ouvrables.',
-      },
-    ],
-  },
-]
-
 export const AVERTISSEMENT_SECTIONS = [
   {
     titre: 'Avertissement médical',
@@ -164,19 +118,88 @@ export const CONFIDENTIALITE_SECTIONS = [
   },
 ]
 
-const conditionsParTitre = Object.fromEntries(
-  CONDITIONS_PAGES.flatMap(p => p.sections).map(s => [
-    s.titre,
-    { titre: s.titre, icone: s.icone, paragraphes: [s.texte] },
-  ])
-)
+// Version complète des conditions d'utilisation : page Termes et services
+// et fenêtre « conditions complètes » de l'inscription.
+const MISE_A_JOUR = '11 octobre 2026'
 
-// Version lisible d'un seul bloc : conditions + avertissement médical.
 export const CONDITIONS_COMPLETES_SECTIONS = [
-  conditionsParTitre['Utilisation du service'],
+  {
+    titre: 'Utilisation du service',
+    icone: 'ti-device-mobile',
+    paragraphes: [
+      'ADJUVET est un outil de référence et de calcul destiné aux professionnels et aux étudiants du domaine vétérinaire.',
+      'Votre compte est personnel. Vous êtes responsable de la confidentialité de votre mot de passe et de toute activité effectuée avec votre compte.',
+    ],
+    liste: [
+      'Le contenu d\'ADJUVET ne peut pas être copié, redistribué ou revendu sans l\'autorisation écrite de VetLab Studio.',
+      'Il est interdit de contourner les limites des forfaits ou de tenter d\'accéder aux données d\'autres utilisateurs ou d\'autres cliniques.',
+      'VetLab Studio peut suspendre ou fermer un compte qui ne respecte pas ces conditions.',
+    ],
+  },
   ...AVERTISSEMENT_SECTIONS,
-  conditionsParTitre['Modifications'],
-  conditionsParTitre['Abonnement et facturation'],
-  conditionsParTitre['Contact'],
-  conditionsParTitre['Acceptation des termes'],
+  {
+    titre: 'Modifications',
+    icone: 'ti-edit',
+    paragraphes: [
+      'Ces conditions peuvent être mises à jour. Les changements importants vous seront communiqués par courriel ou dans l\'application. En continuant à utiliser ADJUVET après une mise à jour, vous acceptez les nouvelles conditions.',
+      `Dernière mise à jour : ${MISE_A_JOUR}.`,
+    ],
+  },
+  {
+    titre: 'Abonnement et facturation',
+    icone: 'ti-credit-card',
+    paragraphes: [
+      'Le forfait Gratuit donne accès aux fonctionnalités de base. Les forfaits Pro (mensuel ou annuel) et Équipe (annuel, par siège) sont des abonnements payants, aux tarifs affichés dans l\'application au moment de l\'abonnement. Les paiements sont traités par Stripe.',
+      'L\'abonnement se renouvelle automatiquement à la fin de chaque période, jusqu\'à son annulation.',
+    ],
+    liste: [
+      'Annulation : vous pouvez annuler à tout moment depuis la page Abonnement. Vous gardez l\'accès jusqu\'à la fin de la période déjà payée, puis votre compte passe au forfait gratuit.',
+      'Remboursement : aucun remboursement n\'est offert pour une période partiellement utilisée.',
+      'Paiement refusé : si un renouvellement échoue, de nouvelles tentatives sont faites automatiquement pendant quelques jours. Si vous avez déjà payé votre abonnement, vous gardez l\'accès pendant ces tentatives, pour un maximum de 21 jours. Sinon, l\'accès est suspendu jusqu\'à ce que le paiement passe. Si le paiement n\'aboutit pas, l\'abonnement est annulé.',
+      'Essais gratuits et codes promotionnels : ils peuvent être offerts à certaines conditions. À la fin d\'un essai, l\'abonnement devient payant, sauf s\'il est annulé avant.',
+      'Changement de tarif : VetLab Studio peut modifier ses tarifs. Un changement s\'applique au renouvellement suivant et vous est communiqué à l\'avance.',
+    ],
+  },
+  {
+    titre: 'Forfait Équipe',
+    icone: 'ti-users',
+    paragraphes: [
+      'Le forfait Équipe permet à une clinique de partager l\'accès Pro et ses données (protocoles, médicaments personnalisés, chartes, babillard, tâches) entre ses membres.',
+    ],
+    liste: [
+      'Le propriétaire de la clinique paie l\'abonnement et choisit le nombre de sièges. Les membres n\'ont aucuns frais.',
+      'Le propriétaire et les admins invitent et retirent les membres. Une invitation expire après 7 jours.',
+      'Un membre peut quitter l\'équipe à tout moment depuis la page Abonnement. Il repasse alors au forfait gratuit.',
+      'Une personne qui a un abonnement Pro et rejoint une clinique voit son abonnement Pro s\'arrêter à la fin de la période déjà payée.',
+      'Transfert de propriété : le nouveau propriétaire doit accepter et entrer sa propre carte. L\'abonnement de l\'ancien propriétaire s\'arrête à la fin de la période déjà payée, et celui-ci reste dans l\'équipe comme admin. Une demande de transfert expire après 7 jours.',
+      'Si l\'abonnement Équipe prend fin, tous les membres repassent au forfait gratuit. Les données de la clinique sont conservées et redeviennent accessibles si l\'abonnement est réactivé.',
+      'Les données partagées appartiennent à la clinique : un membre qui quitte l\'équipe n\'y a plus accès.',
+    ],
+  },
+  {
+    titre: 'Compte et suppression',
+    icone: 'ti-user-x',
+    paragraphes: [
+      'Vous pouvez supprimer votre compte à tout moment depuis la page Profil. La suppression est définitive.',
+    ],
+    liste: [
+      'Votre abonnement est annulé immédiatement, sans remboursement de la période en cours.',
+      'Vos données personnelles sont supprimées, conformément à la Politique de confidentialité.',
+      'Si vous êtes propriétaire d\'une clinique, la clinique et toutes ses données partagées sont supprimées, et ses membres repassent au forfait gratuit. Pour l\'éviter, transférez d\'abord la propriété à un membre.',
+    ],
+  },
+  {
+    titre: 'Contact',
+    icone: 'ti-mail',
+    paragraphes: [
+      'Pour toute question concernant ces conditions, écrivez-nous à info@vetlabstudio.ca. Nous répondons généralement dans un délai de 2 à 3 jours ouvrables.',
+    ],
+  },
+  {
+    titre: 'Acceptation des termes',
+    icone: 'ti-circle-check',
+    paragraphes: [
+      'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation, ainsi que l\'Avertissement médical et la Politique de confidentialité. Ces conditions constituent un accord entre vous et VetLab Studio.',
+    ],
+  },
 ]

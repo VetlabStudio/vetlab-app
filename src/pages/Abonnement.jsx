@@ -87,6 +87,8 @@ export default function Abonnement() {
   const [modalUpgrade, setModalUpgrade] = useState(false)
   const [modalSieges, setModalSieges] = useState(false)
   const [modalCheckout, setModalCheckout] = useState(false)
+  const [modalQuitter, setModalQuitter] = useState(false)
+  const [quitterEnCours, setQuitterEnCours] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [clientSecret, setClientSecret] = useState(null)
   const [erreur, setErreur] = useState('')
@@ -107,9 +109,14 @@ export default function Abonnement() {
     if (profil?.plan === 'equipe') setOnglet('equipe')
   }, [profil?.plan])
 
+  /* Un membre d'une clinique n'a pas d'abonnement à lui : sans cette
+     condition, on affichait son ancien abonnement Pro comme si c'était
+     celui de la clinique. */
+  const aSonAbonnement = (estPro && !estEquipe) || roleEquipe === 'proprietaire'
+
   useEffect(() => {
-    if (estPro || estEquipe) chargerSubDetails()
-  }, [estPro, estEquipe])
+    if (aSonAbonnement) chargerSubDetails()
+  }, [aSonAbonnement])
 
   useEffect(() => {
     if (subDetails?.quantity) setNombreMembres(subDetails.quantity)
@@ -244,6 +251,21 @@ export default function Abonnement() {
     setUpgradeLoading(false)
   }
 
+  async function quitterEquipe() {
+    setQuitterEnCours(true)
+    setErreur('')
+    const { error } = await supabase.rpc('quitter_equipe')
+    setQuitterEnCours(false)
+    setModalQuitter(false)
+    if (error) {
+      setErreur("Vous n'avez pas pu quitter l'équipe. Réessayez.")
+      return
+    }
+    if (chargerProfil) await chargerProfil()
+    setOnglet('personnel')
+    afficherSucces("Vous avez quitté l'équipe. Votre compte est passé au forfait gratuit.")
+  }
+
   const fetchClientSecret = useCallback(() => Promise.resolve(clientSecret), [clientSecret])
 
   const nomForfait = estEquipe ? 'Équipe' : estPro ? 'Pro' : 'Gratuit'
@@ -282,7 +304,11 @@ export default function Abonnement() {
                 {estEquipe && subDetails.quantity > 1 && (
                   <span>{subDetails.quantity} sièges · </span>
                 )}
-                Renouvellement le {formaterDate(subDetails.current_period_end)}
+                {subDetails.statut === 'past_due'
+                  ? 'Paiement en retard : mettez à jour votre carte'
+                  : subDetails.fin_programmee
+                    ? `Se termine le ${formaterDate(subDetails.fin_programmee)}`
+                    : `Renouvellement le ${formaterDate(subDetails.current_period_end)}`}
               </p>
             )}
           </div>
@@ -452,9 +478,17 @@ export default function Abonnement() {
                   </button>
                 </div>
               ) : (
-                <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>
-                  Les sièges sont gérés par le propriétaire de la clinique.
-                </p>
+                <>
+                  <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>
+                    Les sièges sont gérés par le propriétaire de la clinique.
+                  </p>
+                  <button
+                    onClick={() => setModalQuitter(true)}
+                    style={{ background: 'none', border: 'none', padding: 0, marginTop: 12, fontSize: 13, fontWeight: 600, color: 'var(--accent-red)', cursor: 'pointer' }}
+                  >
+                    Quitter l'équipe
+                  </button>
+                </>
               )}
             </>
           ) : estPro ? (
@@ -594,6 +628,40 @@ export default function Abonnement() {
                 disabled={upgradeLoading || nombreMembres < nombreMembresActifs}
               >
                 {upgradeLoading ? 'Mise à jour en cours...' : `Confirmer — ${calculerPrixEquipe(nombreMembres)} $ / année`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL QUITTER L'ÉQUIPE ─── */}
+      {modalQuitter && (
+        <div className="popup-overlay" onClick={() => { if (!quitterEnCours) setModalQuitter(false) }}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-header">
+              <span>Quitter l'équipe</span>
+              <button className="popup-close" onClick={() => setModalQuitter(false)} disabled={quitterEnCours}>✕</button>
+            </div>
+            <div style={{ textAlign: 'center', padding: '4px 0 8px' }}>
+              <i className="ti ti-logout" style={{ fontSize: 36, color: 'var(--accent-red)', display: 'block', marginBottom: 12 }}></i>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                Vous perdrez l'accès au forfait Équipe et aux données partagées de la clinique
+                (protocoles, médicaments, babillard, tâches). Votre compte repassera au forfait gratuit.
+              </p>
+              <p style={{ fontSize: 13, color: 'var(--text-hint)', lineHeight: 1.6, marginTop: 10 }}>
+                Pour revenir, il faudra une nouvelle invitation.
+              </p>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <button className="btn-supprimer-medicament" onClick={quitterEquipe} disabled={quitterEnCours}>
+                {quitterEnCours ? 'En cours...' : "Quitter l'équipe"}
+              </button>
+              <button
+                style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 16px', fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer' }}
+                onClick={() => setModalQuitter(false)}
+                disabled={quitterEnCours}
+              >
+                Annuler
               </button>
             </div>
           </div>

@@ -41,11 +41,11 @@ Deno.serve(async (req) => {
 
     const subscriptions = await stripe.subscriptions.list({
       customer: profile.stripe_customer_id,
-      status: 'active',
-      limit: 1,
+      status: 'all',
+      limit: 20,
     })
 
-    const sub = subscriptions.data[0]
+    const sub = subscriptions.data.find(s => ['active', 'trialing', 'past_due'].includes(s.status))
     if (!sub) {
       return new Response(JSON.stringify({ subscription: null }), {
         status: 200,
@@ -57,6 +57,9 @@ Deno.serve(async (req) => {
       subscription: {
         current_period_end: sub.current_period_end,
         quantity: sub.items.data[0]?.quantity || 1,
+        statut: sub.status,
+        // Date de fin si l'abonnement a été annulé et court jusqu'à la fin de la période.
+        fin_programmee: sub.cancel_at || (sub.cancel_at_period_end ? sub.current_period_end : null),
       },
     }), {
       status: 200,
