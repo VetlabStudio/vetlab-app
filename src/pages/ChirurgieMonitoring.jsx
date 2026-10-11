@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import { TitreContext } from '../App'
 import { useProfil } from '../context/ProfilContext'
 import IconesEspeces, { ESPECES_CONFIG } from '../components/IconesEspeces'
+import { correspond } from '../lib/recherche'
 import {
   COULEUR_PRIMAIRE, COULEUR_ROUGE, creerDocument, bandeauPatient, sectionGrille,
   titreSection, tableau, dureeEntre, finaliser, ouvrir,
@@ -517,9 +518,8 @@ export default function ChirurgieMonitoring() {
   /* La liste complète est déjà chargée, le filtrage se fait
      localement : pas d'aller-retour réseau à chaque lettre. */
   const medicamentsFiltres = useMemo(() => {
-    const q = rechercheMed.trim().toLowerCase()
-    if (!q) return tousMedicaments
-    return tousMedicaments.filter(m => (m.nom || '').toLowerCase().includes(q))
+    if (!rechercheMed.trim()) return tousMedicaments
+    return tousMedicaments.filter(m => correspond(m.nom, rechercheMed))
   }, [tousMedicaments, rechercheMed])
 
   const medicamentsGroupes = useMemo(() => {

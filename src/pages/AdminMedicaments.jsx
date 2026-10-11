@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import IconesEspeces from '../components/IconesEspeces'
+import { correspond } from '../lib/recherche'
 
 export default function AdminMedicaments() {
   const navigate = useNavigate()
@@ -38,7 +39,7 @@ export default function AdminMedicaments() {
   }
 
   const medicamentsFiltres = medicaments.filter(m => {
-    const matchRecherche = m.nom.toLowerCase().includes(recherche.toLowerCase())
+    const matchRecherche = correspond(m.nom, recherche)
     const matchCategorie = categorieFiltre === 'tous' || m.categorie === categorieFiltre
     return matchRecherche && matchCategorie
   })

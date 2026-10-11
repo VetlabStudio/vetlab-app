@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import BadgePro from '../components/BadgePro'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 import LienFavoris from '../components/LienFavoris'
+import { correspond } from '../lib/recherche'
 
 const DROGUES = [
   { id: 'anesthesiques',     label: 'Anesthésiques /\nAnalgésiques', route: '/drogues/anesthesiques', accent: false },
@@ -25,30 +26,34 @@ export default function Pharmacologie() {
   const { estPro, estEquipe, teamId } = useProfil()
   const [showProMsg, setShowProMsg] = useState(false)
   const [recherche, setRecherche] = useState('')
-  const [resultats, setResultats] = useState([])
+  const [catalogue, setCatalogue] = useState([])
   const [dropdownOuvert, setDropdownOuvert] = useState(false)
-  const timerRef = useRef(null)
 
+  /* Les noms sont chargés une seule fois puis filtrés sur place : la
+     recherche ignore ainsi les accents, les majuscules et les traits
+     d'union (« cefalexine » trouve « Céfalexine »), ce que le filtre
+     ilike de la base ne permet pas. */
   useEffect(() => {
-    if (!recherche.trim()) { setResultats([]); return }
-    clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => chercher(recherche), 200)
-    return () => clearTimeout(timerRef.current)
-  }, [recherche])
+    let actif = true
+    async function charger() {
+      const { data: { user } } = await supabase.auth.getUser()
+      const champs = 'id, nom, categorie, sous_categories, especes'
+      const [{ data: meds }, { data: custom }] = await Promise.all([
+        supabase.from('medicaments').select(champs).order('nom'),
+        estEquipe && teamId
+          ? supabase.from('medicaments_custom').select(champs).eq('equipe_id', teamId)
+          : supabase.from('medicaments_custom').select(champs).eq('user_id', user?.id),
+      ])
+      if (actif) setCatalogue([...(meds || []), ...(custom || [])].sort((a, b) => a.nom.localeCompare(b.nom, 'fr')))
+    }
+    charger()
+    return () => { actif = false }
+  }, [estEquipe, teamId])
 
-  async function chercher(terme) {
-    const { data: { user } } = await supabase.auth.getUser()
-    const q = terme.trim()
-
-    const [{ data: meds }, { data: custom }] = await Promise.all([
-      supabase.from('medicaments').select('id, nom, categorie, sous_categories, especes').ilike('nom', `%${q}%`).order('nom').limit(20),
-      estEquipe && teamId
-        ? supabase.from('medicaments_custom').select('id, nom, categorie, sous_categories, especes').eq('equipe_id', teamId).ilike('nom', `%${q}%`).order('nom').limit(10)
-        : supabase.from('medicaments_custom').select('id, nom, categorie, sous_categories, especes').eq('user_id', user.id).ilike('nom', `%${q}%`).order('nom').limit(10),
-    ])
-
-    setResultats([...(meds || []), ...(custom || [])].sort((a, b) => a.nom.localeCompare(b.nom)).slice(0, 25))
-  }
+  const resultats = useMemo(() => {
+    if (!recherche.trim()) return []
+    return catalogue.filter(m => correspond(m.nom, recherche)).slice(0, 25)
+  }, [catalogue, recherche])
 
   return (
     <div className="page-calculateurs">

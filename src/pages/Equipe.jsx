@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
 import AvisRenseignementsClients from '../components/AvisRenseignementsClients'
+import { cleRecherche } from '../lib/recherche'
 
 const COULEURS = ['#F8F6B8', '#BBE6D5', '#BCAADC', '#B8D4F5', '#EDECE9', '#F5C9B8']
 
@@ -143,10 +144,14 @@ function Babillard() {
     }
   }
 
-  function membresFiltrés() {
+  function rechercheTag() {
     const selectionStart = textareaRef.current?.selectionStart || form.contenu.length
-    const recherche = form.contenu.slice(tagPos + 1, selectionStart).toLowerCase()
-    return membres.filter(m => m.profiles?.nom?.toLowerCase().includes(recherche))
+    return cleRecherche(form.contenu.slice(tagPos + 1, selectionStart))
+  }
+
+  function membresFiltrés() {
+    const recherche = rechercheTag()
+    return membres.filter(m => m.profiles?.nom && cleRecherche(m.profiles.nom).includes(recherche))
   }
 
   function insererTag(nom) {
@@ -282,18 +287,14 @@ function Babillard() {
   const notesEpinglees = notes.filter(n => n.epingle)
   const notesFiltrees = notes.filter(note => {
     if (note.epingle) return false
-    const nomAuteur = note.profiles?.nom?.toLowerCase() || ''
-    const matchRecherche = !recherche.trim() || nomAuteur.includes(recherche.toLowerCase())
+    const matchRecherche = !recherche.trim() || cleRecherche(note.profiles?.nom).includes(cleRecherche(recherche))
     const matchCategorie = filtreCategorie === 'Toutes' || note.categorie === filtreCategorie
     return matchRecherche && matchCategorie
   })
   const archivesFiltrees = archives.filter(note => {
     if (!rechercheArchives.trim()) return true
-    const nomAuteur = note.profiles?.nom?.toLowerCase() || ''
-    const contenu = (note.contenu || '').toLowerCase()
-    const titre = (note.titre || '').toLowerCase()
-    const q = rechercheArchives.toLowerCase()
-    return nomAuteur.includes(q) || contenu.includes(q) || titre.includes(q)
+    const q = cleRecherche(rechercheArchives)
+    return [note.profiles?.nom, note.contenu, note.titre].some(t => cleRecherche(t).includes(q))
   })
 
   return (
@@ -578,13 +579,13 @@ function Babillard() {
                   rows={4}
                   style={{ ...inputStyle, resize: 'none', fontFamily: 'inherit' }}
                 />
-                {showTagMenu && (membresFiltrés().length > 0 || 'equipe'.includes(form.contenu.slice(tagPos + 1, textareaRef.current?.selectionStart || form.contenu.length).toLowerCase())) && (
+                {showTagMenu && (membresFiltrés().length > 0 || 'equipe'.includes(rechercheTag())) && (
                   <div style={{
                     position: 'absolute', bottom: '100%', left: 0, right: 0,
                     background: 'var(--bg-card)', border: '1px solid var(--border)',
                     borderRadius: 10, padding: 4, zIndex: 10,
                   }}>
-                    {'equipe'.includes(form.contenu.slice(tagPos + 1, textareaRef.current?.selectionStart || form.contenu.length).toLowerCase()) && (
+                    {'equipe'.includes(rechercheTag()) && (
                       <button onClick={() => insererTag('equipe')} style={{
                         display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px',
                         background: 'none', border: 'none', cursor: 'pointer', fontSize: 14,

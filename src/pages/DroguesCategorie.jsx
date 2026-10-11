@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import IconesEspeces from '../components/IconesEspeces'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
+import { correspond } from '../lib/recherche'
 
 export default function DroguesCategorie({ categorie }) {
   const navigate = useNavigate()
@@ -120,7 +121,7 @@ export default function DroguesCategorie({ categorie }) {
 
   // Filtrer par recherche et sous-catégorie
   const medsFiltres = medicaments.filter(m => {
-    const matchRecherche = m.nom.toLowerCase().includes(recherche.toLowerCase())
+    const matchRecherche = correspond(m.nom, recherche)
     const matchSousCat = sousCategorieFiltree === 'Tous' ||
       (m.sous_categories || []).includes(sousCategorieFiltree)
     return matchRecherche && matchSousCat
