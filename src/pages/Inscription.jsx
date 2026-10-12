@@ -239,6 +239,7 @@ export default function Inscription() {
               className="auth2-input"
               value={nom}
               onChange={(e) => setNom(e.target.value)}
+              autoComplete="name"
               placeholder=" "
               required
             />
@@ -250,6 +251,7 @@ export default function Inscription() {
               className="auth2-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
               placeholder=" "
               required
             />
@@ -262,6 +264,7 @@ export default function Inscription() {
                 className="auth2-input"
                 value={motDePasse}
                 onChange={(e) => setMotDePasse(e.target.value)}
+                autoComplete="new-password"
                 placeholder=" "
                 minLength={12}
                 required
@@ -280,6 +283,7 @@ export default function Inscription() {
                 className="auth2-input"
                 value={confirmation}
                 onChange={(e) => setConfirmation(e.target.value)}
+                autoComplete="new-password"
                 placeholder=" "
                 required
               />

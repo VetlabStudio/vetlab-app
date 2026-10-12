@@ -3,10 +3,41 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
+import { useProfil } from '../context/ProfilContext'
+
+const TAILLE_AVATAR = 512
+
+/* Réduit la photo avant l'envoi : une photo de téléphone pèse souvent
+   plusieurs Mo et dépasse la limite du stockage. Le résultat est un
+   JPEG d'au plus 512 px de côté, quelques dizaines de ko. */
+async function preparerAvatar(fichier) {
+  const url = URL.createObjectURL(fichier)
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const image = new Image()
+      image.onload = () => resolve(image)
+      image.onerror = reject
+      image.src = url
+    })
+    const echelle = Math.min(1, TAILLE_AVATAR / Math.max(img.width || 1, img.height || 1))
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.max(1, Math.round(img.width * echelle))
+    canvas.height = Math.max(1, Math.round(img.height * echelle))
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+    return await new Promise((resolve, reject) =>
+      canvas.toBlob(b => (b ? resolve(b) : reject(new Error('conversion'))), 'image/jpeg', 0.85)
+    )
+  } finally {
+    URL.revokeObjectURL(url)
+  }
+}
 
 export default function Profil() {
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
+  // Rafraîchit l'avatar affiché ailleurs (menu Plus).
+  const { chargerProfil: rafraichirContexte } = useProfil()
+  const [envoiAvatar, setEnvoiAvatar] = useState(false)
 
   const [profil, setProfil] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -124,15 +155,45 @@ export default function Profil() {
   // ─── PHOTO DE PROFIL ──────────────────────────
   async function changerAvatar(e) {
     const file = e.target.files[0]
+    // Vider le champ permet de choisir de nouveau la même photo.
+    e.target.value = ''
     if (!file) return
-    const ext = file.name.split('.').pop()
-    const path = `${profil.id}.${ext}`
-    const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
-    if (uploadError) return
-    const { data } = supabase.storage.from('avatars').getPublicUrl(path)
-    const url = data.publicUrl + '?t=' + Date.now()
-    await supabase.from('profiles').update({ avatar_url: url }).eq('id', profil.id)
-    setAvatarUrl(url)
+    setEnvoiAvatar(true)
+    setErreur('')
+    try {
+      let image
+      try {
+        image = await preparerAvatar(file)
+      } catch {
+        throw new Error("Ce format d'image n'est pas pris en charge. Essayez une photo JPG ou PNG.")
+      }
+      const path = `${profil.id}.jpg`
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, image, { upsert: true, contentType: 'image/jpeg' })
+      if (uploadError) {
+        console.error('Envoi de la photo impossible:', uploadError)
+        throw new Error(`La photo n'a pas pu être envoyée (${uploadError.message}).`)
+      }
+      const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+      const url = data.publicUrl + '?t=' + Date.now()
+      const { error: majErr } = await supabase.from('profiles').update({ avatar_url: url }).eq('id', profil.id)
+      if (majErr) {
+        console.error('Enregistrement de la photo impossible:', majErr)
+        throw new Error("La photo a été envoyée, mais n'a pas pu être enregistrée dans votre profil.")
+      }
+      setAvatarUrl(url)
+      // Les anciennes versions (autre extension) ne servent plus.
+      supabase.storage.from('avatars')
+        .remove(['png', 'jpeg', 'heic', 'webp', 'gif'].map(ext => `${profil.id}.${ext}`))
+        .catch(() => {})
+      if (rafraichirContexte) rafraichirContexte()
+      afficherSucces('Photo de profil mise à jour.')
+    } catch (err) {
+      setErreur(err.message)
+    } finally {
+      setEnvoiAvatar(false)
+    }
   }
 
   // ─── SUPPRIMER COMPTE ─────────────────────────
@@ -202,13 +263,21 @@ export default function Profil() {
 
       {/* AVATAR + NOM */}
       <div className="profil-top">
-        <div className="profil-avatar" onClick={() => fileInputRef.current?.click()}>
+        <div
+          className="profil-avatar"
+          onClick={() => { if (!envoiAvatar) fileInputRef.current?.click() }}
+          role="button"
+          tabIndex={0}
+          aria-label={envoiAvatar ? 'Envoi de la photo en cours' : 'Changer la photo de profil'}
+          onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !envoiAvatar) { e.preventDefault(); fileInputRef.current?.click() } }}
+          style={envoiAvatar ? { opacity: 0.6 } : undefined}
+        >
           {avatarUrl
             ? <img src={avatarUrl} alt="Avatar" className="profil-avatar-img" />
             : <i className="ti ti-user" style={{ fontSize: 40, color: 'var(--text-hint)' }}></i>
           }
           <div className="profil-avatar-overlay">
-            <i className="ti ti-camera" style={{ fontSize: 16, color: 'white' }}></i>
+            <i className={`ti ${envoiAvatar ? 'ti-loader-2' : 'ti-camera'}`} style={{ fontSize: 16, color: 'white' }}></i>
           </div>
         </div>
         <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={changerAvatar} />
@@ -273,7 +342,7 @@ export default function Profil() {
             </div>
             <div className="form-groupe">
               <label className="form-label" htmlFor="profil-nom">Nom complet</label>
-              <input id="profil-nom" className="form-input" placeholder="ex. Marie Tremblay" value={nouveauNom} onChange={e => setNouveauNom(e.target.value)} autoFocus />
+              <input id="profil-nom" className="form-input" autoComplete="name" placeholder="ex. Marie Tremblay" value={nouveauNom} onChange={e => setNouveauNom(e.target.value)} autoFocus />
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderNom} disabled={saving}>
@@ -293,7 +362,7 @@ export default function Profil() {
             </div>
             <div className="form-groupe">
               <label className="form-label" htmlFor="profil-courriel">Nouveau courriel</label>
-              <input id="profil-courriel" className="form-input" placeholder="ex. nom@clinique.ca" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} autoFocus />
+              <input id="profil-courriel" className="form-input" autoComplete="email" placeholder="ex. nom@clinique.ca" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} autoFocus />
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderEmail} disabled={saving}>
@@ -314,12 +383,12 @@ export default function Profil() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div className="form-groupe">
                 <label className="form-label" htmlFor="profil-mdp">Nouveau mot de passe</label>
-                <input id="profil-mdp" className="form-input" type="password" value={nouveauMdp} onChange={e => setNouveauMdp(e.target.value)} autoFocus />
+                <input id="profil-mdp" className="form-input" autoComplete="new-password" type="password" value={nouveauMdp} onChange={e => setNouveauMdp(e.target.value)} autoFocus />
                 <IndicateurMotDePasse motDePasse={nouveauMdp} email={profil?.email} nom={profil?.nom} />
               </div>
               <div className="form-groupe">
                 <label className="form-label" htmlFor="profil-mdp-confirmation">Confirmer le mot de passe</label>
-                <input id="profil-mdp-confirmation" className="form-input" placeholder="Retapez le mot de passe" type="password" value={confirmMdp} onChange={e => setConfirmMdp(e.target.value)} />
+                <input id="profil-mdp-confirmation" className="form-input" autoComplete="new-password" placeholder="Retapez le mot de passe" type="password" value={confirmMdp} onChange={e => setConfirmMdp(e.target.value)} />
               </div>
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}

@@ -247,6 +247,7 @@ export default function RejoindreEquipe() {
                     <input
                       style={styleChamp}
                       placeholder="Votre nom"
+                      autoComplete="name"
                       value={nom}
                       onChange={e => { setNom(e.target.value); setErreurInscription('') }}
                       autoFocus
@@ -254,6 +255,7 @@ export default function RejoindreEquipe() {
                     <input
                       style={styleChamp}
                       type="password"
+                      autoComplete="new-password"
                       placeholder="Mot de passe"
                       value={motDePasse}
                       onChange={e => { setMotDePasse(e.target.value); setErreurInscription('') }}
@@ -262,6 +264,7 @@ export default function RejoindreEquipe() {
                     <input
                       style={styleChamp}
                       type="password"
+                      autoComplete="new-password"
                       placeholder="Confirmer le mot de passe"
                       value={confirmation}
                       onChange={e => { setConfirmation(e.target.value); setErreurInscription('') }}

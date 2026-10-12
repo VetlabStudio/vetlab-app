@@ -65,6 +65,7 @@ export default function Connexion() {
               className="auth2-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
               placeholder=" "
               required
             />
@@ -77,6 +78,7 @@ export default function Connexion() {
                 className="auth2-input"
                 value={motDePasse}
                 onChange={(e) => setMotDePasse(e.target.value)}
+                autoComplete="current-password"
                 placeholder=" "
                 required
               />
