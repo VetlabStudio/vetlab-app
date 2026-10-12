@@ -200,9 +200,15 @@ export default function Inscription() {
             </p>
           )}
           {estDernier && (
-            <button className="cgu-btn" onClick={handleAccepter} disabled={chargement}>
-              {chargement ? 'Création...' : "J'accepte"}
-            </button>
+            <div className="cgu-actions">
+              {/* Annuler abandonne l'inscription : rien n'a encore été créé. */}
+              <button className="cgu-btn-annuler" onClick={() => navigate('/connexion')} disabled={chargement}>
+                Annuler
+              </button>
+              <button className="cgu-btn" onClick={handleAccepter} disabled={chargement}>
+                {chargement ? 'Création...' : "J'accepte"}
+              </button>
+            </div>
           )}
           <div className="cgu-dots">
             {CGU_PAGES.map((_, i) => (
