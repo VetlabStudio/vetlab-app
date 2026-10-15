@@ -21,6 +21,21 @@ const DROGUES = [
   { id: 'urgence',           label: 'Urgence',                        route: '/drogues/urgence',        accent: true },
 ]
 
+/* Supabase renvoie au plus 1 000 lignes par requête : on lit par
+   pages tant qu'une page revient pleine, pour ne jamais tronquer
+   le catalogue sans le savoir. */
+const TAILLE_PAGE = 1000
+async function toutLire(requete) {
+  let tout = []
+  for (let debut = 0; ; debut += TAILLE_PAGE) {
+    const { data, error } = await requete().range(debut, debut + TAILLE_PAGE - 1)
+    if (error || !data) break
+    tout = tout.concat(data)
+    if (data.length < TAILLE_PAGE) break
+  }
+  return tout
+}
+
 export default function Pharmacologie() {
   const navigate = useNavigate()
   const { estPro, estEquipe, teamId } = useProfil()
@@ -38,13 +53,13 @@ export default function Pharmacologie() {
     async function charger() {
       const { data: { user } } = await supabase.auth.getUser()
       const champs = 'id, nom, categorie, sous_categories, especes'
-      const [{ data: meds }, { data: custom }] = await Promise.all([
-        supabase.from('medicaments').select(champs).order('nom'),
-        estEquipe && teamId
-          ? supabase.from('medicaments_custom').select(champs).eq('equipe_id', teamId)
-          : supabase.from('medicaments_custom').select(champs).eq('user_id', user?.id),
+      const [meds, custom] = await Promise.all([
+        toutLire(() => supabase.from('medicaments').select(champs).order('nom')),
+        toutLire(() => estEquipe && teamId
+          ? supabase.from('medicaments_custom').select(champs).eq('equipe_id', teamId).order('nom')
+          : supabase.from('medicaments_custom').select(champs).eq('user_id', user?.id).order('nom')),
       ])
-      if (actif) setCatalogue([...(meds || []), ...(custom || [])].sort((a, b) => a.nom.localeCompare(b.nom, 'fr')))
+      if (actif) setCatalogue([...meds, ...custom].sort((a, b) => a.nom.localeCompare(b.nom, 'fr')))
     }
     charger()
     return () => { actif = false }

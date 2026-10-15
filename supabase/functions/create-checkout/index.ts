@@ -1,6 +1,8 @@
 import Stripe from 'npm:stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+const APP_URL = (Deno.env.get('APP_URL') || 'https://adjuvet.app').replace(/\/+$/, '')
+
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2023-10-16' })
 
 const PRICE_EQUIPE = Deno.env.get('STRIPE_PRICE_EQUIPE') || ''
@@ -132,7 +134,8 @@ Deno.serve(async (req) => {
     payment_method_collection: 'if_required',
     locale: 'fr',
     ui_mode: 'embedded',
-    return_url: `${req.headers.get('origin')}/abonnement?paiement=succes`,
+    // Adresse fixe : l'en-tête Origin vient du navigateur et peut manquer.
+    return_url: `${APP_URL}/abonnement?paiement=succes`,
   })
 
   return json({ clientSecret: session.client_secret })

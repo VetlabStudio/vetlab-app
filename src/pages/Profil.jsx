@@ -131,9 +131,10 @@ export default function Profil() {
     const { error } = await supabase.auth.updateUser({ email: nouveauEmail.trim() })
     setSaving(false)
     if (error) return setErreur('Erreur : ' + error.message)
-    setProfil(prev => ({ ...prev, email: nouveauEmail.trim() }))
+    /* L'adresse affichée ne change pas encore : elle ne change dans
+       le compte qu'une fois le lien de confirmation ouvert. */
     setModalEmail(false)
-    afficherSucces('Un courriel de confirmation a été envoyé.')
+    afficherSucces(`Ouvrez le lien de confirmation envoyé à ${nouveauEmail.trim()} : votre adresse changera ensuite.`)
   }
 
   // ─── MODIFIER MOT DE PASSE ────────────────────

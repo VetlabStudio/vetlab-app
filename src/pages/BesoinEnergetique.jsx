@@ -259,6 +259,19 @@ export default function BesoinEnergetique() {
           </span>
         </div>
 
+        {/* La formule linéaire n'est fiable qu'entre 2 et 45 kg environ :
+            hors de cette plage, on montre aussi le résultat de la formule
+            exponentielle, sans remplacer le calcul. */}
+        {bee > 0 && (poidsKg < 2 || poidsKg > 45) && (
+          <div className="calc-avertissement" role="note">
+            <i className="ti ti-alert-triangle" aria-hidden="true"></i>
+            <span>
+              Sous 2 kg ou au-dessus de 45 kg, la formule linéaire perd en précision.
+              Avec 70 × poids<sup>0,75</sup>, le BEE serait d'environ {Math.round(70 * Math.pow(poidsKg, 0.75))} kcal/jour.
+            </span>
+          </div>
+        )}
+
         {/* ─── CONDITION ──────────────────────── */}
         <div className="champ">
           <label>Condition / stade de vie</label>

@@ -184,15 +184,11 @@ function Babillard() {
     }).select('id').single()
 
     if (taggedIds.length > 0) {
-      const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
-      const auteurNom = monProfil?.nom || user.email
+      // Le texte de la notification est composé par le serveur.
       await supabase.functions.invoke('send-notification', {
         body: {
           recipients: taggedIds,
           type: 'tag_babillard',
-          message: tagEquipe
-            ? `${auteurNom} a tagué toute l'équipe dans le babillard`
-            : `${auteurNom} vous a tagué dans le babillard`,
           reference_type: 'babillard',
           reference_id: newMsg?.id || null,
         },
@@ -769,12 +765,10 @@ function Taches() {
       modifie_le: new Date().toISOString(),
     }).select('id').single()
     if (form.assignee_id && form.assignee_id !== user.id) {
-      const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
       await supabase.functions.invoke('send-notification', {
         body: {
           recipients: [form.assignee_id],
           type: 'tache_assignee',
-          message: `${monProfil?.nom || user.email} vous a assigné une tâche : ${form.titre.trim()}`,
           reference_type: 'tache',
           reference_id: newTache?.id || null,
         },
@@ -800,12 +794,10 @@ function Taches() {
       modifie_le: new Date().toISOString(),
     }).eq('id', tacheActive.id)
     if (editForm.assignee_id && editForm.assignee_id !== tacheActive.assignee_id && editForm.assignee_id !== user.id) {
-      const { data: monProfil } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
       await supabase.functions.invoke('send-notification', {
         body: {
           recipients: [editForm.assignee_id],
           type: 'tache_assignee',
-          message: `${monProfil?.nom || user.email} vous a assigné une tâche : ${editForm.titre.trim()}`,
           reference_type: 'tache',
           reference_id: tacheActive.id,
         },

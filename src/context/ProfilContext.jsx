@@ -83,7 +83,7 @@ export function ProfilProvider({ children }) {
         .single()
       profilData = nouveauProfil
     } else if (!profilData.email && user.email) {
-      await supabase.from('profiles').update({ email: user.email }).eq('id', user.id)
+      // Le serveur synchronise profiles.email avec le compte : on complète seulement l'affichage.
       profilData = { ...profilData, email: user.email }
     }
 
