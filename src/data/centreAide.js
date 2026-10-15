@@ -374,6 +374,14 @@ export const SECTIONS_AIDE = [
         texte: "Au moins 12 caractères. Une courte phrase de quelques mots est facile à retenir et difficile à deviner. Les mots de passe trop courants, les suites (1234, azerty) et ceux qui contiennent votre nom ou votre courriel sont refusés.",
       },
       {
+        titre: 'Mot de passe oublié',
+        etapes: [
+          'Sur la page de connexion, appuyez sur « Mot de passe oublié ? ».',
+          "Entrez l'adresse de votre compte, puis « Recevoir le lien ».",
+          'Ouvrez le lien reçu par courriel (valable une heure) et choisissez un nouveau mot de passe.',
+        ],
+      },
+      {
         titre: 'Changer votre photo de profil',
         texte: 'Dans Plus > Profil, appuyez sur votre photo (ou sur le cercle) et choisissez une image.',
       },

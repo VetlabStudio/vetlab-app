@@ -23,6 +23,10 @@ function invitationExpiree(creeLe: string | null): boolean {
 // quelqu'un sans qu'il comprenne pourquoi.
 const norm = (e?: string | null) => (e || '').trim().toLowerCase()
 
+// Une invitation ne donne jamais plus que « admin » : la propriété ne
+// change que par un transfert.
+const roleAutorise = (role?: string | null) => (role === 'admin' ? 'admin' : 'membre')
+
 /* Annule l'abonnement Pro de la personne qui rejoint l'équipe.
 
    Tout de suite, avec remboursement au prorata de la portion non
@@ -116,6 +120,21 @@ Deno.serve(async (req) => {
     })
   }
 
+  /* Déjà dans cette clinique (ex. le propriétaire qui ouvre une
+     invitation à sa propre adresse) : on ne touche pas à son rôle,
+     sinon il pourrait être rétrogradé. */
+  const { data: dejaMembre } = await supabase
+    .from('membres_equipe')
+    .select('role')
+    .eq('equipe_id', invitation.team_id)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (dejaMembre) {
+    await supabase.from('team_invitations').update({ status: 'accepted' }).eq('id', invitation.id)
+    return json({ ok: true, dejaMembre: true })
+  }
+
   // Vérifier la capacité de l'équipe
   const { data: equipe } = await supabase
     .from('equipes')
@@ -136,7 +155,7 @@ Deno.serve(async (req) => {
   const { error: membreErr } = await supabase
     .from('membres_equipe')
     .upsert(
-      { equipe_id: invitation.team_id, user_id: user.id, role: invitation.role },
+      { equipe_id: invitation.team_id, user_id: user.id, role: roleAutorise(invitation.role) },
       { onConflict: 'equipe_id,user_id' }
     )
 
@@ -176,7 +195,7 @@ Deno.serve(async (req) => {
      le moindre événement Stripe parte. */
   const { error: profilErr } = await supabase
     .from('profiles')
-    .update({ plan: 'equipe', equipe_id: invitation.team_id, role: invitation.role })
+    .update({ plan: 'equipe', equipe_id: invitation.team_id, role: roleAutorise(invitation.role) })
     .eq('id', user.id)
 
   if (profilErr) {

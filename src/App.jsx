@@ -1,10 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from 'react-router-dom'
-import { useEffect, useState, useRef, useLayoutEffect, createContext, useContext, lazy, Suspense } from 'react'
-import { supabase } from './lib/supabase'
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, useNavigationType } from 'react-router-dom'
+import { useEffect, useState, useRef, useLayoutEffect, useCallback, createContext, useContext, lazy, Suspense } from 'react'
+import { supabase, ouvertDepuisLienRecuperation } from './lib/supabase'
 import { ProfilProvider } from './context/ProfilContext'
 
 const Connexion = lazy(() => import('./pages/Connexion'))
 const Inscription = lazy(() => import('./pages/Inscription'))
+const MotDePasseOublie = lazy(() => import('./pages/MotDePasseOublie'))
+const NouveauMotDePasse = lazy(() => import('./pages/NouveauMotDePasse'))
 const CompteSupprime = lazy(() => import('./pages/CompteSupprime'))
 const Accueil = lazy(() => import('./pages/Accueil'))
 const Calculateurs = lazy(() => import('./pages/Calculateurs'))
@@ -254,6 +256,22 @@ function LayoutAdmin({ children }) {
   )
 }
 
+/* Un lien « mot de passe oublié » ouvre une session : sans ce renvoi,
+   la personne arriverait connectée à l'Accueil sans avoir choisi de
+   nouveau mot de passe (par exemple si l'adresse de retour n'est pas
+   autorisée dans Supabase et que le lien mène à la racine). */
+function RenvoiRecuperation({ actif, onFait }) {
+  const navigate = useNavigate()
+  const location = useLocation()
+  useEffect(() => {
+    if (!actif) return
+    if (location.pathname !== '/nouveau-mot-de-passe') navigate('/nouveau-mot-de-passe', { replace: true })
+    // Un seul renvoi : ensuite la personne circule librement.
+    onFait()
+  }, [actif, location.pathname, navigate, onFait])
+  return null
+}
+
 function RouteProtegee({ session, children }) {
   if (!session) return <Navigate to="/connexion" replace />
   return <LayoutPrincipal>{children}</LayoutPrincipal>
@@ -267,13 +285,16 @@ function RouteProtegeeAdmin({ session, children }) {
 
 export default function App() {
   const [session, setSession] = useState(undefined)
+  const [recuperation, setRecuperation] = useState(ouvertDepuisLienRecuperation)
+  const finirRecuperation = useCallback(() => setRecuperation(false), [])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
+      if (event === 'PASSWORD_RECOVERY') setRecuperation(true)
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -284,12 +305,15 @@ export default function App() {
     <ProfilProvider>
     <BrowserRouter>
       <ScrollToTop />
+      <RenvoiRecuperation actif={recuperation} onFait={finirRecuperation} />
       <Routes>
 
         {/* AUTH */}
         <Route path="/connexion" element={<Suspense fallback={null}><Connexion /></Suspense>} />
         <Route path="/inscription" element={<Suspense fallback={null}><Inscription /></Suspense>} />
         <Route path="/compte-supprime" element={<Suspense fallback={null}><CompteSupprime /></Suspense>} />
+        <Route path="/mot-de-passe-oublie" element={<Suspense fallback={null}><MotDePasseOublie /></Suspense>} />
+        <Route path="/nouveau-mot-de-passe" element={<Suspense fallback={null}><NouveauMotDePasse /></Suspense>} />
 
         {/* ACCUEIL */}
         <Route path="/accueil" element={<RouteProtegee session={session}><Accueil /></RouteProtegee>} />

@@ -1,5 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+const JOURS_VALIDITE = 7
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -32,7 +34,7 @@ Deno.serve(async (req) => {
 
   const { data } = await supabase
     .from('team_invitations')
-    .select('id, team_id, email, role, equipes(nom)')
+    .select('id, team_id, email, role, created_at, equipes(nom)')
     .eq('token', token)
     .eq('status', 'pending')
     .single()
@@ -43,6 +45,11 @@ Deno.serve(async (req) => {
     })
   }
 
+  /* Cette fonction est la seule porte d'entrée de la page « Rejoindre
+     une équipe » : la table des invitations n'a pas à être lisible
+     sans connexion. Même règle d'expiration que l'adhésion. */
+  const expiree = Date.now() - new Date(data.created_at).getTime() > JOURS_VALIDITE * 86400000
+
   // On retourne uniquement le strict minimum nécessaire à l'affichage
   return new Response(JSON.stringify({
     invitation: {
@@ -50,6 +57,7 @@ Deno.serve(async (req) => {
       team_id: data.team_id,
       email: data.email,
       role: data.role,
+      expiree,
       equipes: { nom: (data.equipes as any)?.nom },
     }
   }), {

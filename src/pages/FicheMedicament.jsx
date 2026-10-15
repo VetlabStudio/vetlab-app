@@ -102,7 +102,7 @@ const { setTitreCustom } = useContext(TitreContext)
   const [resultat, setResultat] = useState(null)
   const [horsPlage, setHorsPlage] = useState(false)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro } = useProfil()
+  const { estPro, roleEquipe } = useProfil()
 const estProRef = useRef(estPro)
 estProRef.current = estPro
 const medicamentRef = useRef(null)
@@ -191,7 +191,9 @@ useEffect(() => {
       const [{ data: medBase }, { data: medCustomParId }, { data: medCustomDirect }, { data: favData }, { data: profil }] = await Promise.all([
   supabase.from('medicaments').select('*').eq('id', id).maybeSingle(),
   supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
-  supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('id', id).maybeSingle(),
+  // Sans filtre sur l'auteur : un médicament de clinique créé par un admin
+  // doit s'ouvrir pour toute l'équipe (les règles d'accès limitent déjà la lecture).
+  supabase.from('medicaments_custom').select('*').eq('id', id).maybeSingle(),
   supabase.from('favoris').select('id').eq('user_id', user.id).or(`medicament_id.eq.${id},custom_medicament_id.eq.${id}`).limit(1),
   supabase.from('profiles').select('role').eq('id', user.id).single(),
 ])
@@ -266,9 +268,12 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
       }).join(', ')
     : ''}
 </span></div>
+        {/* Un médicament de la clinique ne se modifie que par le propriétaire et les admins. */}
+        {!(estMedCustom && medicament?.equipe_id && roleEquipe !== 'admin' && roleEquipe !== 'proprietaire') && (
         <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => estPro ? navigate(`/drogues/fiche/${id}/personnaliser`) : setShowProMsg(true)}>
   {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-edit" style={{ marginRight: 4 }}></i>}Modifier
 </button>
+        )}
       </div>
 
       <div className="fiche-scroll">

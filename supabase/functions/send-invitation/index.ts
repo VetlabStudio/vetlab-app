@@ -1,24 +1,90 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || ''
 const FROM = 'Adjuvet <noreply@adjuvet.app>'
+const APP_URL = (Deno.env.get('APP_URL') || 'https://adjuvet.app').replace(/\/+$/, '')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+function json(body: object, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  })
+}
+
+// Tout texte venu de la base passe par ici avant d'entrer dans le HTML.
+function echapper(texte: string) {
+  return texte
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+/* ════════════════════════════════════════════════════════════
+   La fonction ne reçoit que l'identifiant d'une invitation déjà
+   créée. L'adresse, le nom de la clinique et le lien viennent de
+   la base, jamais de la requête : sinon n'importe qui pourrait
+   envoyer, au nom d'Adjuvet, le courriel et le lien de son choix.
+   Seuls le propriétaire et les admins de la clinique peuvent
+   déclencher l'envoi.
+   ════════════════════════════════════════════════════════════ */
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
-  const { email, nomClinique, lien, emailInvite } = await req.json()
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader) return json({ error: 'Non autorisé' }, 401)
 
-  if (!email || !lien) {
-    return new Response(JSON.stringify({ error: 'Paramètres manquants' }), {
-      status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  )
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''))
+  if (authError || !user) return json({ error: 'Non autorisé' }, 401)
+
+  let invitationId: unknown
+  try {
+    invitationId = (await req.json())?.invitationId
+  } catch {
+    return json({ error: 'Corps de requête invalide' }, 400)
+  }
+  if (!invitationId || typeof invitationId !== 'string') return json({ error: 'Paramètres manquants' }, 400)
+
+  const { data: invitation } = await supabase
+    .from('team_invitations')
+    .select('id, team_id, email, token, status')
+    .eq('id', invitationId)
+    .maybeSingle()
+
+  if (!invitation || invitation.status !== 'pending') return json({ error: 'Invitation introuvable' }, 404)
+
+  const { data: membre } = await supabase
+    .from('membres_equipe')
+    .select('role')
+    .eq('equipe_id', invitation.team_id)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (membre?.role !== 'admin' && membre?.role !== 'proprietaire') {
+    return json({ error: 'Accès refusé' }, 403)
   }
 
-  const nomAffiche = nomClinique || 'votre équipe'
-  const adresseInvite = emailInvite || email
+  const { data: equipe } = await supabase
+    .from('equipes')
+    .select('nom')
+    .eq('id', invitation.team_id)
+    .maybeSingle()
+
+  const email = invitation.email
+  const lien = `${APP_URL}/rejoindre?token=${encodeURIComponent(invitation.token)}`
+  const nomAffiche = echapper(equipe?.nom || 'votre équipe')
+  const adresseInvite = echapper(email)
 
   /* ══════════════════════════════════════════════════════════
      COULEURS ET CONTRASTES
@@ -143,9 +209,7 @@ img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;}
 
   if (!RESEND_API_KEY) {
     console.warn('RESEND_API_KEY manquant - courriel non envoyé')
-    return new Response(JSON.stringify({ ok: true, skipped: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    return json({ ok: true, skipped: true })
   }
 
   const res = await fetch('https://api.resend.com/emails', {
@@ -154,7 +218,7 @@ img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;}
     body: JSON.stringify({
       from: FROM,
       to: [email],
-      subject: `Invitation à rejoindre ${nomAffiche} sur Adjuvet`,
+      subject: `Invitation à rejoindre ${(equipe?.nom || 'votre équipe').replace(/[\r\n]+/g, ' ')} sur Adjuvet`,
       html,
     }),
   })
@@ -162,12 +226,8 @@ img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;}
   if (!res.ok) {
     const errBody = await res.text()
     console.error('Resend send-invitation error:', errBody)
-    return new Response(JSON.stringify({ error: 'Erreur envoi courriel' }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    return json({ error: 'Erreur envoi courriel' }, 500)
   }
 
-  return new Response(JSON.stringify({ ok: true }), {
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-  })
+  return json({ ok: true })
 })

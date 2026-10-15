@@ -13,6 +13,10 @@ function json(body: object, status = 200) {
 
 const norm = (e?: string | null) => (e || '').trim().toLowerCase()
 
+// Une invitation ne donne jamais plus que « admin » : la propriété ne
+// change que par un transfert.
+const roleAutorise = (role?: string | null) => (role === 'admin' ? 'admin' : 'membre')
+
 const JOURS_VALIDITE = 7
 
 // Même longueur que l'app (src/lib/motDePasse.js) : la création par
@@ -103,7 +107,7 @@ Deno.serve(async (req) => {
     nom: nom?.trim() || '',
     plan: 'equipe',
     equipe_id: invitation.team_id,
-    role: invitation.role,
+    role: roleAutorise(invitation.role),
   }, { onConflict: 'id' })
 
   if (profilErr) {
@@ -115,7 +119,7 @@ Deno.serve(async (req) => {
   const { error: membreErr } = await supabase.from('membres_equipe').insert({
     equipe_id: invitation.team_id,
     user_id: userId,
-    role: invitation.role,
+    role: roleAutorise(invitation.role),
   })
 
   if (membreErr) {

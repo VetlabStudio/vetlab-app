@@ -56,10 +56,11 @@ const { data: customParMedId } = await supabase
   .maybeSingle()
 
 // Chercher par id direct (médicament créé de zéro)
+// Sans filtre sur l'auteur : un admin modifie aussi un médicament de la
+// clinique créé par un autre admin (les règles d'accès décident).
 const { data: customDirect } = await supabase
   .from('medicaments_custom')
   .select('*')
-  .eq('user_id', user.id)
   .eq('id', id)
   .maybeSingle()
 const custom = customParMedId || customDirect

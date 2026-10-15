@@ -88,6 +88,7 @@ export default function Connexion() {
               <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>
           </div>
+          <Link to="/mot-de-passe-oublie" className="auth2-oublie">Mot de passe oublié ?</Link>
           {erreur && <p className="erreur" style={{ textAlign: 'center' }}>{erreur}</p>}
           <button type="submit" className="auth2-btn" disabled={chargement}>
             {chargement ? 'Connexion...' : 'Se connecter'}

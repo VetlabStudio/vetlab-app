@@ -255,14 +255,15 @@ export default function EquipeGestion() {
     await supabase.from('team_invitations').delete().eq('team_id', teamId).eq('email', email)
 
     const token = crypto.randomUUID()
-    const { error } = await supabase.from('team_invitations').insert({
+    const { data: invitation, error } = await supabase.from('team_invitations').insert({
       team_id: teamId, email, role, invited_by: userId, token, status: 'pending',
-    })
+    }).select('id').single()
     if (error) return { ok: false, message: error.message || 'Erreur inconnue' }
 
-    const baseUrl = import.meta.env.VITE_APP_URL || 'https://adjuvet.app'
+    /* Le serveur retrouve l'adresse, le nom de la clinique et le lien
+       à partir de l'invitation : rien d'autre ne lui est confié. */
     const { error: erreurCourriel } = await supabase.functions.invoke('send-invitation', {
-      body: { email, nomClinique: equipe?.nom || 'notre équipe', lien: `${baseUrl}/rejoindre?token=${token}`, emailInvite: email },
+      body: { invitationId: invitation.id },
     })
     // L'invitation existe, mais le courriel n'est pas parti : on le dit.
     if (erreurCourriel) return { ok: false, message: "invitation créée, mais le courriel n'a pas pu être envoyé" }

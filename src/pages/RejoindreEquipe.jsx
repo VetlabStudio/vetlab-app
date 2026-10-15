@@ -36,30 +36,21 @@ export default function RejoindreEquipe() {
   }, [token])
 
   async function verifierToken() {
-    const { data, error } = await supabase
-      .from('team_invitations')
-      .select('*')
-      .eq('token', token)
-      .eq('status', 'pending')
-      .single()
+    /* Passe par la fonction serveur : la table des invitations n'est
+       pas lisible sans connexion, et la page est ouverte avant. */
+    const { data, error } = await supabase.functions.invoke('verify-invitation', { body: { token } })
+    const invitationRecue = data?.invitation
 
-    if (error || !data) { setStatut('invalide'); return }
+    if (error || !invitationRecue) { setStatut('invalide'); return }
 
-    /* Même règle que côté serveur, pour annoncer l'expiration
-       tout de suite au lieu de laisser remplir un formulaire
-       qui serait refusé à l'envoi. */
-    if (Date.now() - new Date(data.created_at).getTime() > JOURS_VALIDITE * 86400000) {
+    /* Annoncer l'expiration tout de suite, au lieu de laisser remplir
+       un formulaire qui serait refusé à l'envoi. */
+    if (invitationRecue.expiree) {
       setStatut('expiree')
       return
     }
 
-    const { data: equipeData } = await supabase
-      .from('equipes')
-      .select('nom')
-      .eq('id', data.team_id)
-      .single()
-
-    setInvitation({ ...data, equipes: equipeData || null })
+    setInvitation(invitationRecue)
     setStatut('valide')
   }
 

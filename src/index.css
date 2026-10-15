@@ -10200,6 +10200,22 @@ input[type="number"] {
   text-decoration: underline;
 }
 
+.auth2-aide {
+  margin: 0 0 4px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #213058;
+}
+
+.auth2-oublie {
+  align-self: flex-end;
+  margin: -4px 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #213058;
+  text-decoration: underline;
+}
+
 .auth2-photo {
   position: relative;
   z-index: 1;
