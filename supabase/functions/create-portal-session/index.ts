@@ -1,5 +1,6 @@
 import Stripe from 'npm:stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { synchroniserCourrielStripe } from '../_shared/stripeCourriel.ts'
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!)
 const RETURN_URL = Deno.env.get('APP_URL') + '/profil'
@@ -34,6 +35,12 @@ Deno.serve(async (req) => {
       .single()
 
     if (!profile?.stripe_customer_id) throw new Error('Aucun abonnement actif trouvé.')
+
+    // Le portail affiche le courriel du client Stripe : il doit suivre celui du compte.
+    if (user.email) {
+      await synchroniserCourrielStripe(stripe, profile.stripe_customer_id, user.email)
+        .catch((erreur) => console.error('Synchronisation du courriel Stripe :', erreur))
+    }
 
     const session = await stripe.billingPortal.sessions.create({
       customer: profile.stripe_customer_id,

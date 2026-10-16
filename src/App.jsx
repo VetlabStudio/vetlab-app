@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, useNavigationType } from 'react-router-dom'
 import { useEffect, useState, useRef, useLayoutEffect, useCallback, createContext, useContext, lazy, Suspense } from 'react'
-import { supabase, ouvertDepuisLienRecuperation } from './lib/supabase'
+import { supabase, ouvertDepuisLienRecuperation, sessionEnregistree } from './lib/supabase'
 import { ProfilProvider } from './context/ProfilContext'
 
 const Connexion = lazy(() => import('./pages/Connexion'))
@@ -127,6 +127,9 @@ import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 import BottomNavAdmin from './components/BottomNavAdmin'
 import ProGate from './components/ProGate'
+import RequiertInternet from './components/RequiertInternet'
+import BandeauHorsLigne from './components/BandeauHorsLigne'
+import { prechargerDonnees, oublierDonnees } from './lib/horsLigne'
 
 export const TitreContext = createContext({ titreCustom: '', setTitreCustom: () => {} })
 export const NavGuardContext = createContext({ navGuardActif: false, setNavGuardActif: () => {}, navGuardMessage: '', setNavGuardMessage: () => {}, demanderConfirmation: (action) => action() })
@@ -181,6 +184,7 @@ function LayoutPrincipal({ children }) {
         <NavDirectionContext.Provider value={{ skipNextRef }}>
         <div className={`app-layout ${estAccueil ? 'app-layout-accueil' : ''}`}>
           <Header />
+          <BandeauHorsLigne />
           <main className="contenu-principal" style={{ position: 'relative', overflow: 'hidden' }}>
             {/* La page sortante n'apparaît que pendant l'animation. */}
             {transition && (
@@ -289,15 +293,25 @@ export default function App() {
   const finirRecuperation = useCallback(() => setRecuperation(false), [])
 
   useEffect(() => {
+    /* Sans réseau, le client peut annoncer une session vide faute de
+       pouvoir la renouveler : on garde alors celle de l'appareil, qui
+       n'est effacée qu'à la déconnexion. */
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
+      setSession(session ?? sessionEnregistree())
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session)
+      setSession(session ?? (event === 'SIGNED_OUT' ? null : sessionEnregistree()))
+      if (event === 'SIGNED_OUT') oublierDonnees()
       if (event === 'PASSWORD_RECOVERY') setRecuperation(true)
     })
     return () => subscription.unsubscribe()
   }, [])
+
+  // Garde les tables de référence sur l'appareil pour l'usage hors ligne.
+  const userId = session?.user?.id
+  useEffect(() => {
+    if (userId && import.meta.env.PROD) prechargerDonnees(userId).catch(() => {})
+  }, [userId])
 
   if (session === undefined) return null
 
@@ -317,11 +331,11 @@ export default function App() {
 
         {/* ACCUEIL */}
         <Route path="/accueil" element={<RouteProtegee session={session}><Accueil /></RouteProtegee>} />
-        <Route path="/notes" element={<RouteProtegee session={session}><Notes /></RouteProtegee>} />
-        <Route path="/notes/:id" element={<RouteProtegee session={session}><NoteDetail /></RouteProtegee>} />
-        <Route path="/equipe" element={<RouteProtegee session={session}><Equipe /></RouteProtegee>} />
-        <Route path="/equipe/gestion" element={<RouteProtegee session={session}><EquipeGestion /></RouteProtegee>} />
-        <Route path="/equipe/transfert" element={<RouteProtegee session={session}><TransfertPropriete /></RouteProtegee>} />
+        <Route path="/notes" element={<RouteProtegee session={session}><RequiertInternet><Notes /></RequiertInternet></RouteProtegee>} />
+        <Route path="/notes/:id" element={<RouteProtegee session={session}><RequiertInternet><NoteDetail /></RequiertInternet></RouteProtegee>} />
+        <Route path="/equipe" element={<RouteProtegee session={session}><RequiertInternet><Equipe /></RequiertInternet></RouteProtegee>} />
+        <Route path="/equipe/gestion" element={<RouteProtegee session={session}><RequiertInternet><EquipeGestion /></RequiertInternet></RouteProtegee>} />
+        <Route path="/equipe/transfert" element={<RouteProtegee session={session}><RequiertInternet><TransfertPropriete /></RequiertInternet></RouteProtegee>} />
         <Route path="/rejoindre" element={<Suspense fallback={null}><RejoindreEquipe /></Suspense>} />
 
         {/* CALCULATEURS */}
@@ -362,14 +376,14 @@ export default function App() {
         <Route path="/drogues/respiratoires" element={<RouteProtegee session={session}><DroguesRespiratoires /></RouteProtegee>} />
         <Route path="/drogues/urgence" element={<RouteProtegee session={session}><DroguesUrgence /></RouteProtegee>} />
         <Route path="/drogues/mes-drogues" element={<RouteProtegee session={session}><MesDrogues /></RouteProtegee>} />
-        <Route path="/drogues/ajouter" element={<RouteProtegee session={session}><AjouterMedicament /></RouteProtegee>} />
+        <Route path="/drogues/ajouter" element={<RouteProtegee session={session}><RequiertInternet><AjouterMedicament /></RequiertInternet></RouteProtegee>} />
         <Route path="/drogues/fiche/:id" element={<RouteProtegee session={session}><FicheMedicament /></RouteProtegee>} />
         <Route path="/drogues/toxicologie" element={<RouteProtegee session={session}><ProGate><Toxicologie /></ProGate></RouteProtegee>} />
-        <Route path="/drogues/fiche/:id/personnaliser" element={<RouteProtegee session={session}><MedicamentCustomForm /></RouteProtegee>} />
+        <Route path="/drogues/fiche/:id/personnaliser" element={<RouteProtegee session={session}><RequiertInternet><MedicamentCustomForm /></RequiertInternet></RouteProtegee>} />
 
         {/* LABO */}
         <Route path="/labo" element={<RouteProtegee session={session}><LaboAccueil /></RouteProtegee>} />
-        <Route path="/labo/nouveau" element={<RouteProtegee session={session}><LaboNouveauProtocole /></RouteProtegee>} />
+        <Route path="/labo/nouveau" element={<RouteProtegee session={session}><RequiertInternet><LaboNouveauProtocole /></RequiertInternet></RouteProtegee>} />
         <Route path="/labo/protocole/:protocoleId" element={<RouteProtegee session={session}><LaboProtocoleDetail /></RouteProtegee>} />
         <Route path="/labo/aeac9309-185f-4f2c-81b2-dfed3d4e55aa" element={<RouteProtegee session={session}><LaboUrologie /></RouteProtegee>} />
         <Route path="/labo/urologie/valeurs" element={<RouteProtegee session={session}><ProGate><LaboUrologieValeurs /></ProGate></RouteProtegee>} />
@@ -395,21 +409,21 @@ export default function App() {
         <Route path="/labo/radiologie/notions-base" element={<RouteProtegee session={session}><ProGate><LaRadiologieBases /></ProGate></RouteProtegee>} />
         <Route path="/labo/radiologie/depannage" element={<RouteProtegee session={session}><LaRadiologieDepannage /></RouteProtegee>} />
         <Route path="/labo/radiologie/charte" element={<RouteProtegee session={session}><ProGate><LaRadiologieCharte /></ProGate></RouteProtegee>} />
-        <Route path="/labo/radiologie/charte/nouvelle" element={<RouteProtegee session={session}><ProGate><LaRadiologieCharteForm /></ProGate></RouteProtegee>} />
-        <Route path="/labo/radiologie/charte/:id/modifier" element={<RouteProtegee session={session}><ProGate><LaRadiologieCharteForm /></ProGate></RouteProtegee>} />
+        <Route path="/labo/radiologie/charte/nouvelle" element={<RouteProtegee session={session}><ProGate><RequiertInternet><LaRadiologieCharteForm /></RequiertInternet></ProGate></RouteProtegee>} />
+        <Route path="/labo/radiologie/charte/:id/modifier" element={<RouteProtegee session={session}><ProGate><RequiertInternet><LaRadiologieCharteForm /></RequiertInternet></ProGate></RouteProtegee>} />
         <Route path="/labo/:categorieId" element={<RouteProtegee session={session}><LaboProtocoles /></RouteProtegee>} />
 
         {/* CHIRURGIE */}
         <Route path="/chirurgie/instruments" element={<RouteProtegee session={session}><ProGate><ChirurgieInstruments /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/tubes" element={<RouteProtegee session={session}><ProGate><ChirurgieTubes /></ProGate></RouteProtegee>} />
-        <Route path="/chirurgie/monitoring" element={<RouteProtegee session={session}><ProGate><ChirurgieMonitoring /></ProGate></RouteProtegee>} />
+        <Route path="/chirurgie/monitoring" element={<RouteProtegee session={session}><ProGate><RequiertInternet><ChirurgieMonitoring /></RequiertInternet></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/capnographie" element={<RouteProtegee session={session}><ProGate><ChirurgieCapnographie /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/post-op" element={<RouteProtegee session={session}><ProGate><ChirurgiePostOp /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/douleur" element={<RouteProtegee session={session}><ChirurgieDouleur /></RouteProtegee>} />
         <Route path="/chirurgie/ecg" element={<RouteProtegee session={session}><ProGate><ChirurgieECG /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/electrodes" element={<RouteProtegee session={session}><ProGate><ChirurgieECGElectrodes /></ProGate></RouteProtegee>} />
         <Route path="/chirurgie/ecg/anomalies" element={<RouteProtegee session={session}><ProGate><ChirurgieECGAnomalies /></ProGate></RouteProtegee>} />
-        <Route path="/soins-generaux/examen-physique" element={<RouteProtegee session={session}><ProGate><SoinsGenerauxExamenPhysique /></ProGate></RouteProtegee>} />
+        <Route path="/soins-generaux/examen-physique" element={<RouteProtegee session={session}><ProGate><RequiertInternet><SoinsGenerauxExamenPhysique /></RequiertInternet></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/glasgow" element={<RouteProtegee session={session}><ProGate><ScoreGlasgow /></ProGate></RouteProtegee>} />
 
         {/* NUTRITION */}
@@ -431,11 +445,11 @@ export default function App() {
 
         {/* MENU */}
         <Route path="/menu" element={<RouteProtegee session={session}><Menu /></RouteProtegee>} />
-        <Route path="/notifications" element={<RouteProtegee session={session}><Notifications /></RouteProtegee>} />
+        <Route path="/notifications" element={<RouteProtegee session={session}><RequiertInternet><Notifications /></RequiertInternet></RouteProtegee>} />
 
         {/* PROFIL */}
-        <Route path="/profil" element={<RouteProtegee session={session}><Profil /></RouteProtegee>} />
-        <Route path="/abonnement" element={<RouteProtegee session={session}><Abonnement /></RouteProtegee>} />
+        <Route path="/profil" element={<RouteProtegee session={session}><RequiertInternet><Profil /></RequiertInternet></RouteProtegee>} />
+        <Route path="/abonnement" element={<RouteProtegee session={session}><RequiertInternet><Abonnement /></RequiertInternet></RouteProtegee>} />
         <Route path="/sources-references" element={<RouteProtegee session={session}><SourcesReferences /></RouteProtegee>} />
         <Route path="/disclaimer" element={<RouteProtegee session={session}><Disclaimer /></RouteProtegee>} />
         <Route path="/politique-confidentialite" element={<RouteProtegee session={session}><PolitiqueConfidentialite /></RouteProtegee>} />

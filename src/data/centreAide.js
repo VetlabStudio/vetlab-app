@@ -36,6 +36,16 @@ export const SECTIONS_AIDE = [
         ],
       },
       {
+        titre: 'Utiliser Adjuvet sans internet',
+        texte: "Une fois ouverte avec internet sur un appareil, l'app s'ouvre aussi sans connexion. Votre session reste ouverte et le contenu enregistré se met à jour chaque fois qu'internet revient.",
+        etapes: [
+          'Disponibles sans internet : les calculateurs, la pharmacologie (avec vos médicaments personnalisés et vos favoris), le laboratoire, la chirurgie, les soins généraux, la nutrition et le centre d\'aide.',
+          "Hors ligne, le contenu est celui de votre dernière connexion. Les images s'enregistrent la première fois qu'elles s'affichent.",
+          "Demandent internet : l'équipe, les notes, les notifications, le profil, l'abonnement, le monitoring, l'examen physique et tout ajout ou modification. Ces sections l'indiquent et s'ouvrent dès que la connexion revient.",
+          'Un bandeau jaune sous le titre de la page indique que vous êtes hors ligne.',
+        ],
+      },
+      {
         titre: 'Trouver un médicament',
         etapes: [
           "Sur l'Accueil, ouvrez Pharmacologie.",

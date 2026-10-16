@@ -11684,3 +11684,54 @@ summary:focus-visible {
     scroll-behavior: auto !important;
   }
 }
+
+/* ─── HORS LIGNE ──────────────────────────────── */
+
+.bandeau-hors-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--yellow);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 16px;
+  text-align: center;
+}
+
+.bandeau-hors-ligne .ti {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.page-hors-ligne {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 48px 24px;
+  max-width: 360px;
+  margin: 0 auto;
+  color: var(--text-primary);
+}
+
+.page-hors-ligne .ti {
+  font-size: 44px;
+  color: var(--text-hint);
+}
+
+.page-hors-ligne h2 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.page-hors-ligne p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.page-hors-ligne-aide {
+  color: var(--text-hint);
+}

@@ -1,5 +1,6 @@
 import Stripe from 'npm:stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { synchroniserCourrielStripe } from '../_shared/stripeCourriel.ts'
 
 const APP_URL = (Deno.env.get('APP_URL') || 'https://adjuvet.app').replace(/\/+$/, '')
 
@@ -102,6 +103,12 @@ Deno.serve(async (req) => {
     } catch {
       customerId = null
     }
+  }
+
+  // Le courriel du compte a pu changer depuis la création du client Stripe.
+  if (customerId && user.email) {
+    await synchroniserCourrielStripe(stripe, customerId, user.email)
+      .catch((erreur) => console.error('Synchronisation du courriel Stripe :', erreur))
   }
 
   if (!customerId) {

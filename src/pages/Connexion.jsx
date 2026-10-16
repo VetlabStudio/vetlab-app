@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { isAuthRetryableFetchError } from '@supabase/supabase-js'
+import { supabase, horsLigne } from '../lib/supabase'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 
 export default function Connexion() {
@@ -33,7 +34,10 @@ export default function Connexion() {
     })
 
     if (error) {
-      setErreur('Courriel ou mot de passe incorrect.')
+      // Sans réseau, le message « mot de passe incorrect » serait trompeur.
+      setErreur(horsLigne() || isAuthRetryableFetchError(error)
+        ? 'Connexion internet requise pour vous connecter.'
+        : 'Courriel ou mot de passe incorrect.')
     } else {
       navigate(redirectUrl || '/accueil')
     }
