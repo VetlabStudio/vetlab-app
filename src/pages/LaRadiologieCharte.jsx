@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useCharteRadio from '../hooks/useCharteRadio'
 import { qualiteOptions } from '../data/charteRadioOptions'
-import { ESPECES_CONFIG } from '../components/IconesEspeces'
+import { ESPECES_CONFIG } from '../data/especes'
 
 const QUALITE_LABEL = Object.fromEntries(qualiteOptions.map(q => [q.value, q.label]))
 

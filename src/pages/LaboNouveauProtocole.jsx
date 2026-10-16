@@ -11,12 +11,12 @@ export default function LaboNouveauProtocole() {
 
   useEffect(() => {
     if (!peutModifier) navigate(-1)
-  }, [peutModifier])
+  }, [peutModifier, navigate])
   const categorieId = searchParams.get('categorie')
 
   const [titre, setTitre] = useState('')
   const [materiel, setMateriel] = useState([''])
-  const [etapes, setEtapes] = useState([
+  const [etapes, setEtapes] = useState(() => [
     { id: Date.now(), titre: '', description: '' },
   ])
   const [sauvegarde, setSauvegarde] = useState(false)

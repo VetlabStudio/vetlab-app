@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useMemo, useRef } from 'react'
 import { supabase } from '../lib/supabase'
-import { TitreContext } from '../App'
+import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import {
   COULEUR_PRIMAIRE, creerDocument, bandeauPatient, sectionGrille,
@@ -115,15 +115,6 @@ const ESPECES = [
   { id: 'chinchilla',   label: 'Chinchilla',         icone: '/icone-chinchilla.png' },
   { id: 'cobaye',       label: "Cochon d'Inde",      icone: '/icone-cobaye.png' },
   { id: 'herisson',     label: 'Hérisson',           icone: '/icone-herisson.png' },
-]
-
-const SECTIONS = [
-  { id: 'identification', titre: 'Identification',    icone: 'ti-clipboard-text' },
-  { id: 'anamnese',       titre: 'Anamnèse',          icone: 'ti-message-circle', facultatif: true },
-  { id: 'vitaux',         titre: 'Paramètres vitaux', icone: 'ti-heartbeat' },
-  { id: 'general',        titre: 'État général',      icone: 'ti-paw' },
-  { id: 'systemes',       titre: 'Systèmes',          icone: 'ti-stethoscope' },
-  { id: 'complements',    titre: 'Compléments',       icone: 'ti-notes',          facultatif: true },
 ]
 
 function etatInitial() {
@@ -320,6 +311,8 @@ export default function SoinsGenerauxExamenPhysique() {
   const [form, setForm] = useState(etatInitial())
   const [currentId, setCurrentId] = useState(null)
   const [historique, setHistorique] = useState([])
+  // Incrémenté pour recharger l'historique (après un enregistrement).
+  const [versionHistorique, setVersionHistorique] = useState(0)
   const [itemConsulte, setItemConsulte] = useState(null)
   const [showResume, setShowResume] = useState(null)
   const [showIncomplet, setShowIncomplet] = useState(false)
@@ -343,7 +336,7 @@ export default function SoinsGenerauxExamenPhysique() {
   useEffect(() => {
     setTitreCustom(vue === 'formulaire' ? (currentId ? "Modifier l'examen" : 'Nouvel examen') : 'Démarrer un examen')
     return () => setTitreCustom('')
-  }, [vue, currentId])
+  }, [vue, currentId, setTitreCustom])
 
   /* ─── Hauteur réelle de la navigation du bas ─────────── */
   useEffect(() => {
@@ -380,7 +373,7 @@ export default function SoinsGenerauxExamenPhysique() {
         .eq('id', currentId)
         .then(() => {
           setSauvegarde('ok')
-          chargerHistorique()
+          setVersionHistorique(v => v + 1)
         })
     }, 800)
     return () => clearTimeout(t)
@@ -389,9 +382,22 @@ export default function SoinsGenerauxExamenPhysique() {
   const date = new Date()
   const dateAffichee = date.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
 
+  /* Rechargé à l'ouverture, quand le profil arrive (clinique) et à
+     chaque nouvelle version ; « actif » écarte une réponse périmée. */
   useEffect(() => {
+    let actif = true
+    async function chargerHistorique() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const query = supabase.from('examens_physiques').select('*').order('created_at', { ascending: false })
+      const { data } = estEquipe && teamId
+        ? await query.eq('equipe_id', teamId)
+        : await query.eq('user_id', user.id)
+      if (actif) setHistorique(data || [])
+    }
     chargerHistorique()
-  }, [])
+    return () => { actif = false }
+  }, [estEquipe, teamId, versionHistorique])
 
   /* Nom et logo de la clinique, pour l'entête des PDF */
   useEffect(() => {
@@ -403,16 +409,6 @@ export default function SoinsGenerauxExamenPhysique() {
       .single()
       .then(({ data }) => setClinique({ nom: data?.nom || '', logo: data?.logo_url || '' }))
   }, [estEquipe, teamId])
-
-  async function chargerHistorique() {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const query = supabase.from('examens_physiques').select('*').order('created_at', { ascending: false })
-    const { data } = estEquipe && teamId
-      ? await query.eq('equipe_id', teamId)
-      : await query.eq('user_id', user.id)
-    setHistorique(data || [])
-  }
 
   function modifierChamp(champ, valeur) {
     setForm(prev => ({ ...prev, [champ]: valeur }))
@@ -644,7 +640,7 @@ export default function SoinsGenerauxExamenPhysique() {
     const { data } = await supabase.from('examens_physiques').insert(payload).select().single()
     if (data) {
       setCurrentId(data.id)
-      chargerHistorique()
+      setVersionHistorique(v => v + 1)
     }
   }
 
@@ -866,7 +862,7 @@ export default function SoinsGenerauxExamenPhysique() {
       const { data } = await supabase.from('examens_physiques').insert(payload).select().single()
       if (data) setCurrentId(data.id)
     }
-    await chargerHistorique()
+    setVersionHistorique(v => v + 1)
   }
 
   function fermerResume() {

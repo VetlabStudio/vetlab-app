@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
 import AvisRenseignementsClients from '../components/AvisRenseignementsClients'
@@ -35,12 +35,41 @@ function grouperParJour(notes) {
 }
 
 // ─── BABILLARD (notes partagées) ──────────────────────────
+// Texte d'une note, avec les mentions @ en couleur.
+function RenduContenu({ texte, membres }) {
+  if (!texte) return null
+  /* Les noms des membres d'abord, les plus longs en premier, pour garder
+     en entier « Jean-Maxime », « PèreNoëlSecret » ou « Marie Tremblay ».
+     \w ne connaît ni les accents ni les traits d'union : un ancien membre
+     retombe sur un seul mot, accents compris. */
+  const noms = ['equipe', ...membres.map(m => m.profiles?.nom).filter(Boolean)]
+    .sort((a, b) => b.length - a.length)
+    .map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  const regex = new RegExp(`(?<![\\p{L}\\p{N}])@(?:(?:${noms.join('|')})(?![\\p{L}\\p{N}_-])|[\\p{L}\\p{N}_-]+)`, 'gu')
+  const parts = []
+  let lastIndex = 0
+  let match
+  while ((match = regex.exec(texte)) !== null) {
+    if (match.index > lastIndex) parts.push(texte.slice(lastIndex, match.index))
+    parts.push({ mention: match[0] })
+    lastIndex = match.index + match[0].length
+  }
+  if (lastIndex < texte.length) parts.push(texte.slice(lastIndex))
+  return parts.map((part, i) =>
+    typeof part === 'string'
+      ? part
+      : <span key={i} style={{ color: 'var(--primary)', fontWeight: 600 }}>{part.mention}</span>
+  )
+}
+
 function Babillard() {
   const { teamId, roleEquipe } = useProfil()
   const peutEpingler = roleEquipe === 'admin' || roleEquipe === 'proprietaire'
   const [notes, setNotes] = useState([])
   const [membres, setMembres] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [chargementEnCours, setLoading] = useState(true)
+  // Sans clinique, rien à charger.
+  const loading = Boolean(teamId) && chargementEnCours
   const [userId, setUserId] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [noteActive, setNoteActive] = useState(null)
@@ -50,6 +79,8 @@ function Babillard() {
   const [saving, setSaving] = useState(false)
   const [showTagMenu, setShowTagMenu] = useState(false)
   const [tagPos, setTagPos] = useState(0)
+  // Texte tapé après le @, pour filtrer les membres proposés.
+  const [texteTag, setTexteTag] = useState('')
   const textareaRef = useRef(null)
   const [form, setForm] = useState({ titre: '', contenu: '', couleur: COULEURS[0], categorie: '' })
   const [recherche, setRecherche] = useState('')
@@ -59,51 +90,59 @@ function Babillard() {
   const [loadingArchives, setLoadingArchives] = useState(false)
   const [rechercheArchives, setRechercheArchives] = useState('')
 
-  useEffect(() => {
-    if (!teamId) { setLoading(false); return }
-    charger()
+  // Incrémenté pour relire le babillard (temps réel ou après une action).
+  const [version, setVersion] = useState(0)
 
+  useEffect(() => {
+    if (!teamId) return
+    let actif = true
+    async function charger() {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      const limite90j = new Date()
+      limite90j.setDate(limite90j.getDate() - 90)
+      await supabase.from('babillard_messages')
+        .update({ archived: true })
+        .eq('team_id', teamId)
+        .eq('archived', false)
+        .eq('epingle', false)
+        .lt('created_at', limite90j.toISOString())
+
+      const { data: msgs } = await supabase
+        .from('babillard_messages')
+        .select('*, profiles(nom)')
+        .eq('team_id', teamId)
+        .eq('archived', false)
+        .order('created_at', { ascending: false })
+
+      const { data: mems } = await supabase
+        .from('membres_equipe')
+        .select('user_id, profiles(nom)')
+        .eq('equipe_id', teamId)
+
+      if (!actif) return
+      setUserId(user.id)
+      setNotes(msgs || [])
+      setMembres(mems || [])
+      setLoading(false)
+    }
+    charger()
+    return () => { actif = false }
+  }, [teamId, version])
+
+  // Temps réel : une modification par un collègue relit le babillard.
+  useEffect(() => {
+    if (!teamId) return
     const channel = supabase
       .channel('babillard-' + teamId + '-' + Date.now())
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'babillard_messages',
         filter: `team_id=eq.${teamId}`
-      }, () => charger(true))
+      }, () => setVersion(v => v + 1))
       .subscribe()
 
     return () => supabase.removeChannel(channel)
   }, [teamId])
-
-  async function charger(silent = false) {
-    if (!silent) setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    setUserId(user.id)
-
-    const limite90j = new Date()
-    limite90j.setDate(limite90j.getDate() - 90)
-    await supabase.from('babillard_messages')
-      .update({ archived: true })
-      .eq('team_id', teamId)
-      .eq('archived', false)
-      .eq('epingle', false)
-      .lt('created_at', limite90j.toISOString())
-
-    const { data: msgs } = await supabase
-      .from('babillard_messages')
-      .select('*, profiles(nom)')
-      .eq('team_id', teamId)
-      .eq('archived', false)
-      .order('created_at', { ascending: false })
-
-    const { data: mems } = await supabase
-      .from('membres_equipe')
-      .select('user_id, profiles(nom)')
-      .eq('equipe_id', teamId)
-
-    setNotes(msgs || [])
-    setMembres(mems || [])
-    setLoading(false)
-  }
 
   async function chargerArchives() {
     setLoadingArchives(true)
@@ -139,14 +178,14 @@ function Babillard() {
     if (dernier !== -1 && !avant.slice(dernier).includes(' ')) {
       setShowTagMenu(true)
       setTagPos(dernier)
+      setTexteTag(avant.slice(dernier + 1))
     } else {
       setShowTagMenu(false)
     }
   }
 
   function rechercheTag() {
-    const selectionStart = textareaRef.current?.selectionStart || form.contenu.length
-    return cleRecherche(form.contenu.slice(tagPos + 1, selectionStart))
+    return cleRecherche(texteTag)
   }
 
   function membresFiltrés() {
@@ -199,7 +238,7 @@ function Babillard() {
     setShowTagMenu(false)
     setShowForm(false)
     setSaving(false)
-    charger(true)
+    setVersion(v => v + 1)
   }
 
   async function supprimerNote(id) {
@@ -239,32 +278,6 @@ function Babillard() {
     if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`
     if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`
     return d.toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' })
-  }
-
-  function RenduContenu({ texte }) {
-    if (!texte) return null
-    /* Les noms des membres d'abord, les plus longs en premier, pour garder
-       en entier « Jean-Maxime », « PèreNoëlSecret » ou « Marie Tremblay ».
-       \w ne connaît ni les accents ni les traits d'union : un ancien membre
-       retombe sur un seul mot, accents compris. */
-    const noms = ['equipe', ...membres.map(m => m.profiles?.nom).filter(Boolean)]
-      .sort((a, b) => b.length - a.length)
-      .map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-    const regex = new RegExp(`(?<![\\p{L}\\p{N}])@(?:(?:${noms.join('|')})(?![\\p{L}\\p{N}_-])|[\\p{L}\\p{N}_-]+)`, 'gu')
-    const parts = []
-    let lastIndex = 0
-    let match
-    while ((match = regex.exec(texte)) !== null) {
-      if (match.index > lastIndex) parts.push(texte.slice(lastIndex, match.index))
-      parts.push({ mention: match[0] })
-      lastIndex = match.index + match[0].length
-    }
-    if (lastIndex < texte.length) parts.push(texte.slice(lastIndex))
-    return parts.map((part, i) =>
-      typeof part === 'string'
-        ? part
-        : <span key={i} style={{ color: 'var(--primary)', fontWeight: 600 }}>{part.mention}</span>
-    )
   }
 
   function apercu(contenu) {
@@ -356,7 +369,7 @@ function Babillard() {
                   {note.titre ? <p className="note-tuile-titre">{note.titre}</p> : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>}
                 </div>
                 {note.categorie && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4 }}>{note.categorie}</span>}
-                <p className="note-tuile-apercu"><RenduContenu texte={apercu(note.contenu)} /></p>
+                <p className="note-tuile-apercu"><RenduContenu texte={apercu(note.contenu)} membres={membres} /></p>
                 <p className="note-tuile-date"><span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>{' · '}{formatDate(note.created_at)}</p>
               </div>
             ))}
@@ -375,7 +388,7 @@ function Babillard() {
                   {note.titre ? <p className="note-tuile-titre">{note.titre}</p> : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>}
                 </div>
                 {note.categorie && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4 }}>{note.categorie}</span>}
-                <p className="note-tuile-apercu"><RenduContenu texte={apercu(note.contenu)} /></p>
+                <p className="note-tuile-apercu"><RenduContenu texte={apercu(note.contenu)} membres={membres} /></p>
                 <p className="note-tuile-date"><span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>{' · '}{formatDate(note.created_at)}</p>
               </div>
             ))}
@@ -419,7 +432,7 @@ function Babillard() {
                     {note.titre ? <p className="note-tuile-titre">{note.titre}</p> : <p className="note-tuile-titre" style={{ opacity: 0.5 }}>(sans titre)</p>}
                   </div>
                   {note.categorie && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: 'rgba(0,0,0,0.1)', color: '#444', alignSelf: 'flex-start', marginBottom: 4 }}>{note.categorie}</span>}
-                  <p className="note-tuile-apercu"><RenduContenu texte={apercu(note.contenu)} /></p>
+                  <p className="note-tuile-apercu"><RenduContenu texte={apercu(note.contenu)} membres={membres} /></p>
                   <p className="note-tuile-date"><span style={{ fontWeight: 600 }}>{note.profiles?.nom || 'Membre'}</span>{' · '}{formatDate(note.created_at)}</p>
                 </div>
               ))}
@@ -486,7 +499,7 @@ function Babillard() {
               </div>
             </div>
             <p style={{ fontSize: 14, color: '#333', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>
-              <RenduContenu texte={noteActive.contenu} />
+              <RenduContenu texte={noteActive.contenu} membres={membres} />
             </p>
             <div style={{ marginTop: 16 }}>
               <button className="labo-btn-secondary" style={{ width: '100%' }} onClick={() => setNoteActive(null)}>Fermer</button>
@@ -691,7 +704,9 @@ function Taches() {
   const { teamId } = useProfil()
   const [taches, setTaches] = useState([])
   const [membres, setMembres] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [chargementEnCours, setLoading] = useState(true)
+  // Sans clinique, rien à charger.
+  const loading = Boolean(teamId) && chargementEnCours
   const [userId, setUserId] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [tacheActive, setTacheActive] = useState(null)
@@ -701,41 +716,49 @@ function Taches() {
   const [saving, setSaving] = useState(false)
   const [filtreMes, setFiltreMes] = useState(false)
 
-  useEffect(() => {
-    if (!teamId) { setLoading(false); return }
-    charger()
+  // Incrémenté pour relire les tâches (temps réel ou après une action).
+  const [version, setVersion] = useState(0)
 
+  useEffect(() => {
+    if (!teamId) return
+    let actif = true
+    async function charger() {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      const { data: t } = await supabase
+        .from('taches')
+        .select('*')
+        .eq('team_id', teamId)
+        .order('date_echeance', { ascending: true, nullsFirst: false })
+
+      const { data: mems } = await supabase
+        .from('membres_equipe')
+        .select('user_id, profiles(nom)')
+        .eq('equipe_id', teamId)
+
+      if (!actif) return
+      setUserId(user.id)
+      setTaches(t || [])
+      setMembres(mems || [])
+      setLoading(false)
+    }
+    charger()
+    return () => { actif = false }
+  }, [teamId, version])
+
+  // Temps réel : une modification par un collègue relit les tâches.
+  useEffect(() => {
+    if (!teamId) return
     const channel = supabase
       .channel('taches-' + teamId + '-' + Date.now())
       .on('postgres_changes', {
         event: '*', schema: 'public', table: 'taches',
         filter: `team_id=eq.${teamId}`
-      }, () => charger())
+      }, () => setVersion(v => v + 1))
       .subscribe()
 
     return () => supabase.removeChannel(channel)
   }, [teamId])
-
-  async function charger(silent = false) {
-    if (!silent) setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    setUserId(user.id)
-
-    const { data: t } = await supabase
-      .from('taches')
-      .select('*')
-      .eq('team_id', teamId)
-      .order('date_echeance', { ascending: true, nullsFirst: false })
-
-    const { data: mems } = await supabase
-      .from('membres_equipe')
-      .select('user_id, profiles(nom)')
-      .eq('equipe_id', teamId)
-
-    setTaches(t || [])
-    setMembres(mems || [])
-    setLoading(false)
-  }
 
   async function toggleTermine(tache) {
     const { data: { user } } = await supabase.auth.getUser()
@@ -777,7 +800,7 @@ function Taches() {
     setForm({ titre: '', description: '', assignee_id: '', date_echeance: '' })
     setShowForm(false)
     setSaving(false)
-    charger(true)
+    setVersion(v => v + 1)
   }
 
   async function sauvegarderEdit() {
@@ -1139,6 +1162,17 @@ function ClocheMini() {
 
   useEffect(() => {
     if (!estEquipe) return
+    async function charger() {
+      const { data: { user } } = await supabase.auth.getUser()
+      const { data } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(20)
+      setNotifs(data || [])
+      setCount((data || []).filter(n => !n.lu).length)
+    }
     charger()
     let active = true
     let channel = null
@@ -1155,18 +1189,6 @@ function ClocheMini() {
     })
     return () => { active = false; if (channel) supabase.removeChannel(channel) }
   }, [estEquipe])
-
-  async function charger() {
-    const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(20)
-    setNotifs(data || [])
-    setCount((data || []).filter(n => !n.lu).length)
-  }
 
   async function marquerLues() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -1249,10 +1271,14 @@ export default function Equipe() {
   const { estEquipe, chargement, roleEquipe } = useProfil()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const tab = searchParams.get('tab')
-    if (tab === 'babillard' || tab === 'taches') setSousOnglet(tab)
-  }, [searchParams])
+  /* Un lien vers un onglet (notification) l'ouvre aussi quand la page
+     est déjà affichée : on suit chaque nouvelle navigation. */
+  const { key: cleNavigation } = useLocation()
+  const [navigationVue, setNavigationVue] = useState(cleNavigation)
+  if (cleNavigation !== navigationVue) {
+    setNavigationVue(cleNavigation)
+    if (tabParam === 'babillard' || tabParam === 'taches') setSousOnglet(tabParam)
+  }
 
   if (chargement) return null
 

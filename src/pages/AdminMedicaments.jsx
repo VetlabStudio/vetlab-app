@@ -13,24 +13,22 @@ export default function AdminMedicaments() {
   const [categories, setCategories] = useState([])
 
   useEffect(() => {
+    async function chargerMedicaments() {
+      const { data, error } = await supabase
+        .from('medicaments')
+        .select('*')
+        .order('categorie', { ascending: true })
+        .order('nom', { ascending: true })
+
+      if (!error) {
+        setMedicaments(data)
+        const cats = [...new Set(data.map(m => m.categorie))]
+        setCategories(cats)
+      }
+      setLoading(false)
+    }
     chargerMedicaments()
   }, [])
-
-  async function chargerMedicaments() {
-    setLoading(true)
-    const { data, error } = await supabase
-      .from('medicaments')
-      .select('*')
-      .order('categorie', { ascending: true })
-      .order('nom', { ascending: true })
-
-    if (!error) {
-      setMedicaments(data)
-      const cats = [...new Set(data.map(m => m.categorie))]
-      setCategories(cats)
-    }
-    setLoading(false)
-  }
 
   async function supprimerMedicament(id, nom) {
     if (!confirm(`Supprimer « ${nom} » ?`)) return

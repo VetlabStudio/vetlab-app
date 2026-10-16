@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { NavGuardContext, NavDirectionContext } from '../App'
+import { NavGuardContext, NavDirectionContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import useNotificationsNonLues from '../hooks/useNotificationsNonLues'
 

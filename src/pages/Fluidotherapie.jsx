@@ -91,7 +91,8 @@ function ecrirePrefs(prefs) {
 
 export default function Fluidotherapie() {
   const navigate = useNavigate()
-  const prefsInitiales = useRef(lirePrefs()).current
+  // Préférences lues une seule fois, au premier affichage.
+  const [prefsInitiales] = useState(lirePrefs)
 
   /* ─── ÉTAT : PATIENT ─────────────────────────────────── */
   const [espece, setEspece] = useState(prefsInitiales.espece || 'chien')

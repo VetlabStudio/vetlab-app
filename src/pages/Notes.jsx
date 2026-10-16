@@ -87,19 +87,19 @@ export default function Notes() {
   const [form, setForm] = useState({ titre: '', contenu: '', couleur: COULEURS[0], categorie: '' })
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => { chargerNotes() }, [])
-
-  async function chargerNotes() {
-    setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase
-      .from('notes')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('updated_at', { ascending: false })
-    setNotes(data || [])
-    setLoading(false)
-  }
+  useEffect(() => {
+    async function chargerNotes() {
+      const { data: { user } } = await supabase.auth.getUser()
+      const { data } = await supabase
+        .from('notes')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false })
+      setNotes(data || [])
+      setLoading(false)
+    }
+    chargerNotes()
+  }, [])
 
   async function creerNote() {
     if (!form.contenu.trim() && !form.titre.trim()) return

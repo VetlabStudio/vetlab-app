@@ -17,67 +17,70 @@ export default function DroguesCategorie({ categorie }) {
   const [showProMsg, setShowProMsg] = useState(false)
   const { estPro, estEquipe, teamId, roleEquipe } = useProfil()
 
+  /* Rechargé quand le profil arrive (clinique) ; « actif » écarte la
+     réponse d'un chargement devenu périmé. */
   useEffect(() => {
-    chargerDonnees()
-  }, [categorie])
+    let actif = true
+    async function chargerDonnees() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
 
-  async function chargerDonnees() {
-    setLoading(true)
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-
-      const [{ data: meds }, { data: favs }, { data: customBasePersonnel }, { data: newMedsPersonnel }] = await Promise.all([
-        supabase.from('medicaments').select('*').eq('categorie', categorie).order('nom', { ascending: true }),
-        supabase.from('favoris').select('medicament_id, custom_medicament_id').eq('user_id', user.id),
-        // Overrides personnels de médicaments de base
-        supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('categorie', categorie).not('medicament_id', 'is', null).is('equipe_id', null),
-        // Nouveaux médicaments personnels
-        supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('categorie', categorie).is('medicament_id', null).is('equipe_id', null),
-      ])
-
-      // Médicaments d'équipe (visibles par tous les membres)
-      let customBaseEquipe = []
-      let newMedsEquipe = []
-      if (estEquipe && teamId) {
-        const [{ data: cbe }, { data: nme }] = await Promise.all([
-          supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).eq('categorie', categorie).not('medicament_id', 'is', null),
-          supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).eq('categorie', categorie).is('medicament_id', null),
+        const [{ data: meds }, { data: favs }, { data: customBasePersonnel }, { data: newMedsPersonnel }] = await Promise.all([
+          supabase.from('medicaments').select('*').eq('categorie', categorie).order('nom', { ascending: true }),
+          supabase.from('favoris').select('medicament_id, custom_medicament_id').eq('user_id', user.id),
+          // Overrides personnels de médicaments de base
+          supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('categorie', categorie).not('medicament_id', 'is', null).is('equipe_id', null),
+          // Nouveaux médicaments personnels
+          supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('categorie', categorie).is('medicament_id', null).is('equipe_id', null),
         ])
-        customBaseEquipe = cbe || []
-        newMedsEquipe = nme || []
+
+        // Médicaments d'équipe (visibles par tous les membres)
+        let customBaseEquipe = []
+        let newMedsEquipe = []
+        if (estEquipe && teamId) {
+          const [{ data: cbe }, { data: nme }] = await Promise.all([
+            supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).eq('categorie', categorie).not('medicament_id', 'is', null),
+            supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).eq('categorie', categorie).is('medicament_id', null),
+          ])
+          customBaseEquipe = cbe || []
+          newMedsEquipe = nme || []
+        }
+
+        if (!actif) return
+        const ids = new Set((favs || []).map(f => f.custom_medicament_id || f.medicament_id).filter(Boolean))
+        setFavorisIds(ids)
+
+        // Override équipe prioritaire sur personnel pour un même médicament de base
+        const medsAvecCustom = (meds || []).map(m => {
+          const customEq = customBaseEquipe.find(c => c.medicament_id === m.id)
+          if (customEq) return { ...customEq, estCustom: true, badge: 'equipe' }
+          const customPers = (customBasePersonnel || []).find(c => c.medicament_id === m.id)
+          if (customPers) return { ...customPers, estCustom: true, badge: 'personnel' }
+          return m
+        })
+
+        const tries = [
+          ...medsAvecCustom,
+          ...(newMedsPersonnel || []).map(m => ({ ...m, estCustom: true, badge: 'personnel' })),
+          ...newMedsEquipe.map(m => ({ ...m, estCustom: true, badge: 'equipe' })),
+        ].sort((a, b) => {
+          const aFav = ids.has(a.id)
+          const bFav = ids.has(b.id)
+          if (aFav && !bFav) return -1
+          if (!aFav && bFav) return 1
+          return a.nom.localeCompare(b.nom)
+        })
+
+        setMedicaments(tries)
+      } catch (err) {
+        console.error('Erreur chargement:', err)
+      } finally {
+        if (actif) setLoading(false)
       }
-
-      const ids = new Set((favs || []).map(f => f.custom_medicament_id || f.medicament_id).filter(Boolean))
-      setFavorisIds(ids)
-
-      // Override équipe prioritaire sur personnel pour un même médicament de base
-      const medsAvecCustom = (meds || []).map(m => {
-        const customEq = customBaseEquipe.find(c => c.medicament_id === m.id)
-        if (customEq) return { ...customEq, estCustom: true, badge: 'equipe' }
-        const customPers = (customBasePersonnel || []).find(c => c.medicament_id === m.id)
-        if (customPers) return { ...customPers, estCustom: true, badge: 'personnel' }
-        return m
-      })
-
-      const tries = [
-        ...medsAvecCustom,
-        ...(newMedsPersonnel || []).map(m => ({ ...m, estCustom: true, badge: 'personnel' })),
-        ...newMedsEquipe.map(m => ({ ...m, estCustom: true, badge: 'equipe' })),
-      ].sort((a, b) => {
-        const aFav = ids.has(a.id)
-        const bFav = ids.has(b.id)
-        if (aFav && !bFav) return -1
-        if (!aFav && bFav) return 1
-        return a.nom.localeCompare(b.nom)
-      })
-
-      setMedicaments(tries)
-    } catch (err) {
-      console.error('Erreur chargement:', err)
-    } finally {
-      setLoading(false)
     }
-  }
+    chargerDonnees()
+    return () => { actif = false }
+  }, [categorie, estEquipe, teamId])
 
   async function toggleFavori(medicamentId, estCustom = false) {
   const { data: { user } } = await supabase.auth.getUser()

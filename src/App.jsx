@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, useNavigationType } from 'react-router-dom'
-import { useEffect, useState, useRef, useLayoutEffect, useCallback, createContext, useContext, lazy, Suspense } from 'react'
+import { useEffect, useState, useRef, useLayoutEffect, useCallback, lazy, Suspense } from 'react'
 import { supabase, ouvertDepuisLienRecuperation, sessionEnregistree } from './lib/supabase'
-import { ProfilProvider } from './context/ProfilContext'
+import { ProfilProvider } from './context/ProfilProvider'
+import { TitreContext, NavGuardContext, NavDirectionContext } from './context/NavigationContext'
 
 const Connexion = lazy(() => import('./pages/Connexion'))
 const Inscription = lazy(() => import('./pages/Inscription'))
@@ -131,10 +132,6 @@ import RequiertInternet from './components/RequiertInternet'
 import BandeauHorsLigne from './components/BandeauHorsLigne'
 import { prechargerDonnees, oublierDonnees } from './lib/horsLigne'
 
-export const TitreContext = createContext({ titreCustom: '', setTitreCustom: () => {} })
-export const NavGuardContext = createContext({ navGuardActif: false, setNavGuardActif: () => {}, navGuardMessage: '', setNavGuardMessage: () => {}, demanderConfirmation: (action) => action() })
-export const NavDirectionContext = createContext({ skipNextRef: { current: false } })
-
 function ScrollToTop() {
   const { pathname } = useLocation()
   useEffect(() => {
@@ -168,7 +165,7 @@ function LayoutPrincipal({ children }) {
       prevLocationKeyRef.current = location.key
     }
     prevChildrenRef.current = children
-  })
+  }, [location.key, children, navType])
 
   function demanderConfirmation(action) {
     if (navGuardActif) {

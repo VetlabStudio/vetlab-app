@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import LienFavoris from '../components/LienFavoris'
 
 // ─── DÉMARCHE DE CALCUL ───────────────────────────────────
@@ -64,14 +64,10 @@ export default function Calculateurs() {
   const [uniteDose, setUniteDose] = useState('mg/kg')
   const [concentration, setConcentration] = useState('')
   const [uniteConc, setUniteConc] = useState('mg/mL')
-  const [resultat, setResultat] = useState(null)
 
-  // Calcul automatique
-  useEffect(() => {
-    if (!poids || !posologie || !concentration) {
-      setResultat(null)
-      return
-    }
+  // Calcul automatique, refait à chaque saisie.
+  const resultat = useMemo(() => {
+    if (!poids || !posologie || !concentration) return null
 
     const poidsKg = unitePoids === 'lb'
       ? Math.round((parseFloat(poids.replace(',', '.')) / 2.205) * 100) / 100
@@ -95,7 +91,7 @@ export default function Calculateurs() {
 
     const volume = doseTotale / conc
 
-    setResultat({
+    return {
       poidsKg: poidsKg.toFixed(2),
       unitePoids: unitePoids === 'lb' ? `(${poids} lb → ${poidsKg.toFixed(2)} kg)` : '',
       poso,
@@ -105,7 +101,7 @@ export default function Calculateurs() {
       uniteConc,
       conc,
       etapeConversion,
-    })
+    }
   }, [poids, unitePoids, posologie, uniteDose, concentration, uniteConc])
 
   return (

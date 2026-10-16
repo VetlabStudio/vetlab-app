@@ -184,7 +184,7 @@ function volumeMl(quantite, uniteDose, concentration, uniteConc) {
   if (!concentration || concentration <= 0) return null
   const base = uniteSeule(uniteDose)
   const baseConc = uniteSeule(uniteConc)
-  let q = quantite
+  let q
   if (base === baseConc) q = quantite
   else if (base === 'mcg' && baseConc === 'mg') q = quantite / 1000
   else if (base === 'mg' && baseConc === 'mcg') q = quantite * 1000

@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext, useRef } from 'react'
+import { useState, useEffect, useContext, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import IconesEspeces from '../components/IconesEspeces'
-import { TitreContext } from '../App'
+import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 
@@ -92,34 +92,60 @@ export default function FicheMedicament() {
   const [loading, setLoading] = useState(true)
   const [estFavori, setEstFavori] = useState(false)
   const [estMedCustom, setEstMedCustom] = useState(false)
-  const [estAdmin, setEstAdmin] = useState(false)
 const { setTitreCustom } = useContext(TitreContext)
   // Calculateur
   const [poids, setPoids] = useState('')
   const [unitePoids, setUnitePoids] = useState('kg')
   const [posologie, setPosologie] = useState('')
   const [concentration, setConcentration] = useState('')
-  const [resultat, setResultat] = useState(null)
-  const [horsPlage, setHorsPlage] = useState(false)
   const [showProMsg, setShowProMsg] = useState(false)
   const { estPro, roleEquipe } = useProfil()
-const estProRef = useRef(estPro)
-estProRef.current = estPro
-const medicamentRef = useRef(null)
-medicamentRef.current = medicament
-
-useEffect(() => {
   /* Pendant une transition de page, l'ancienne fiche reste montée
      sous la nouvelle route : useParams ne renvoie plus rien. On ne
      touche à rien pour que l'affichage reste intact le temps de
      l'animation, et on ne lance surtout pas de requête avec un
      identifiant indéfini. */
-  if (!UUID.test(id || '')) {
-    if (!medicamentRef.current) setLoading(false)
-    return
-  }
-  chargerDonnees()
-}, [id])
+  const idValide = UUID.test(id || '')
+
+  /* Rechargé quand le forfait est connu : un compte Pro voit alors sa
+     version personnalisée même si la fiche s'ouvre avant le profil.
+     « actif » écarte la réponse d'un chargement devenu périmé. */
+  useEffect(() => {
+    if (!idValide) return
+    let actif = true
+    async function chargerDonnees() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+
+        const [{ data: medBase }, { data: medCustomParId }, { data: medCustomDirect }, { data: favData }] = await Promise.all([
+          supabase.from('medicaments').select('*').eq('id', id).maybeSingle(),
+          supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
+          // Sans filtre sur l'auteur : un médicament de clinique créé par un admin
+          // doit s'ouvrir pour toute l'équipe (les règles d'accès limitent déjà la lecture).
+          supabase.from('medicaments_custom').select('*').eq('id', id).maybeSingle(),
+          supabase.from('favoris').select('id').eq('user_id', user.id).or(`medicament_id.eq.${id},custom_medicament_id.eq.${id}`).limit(1),
+        ])
+        if (!actif) return
+
+        const medCustom = medCustomParId || medCustomDirect
+        const med = (estPro && medCustom) ? medCustom : (medBase || medCustomDirect)
+
+        if (med) {
+          setMedicament(med)
+          setPosologie(med.dose_min?.toString() || '')
+          setConcentration(med.concentration?.toString() || '')
+        }
+        setEstFavori(!!(favData && favData.length > 0))
+        setEstMedCustom(!!medCustomDirect)
+      } catch (err) {
+        console.error('Erreur:', err)
+      } finally {
+        if (actif) setLoading(false)
+      }
+    }
+    chargerDonnees()
+    return () => { actif = false }
+  }, [id, idValide, estPro])
 
 useEffect(() => {
   if (medicament?.nom) {
@@ -129,13 +155,18 @@ useEffect(() => {
   useEffect(() => {
   if (medicament?.nom) setTitreCustom(medicament.nom)
   return () => setTitreCustom('')
-}, [medicament?.nom])
+}, [medicament?.nom, setTitreCustom])
 
-  // Calcul automatique
-  useEffect(() => {
+  // Calcul automatique, refait à chaque saisie.
+  const { resultat, horsPlage } = useMemo(() => {
+    /* L'avertissement ne dépend que de la posologie : il s'affiche dès
+       qu'elle sort de la plage du médicament, même sans poids saisi. */
+    const posoSaisie = parseFloat(posologie)
+    const horsPlage = Boolean(posologie && medicament?.dose_min && medicament?.dose_max)
+      && (posoSaisie < medicament.dose_min || posoSaisie > medicament.dose_max)
+
     if (!poids || !posologie || !concentration || !medicament) {
-      setResultat(null)
-      return
+      return { resultat: null, horsPlage }
     }
 
     const poidsKg = unitePoids === 'lb'
@@ -164,13 +195,7 @@ useEffect(() => {
 
     /* Sans le else, une fiche sans dose maximale conservait
        l'avertissement du médicament consulté précédemment. */
-    if (medicament.dose_min && medicament.dose_max) {
-      setHorsPlage(poso < medicament.dose_min || poso > medicament.dose_max)
-    } else {
-      setHorsPlage(false)
-    }
-
-    setResultat({
+    return { horsPlage, resultat: {
       poidsKg: poidsKg.toFixed(2),
       unitePoids: unitePoids === 'lb' ? `(${poids} lb → ${poidsKg.toFixed(2)} kg)` : '',
       poso,
@@ -180,41 +205,8 @@ useEffect(() => {
       uniteConc,
       conc,
       etapeConversion,
-    })
+    } }
   }, [poids, unitePoids, posologie, concentration, medicament])
-
-  async function chargerDonnees() {
-  setLoading(true)
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-
-      const [{ data: medBase }, { data: medCustomParId }, { data: medCustomDirect }, { data: favData }, { data: profil }] = await Promise.all([
-  supabase.from('medicaments').select('*').eq('id', id).maybeSingle(),
-  supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('medicament_id', id).maybeSingle(),
-  // Sans filtre sur l'auteur : un médicament de clinique créé par un admin
-  // doit s'ouvrir pour toute l'équipe (les règles d'accès limitent déjà la lecture).
-  supabase.from('medicaments_custom').select('*').eq('id', id).maybeSingle(),
-  supabase.from('favoris').select('id').eq('user_id', user.id).or(`medicament_id.eq.${id},custom_medicament_id.eq.${id}`).limit(1),
-  supabase.from('profiles').select('role').eq('id', user.id).single(),
-])
-
-const medCustom = medCustomParId || medCustomDirect
-const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustomDirect)
-
-      if (med) {
-        setMedicament(med)
-        setPosologie(med.dose_min?.toString() || '')
-        setConcentration(med.concentration?.toString() || '')
-      }
-      setEstFavori(!!(favData && favData.length > 0))
-      setEstMedCustom(!!medCustomDirect)
-      setEstAdmin(profil?.role === 'admin')
-    } catch (err) {
-      console.error('Erreur:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   async function toggleFavori() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -238,7 +230,7 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
     ? `Recommandé : ${medicament.dose_min} ${medicament.unite_dose || 'mg/kg'}`
     : null
 
-  if (loading) return <div className="admin-loading">Chargement...</div>
+  if (idValide && loading) return <div className="admin-loading">Chargement...</div>
   if (!medicament) return <div className="admin-vide">Médicament introuvable</div>
 
   return (
@@ -313,7 +305,7 @@ const med = (estProRef.current && medCustom) ? medCustom : (medBase || medCustom
       type="text"
       inputMode="decimal"
       value={posologie}
-      onChange={e => { setPosologie(e.target.value.replace(',', '.')); setHorsPlage(false) }}
+      onChange={e => setPosologie(e.target.value.replace(',', '.'))}
       placeholder="Ex: 0.05"
     />
     <span className="unite-fixe">{medicament.unite_dose || 'mg/kg'}</span>

@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext, useMemo, useRef } from 'react'
 import { supabase } from '../lib/supabase'
-import { TitreContext } from '../App'
+import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
-import IconesEspeces, { ESPECES_CONFIG } from '../components/IconesEspeces'
+import IconesEspeces from '../components/IconesEspeces'
+import { ESPECES_CONFIG } from '../data/especes'
 import { correspond } from '../lib/recherche'
 import {
   COULEUR_PRIMAIRE, COULEUR_ROUGE, creerDocument, bandeauPatient, sectionGrille,
@@ -34,7 +35,6 @@ const MUQUEUSES_OPTIONS = ['Roses', 'Pâles', 'Congestives', 'Cyanotiques']
 const ASA_OPTIONS = ['I', 'II', 'III', 'IV', 'V']
 const CATEGORIES_MED = ["Drogues d'urgence", 'Pré-anesthésique', 'Inducteurs', 'Intra-opératoire', 'Post-opératoire']
 const MAX_HISTORIQUE = 30
-const COLONNES_PAR_TABLEAU_PDF = 6
 const INTERVALLE_MESURE_MIN = 5
 
 const COLONNES_SUIVI_PDF = 9
@@ -262,6 +262,11 @@ function normaliserMedicament(med) {
   return { doseMin, doseMax, concentration: conc }
 }
 
+// Identifiant d'une médication ajoutée ; appelée seulement au clic.
+function idMedication(medId) {
+  return medId + '-' + Date.now()
+}
+
 function categorieMedDefaut(med) {
   const c = med.categorie || ''
   if (c === 'Urgence' || c === 'Antagonistes') return "Drogues d'urgence"
@@ -326,6 +331,8 @@ export default function ChirurgieMonitoring() {
   const [form, setForm] = useState(etatInitial())
   const [currentId, setCurrentId] = useState(null)
   const [historique, setHistorique] = useState([])
+  // Incrémenté pour recharger l'historique (après un enregistrement).
+  const [versionHistorique, setVersionHistorique] = useState(0)
   const [itemConsulte, setItemConsulte] = useState(null)
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(null)
   const [showResume, setShowResume] = useState(null)
@@ -343,7 +350,7 @@ export default function ChirurgieMonitoring() {
   const [medsReplies, setMedsReplies] = useState(false)
   const [editHeureDebut, setEditHeureDebut] = useState(false)
   const [complementairesOuverts, setComplementairesOuverts] = useState(false)
-  const [tick, setTick] = useState(0)
+  const [, setTick] = useState(0)
   const [champsAutres, setChampsAutres] = useState(() => new Set())
   const [membresEquipe, setMembresEquipe] = useState([])
   const [nomClinique, setNomClinique] = useState('')
@@ -367,7 +374,7 @@ export default function ChirurgieMonitoring() {
     else if (vue === 'monitoring') setTitreCustom('Monitoring en cours')
     else setTitreCustom('')
     return () => setTitreCustom('')
-  }, [vue, currentId])
+  }, [vue, currentId, setTitreCustom])
 
   /* ─── Hauteur réelle de la navigation du bas ─────────── */
   useEffect(() => {
@@ -407,7 +414,7 @@ export default function ChirurgieMonitoring() {
         .from('monitorings_anesthesiques')
         .update({ animal_nom: form.animalNom || 'Sans nom', donnees: form, updated_at: new Date().toISOString() })
         .eq('id', currentId)
-        .then(() => chargerHistorique())
+        .then(() => setVersionHistorique(v => v + 1))
     }, 800)
     return () => clearTimeout(t)
   }, [form, currentId, vue])
@@ -458,19 +465,22 @@ export default function ChirurgieMonitoring() {
       })
   }, [estEquipe, teamId])
 
+  /* Rechargé à l'ouverture, quand le profil arrive (clinique) et à
+     chaque nouvelle version ; « actif » écarte une réponse périmée. */
   useEffect(() => {
+    let actif = true
+    async function chargerHistorique() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const query = supabase.from('monitorings_anesthesiques').select('*').order('created_at', { ascending: false })
+      const { data } = estEquipe && teamId
+        ? await query.eq('equipe_id', teamId)
+        : await query.eq('user_id', user.id)
+      if (actif) setHistorique(data || [])
+    }
     chargerHistorique()
-  }, [])
-
-  async function chargerHistorique() {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const query = supabase.from('monitorings_anesthesiques').select('*').order('created_at', { ascending: false })
-    const { data } = estEquipe && teamId
-      ? await query.eq('equipe_id', teamId)
-      : await query.eq('user_id', user.id)
-    setHistorique(data || [])
-  }
+    return () => { actif = false }
+  }, [estEquipe, teamId, versionHistorique])
 
   function modifierChamp(champ, valeur) {
     setForm(prev => ({ ...prev, [champ]: valeur }))
@@ -510,7 +520,7 @@ export default function ChirurgieMonitoring() {
       .single()
     if (data) {
       setCurrentId(data.id)
-      chargerHistorique()
+      setVersionHistorique(v => v + 1)
     }
   }
 
@@ -544,7 +554,7 @@ export default function ChirurgieMonitoring() {
 
   function ajouterMedication(med) {
     const { doseMin, concentration } = normaliserMedicament(med)
-    const newId = med.id + '-' + Date.now()
+    const newId = idMedication(med.id)
     setForm(prev => ({
       ...prev,
       medications: [...prev.medications, {
@@ -588,7 +598,10 @@ export default function ChirurgieMonitoring() {
   /* Les vérifications propres au cercle ne disparaissent que si
      un circuit non réinspiratoire est explicitement choisi. */
   const estNonReinspiratoire = String(form.circuit || '').startsWith('Non réinspiratoire')
-  const verificationsActives = VERIFICATIONS.filter(v => !v.siCercle || !estNonReinspiratoire)
+  const verificationsActives = useMemo(
+    () => VERIFICATIONS.filter(v => !v.siCercle || !estNonReinspiratoire),
+    [estNonReinspiratoire]
+  )
 
   /* Suggestion de débit d'O₂ selon le circuit et le poids */
   const suggestionO2 = useMemo(() => {
@@ -619,7 +632,7 @@ export default function ChirurgieMonitoring() {
     ]
     const faits = vals.filter(v => String(v || '').trim()).length + verificationsActives.filter(v => form[v.champ]).length
     return { faits, total: vals.length + verificationsActives.length }
-  }, [form])
+  }, [form, verificationsActives])
 
   function etatSection(id) {
     const compte = (vals) => vals.filter(v => String(v || '').trim()).length
@@ -1191,7 +1204,7 @@ export default function ChirurgieMonitoring() {
       const { data } = await supabase.from('monitorings_anesthesiques').insert(payload).select().single()
       if (data) setCurrentId(data.id)
     }
-    await chargerHistorique()
+    setVersionHistorique(v => v + 1)
   }
 
   function consulter(item) {

@@ -8,17 +8,16 @@ export default function LaboAccueil() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    async function chargerCategories() {
+      const { data } = await supabase
+        .from('labo_categories')
+        .select('*')
+        .order('ordre')
+      setCategories(data || [])
+      setLoading(false)
+    }
     chargerCategories()
   }, [])
-
-  async function chargerCategories() {
-    const { data } = await supabase
-      .from('labo_categories')
-      .select('*')
-      .order('ordre')
-    setCategories(data || [])
-    setLoading(false)
-  }
 
   if (loading) return <div className="admin-loading">Chargement...</div>
 

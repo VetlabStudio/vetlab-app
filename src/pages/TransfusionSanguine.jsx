@@ -152,10 +152,8 @@ export default function TransfusionSanguine() {
     const d = nombreValide(htProduit)
     if (a === null || s === null || d === null) return { volume: null, message: null }
 
-    for (const v of [a, s, d]) {
-      if (v <= 0 || v > 100) {
-        return { volume: null, message: 'Un hématocrite doit se situer entre 1 et 100 %.' }
-      }
+    if ([a, s, d].some(v => v <= 0 || v > 100)) {
+      return { volume: null, message: 'Un hématocrite doit se situer entre 1 et 100 %.' }
     }
     if (s <= a) {
       return {

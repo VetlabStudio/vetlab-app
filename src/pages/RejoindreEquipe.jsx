@@ -11,7 +11,8 @@ export default function RejoindreEquipe() {
   const navigate = useNavigate()
   const token = searchParams.get('token')
 
-  const [statut, setStatut] = useState('chargement')
+  // Sans jeton dans l'adresse, le lien est invalide d'emblée.
+  const [statut, setStatut] = useState(token ? 'chargement' : 'invalide')
   const [invitation, setInvitation] = useState(null)
   const [loading, setLoading] = useState(false)
   const [sessionUser, setSessionUser] = useState(null)
@@ -31,28 +32,27 @@ export default function RejoindreEquipe() {
   }, [])
 
   useEffect(() => {
-    if (!token) { setStatut('invalide'); return }
+    if (!token) return
+    async function verifierToken() {
+      /* Passe par la fonction serveur : la table des invitations n'est
+         pas lisible sans connexion, et la page est ouverte avant. */
+      const { data, error } = await supabase.functions.invoke('verify-invitation', { body: { token } })
+      const invitationRecue = data?.invitation
+
+      if (error || !invitationRecue) { setStatut('invalide'); return }
+
+      /* Annoncer l'expiration tout de suite, au lieu de laisser remplir
+         un formulaire qui serait refusé à l'envoi. */
+      if (invitationRecue.expiree) {
+        setStatut('expiree')
+        return
+      }
+
+      setInvitation(invitationRecue)
+      setStatut('valide')
+    }
     verifierToken()
   }, [token])
-
-  async function verifierToken() {
-    /* Passe par la fonction serveur : la table des invitations n'est
-       pas lisible sans connexion, et la page est ouverte avant. */
-    const { data, error } = await supabase.functions.invoke('verify-invitation', { body: { token } })
-    const invitationRecue = data?.invitation
-
-    if (error || !invitationRecue) { setStatut('invalide'); return }
-
-    /* Annoncer l'expiration tout de suite, au lieu de laisser remplir
-       un formulaire qui serait refusé à l'envoi. */
-    if (invitationRecue.expiree) {
-      setStatut('expiree')
-      return
-    }
-
-    setInvitation(invitationRecue)
-    setStatut('valide')
-  }
 
   async function accepterInvitation() {
     setLoading(true)

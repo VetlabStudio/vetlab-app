@@ -92,7 +92,6 @@ export default function ChirurgieDouleur() {
 
   const scores = Object.values(selections).filter(v => v !== undefined)
   const total = scores.reduce((acc, v) => acc + v, 0)
-  const nbRemplis = Object.keys(CATEGORIES).length
   const toutRempli = scores.length === CATEGORIES.length
   const interpretation = toutRempli ? getInterpretation(total, scores.length) : null
 

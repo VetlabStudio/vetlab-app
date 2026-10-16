@@ -8,22 +8,21 @@ export default function Notifications() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    async function charger() {
+      const { data: { user } } = await supabase.auth.getUser()
+      const { data } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50)
+      setNotifs(data || [])
+      setLoading(false)
+      // Marquer toutes comme lues
+      await supabase.from('notifications').update({ lu: true }).eq('user_id', user.id).eq('lu', false)
+    }
     charger()
   }, [])
-
-  async function charger() {
-    const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(50)
-    setNotifs(data || [])
-    setLoading(false)
-    // Marquer toutes comme lues
-    await supabase.from('notifications').update({ lu: true }).eq('user_id', user.id).eq('lu', false)
-  }
 
   async function supprimer(id) {
     await supabase.from('notifications').delete().eq('id', id)

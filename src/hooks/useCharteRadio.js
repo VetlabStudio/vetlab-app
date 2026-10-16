@@ -8,23 +8,27 @@ export default function useCharteRadio() {
   const [userId, setUserId] = useState(null)
   const { estEquipe, teamId } = useProfil()
 
-  const charger = useCallback(async () => {
-    setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    setUserId(user.id)
-    const query = estEquipe && teamId
-      ? supabase.from('chartes_radio').select('*').or(`user_id.eq.${user.id},equipe_id.eq.${teamId}`).order('espece', { ascending: true })
-      : supabase.from('chartes_radio').select('*').eq('user_id', user.id).order('espece', { ascending: true })
-    const { data } = await query
-    setEntrees(data || [])
-    setLoading(false)
+  /* Rechargé quand le profil arrive (clinique) ; « actif » écarte la
+     réponse d'un chargement devenu périmé. */
+  useEffect(() => {
+    let actif = true
+    async function charger() {
+      const { data: { user } } = await supabase.auth.getUser()
+      const query = estEquipe && teamId
+        ? supabase.from('chartes_radio').select('*').or(`user_id.eq.${user.id},equipe_id.eq.${teamId}`).order('espece', { ascending: true })
+        : supabase.from('chartes_radio').select('*').eq('user_id', user.id).order('espece', { ascending: true })
+      const { data } = await query
+      if (!actif) return
+      setUserId(user.id)
+      setEntrees(data || [])
+      setLoading(false)
+    }
+    charger()
+    return () => { actif = false }
   }, [estEquipe, teamId])
 
-  useEffect(() => {
-    charger()
-  }, [charger])
-
-  async function obtenirEntree(id) {
+  // Stable d'un affichage à l'autre : le formulaire s'en sert dans un effet.
+  const obtenirEntree = useCallback(async (id) => {
     const { data: { user } } = await supabase.auth.getUser()
     const { data, error } = await supabase
       .from('chartes_radio')
@@ -33,7 +37,7 @@ export default function useCharteRadio() {
       .eq('user_id', user.id)
       .single()
     return { data, error }
-  }
+  }, [])
 
   async function creerEntree(payload) {
     const { data: { user } } = await supabase.auth.getUser()
@@ -68,5 +72,5 @@ export default function useCharteRadio() {
     return { error }
   }
 
-  return { entrees, loading, userId, charger, obtenirEntree, creerEntree, modifierEntree, supprimerEntree }
+  return { entrees, loading, userId, obtenirEntree, creerEntree, modifierEntree, supprimerEntree }
 }

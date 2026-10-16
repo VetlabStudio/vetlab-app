@@ -8,7 +8,8 @@ export default function Connexion() {
   const [motDePasse, setMotDePasse] = useState('')
   const [erreur, setErreur] = useState(null)
   const [chargement, setChargement] = useState(false)
-  const [confirmé, setConfirmé] = useState(false)
+  // Retour du lien de confirmation (inscription ou nouveau courriel).
+  const [confirmé] = useState(() => /type=(signup|email_change)/.test(window.location.hash))
   const [voirMdp, setVoirMdp] = useState(false)
   const [logoSrc] = useState(() => `/adjuvet-logo-anime.svg?v=${Date.now()}`)
   const navigate = useNavigate()
@@ -16,12 +17,8 @@ export default function Connexion() {
   const redirectUrl = searchParams.get('redirect')
 
   useEffect(() => {
-    const hash = window.location.hash
-    if (hash.includes('type=signup') || hash.includes('type=email_change')) {
-      setConfirmé(true)
-      window.history.replaceState(null, '', window.location.pathname)
-    }
-  }, [])
+    if (confirmé) window.history.replaceState(null, '', window.location.pathname)
+  }, [confirmé])
 
   const handleConnexion = async (e) => {
     e.preventDefault()

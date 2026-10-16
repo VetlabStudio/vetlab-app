@@ -19,26 +19,25 @@ export default function LaboParasitologie() {
   const [showProMsg, setShowProMsg] = useState(false)
   const { estPro } = useProfil()
 
+  // L'affichage démarre déjà en chargement (loading vaut true).
   useEffect(() => {
+    async function chargerProtocoles() {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      const [{ data: protos }, { data: protosUser }] = await Promise.all([
+        supabase.from('labo_protocoles').select('*').eq('categorie_id', CATEGORIE_ID).order('ordre'),
+        supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', CATEGORIE_ID).order('ordre'),
+      ])
+
+      const protosBaseIds = (protosUser || []).map(p => p.protocole_base_id).filter(Boolean)
+      setProtocoles([
+        ...(protos || []).filter(p => !protosBaseIds.includes(p.id)).map(p => ({ ...p, type: 'base' })),
+        ...(protosUser || []).map(p => ({ ...p, type: 'user' })),
+      ])
+      setLoading(false)
+    }
     chargerProtocoles()
   }, [])
-
-  async function chargerProtocoles() {
-    setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-
-    const [{ data: protos }, { data: protosUser }] = await Promise.all([
-      supabase.from('labo_protocoles').select('*').eq('categorie_id', CATEGORIE_ID).order('ordre'),
-      supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).eq('categorie_id', CATEGORIE_ID).order('ordre'),
-    ])
-
-    const protosBaseIds = (protosUser || []).map(p => p.protocole_base_id).filter(Boolean)
-setProtocoles([
-  ...(protos || []).filter(p => !protosBaseIds.includes(p.id)).map(p => ({ ...p, type: 'base' })),
-  ...(protosUser || []).map(p => ({ ...p, type: 'user' })),
-])
-    setLoading(false)
-  }
 
   return (
     <div className="drogues-page">

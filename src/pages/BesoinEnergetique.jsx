@@ -48,7 +48,6 @@ export default function BesoinEnergetique() {
   const [facteurPerso, setFacteurPerso] = useState(false)
   const [facteurCustom, setFacteurCustom] = useState('')
   const [nbRepas, setNbRepas] = useState(2)
-  const [copie, setCopie] = useState(false)
 
   /* Hauteur réelle de la barre de navigation, pour que la barre
      de résultat se pose juste au-dessus sur tous les appareils. */
@@ -180,25 +179,6 @@ export default function BesoinEnergetique() {
   function retourAuTableau() {
     setFacteurPerso(false)
     setFacteurCustom('')
-  }
-
-  async function copier() {
-    const lignes = [
-      `${espece === 'chien' ? 'Chien' : 'Chat'} ${arrondir(poidsKg, 2)} kg`,
-      `BEE ${bee} kcal/jour`,
-    ]
-    if (beqValeur) lignes.push(`BEQ ${beqValeur} kcal/jour (${traceFacteur.split(' · ')[0]})`)
-    if (portionValeur) {
-      lignes.push(`Quantité ${portionValeur} ${portionUnite}`)
-      if (repasTexte && nbRepas > 1) lignes.push(`${nbRepas} repas : ${repasTexte} par repas`)
-    }
-    try {
-      await navigator.clipboard.writeText(lignes.join(' · '))
-      setCopie(true)
-      setTimeout(() => setCopie(false), 1800)
-    } catch {
-      /* presse-papiers refusé : on ne bloque rien */
-    }
   }
 
   return (

@@ -13,6 +13,15 @@ function ClocheMiniAccueil() {
 
   useEffect(() => {
     if (!estEquipe) return
+    async function charger() {
+      const { data: { user } } = await supabase.auth.getUser()
+      const { data } = await supabase
+        .from('notifications')
+        .select('id, lu')
+        .eq('user_id', user.id)
+        .eq('lu', false)
+      setCount((data || []).length)
+    }
     charger()
     let active = true
     let channel = null
@@ -29,16 +38,6 @@ function ClocheMiniAccueil() {
     })
     return () => { active = false; if (channel) supabase.removeChannel(channel) }
   }, [estEquipe])
-
-  async function charger() {
-    const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase
-      .from('notifications')
-      .select('id, lu')
-      .eq('user_id', user.id)
-      .eq('lu', false)
-    setCount((data || []).length)
-  }
 
   if (!estEquipe) return null
 

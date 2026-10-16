@@ -61,8 +61,31 @@ export default function AdminMedicamentForm() {
   const [sousCategoriesDisponibles, setSousCategoriesDisponibles] = useState([])
 
   useEffect(() => {
+    async function chargerMedicament() {
+      const { data, error } = await supabase
+        .from('medicaments')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (!error && data) {
+        setForm({
+          ...data,
+          especes: data.especes || [],
+          type_dose: data.dose_max ? 'min_max' : 'fixe',
+          voies_admin: data.voies_admin || [],
+          sous_categories: data.sous_categories || [],
+          interactions: data.interactions || '',
+          effets_secondaires: data.effets_secondaires || '',
+          contre_indications: data.contre_indications || '',
+          notes: data.notes || '',
+          indication: data.indication || '',
+        })
+      }
+      setLoading(false)
+    }
     if (!estNouveau) chargerMedicament()
-  }, [id])
+  }, [id, estNouveau])
 
   useEffect(() => {
     async function chargerSousCategories() {
@@ -76,30 +99,6 @@ export default function AdminMedicamentForm() {
     }
     chargerSousCategories()
   }, [form.categorie])
-
-  async function chargerMedicament() {
-    const { data, error } = await supabase
-      .from('medicaments')
-      .select('*')
-      .eq('id', id)
-      .single()
-
-    if (!error && data) {
-      setForm({
-        ...data,
-        especes: data.especes || [],
-        type_dose: data.dose_max ? 'min_max' : 'fixe',
-        voies_admin: data.voies_admin || [],
-        sous_categories: data.sous_categories || [],
-        interactions: data.interactions || '',
-        effets_secondaires: data.effets_secondaires || '',
-        contre_indications: data.contre_indications || '',
-        notes: data.notes || '',
-        indication: data.indication || '',
-      })
-    }
-    setLoading(false)
-  }
 
   function handleChange(champ, valeur) {
     setForm(prev => ({ ...prev, [champ]: valeur }))

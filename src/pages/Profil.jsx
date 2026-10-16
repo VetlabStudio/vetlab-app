@@ -64,27 +64,26 @@ export default function Profil() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
+    async function chargerProfil() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+      if (data?.equipe_id) {
+        const { data: eq } = await supabase
+          .from('equipes')
+          .select('id, nom, proprietaire_id')
+          .eq('id', data.equipe_id)
+          .single()
+        if (eq?.proprietaire_id === user.id) {
+          setEquipeProprietaire({ id: eq.id, nom: eq.nom })
+        }
+      }
+      setProfil({ ...data, email: user.email })
+      setAvatarUrl(data?.avatar_url || null)
+      setLoading(false)
+    }
     chargerProfil()
   }, [])
-
-  async function chargerProfil() {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-    if (data?.equipe_id) {
-      const { data: eq } = await supabase
-        .from('equipes')
-        .select('id, nom, proprietaire_id')
-        .eq('id', data.equipe_id)
-        .single()
-      if (eq?.proprietaire_id === user.id) {
-        setEquipeProprietaire({ id: eq.id, nom: eq.nom })
-      }
-    }
-    setProfil({ ...data, email: user.email })
-    setAvatarUrl(data?.avatar_url || null)
-    setLoading(false)
-  }
 
   /* supabase-js met le corps d'une réponse non 2xx dans
      error.context, pas dans data. Sans ça on n'a que

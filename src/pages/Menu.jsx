@@ -30,8 +30,6 @@ export default function Menu() {
   const navigate = useNavigate()
   const { profil, estPro, estEquipe } = useProfil()
 
-  const prenom = profil?.nom ? profil.nom.split(' ')[0] : null
-
   return (
     <div className="menu-page">
       <div className="menu-page-profil-banner">

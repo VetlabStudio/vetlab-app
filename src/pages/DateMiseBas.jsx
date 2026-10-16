@@ -112,7 +112,7 @@ export default function DateMiseBas() {
       moyenne: ajouterJours(base, info.dureeMoyenne),
       tard:    ajouterJours(base, info.dureeMax),
     }
-  }, [dateAccouplement, espece, info, dateValide])
+  }, [dateAccouplement, info, dateValide])
 
   return (
     <div className="page-calculateurs">

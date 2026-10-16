@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { TitreContext } from '../App'
+import { TitreContext } from '../context/NavigationContext'
 import useCharteRadio from '../hooks/useCharteRadio'
 import { regions, qualiteOptions } from '../data/charteRadioOptions'
-import { ESPECES_CONFIG } from '../components/IconesEspeces'
+import { ESPECES_CONFIG } from '../data/especes'
 
 const FORM_VIDE = {
   espece: '',
@@ -36,29 +36,28 @@ export default function LaRadiologieCharteForm() {
 
   useEffect(() => {
     setTitreCustom(modeEdition ? 'Modifier une entrée' : 'Nouvelle entrée')
+    // L'affichage démarre déjà en chargement en mode édition.
+    async function chargerEntree() {
+      const { data } = await obtenirEntree(id)
+      if (data) {
+        setForm({
+          espece: data.espece,
+          region: data.region,
+          epaisseur_min: data.epaisseur_min ?? '',
+          epaisseur_max: data.epaisseur_max ?? '',
+          kv: data.kv,
+          mas: data.mas,
+          dff: data.dff,
+          grille: data.grille,
+          qualite: data.qualite || '',
+          notes: data.notes || '',
+        })
+      }
+      setLoading(false)
+    }
     if (modeEdition) chargerEntree()
     return () => setTitreCustom('')
-  }, [id])
-
-  async function chargerEntree() {
-    setLoading(true)
-    const { data } = await obtenirEntree(id)
-    if (data) {
-      setForm({
-        espece: data.espece,
-        region: data.region,
-        epaisseur_min: data.epaisseur_min ?? '',
-        epaisseur_max: data.epaisseur_max ?? '',
-        kv: data.kv,
-        mas: data.mas,
-        dff: data.dff,
-        grille: data.grille,
-        qualite: data.qualite || '',
-        notes: data.notes || '',
-      })
-    }
-    setLoading(false)
-  }
+  }, [id, modeEdition, obtenirEntree, setTitreCustom])
 
   function handleChange(champ, valeur) {
     setForm(prev => ({ ...prev, [champ]: valeur }))

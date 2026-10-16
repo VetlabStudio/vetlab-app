@@ -12,57 +12,55 @@ export default function MesDrogues() {
   const [especeFiltree, setEspeceFiltree] = useState('tous')
 
   useEffect(() => {
+    async function chargerFavoris() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+
+        const { data: favs } = await supabase
+          .from('favoris')
+          .select('medicament_id, custom_medicament_id')
+          .eq('user_id', user.id)
+
+        if (!favs || favs.length === 0) {
+          setFavoris([])
+          setLoading(false)
+          return
+        }
+
+        const idsBase = favs.map(f => f.medicament_id).filter(Boolean)
+        const idsCustom = favs.map(f => f.custom_medicament_id).filter(Boolean)
+
+        const [{ data: meds }, { data: medsCustom }, { data: medsCustomBase }] = await Promise.all([
+          idsBase.length > 0
+            ? supabase.from('medicaments').select('*').in('id', idsBase).order('nom', { ascending: true })
+            : { data: [] },
+          idsCustom.length > 0
+            ? supabase.from('medicaments_custom').select('*').in('id', idsCustom).order('nom', { ascending: true })
+            : { data: [] },
+          idsBase.length > 0
+            ? estEquipe && teamId
+              ? supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).in('medicament_id', idsBase).order('nom', { ascending: true })
+              : supabase.from('medicaments_custom').select('*').eq('user_id', user.id).in('medicament_id', idsBase).order('nom', { ascending: true })
+            : { data: [] },
+        ])
+
+        const medsBaseAvecCustom = (meds || []).map(m => {
+          const custom = (medsCustomBase || []).find(c => c.medicament_id === m.id)
+          return custom ? { ...custom, estCustom: true } : m
+        })
+
+        setFavoris([
+          ...medsBaseAvecCustom,
+          ...(medsCustom || []).map(m => ({ ...m, estCustom: true })),
+        ].sort((a, b) => a.nom.localeCompare(b.nom)))
+      } catch (err) {
+        console.error('Erreur chargement favoris:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
     chargerFavoris()
   }, [estEquipe, teamId])
-
-  async function chargerFavoris() {
-    setLoading(true)
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-
-      const { data: favs } = await supabase
-        .from('favoris')
-        .select('medicament_id, custom_medicament_id')
-        .eq('user_id', user.id)
-
-      if (!favs || favs.length === 0) {
-        setFavoris([])
-        setLoading(false)
-        return
-      }
-
-      const idsBase = favs.map(f => f.medicament_id).filter(Boolean)
-      const idsCustom = favs.map(f => f.custom_medicament_id).filter(Boolean)
-
-      const [{ data: meds }, { data: medsCustom }, { data: medsCustomBase }] = await Promise.all([
-        idsBase.length > 0
-          ? supabase.from('medicaments').select('*').in('id', idsBase).order('nom', { ascending: true })
-          : { data: [] },
-        idsCustom.length > 0
-          ? supabase.from('medicaments_custom').select('*').in('id', idsCustom).order('nom', { ascending: true })
-          : { data: [] },
-        idsBase.length > 0
-          ? estEquipe && teamId
-            ? supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).in('medicament_id', idsBase).order('nom', { ascending: true })
-            : supabase.from('medicaments_custom').select('*').eq('user_id', user.id).in('medicament_id', idsBase).order('nom', { ascending: true })
-          : { data: [] },
-      ])
-
-      const medsBaseAvecCustom = (meds || []).map(m => {
-        const custom = (medsCustomBase || []).find(c => c.medicament_id === m.id)
-        return custom ? { ...custom, estCustom: true } : m
-      })
-
-      setFavoris([
-        ...medsBaseAvecCustom,
-        ...(medsCustom || []).map(m => ({ ...m, estCustom: true })),
-      ].sort((a, b) => a.nom.localeCompare(b.nom)))
-    } catch (err) {
-      console.error('Erreur chargement favoris:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   async function retirerFavori(e, medicamentId) {
     e.stopPropagation()

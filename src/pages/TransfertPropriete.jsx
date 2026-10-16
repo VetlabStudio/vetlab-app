@@ -27,30 +27,6 @@ export default function TransfertPropriete() {
   const [confirmerRefus, setConfirmerRefus] = useState(false)
   const [clientSecret, setClientSecret] = useState(null)
 
-  async function consulter() {
-    const { data, error } = await supabase.functions.invoke('transferer-propriete', {
-      body: { action: 'consulter' },
-    })
-    if (error) setErreur(await messageErreur(error, data, 'Impossible de charger la demande. Réessayez.'))
-    setTransfert(data?.transfert || null)
-    setChargement(false)
-  }
-
-  // Le webhook Stripe finalise le transfert quelques secondes après le paiement.
-  async function attendreFinalisation() {
-    const { data: { user } } = await supabase.auth.getUser()
-    for (let i = 0; i < 15 && user; i++) {
-      const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-      if (data?.role === 'proprietaire') {
-        if (chargerProfil) await chargerProfil()
-        setEtape('termine')
-        return
-      }
-      await new Promise(r => setTimeout(r, 2000))
-    }
-    setEtape('attente')
-  }
-
   async function accepter() {
     setEnvoi(true)
     setErreur('')
@@ -79,7 +55,33 @@ export default function TransfertPropriete() {
     setEtape('refuse')
   }
 
+  /* Une seule fois, à l'ouverture : l'étape de départ vient de
+     l'adresse (retour de paiement ou non). */
   useEffect(() => {
+    async function consulter() {
+      const { data, error } = await supabase.functions.invoke('transferer-propriete', {
+        body: { action: 'consulter' },
+      })
+      if (error) setErreur(await messageErreur(error, data, 'Impossible de charger la demande. Réessayez.'))
+      setTransfert(data?.transfert || null)
+      setChargement(false)
+    }
+
+    // Le webhook Stripe finalise le transfert quelques secondes après le paiement.
+    async function attendreFinalisation() {
+      const { data: { user } } = await supabase.auth.getUser()
+      for (let i = 0; i < 15 && user; i++) {
+        const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        if (data?.role === 'proprietaire') {
+          if (chargerProfil) await chargerProfil()
+          setEtape('termine')
+          return
+        }
+        await new Promise(r => setTimeout(r, 2000))
+      }
+      setEtape('attente')
+    }
+
     if (etape === 'finalisation') {
       navigate('/equipe/transfert', { replace: true })
       attendreFinalisation()

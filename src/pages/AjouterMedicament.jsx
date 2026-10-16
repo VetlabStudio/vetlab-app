@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { TitreContext } from '../App'
+import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 
 const CATEGORIES = [
@@ -58,7 +58,7 @@ export default function AjouterMedicament() {
 
   useEffect(() => {
     if (!peutModifier) navigate(-1)
-  }, [peutModifier])
+  }, [peutModifier, navigate])
   const categorieParam = searchParams.get('categorie')
   const [form, setForm] = useState(
     CATEGORIES.includes(categorieParam) ? { ...VIDE, categorie: categorieParam } : VIDE
@@ -70,7 +70,7 @@ export default function AjouterMedicament() {
 
   useEffect(() => {
     return () => setTitreCustom('')
-  }, [])
+  }, [setTitreCustom])
   useEffect(() => {
   async function chargerSousCategories() {
     if (!form.categorie) return

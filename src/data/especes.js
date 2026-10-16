@@ -1,0 +1,23 @@
+// Icône et nom de chaque espèce (IconesEspeces, chartes radio, monitoring).
+export const ESPECES_CONFIG = {
+  chien:      { icone: '/icone-chien.svg', label: 'Chien' },
+  chat:       { icone: '/icone-chat.svg',  label: 'Chat'  },
+  cheval:     { icone: '/icone-cheval.svg', label: 'Cheval' },
+  vache:      { icone: '/icone-vache.svg', label: 'Vache' },
+  mouton:     { icone: '/icone-mouton.svg', label: 'Mouton' },
+  lama:       { icone: '/icone-lama.svg', label: 'Lama' },
+  chevre:     { icone: '/icone-chevre.svg', label: 'Chèvre' },
+  cochon:     { icone: '/icone-cochon.svg', label: 'Cochon' },
+  lapin:      { icone: '/icone-lapin.svg', label: 'Lapin' },
+  furet:      { icone: '/furet.svg', label: 'Furet', ratio: 38 / 30 },
+  oiseau:     { icone: '/icone-oiseau.svg', label: 'Oiseau' },
+  serpent:    { icone: '/icone-serpent.svg', label: 'Serpent' },
+  lezard:     { icone: '/icone-lezard.svg', label: 'Lézard' },
+  tortue:     { icone: '/icone-tortue.svg', label: 'Tortue' },
+  poisson:    { icone: '/icone-poisson.svg', label: 'Poisson' },
+  amphibien:  { icone: '/icone-grenouille.svg', label: 'Amphibien' },
+  rongeur:    { icone: '/icone-rongeurs.svg', label: 'Rongeur' },
+  chinchilla: { icone: '/icone-chinchilla.svg', label: 'Chinchilla' },
+  cobaye:     { icone: '/icone-cobaye.svg', label: 'Cochon d\'Inde' },
+  herisson:   { icone: '/icone-herisson.svg', label: 'Hérisson' },
+}

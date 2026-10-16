@@ -1,57 +1,60 @@
 import { useState, useEffect, useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { TitreContext } from '../App'
+import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 
 export default function LaboProtocoles() {
   const navigate = useNavigate()
   const { categorieId } = useParams()
-  const [categorie, setCategorie] = useState(null)
   const [protocoles, setProtocoles] = useState([])
   const [loading, setLoading] = useState(true)
   const { setTitreCustom } = useContext(TitreContext)
   const [showProMsg, setShowProMsg] = useState(false)
   const { estPro, estEquipe, teamId, roleEquipe } = useProfil()
 
+  /* Rechargé quand le profil arrive (clinique) ; « actif » écarte la
+     réponse d'un chargement devenu périmé. */
   useEffect(() => {
-    chargerDonnees()
-    return () => setTitreCustom('')
-  }, [categorieId])
+    let actif = true
+    async function chargerDonnees() {
+      const { data: { user } } = await supabase.auth.getUser()
 
-  async function chargerDonnees() {
-    setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
+      const [{ data: cat }, { data: protos }, { data: protosPersonnel }] = await Promise.all([
+        supabase.from('labo_categories').select('*').eq('id', categorieId).single(),
+        supabase.from('labo_protocoles').select('*').eq('categorie_id', categorieId).order('ordre'),
+        // Protocoles personnels : créés par cet utilisateur, sans association à une équipe
+        supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).is('equipe_id', null).eq('categorie_id', categorieId).order('ordre'),
+      ])
 
-    const [{ data: cat }, { data: protos }, { data: protosPersonnel }] = await Promise.all([
-      supabase.from('labo_categories').select('*').eq('id', categorieId).single(),
-      supabase.from('labo_protocoles').select('*').eq('categorie_id', categorieId).order('ordre'),
-      // Protocoles personnels : créés par cet utilisateur, sans association à une équipe
-      supabase.from('labo_protocoles_user').select('*').eq('user_id', user.id).is('equipe_id', null).eq('categorie_id', categorieId).order('ordre'),
-    ])
+      // Protocoles d'équipe : partagés avec toute l'équipe (visibles par tous les membres)
+      let protosEquipe = []
+      if (estEquipe && teamId) {
+        const { data } = await supabase
+          .from('labo_protocoles_user')
+          .select('*')
+          .eq('equipe_id', teamId)
+          .eq('categorie_id', categorieId)
+          .order('ordre')
+        protosEquipe = data || []
+      }
 
-    // Protocoles d'équipe : partagés avec toute l'équipe (visibles par tous les membres)
-    let protosEquipe = []
-    if (estEquipe && teamId) {
-      const { data } = await supabase
-        .from('labo_protocoles_user')
-        .select('*')
-        .eq('equipe_id', teamId)
-        .eq('categorie_id', categorieId)
-        .order('ordre')
-      protosEquipe = data || []
+      if (!actif) return
+      if (cat?.nom) setTitreCustom(cat.nom)
+      setProtocoles([
+        ...(protos || []).map(p => ({ ...p, type: 'base' })),
+        ...(protosPersonnel || []).map(p => ({ ...p, type: 'user', badge: 'personnel' })),
+        ...protosEquipe.map(p => ({ ...p, type: 'user', badge: 'equipe' })),
+      ])
+      setLoading(false)
     }
-
-    setCategorie(cat)
-    if (cat?.nom) setTitreCustom(cat.nom)
-    setProtocoles([
-      ...(protos || []).map(p => ({ ...p, type: 'base' })),
-      ...(protosPersonnel || []).map(p => ({ ...p, type: 'user', badge: 'personnel' })),
-      ...protosEquipe.map(p => ({ ...p, type: 'user', badge: 'equipe' })),
-    ])
-    setLoading(false)
-  }
+    chargerDonnees()
+    return () => {
+      actif = false
+      setTitreCustom('')
+    }
+  }, [categorieId, estEquipe, teamId, setTitreCustom])
 
   // Seuls les admins/propriétaires peuvent créer des protocoles en mode équipe
   const peutAjouter = estEquipe

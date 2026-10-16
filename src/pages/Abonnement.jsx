@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useEffectEvent, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
@@ -23,6 +23,22 @@ function calculerPrixEquipe(n) {
 
 function prixParSiege(n) {
   return TIERS_EQUIPE.find(t => n >= t.min && (t.max === null || n <= t.max))?.prix || 39
+}
+
+/* Détails de l'abonnement (prochain paiement, sièges). Facultatifs :
+   en cas d'erreur, la page s'affiche sans eux. */
+async function lireAbonnement() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    const response = await fetch(
+      'https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/get-subscription',
+      { headers: { 'Authorization': `Bearer ${session.access_token}` } }
+    )
+    const data = await response.json()
+    return data.subscription || null
+  } catch {
+    return null
+  }
 }
 
 function formaterDate(timestamp) {
@@ -87,7 +103,7 @@ export default function Abonnement() {
   const [searchParams] = useSearchParams()
   const { profil, estPro, estEquipe, roleEquipe, teamId, chargerProfil } = useProfil()
 
-  const [onglet, setOnglet] = useState('personnel')
+  const [onglet, setOnglet] = useState(profil?.plan === 'equipe' ? 'equipe' : 'personnel')
   const [periode, setPeriode] = useState('annuel')
   const [nombreMembres, setNombreMembres] = useState(2)
   const [upgradeLoading, setUpgradeLoading] = useState(false)
@@ -103,18 +119,12 @@ export default function Abonnement() {
   const [subDetails, setSubDetails] = useState(null)
   const [nombreMembresActifs, setNombreMembresActifs] = useState(0)
 
-  useEffect(() => {
-    if (searchParams.get('paiement') === 'succes') {
-      const plan = sessionStorage.getItem('checkout_plan') || 'pro'
-      sessionStorage.removeItem('checkout_plan')
-      navigate('/abonnement', { replace: true })
-      attendrePlanActif(plan)
-    }
-  }, [])
-
-  useEffect(() => {
+  // L'onglet Équipe s'ouvre quand le forfait devient Équipe.
+  const [planAffiche, setPlanAffiche] = useState(profil?.plan)
+  if (profil?.plan !== planAffiche) {
+    setPlanAffiche(profil?.plan)
     if (profil?.plan === 'equipe') setOnglet('equipe')
-  }, [profil?.plan])
+  }
 
   /* Un membre d'une clinique n'a pas d'abonnement à lui : sans cette
      condition, on affichait son ancien abonnement Pro comme si c'était
@@ -122,24 +132,33 @@ export default function Abonnement() {
   const aSonAbonnement = (estPro && !estEquipe) || roleEquipe === 'proprietaire'
 
   useEffect(() => {
-    if (aSonAbonnement) chargerSubDetails()
+    if (!aSonAbonnement) return
+    let actif = true
+    lireAbonnement().then((abonnement) => {
+      if (actif && abonnement) setSubDetails(abonnement)
+    })
+    return () => { actif = false }
   }, [aSonAbonnement])
 
-  useEffect(() => {
+  // Le nombre de sièges choisi part de celui de l'abonnement chargé.
+  const [subAffiche, setSubAffiche] = useState(null)
+  if (subDetails !== subAffiche) {
+    setSubAffiche(subDetails)
     if (subDetails?.quantity) setNombreMembres(subDetails.quantity)
-  }, [subDetails])
+  }
 
   useEffect(() => {
-    if (estEquipe && teamId) chargerNombreMembres()
-  }, [estEquipe, teamId])
-
-  async function chargerNombreMembres() {
-    const { count } = await supabase
+    if (!estEquipe || !teamId) return
+    let actif = true
+    supabase
       .from('membres_equipe')
       .select('*', { count: 'exact', head: true })
       .eq('equipe_id', teamId)
-    setNombreMembresActifs(count || 0)
-  }
+      .then(({ count }) => {
+        if (actif) setNombreMembresActifs(count || 0)
+      })
+    return () => { actif = false }
+  }, [estEquipe, teamId])
 
   function afficherSucces(msg) {
     setSucces(msg)
@@ -148,15 +167,8 @@ export default function Abonnement() {
   }
 
   async function chargerSubDetails() {
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const response = await fetch(
-        'https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/get-subscription',
-        { headers: { 'Authorization': `Bearer ${session.access_token}` } }
-      )
-      const data = await response.json()
-      if (data.subscription) setSubDetails(data.subscription)
-    } catch {}
+    const abonnement = await lireAbonnement()
+    if (abonnement) setSubDetails(abonnement)
   }
 
   async function attendrePlanActif(planAttendu) {
@@ -180,6 +192,21 @@ export default function Abonnement() {
     if (chargerProfil) await chargerProfil()
     afficherSucces(planAttendu === 'equipe' ? 'Abonnement Équipe activé !' : 'Abonnement Pro activé !')
   }
+
+  // Retour de Stripe après un paiement : traité une seule fois, à l'ouverture.
+  const finaliserRetourPaiement = useEffectEvent(() => {
+    if (searchParams.get('paiement') !== 'succes') return
+    const plan = sessionStorage.getItem('checkout_plan') || 'pro'
+    sessionStorage.removeItem('checkout_plan')
+    navigate('/abonnement', { replace: true })
+    attendrePlanActif(plan)
+  })
+  useEffect(() => {
+    /* attendrePlanActif ne change l'état qu'après des await (attente du
+       webhook Stripe) : rien n'est modifié pendant l'effet lui-même. */
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    finaliserRetourPaiement()
+  }, [])
 
   async function ouvrirPortail() {
     setCheckoutLoading(true)

@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useContext } from 'react'
-import { TitreContext, NavGuardContext } from '../App'
+import { TitreContext, NavGuardContext } from '../context/NavigationContext'
 
 const titres = {
   '/calculateurs': 'Calculateur de dosage',

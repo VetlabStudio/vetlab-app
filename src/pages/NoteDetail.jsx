@@ -1,13 +1,12 @@
 import { useState, useEffect, useContext, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { TitreContext } from '../App'
+import { TitreContext } from '../context/NavigationContext'
 
 const COULEURS = ['#F8F6B8', '#BBE6D5', '#BCAADC', '#B8D4F5', '#EDECE9', '#F5C9B8']
 
 export default function NoteDetail() {
   const { id } = useParams()
-  const navigate = useNavigate()
   const { setTitreCustom } = useContext(TitreContext)
   const [note, setNote] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -15,29 +14,27 @@ export default function NoteDetail() {
   const sauvegardeRef = useRef(null)
 
   useEffect(() => {
+    async function chargerNote() {
+      const { data } = await supabase.from('notes').select('*').eq('id', id).single()
+      if (data) {
+        setNote(data)
+        setTitreCustom(data.titre)
+      }
+      const { data: { user } } = await supabase.auth.getUser()
+      const { data: autres } = await supabase
+        .from('notes')
+        .select('categorie')
+        .eq('user_id', user.id)
+        .not('categorie', 'is', null)
+      setCategoriesExistantes([...new Set((autres || []).map(n => n.categorie).filter(Boolean))].sort())
+      setLoading(false)
+    }
     chargerNote()
     return () => {
       setTitreCustom('')
       if (sauvegardeRef.current) clearTimeout(sauvegardeRef.current)
     }
-  }, [id])
-
-  async function chargerNote() {
-    setLoading(true)
-    const { data } = await supabase.from('notes').select('*').eq('id', id).single()
-    if (data) {
-      setNote(data)
-      setTitreCustom(data.titre)
-    }
-    const { data: { user } } = await supabase.auth.getUser()
-    const { data: autres } = await supabase
-      .from('notes')
-      .select('categorie')
-      .eq('user_id', user.id)
-      .not('categorie', 'is', null)
-    setCategoriesExistantes([...new Set((autres || []).map(n => n.categorie).filter(Boolean))].sort())
-    setLoading(false)
-  }
+  }, [id, setTitreCustom])
 
   function modifierChamp(champ, valeur) {
     setNote(prev => ({ ...prev, [champ]: valeur }))

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useContext } from 'react'
-import { TitreContext } from '../App'
+import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 
@@ -23,63 +23,78 @@ export default function LaboProtocoleDetail() {
   const { estPro, roleEquipe } = useProfil()
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(false)
 
+  // Incrémenté pour relire le protocole (après un enregistrement ou une annulation).
+  const [version, setVersion] = useState(0)
+
+  /* « actif » écarte la réponse d'un chargement devenu périmé.
+     L'affichage démarre déjà en chargement ; recharger() le remet. */
   useEffect(() => {
-  chargerDonnees()
-  return () => setTitreCustom('')
-}, [protocoleId])
+    let actif = true
+    async function chargerDonnees() {
+      const { data: { user } } = await supabase.auth.getUser()
 
-  async function chargerDonnees() {
-    setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (type === 'user') {
-      const [{ data: proto }, { data: etapesData }] = await Promise.all([
-        supabase.from('labo_protocoles_user').select('*').eq('id', protocoleId).single(),
-        supabase.from('labo_etapes_user_custom').select('*').eq('protocole_user_id', protocoleId).order('ordre'),
-      ])
-      setProtocole(proto)
-      setEtapes(etapesData || [])
-      if (proto?.titre) setTitreCustom(proto.titre)
-      // Charger le matériel depuis description
-      if (proto?.description) {
-        setMateriel(proto.description.split('\n').filter(m => m.trim()))
-      } else {
-        setMateriel([''])
-      }
-    } else {
-      const { data: proto } = await supabase
-        .from('labo_protocoles').select('*').eq('id', protocoleId).single()
-
-      const { data: etapesBase } = await supabase
-        .from('labo_etapes').select('*').eq('protocole_id', protocoleId).order('ordre')
-
-      const { data: userMods } = await supabase
-        .from('labo_etapes_user')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('protocole_id', protocoleId)
-
-      const etapesFusionnees = (etapesBase || []).map(e => {
-        const mod = (userMods || []).find(m => m.etape_id === e.id)
-        return {
-          ...e,
-          visible: mod ? mod.visible : e.visible,
-          ordre: mod ? mod.ordre : e.ordre,
-          description: mod?.description || e.description,
-          mod_id: mod?.id,
+      if (type === 'user') {
+        const [{ data: proto }, { data: etapesData }] = await Promise.all([
+          supabase.from('labo_protocoles_user').select('*').eq('id', protocoleId).single(),
+          supabase.from('labo_etapes_user_custom').select('*').eq('protocole_user_id', protocoleId).order('ordre'),
+        ])
+        if (!actif) return
+        setProtocole(proto)
+        setEtapes(etapesData || [])
+        if (proto?.titre) setTitreCustom(proto.titre)
+        // Charger le matériel depuis description
+        if (proto?.description) {
+          setMateriel(proto.description.split('\n').filter(m => m.trim()))
+        } else {
+          setMateriel([''])
         }
-      }).sort((a, b) => a.ordre - b.ordre)
-
-      setProtocole(proto)
-      if (proto?.titre) setTitreCustom(proto.titre)
-      setEtapes(etapesFusionnees)
-      if (proto?.description) {
-        setMateriel(proto.description.split('\n').filter(m => m.trim()))
       } else {
-        setMateriel([''])
+        const { data: proto } = await supabase
+          .from('labo_protocoles').select('*').eq('id', protocoleId).single()
+
+        const { data: etapesBase } = await supabase
+          .from('labo_etapes').select('*').eq('protocole_id', protocoleId).order('ordre')
+
+        const { data: userMods } = await supabase
+          .from('labo_etapes_user')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('protocole_id', protocoleId)
+
+        const etapesFusionnees = (etapesBase || []).map(e => {
+          const mod = (userMods || []).find(m => m.etape_id === e.id)
+          return {
+            ...e,
+            visible: mod ? mod.visible : e.visible,
+            ordre: mod ? mod.ordre : e.ordre,
+            description: mod?.description || e.description,
+            mod_id: mod?.id,
+          }
+        }).sort((a, b) => a.ordre - b.ordre)
+
+        if (!actif) return
+        setProtocole(proto)
+        if (proto?.titre) setTitreCustom(proto.titre)
+        setEtapes(etapesFusionnees)
+        if (proto?.description) {
+          setMateriel(proto.description.split('\n').filter(m => m.trim()))
+        } else {
+          setMateriel([''])
+        }
       }
+      setLoading(false)
     }
-    setLoading(false)
+    chargerDonnees()
+    return () => { actif = false }
+  }, [protocoleId, type, version, setTitreCustom])
+
+  useEffect(() => {
+    return () => setTitreCustom('')
+  }, [setTitreCustom])
+
+  function recharger() {
+    setLoading(true)
+    setVersion(v => v + 1)
   }
 
   async function sauvegarderModifications() {
@@ -164,16 +179,8 @@ export default function LaboProtocoleDetail() {
   }
 
   setModeEdit(false)
-  chargerDonnees()
+  recharger()
 }
-
-  function deplacerEtape(index, direction) {
-    const nouvelles = [...etapes]
-    const cible = index + direction
-    if (cible < 0 || cible >= nouvelles.length) return
-    ;[nouvelles[index], nouvelles[cible]] = [nouvelles[cible], nouvelles[index]]
-    setEtapes(nouvelles.map((e, i) => ({ ...e, ordre: i })))
-  }
 
   function ajouterEtape() {
     setEtapes(prev => [...prev, {
@@ -210,7 +217,7 @@ async function supprimerProtocole() {
       <div className="labo-actions">
         {modeEdit ? (
           <>
-            <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); chargerDonnees() }}>
+            <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); recharger() }}>
               Annuler
             </button>
             <button className="labo-btn-reorganiser" onClick={() => setShowReorganiser(true)}>
@@ -301,7 +308,7 @@ async function supprimerProtocole() {
       {/* ─── ÉTAPES ─────────────────────────── */}
       {modeEdit ? (
       <div className="labo-etapes">
-        {etapesVisibles.map((etape, index) => (
+        {etapesVisibles.map((etape) => (
           <div key={etape.id} className={`labo-etape-card ${!etape.visible ? 'masquee' : ''}`}>
 
             {/* Titre */}
@@ -376,7 +383,7 @@ async function supprimerProtocole() {
 {modeEdit && type === 'user' && (
   <div className="labo-actions-bas" style={{ flexDirection: 'column', gap: 8 }}>
     <div style={{ display: 'flex', gap: 8 }}>
-      <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); chargerDonnees() }}>
+      <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); recharger() }}>
         Annuler
       </button>
       <button className="labo-btn-primary" onClick={sauvegarderModifications}>
@@ -390,7 +397,7 @@ async function supprimerProtocole() {
 )}
 {modeEdit && type === 'base' && (
   <div className="labo-actions">
-    <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); chargerDonnees() }}>
+    <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); recharger() }}>
       Annuler
     </button>
     <button className="labo-btn-primary" onClick={sauvegarderModifications}>

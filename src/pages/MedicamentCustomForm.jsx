@@ -1,7 +1,7 @@
-import { useState, useEffect, useContext, useRef } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { TitreContext } from '../App'
+import { TitreContext } from '../context/NavigationContext'
 
 const VOIES = [
   'Intraveineux (IV)',
@@ -29,74 +29,68 @@ export default function MedicamentCustomForm() {
   const [customId, setCustomId] = useState(null)
   const [showConfirmSupprimer, setShowConfirmSupprimer] = useState(false)
   const { setTitreCustom } = useContext(TitreContext)
-  const formRef = useRef(null)
-  formRef.current = form
+  /* Même contrat que la fiche : pendant une transition, les
+     paramètres de route de la page sortante disparaissent. */
+  const idValide = UUID.test(id || '')
 
   useEffect(() => {
-    /* Même contrat que la fiche : pendant une transition, les
-       paramètres de route de la page sortante disparaissent. */
-    if (!UUID.test(id || '')) {
-      if (!formRef.current) setLoading(false)
-      return
+    if (!idValide) return
+    async function chargerDonnees() {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      // Vérifier si un custom existe déjà
+      // Chercher par medicament_id (copie d'un médicament de base)
+      const { data: customParMedId } = await supabase
+        .from('medicaments_custom')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('medicament_id', id)
+        .maybeSingle()
+
+      // Chercher par id direct (médicament créé de zéro)
+      // Sans filtre sur l'auteur : un admin modifie aussi un médicament de la
+      // clinique créé par un autre admin (les règles d'accès décident).
+      const { data: customDirect } = await supabase
+        .from('medicaments_custom')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle()
+      const custom = customParMedId || customDirect
+
+      if (custom) {
+        setCustomId(custom.id)
+        setTitreCustom(`Personnaliser — ${custom.nom}`)
+        setForm({
+          ...custom,
+          type_dose: custom.dose_max ? 'min_max' : 'fixe',
+          especes: custom.especes || [],
+          voies_admin: custom.voies_admin || [],
+          sous_categories: custom.sous_categories || [],
+        })
+      } else {
+        // Copier depuis medicaments de base
+        const { data: base } = await supabase
+          .from('medicaments')
+          .select('*')
+          .eq('id', id)
+          .single()
+
+        if (base) {
+          setTitreCustom(`Personnaliser — ${base.nom}`)
+          setForm({
+            ...base,
+            type_dose: base.dose_max ? 'min_max' : 'fixe',
+            especes: base.especes || [],
+            voies_admin: base.voies_admin || [],
+            sous_categories: base.sous_categories || [],
+          })
+        }
+      }
+
+      setLoading(false)
     }
     chargerDonnees()
-  }, [id])
-
-  async function chargerDonnees() {
-    setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-
-    // Vérifier si un custom existe déjà
-    // Chercher par medicament_id (copie d'un médicament de base)
-const { data: customParMedId } = await supabase
-  .from('medicaments_custom')
-  .select('*')
-  .eq('user_id', user.id)
-  .eq('medicament_id', id)
-  .maybeSingle()
-
-// Chercher par id direct (médicament créé de zéro)
-// Sans filtre sur l'auteur : un admin modifie aussi un médicament de la
-// clinique créé par un autre admin (les règles d'accès décident).
-const { data: customDirect } = await supabase
-  .from('medicaments_custom')
-  .select('*')
-  .eq('id', id)
-  .maybeSingle()
-const custom = customParMedId || customDirect
-
-if (custom) {
-  setCustomId(custom.id)
-  setTitreCustom(`Personnaliser — ${custom.nom}`)
-  setForm({
-    ...custom,
-    type_dose: custom.dose_max ? 'min_max' : 'fixe',
-    especes: custom.especes || [],
-    voies_admin: custom.voies_admin || [],
-    sous_categories: custom.sous_categories || [],
-  })
-} else {
-  // Copier depuis medicaments de base
-  const { data: base } = await supabase
-    .from('medicaments')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  if (base) {
-    setTitreCustom(`Personnaliser — ${base.nom}`)
-    setForm({
-      ...base,
-      type_dose: base.dose_max ? 'min_max' : 'fixe',
-      especes: base.especes || [],
-      voies_admin: base.voies_admin || [],
-      sous_categories: base.sous_categories || [],
-    })
-  }
-}
-
-    setLoading(false)
-  }
+  }, [id, idValide, setTitreCustom])
 
   function handleChange(champ, valeur) {
     setForm(prev => ({ ...prev, [champ]: valeur }))
@@ -167,7 +161,6 @@ if (custom) {
   }
 
   async function reinitialiser() {
-    const { data: { user } } = await supabase.auth.getUser()
    await supabase
   .from('medicaments_custom')
   .delete()
@@ -185,7 +178,7 @@ if (custom) {
   .replace(/[^a-z0-9-]/g, '')}`)
   }
 
-  if (loading) return <div className="admin-loading">Chargement...</div>
+  if (idValide && loading) return <div className="admin-loading">Chargement...</div>
   if (!form)   return <div className="admin-vide">Médicament introuvable</div>
 
   return (

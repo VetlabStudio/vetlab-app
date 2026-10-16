@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
+// Identifiant provisoire d'une étape pas encore enregistrée ; appelée seulement au clic.
+function idNouvelleEtape() {
+  return `new-${Date.now()}`
+}
+
+async function lireProtocoles(categorieId) {
+  const { data } = await supabase
+    .from('labo_protocoles')
+    .select('*')
+    .eq('categorie_id', categorieId)
+    .order('ordre')
+  return data || []
+}
+
 export default function AdminLaboProtocoles() {
   const [categories, setCategories] = useState([])
   const [protocoles, setProtocoles] = useState([])
@@ -14,27 +28,26 @@ export default function AdminLaboProtocoles() {
   const [showReorganiser, setShowReorganiser] = useState(false)
 
   useEffect(() => {
+    async function chargerCategories() {
+      const { data } = await supabase.from('labo_categories').select('*').order('ordre')
+      setCategories(data || [])
+      if (data?.length > 0) setCategorieSelectee(data[0])
+      setLoading(false)
+    }
     chargerCategories()
   }, [])
 
   useEffect(() => {
-    if (categorieSelectee) chargerProtocoles()
+    if (!categorieSelectee) return
+    let actif = true
+    lireProtocoles(categorieSelectee.id).then((liste) => {
+      if (actif) setProtocoles(liste)
+    })
+    return () => { actif = false }
   }, [categorieSelectee])
 
-  async function chargerCategories() {
-    const { data } = await supabase.from('labo_categories').select('*').order('ordre')
-    setCategories(data || [])
-    if (data?.length > 0) setCategorieSelectee(data[0])
-    setLoading(false)
-  }
-
   async function chargerProtocoles() {
-    const { data } = await supabase
-      .from('labo_protocoles')
-      .select('*')
-      .eq('categorie_id', categorieSelectee.id)
-      .order('ordre')
-    setProtocoles(data || [])
+    setProtocoles(await lireProtocoles(categorieSelectee.id))
   }
 
   async function chargerEtapes(protocoleId) {
@@ -53,7 +66,7 @@ export default function AdminLaboProtocoles() {
     if (proto) {
       chargerEtapes(proto.id)
     } else {
-      setEtapes([{ id: `new-${Date.now()}`, titre: 'Étape 1', description: '', visible: true, ordre: 0 }])
+      setEtapes([{ id: idNouvelleEtape(), titre: 'Étape 1', description: '', visible: true, ordre: 0 }])
     }
     setShowFormProto(true)
   }
@@ -235,7 +248,7 @@ export default function AdminLaboProtocoles() {
         </div>
 
         <button className="labo-btn-ajouter-etape" onClick={() => setEtapes(prev => [...prev, {
-          id: `new-${Date.now()}`,
+          id: idNouvelleEtape(),
           titre: `Étape ${prev.length + 1}`,
           description: '',
           visible: true,
