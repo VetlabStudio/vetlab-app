@@ -131,7 +131,7 @@ export default function MesDrogues() {
           <i className="ti ti-star" style={{ fontSize: 40, color: 'var(--text-hint)' }}></i>
           <p>Aucun médicament en favori</p>
           <p className="mes-drogues-vide-hint">
-            Ajoute des favoris en appuyant sur ★ dans les listes de médicaments.
+            Ajoutez des favoris en appuyant sur ★ dans les listes de médicaments.
           </p>
         </div>
       ) : (

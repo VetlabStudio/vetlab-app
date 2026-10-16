@@ -171,7 +171,7 @@ export default function ChirurgieDouleur() {
         {!toutRempli && scores.length > 0 && (
           <p className="douleur-reminder">
             <i className="ti ti-info-circle"></i>
-            Complète tous les critères pour obtenir l'interprétation complète.
+            Complétez tous les critères pour obtenir l'interprétation complète.
           </p>
         )}
 

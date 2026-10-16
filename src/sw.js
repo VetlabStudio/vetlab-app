@@ -24,7 +24,7 @@ const CACHE_META = 'adjuvet-meta'
 
 // Même adresse que src/lib/supabase.js.
 const SUPABASE = 'https://jbvjruunwdrbrzipgezs.supabase.co'
-const ICONES = 'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css'
+const ICONES = 'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.49.0/dist/tabler-icons.min.css'
 
 // Tables lues hors ligne. Les autres demandent internet.
 const TABLES_HORS_LIGNE = new Set([

@@ -43,7 +43,7 @@ export default function TapTempo() {
 
         <div className="calc-avertissement">
           <i className="ti ti-info-circle"></i>
-          Tape au rythme des battements pour obtenir une estimation du nombre de battements par minute.
+          Appuyez sur Tap au rythme des battements pour obtenir une estimation du nombre de battements par minute.
         </div>
 
         <div className="tempo-resultat">

@@ -174,7 +174,7 @@ export default function ChirurgieECGAnomalies() {
             <ul className="postop-alerte-liste">
               {a.liste.map((item, i) => (
                 <li key={i} className="postop-alerte-item">
-                  <i className="ti ti-point-filled postop-alerte-puce"></i>
+                  <i className="ti ti-point postop-alerte-puce"></i>
                   <span><Texte>{item}</Texte></span>
                 </li>
               ))}

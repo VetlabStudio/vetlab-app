@@ -22,7 +22,7 @@ export default function PopupPro({ onClose }) {
           </p>
         </div>
         <button className="labo-btn-primary" style={{ width: '100%' }} onClick={allerAuProfil}>
-          Abonne-toi au forfait Pro maintenant!
+          Abonnez-vous au forfait Pro maintenant!
         </button>
       </div>
     </div>

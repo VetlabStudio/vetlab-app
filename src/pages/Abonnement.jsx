@@ -197,7 +197,7 @@ export default function Abonnement() {
       if (!response.ok) throw new Error(data.error || 'Erreur')
       window.location.href = data.url
     } catch {
-      setErreur("Impossible d'ouvrir le portail. Réessaie.")
+      setErreur("Impossible d'ouvrir le portail. Réessayez.")
     }
     setCheckoutLoading(false)
   }
@@ -217,13 +217,13 @@ export default function Abonnement() {
       )
       const data = await response.json().catch(() => ({}))
       if (!response.ok) {
-        setErreur(data.error || "Impossible d'ouvrir le formulaire de paiement. Réessaie.")
+        setErreur(data.error || "Impossible d'ouvrir le formulaire de paiement. Réessayez.")
       } else {
         setClientSecret(data.clientSecret)
         setModalCheckout(true)
       }
     } catch {
-      setErreur("Impossible d'ouvrir le formulaire de paiement. Réessaie.")
+      setErreur("Impossible d'ouvrir le formulaire de paiement. Réessayez.")
     }
     setCheckoutLoading(false)
   }

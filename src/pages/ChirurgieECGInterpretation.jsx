@@ -92,7 +92,7 @@ export default function ChirurgieECGInterpretation() {
           <ul className="postop-alerte-liste">
             {etape.items.map((item, i) => (
               <li key={i} className="postop-alerte-item">
-                <i className="ti ti-point-filled postop-alerte-puce"></i>
+                <i className="ti ti-point postop-alerte-puce"></i>
                 <span>{item}</span>
               </li>
             ))}

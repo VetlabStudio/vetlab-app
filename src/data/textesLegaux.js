@@ -14,7 +14,7 @@ export const AVERTISSEMENT_SECTIONS = [
       'Toute décision clinique (dosage, traitement, diagnostic, intervention) doit être validée par un professionnel vétérinaire qualifié, en tenant compte de l\'état particulier de chaque patient.',
     ],
     liste: [
-      'Les calculateurs de dosage sont des outils d\'aide au calcul - vérifie toujours les valeurs obtenues avant administration.',
+      'Les calculateurs de dosage sont des outils d\'aide au calcul - vérifiez toujours les valeurs obtenues avant administration.',
       'Les informations sur les médicaments peuvent ne pas refléter les plus récentes données ou les particularités locales (disponibilité, formulations, réglementation).',
       'Les protocoles et guides ne couvrent pas tous les cas cliniques possibles.',
     ],

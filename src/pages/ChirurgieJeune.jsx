@@ -51,7 +51,7 @@ export default function ChirurgieJeune() {
           <div className="jeune-statut">{row.statut}</div>
           <div className="jeune-donnees">
             <div className="jeune-donnee">
-              <i className="ti ti-tool-kitchen-2" style={{ fontSize: 18, color: 'var(--text-hint)', flexShrink: 0 }} />
+              <i className="ti ti-tools-kitchen-2" style={{ fontSize: 18, color: 'var(--text-hint)', flexShrink: 0 }} />
               <div>
                 <div className="jeune-label">Nourriture</div>
                 <div className={`jeune-val${row.urgence ? ' urgence' : ''}`}>{row.nourriture}</div>

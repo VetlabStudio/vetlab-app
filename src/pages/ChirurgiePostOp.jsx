@@ -121,7 +121,7 @@ export default function ChirurgiePostOp() {
         <ul className="postop-alerte-liste">
           {SIGNES_ALERTE.map((signe, i) => (
             <li key={i} className="postop-alerte-item">
-              <i className="ti ti-point-filled postop-alerte-puce"></i>
+              <i className="ti ti-point postop-alerte-puce"></i>
               <span>{signe}</span>
             </li>
           ))}

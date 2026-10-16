@@ -3,7 +3,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { synchroniserCourrielStripe } from '../_shared/stripeCourriel.ts'
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!)
-const RETURN_URL = Deno.env.get('APP_URL') + '/profil'
+// Retour sur la page d'où le portail est ouvert. Adresse par défaut si APP_URL manque.
+const APP_URL = (Deno.env.get('APP_URL') || 'https://adjuvet.app').replace(/\/+$/, '')
+const RETURN_URL = `${APP_URL}/abonnement`
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -52,7 +54,7 @@ Deno.serve(async (req) => {
       headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
     })
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: (err as Error).message }), {
       status: 400,
       headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
     })
