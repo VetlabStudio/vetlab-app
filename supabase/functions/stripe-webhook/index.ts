@@ -522,8 +522,8 @@ Deno.serve(async (req) => {
   try {
     event = await stripe.webhooks.constructEventAsync(body, signature, WEBHOOK_SECRET)
   } catch (err) {
-    console.error('Signature invalide:', err.message)
-    return new Response(`Signature invalide: ${err.message}`, { status: 400 })
+    console.error('Signature invalide:', (err as Error).message)
+    return new Response(`Signature invalide: ${(err as Error).message}`, { status: 400 })
   }
 
   console.log('Webhook reçu:', event.type)

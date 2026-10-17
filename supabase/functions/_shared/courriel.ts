@@ -4,7 +4,10 @@
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || ''
 const FROM = 'Adjuvet <noreply@adjuvet.app>'
 
-export const courrielsActifs = () => Boolean(RESEND_API_KEY)
+export const courrielsActifs = () => {
+  if (!RESEND_API_KEY) console.warn('RESEND_API_KEY manquant : aucun courriel envoyé')
+  return Boolean(RESEND_API_KEY)
+}
 
 export const echapper = (t: string) =>
   t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -101,9 +104,16 @@ img{border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;}
 }
 
 export async function envoyerCourriel(email: string, sujet: string, html: string) {
-  await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: FROM, to: [email], subject: sujet, html }),
-  }).catch(e => console.error(`Resend: échec de l'envoi « ${sujet} »`, e))
+  try {
+    const reponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: FROM, to: [email], subject: sujet, html }),
+    })
+    // Resend répond sans lever d'erreur quand il refuse (ex. domaine non vérifié) : on note sa raison.
+    if (!reponse.ok) console.error(`Resend a refusé « ${sujet} » (${reponse.status}) :`, await reponse.text())
+    else console.log(`Courriel envoyé : « ${sujet} »`)
+  } catch (e) {
+    console.error(`Resend: échec de l'envoi « ${sujet} »`, e)
+  }
 }

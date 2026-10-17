@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useEffectEvent, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
@@ -26,6 +26,23 @@ export default function TransfertPropriete() {
   const [envoi, setEnvoi] = useState(false)
   const [confirmerRefus, setConfirmerRefus] = useState(false)
   const [clientSecret, setClientSecret] = useState(null)
+  // Paiement réussi dans la fenêtre intégrée, sans recharger l'app.
+  const [paye, setPaye] = useState(false)
+
+  // Le webhook Stripe finalise le transfert quelques secondes après le paiement.
+  async function attendreFinalisation() {
+    const { data: { user } } = await supabase.auth.getUser()
+    for (let i = 0; i < 15 && user; i++) {
+      const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+      if (data?.role === 'proprietaire') {
+        if (chargerProfil) await chargerProfil()
+        setEtape('termine')
+        return
+      }
+      await new Promise(r => setTimeout(r, 2000))
+    }
+    setEtape('attente')
+  }
 
   async function accepter() {
     setEnvoi(true)
@@ -67,23 +84,11 @@ export default function TransfertPropriete() {
       setChargement(false)
     }
 
-    // Le webhook Stripe finalise le transfert quelques secondes après le paiement.
-    async function attendreFinalisation() {
-      const { data: { user } } = await supabase.auth.getUser()
-      for (let i = 0; i < 15 && user; i++) {
-        const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-        if (data?.role === 'proprietaire') {
-          if (chargerProfil) await chargerProfil()
-          setEtape('termine')
-          return
-        }
-        await new Promise(r => setTimeout(r, 2000))
-      }
-      setEtape('attente')
-    }
-
     if (etape === 'finalisation') {
       navigate('/equipe/transfert', { replace: true })
+      /* attendreFinalisation ne change l'état qu'après des await (attente
+         du webhook Stripe) : rien n'est modifié pendant l'effet lui-même. */
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       attendreFinalisation()
     } else {
       consulter()
@@ -92,6 +97,23 @@ export default function TransfertPropriete() {
   }, [])
 
   const fetchClientSecret = useCallback(() => Promise.resolve(clientSecret), [clientSecret])
+
+  /* Appelé par Stripe quand le paiement réussit dans la fenêtre intégrée.
+     Stable : Stripe garde la première version de ce rappel. */
+  const paiementReussi = useCallback(() => {
+    setClientSecret(null)
+    setPaye(true)
+  }, [])
+  const finaliserApresPaiement = useEffectEvent(() => {
+    setPaye(false)
+    setEtape('finalisation')
+    attendreFinalisation()
+  })
+  useEffect(() => {
+    if (!paye) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    finaliserApresPaiement()
+  }, [paye])
 
   if (chargement) {
     return (
@@ -206,7 +228,7 @@ export default function TransfertPropriete() {
               <span>Devenir propriétaire de {nomEquipe}</span>
               <button className="popup-close" onClick={() => setClientSecret(null)}>✕</button>
             </div>
-            <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret }}>
+            <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret, onComplete: paiementReussi }}>
               <EmbeddedCheckout />
             </EmbeddedCheckoutProvider>
           </div>

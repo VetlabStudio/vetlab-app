@@ -5,6 +5,15 @@ import { courrielsActifs, echapper, envoyerCourriel, gabaritCourriel } from '../
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2023-10-16' })
 const PRICE_EQUIPE = Deno.env.get('STRIPE_PRICE_EQUIPE') || ''
 const JOURS_VALIDITE = 7
+const APP_URL = (Deno.env.get('APP_URL') || 'https://adjuvet.app').replace(/\/+$/, '')
+
+/* Adresse de retour après le paiement, utilisée seulement quand le moyen
+   de paiement l'exige (une carte se règle sans quitter l'app). L'adresse
+   de l'app, ou celle d'un test sur l'ordinateur (localhost). */
+function adresseApp(req: Request): string {
+  const origine = req.headers.get('origin') || ''
+  return /^http:\/\/localhost:\d+$/.test(origine) ? origine : APP_URL
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -285,12 +294,14 @@ Deno.serve(async (req) => {
       payment_method_collection: 'always',
       locale: 'fr',
       ui_mode: 'embedded',
+      // Paiement terminé dans la fenêtre intégrée, sans recharger l'app.
+      redirect_on_completion: 'if_required',
       metadata: { transfert_id: t.id },
       subscription_data: {
         metadata: { transfert_id: t.id },
         ...(ancrage ? { billing_cycle_anchor: ancrage, proration_behavior: 'none' as const } : {}),
       },
-      return_url: `${req.headers.get('origin')}/equipe/transfert?paiement=succes`,
+      return_url: `${adresseApp(req)}/equipe/transfert?paiement=succes`,
     })
 
     return json({ clientSecret: session.client_secret })

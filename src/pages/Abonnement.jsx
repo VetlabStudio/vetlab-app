@@ -119,6 +119,11 @@ export default function Abonnement() {
   const [succes, setSucces] = useState('')
   const [subDetails, setSubDetails] = useState(null)
   const [nombreMembresActifs, setNombreMembresActifs] = useState(0)
+  /* Paiement terminé : dans la fenêtre de paiement (sans recharger
+     l'app) ou au retour de Stripe (adresse ?paiement=succes). */
+  const [paiementTermine, setPaiementTermine] = useState(() => searchParams.get('paiement') === 'succes')
+  // Activation en cours : le webhook Stripe met le forfait à jour.
+  const [activation, setActivation] = useState(false)
 
   // L'onglet Équipe s'ouvre quand le forfait devient Équipe.
   const [planAffiche, setPlanAffiche] = useState(profil?.plan)
@@ -173,6 +178,15 @@ export default function Abonnement() {
   }
 
   async function attendrePlanActif(planAttendu) {
+    setActivation(true)
+    try {
+      await attendrePlan(planAttendu)
+    } finally {
+      setActivation(false)
+    }
+  }
+
+  async function attendrePlan(planAttendu) {
     for (let i = 0; i < 10; i++) {
       await new Promise(r => setTimeout(r, 2000))
       const { data: { user } } = await supabase.auth.getUser()
@@ -194,19 +208,26 @@ export default function Abonnement() {
     afficherSucces(planAttendu === 'equipe' ? 'Abonnement Équipe activé !' : 'Abonnement Pro activé !')
   }
 
-  // Retour de Stripe après un paiement : traité une seule fois, à l'ouverture.
-  const finaliserRetourPaiement = useEffectEvent(() => {
-    if (searchParams.get('paiement') !== 'succes') return
+  // Paiement terminé : traité une seule fois, puis attente du forfait.
+  const finaliserPaiement = useEffectEvent(() => {
+    setPaiementTermine(false)
     const plan = sessionStorage.getItem('checkout_plan') || 'pro'
     sessionStorage.removeItem('checkout_plan')
-    navigate('/abonnement', { replace: true })
+    if (searchParams.get('paiement')) navigate('/abonnement', { replace: true })
     attendrePlanActif(plan)
   })
   useEffect(() => {
-    /* attendrePlanActif ne change l'état qu'après des await (attente du
-       webhook Stripe) : rien n'est modifié pendant l'effet lui-même. */
+    if (!paiementTermine) return
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    finaliserRetourPaiement()
+    finaliserPaiement()
+  }, [paiementTermine])
+
+  /* Appelé par Stripe quand le paiement réussit dans la fenêtre intégrée.
+     Stable : Stripe garde la première version de ce rappel. */
+  const paiementReussi = useCallback(() => {
+    setModalCheckout(false)
+    setClientSecret(null)
+    setPaiementTermine(true)
   }, [])
 
   async function ouvrirPortail() {
@@ -316,6 +337,14 @@ export default function Abonnement() {
   return (
     <div className="abonnement-page">
 
+      {activation && !succes && (
+        <div role="status" style={{
+          background: 'var(--bg-secondary)', borderRadius: 12, padding: '12px 16px',
+          color: 'var(--text-primary)', fontSize: 14, fontWeight: 500,
+        }}>
+          Paiement reçu. Activation de votre abonnement...
+        </div>
+      )}
       {succes && (
         <div style={{
           background: 'rgba(46,158,91,0.1)', border: '1px solid rgba(46,158,91,0.3)',
@@ -683,7 +712,7 @@ export default function Abonnement() {
               <span>Passer au forfait {onglet === 'equipe' ? 'Équipe' : 'Pro'}</span>
               <button className="popup-close" onClick={() => setModalCheckout(false)}>✕</button>
             </div>
-            <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret }}>
+            <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret, onComplete: paiementReussi }}>
               <EmbeddedCheckout />
             </EmbeddedCheckoutProvider>
           </div>

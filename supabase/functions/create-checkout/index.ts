@@ -4,6 +4,14 @@ import { synchroniserCourrielStripe } from '../_shared/stripeCourriel.ts'
 
 const APP_URL = (Deno.env.get('APP_URL') || 'https://adjuvet.app').replace(/\/+$/, '')
 
+/* Adresse de retour après le paiement, utilisée seulement quand le moyen
+   de paiement l'exige (une carte se règle sans quitter l'app). L'adresse
+   de l'app, ou celle d'un test sur l'ordinateur (localhost). */
+function adresseApp(req: Request): string {
+  const origine = req.headers.get('origin') || ''
+  return /^http:\/\/localhost:\d+$/.test(origine) ? origine : APP_URL
+}
+
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2023-10-16' })
 
 const PRICE_EQUIPE = Deno.env.get('STRIPE_PRICE_EQUIPE') || ''
@@ -141,8 +149,10 @@ Deno.serve(async (req) => {
     payment_method_collection: 'if_required',
     locale: 'fr',
     ui_mode: 'embedded',
-    // Adresse fixe : l'en-tête Origin vient du navigateur et peut manquer.
-    return_url: `${APP_URL}/abonnement?paiement=succes`,
+    /* Paiement terminé dans la fenêtre intégrée, sans recharger l'app :
+       la page Abonnement prend le relais. */
+    redirect_on_completion: 'if_required',
+    return_url: `${adresseApp(req)}/abonnement?paiement=succes`,
   })
 
   return json({ clientSecret: session.client_secret })
