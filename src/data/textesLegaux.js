@@ -77,8 +77,8 @@ export const CONFIDENTIALITE_SECTIONS = [
     titre: 'Responsable de la protection des renseignements personnels',
     icone: 'ti-id-badge',
     paragraphes: [
-      'Conformément à la Loi sur la protection des renseignements personnels dans le secteur privé du Québec (Loi 25), VetLab Studio a désigné une personne responsable de la protection des renseignements personnels.',
-      'Pour une question, une demande d\'accès ou de correction, une plainte, ou pour signaler un incident de confidentialité, écrivez à : Responsable de la protection des renseignements personnels, VetLab Studio, confidentialite@vetlabstudio.ca.',
+      'Conformément à la Loi sur la protection des renseignements personnels dans le secteur privé du Québec (Loi 25), ADJUVET a désigné une personne responsable de la protection des renseignements personnels.',
+      'Pour une question, une demande d\'accès ou de correction, une plainte, ou pour signaler un incident de confidentialité, écrivez à : Responsable de la protection des renseignements personnels, ADJUVET, confidentialite@vetlabstudio.ca.',
     ],
   },
   {
@@ -139,10 +139,10 @@ export const CONDITIONS_COMPLETES_SECTIONS = [
       'Votre compte est personnel. Vous êtes responsable de la confidentialité de votre mot de passe et de toute activité effectuée avec votre compte.',
     ],
     liste: [
-      'Le contenu d\'ADJUVET ne peut pas être copié, redistribué ou revendu sans l\'autorisation écrite de VetLab Studio.',
+      'Le contenu d\'ADJUVET ne peut pas être copié, redistribué ou revendu sans l\'autorisation écrite de ADJUVET.',
       'Il est interdit de contourner les limites des forfaits ou de tenter d\'accéder aux données d\'autres utilisateurs ou d\'autres cliniques.',
       'N\'inscrivez pas de renseignements personnels sur les clients de votre clinique (nom, téléphone, adresse, etc.) dans les notes, le babillard ou les tâches. Utilisez plutôt le nom de l\'animal ou un numéro de dossier.',
-      'VetLab Studio peut suspendre ou fermer un compte qui ne respecte pas ces conditions.',
+      'ADJUVET peut suspendre ou fermer un compte qui ne respecte pas ces conditions.',
     ],
   },
   ...AVERTISSEMENT_SECTIONS,
@@ -166,7 +166,7 @@ export const CONDITIONS_COMPLETES_SECTIONS = [
       'Remboursement : aucun remboursement n\'est offert pour une période partiellement utilisée, sauf dans le cas prévu à la section Forfait Équipe (abonnement Pro remplacé par l\'adhésion à une clinique).',
       'Paiement refusé : si un renouvellement échoue, de nouvelles tentatives sont faites automatiquement pendant quelques jours. Si vous avez déjà payé votre abonnement, vous gardez l\'accès pendant ces tentatives, pour un maximum de 21 jours. Sinon, l\'accès est suspendu jusqu\'à ce que le paiement passe. Si le paiement n\'aboutit pas, l\'abonnement est annulé.',
       'Essais gratuits et codes promotionnels : ils peuvent être offerts à certaines conditions. À la fin d\'un essai, l\'abonnement devient payant, sauf s\'il est annulé avant.',
-      'Changement de tarif : VetLab Studio peut modifier ses tarifs. Un changement s\'applique au renouvellement suivant et vous est communiqué à l\'avance.',
+      'Changement de tarif : ADJUVET peut modifier ses tarifs. Un changement s\'applique au renouvellement suivant et vous est communiqué à l\'avance.',
     ],
   },
   {
@@ -208,7 +208,7 @@ export const CONDITIONS_COMPLETES_SECTIONS = [
     titre: 'Acceptation des termes',
     icone: 'ti-circle-check',
     paragraphes: [
-      'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation, ainsi que l\'Avertissement médical et la Politique de confidentialité. Ces conditions constituent un accord entre vous et VetLab Studio.',
+      'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation, ainsi que l\'Avertissement médical et la Politique de confidentialité. Ces conditions constituent un accord entre vous et ADJUVET.',
     ],
   },
 ]

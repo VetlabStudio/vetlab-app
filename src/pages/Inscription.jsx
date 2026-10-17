@@ -36,7 +36,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Responsabilité de l\'utilisateur',
-        texte: 'Toute décision clinique doit être validée par un professionnel vétérinaire qualifié, en tenant compte de l\'état particulier de chaque patient. L\'utilisateur assume l\'entière responsabilité des décisions ou actions prises à partir des informations contenues dans ADJUVET.',
+        texte: 'Bien que le contenu d\'ADJUVET soit basé sur la littérature et la recherche vétérinaire, nous ne pouvons garantir son exactitude, son exhaustivité ou son actualité complètes. L\'utilisateur assume l\'entière responsabilité des décisions ou actions prises à partir des informations contenues dans ADJUVET.',
       },
     ],
   },
