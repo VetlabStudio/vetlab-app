@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { traduireErreur } from '../lib/messagesErreur'
 import { useProfil } from '../context/ProfilContext'
 import SuggestionCourriel from '../components/SuggestionCourriel'
 import { suggererCourriel } from '../lib/suggestionCourriel'
+import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
 
 const BUCKET_LOGOS = 'logos-cliniques'
 const TAILLE_MAX_LOGO = 2 * 1024 * 1024 // 2 Mo
@@ -91,8 +93,6 @@ export default function EquipeGestion() {
   const [recherche, setRecherche] = useState('')
 
   const [emailsInput, setEmailsInput] = useState('')
-  // Les fautes de frappe se signalent une fois le champ quitté.
-  const [invitsQuittees, setInvitsQuittees] = useState(false)
   const [roleInvit, setRoleInvit] = useState('membre')
   const [envoi, setEnvoi] = useState(false)
   const [envoiProgress, setEnvoiProgress] = useState(null)
@@ -196,7 +196,7 @@ export default function EquipeGestion() {
       setEquipe(prev => ({ ...prev, logo_url: url }))
       signaler('succes', 'Logo mis à jour. Il apparaîtra sur vos prochains PDF.')
     } catch (err) {
-      signaler('erreur', `Le logo n'a pas pu être envoyé. ${err?.message || ''}`.trim())
+      signaler('erreur', `Le logo n'a pas pu être envoyé. ${traduireErreur(err, '')}`.trim())
     } finally {
       setEnvoiLogo(false)
     }
@@ -212,7 +212,7 @@ export default function EquipeGestion() {
       setEquipe(prev => ({ ...prev, logo_url: null }))
       signaler('succes', 'Logo retiré.')
     } catch (err) {
-      signaler('erreur', `Le logo n'a pas pu être retiré. ${err?.message || ''}`.trim())
+      signaler('erreur', `Le logo n'a pas pu être retiré. ${traduireErreur(err, '')}`.trim())
     } finally {
       setEnvoiLogo(false)
     }
@@ -255,12 +255,21 @@ export default function EquipeGestion() {
 
   const emailsParsed = useMemo(() => parseEmails(emailsInput), [emailsInput])
 
-  // Faute de frappe probable dans une adresse (ex. nom@gmial.com).
-  const suggestionsInvit = invitsQuittees
-    ? emailsParsed
+  // Fautes de frappe probables dans les adresses (ex. nom@gmial.com).
+  const verifInvit = useSuggestionCourriel(emailsInput, texte => {
+    const adresses = parseEmails(texte)
+    return adresses
       .map(avant => ({ avant, apres: suggererCourriel(avant) }))
-      .filter(s => s.apres && !emailsParsed.includes(s.apres))
-    : []
+      .filter(s => s.apres && !adresses.includes(s.apres))
+  })
+  const suggestionsInvit = verifInvit.suggestion || []
+
+  /* Les réinvitations d'une adresse déjà en attente ne prennent pas
+     de siège supplémentaire : inviterUn remplace l'invitation. */
+  const emailsEnAttente = new Set(invitationsVives.map(i => i.email))
+  const nouveauxInvit = emailsParsed.filter(e => !emailsEnAttente.has(e)).length
+  const depasseSieges = Boolean(equipe?.max_membres) && nouveauxInvit > siegesRestants
+  const libelleEnvoi = emailsParsed.length > 1 ? `Envoyer ${emailsParsed.length} invitations` : "Envoyer l'invitation"
 
   function corrigerInvit(avant, apres) {
     setEmailsInput(texte => texte
@@ -276,7 +285,7 @@ export default function EquipeGestion() {
     const { data: invitation, error } = await supabase.from('team_invitations').insert({
       team_id: teamId, email, role, invited_by: userId, token, status: 'pending',
     }).select('id').single()
-    if (error) return { ok: false, message: error.message || 'Erreur inconnue' }
+    if (error) return { ok: false, message: traduireErreur(error, "l'invitation n'a pas pu être créée.") }
 
     /* Le serveur retrouve l'adresse, le nom de la clinique et le lien
        à partir de l'invitation : rien d'autre ne lui est confié. */
@@ -292,19 +301,10 @@ export default function EquipeGestion() {
     if (emailsParsed.length === 0 || envoi) return
     setErreurInvit('')
 
-    /* Les réinvitations d'une adresse déjà en attente ne prennent pas
-       de siège supplémentaire : inviterUn remplace l'invitation. */
-    const emailsEnAttente = new Set(invitationsVives.map(i => i.email))
-    const nouveaux = emailsParsed.filter(e => !emailsEnAttente.has(e)).length
-
-    if (equipe?.max_membres && nouveaux > siegesRestants) {
-      setErreurInvit(
-        siegesRestants > 0
-          ? `Seulement ${siegesRestants} siège${siegesRestants > 1 ? 's' : ''} disponible${siegesRestants > 1 ? 's' : ''} pour ${nouveaux} nouvelles invitations.`
-          : "Tous les sièges sont occupés, invitations en attente comprises. Annulez une invitation ou ajoutez des sièges."
-      )
-      return
-    }
+    // Le bouton est désactivé dans ce cas ; on revérifie par sécurité.
+    if (depasseSieges) return
+    // Faute de frappe probable pas encore vue : on la montre d'abord.
+    if (verifInvit.doitConfirmer()) return
 
     setEnvoi(true)
     let envoyes = 0
@@ -319,7 +319,7 @@ export default function EquipeGestion() {
     }
 
     setEmailsInput('')
-    setInvitsQuittees(false)
+    verifInvit.reinitialiser()
     await charger()
 
     if (erreurs.length === 0) {
@@ -783,11 +783,11 @@ export default function EquipeGestion() {
 
       {/* ═══ POPUP INVITATION ═══ */}
       {showInviteModal && (
-        <div className="popup-overlay" onClick={() => { setShowInviteModal(false); setEmailsInput(''); setInvitsQuittees(false); setErreurInvit(''); setMsgSucces('') }}>
+        <div className="popup-overlay" onClick={() => { setShowInviteModal(false); setEmailsInput(''); verifInvit.reinitialiser(); setErreurInvit(''); setMsgSucces('') }}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
               <span>Inviter une personne</span>
-              <button className="popup-close" onClick={() => { setShowInviteModal(false); setEmailsInput(''); setInvitsQuittees(false); setErreurInvit(''); setMsgSucces('') }}>✕</button>
+              <button className="popup-close" onClick={() => { setShowInviteModal(false); setEmailsInput(''); verifInvit.reinitialiser(); setErreurInvit(''); setMsgSucces('') }}>✕</button>
             </div>
 
             <div className="equipe-gestion">
@@ -810,7 +810,6 @@ export default function EquipeGestion() {
                   placeholder="adresse@clinique.com, autre@email.com..."
                   value={emailsInput}
                   onChange={e => { setEmailsInput(e.target.value); setErreurInvit('') }}
-                  onBlur={() => { if (emailsInput.trim()) setInvitsQuittees(true) }}
                   style={{ paddingLeft: 36 }}
                 />
               </div>
@@ -831,9 +830,41 @@ export default function EquipeGestion() {
                 </div>
               )}
 
-              {suggestionsInvit.map(s => (
-                <SuggestionCourriel key={s.avant} suggestion={s.apres} avant={suggestionsInvit.length > 1 || emailsParsed.length > 1 ? s.avant : undefined} onCorriger={() => corrigerInvit(s.avant, s.apres)} />
+              {suggestionsInvit.map((s, i) => (
+                <SuggestionCourriel
+                  key={s.avant}
+                  suggestion={s.apres}
+                  avant={emailsParsed.length > 1 ? s.avant : undefined}
+                  onCorriger={() => corrigerInvit(s.avant, s.apres)}
+                  avertie={verifInvit.avertie && i === suggestionsInvit.length - 1}
+                  bouton={libelleEnvoi}
+                />
               ))}
+
+              {/* Plus d'adresses que de sièges libres : on le dit avant l'envoi. */}
+              {depasseSieges && (
+                <div className="equipe-message erreur" role="alert">
+                  <i className="ti ti-alert-circle"></i>
+                  <span>
+                    {siegesRestants > 0
+                      ? `Il reste ${siegesRestants} siège${siegesRestants > 1 ? 's' : ''} libre${siegesRestants > 1 ? 's' : ''} pour ${nouveauxInvit} nouvelles adresses. Retirez ${nouveauxInvit - siegesRestants} adresse${nouveauxInvit - siegesRestants > 1 ? 's' : ''}`
+                      : 'Tous les sièges sont occupés, invitations en attente comprises. Annulez une invitation'}
+                    {estProprietaire ? (
+                      <>
+                        {' ou '}
+                        <button
+                          type="button"
+                          onClick={() => navigate('/abonnement')}
+                          style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', fontWeight: 700, color: 'inherit', textDecoration: 'underline', cursor: 'pointer' }}
+                        >
+                          ajoutez des sièges
+                        </button>
+                        .
+                      </>
+                    ) : '. Seul le propriétaire peut ajouter des sièges.'}
+                  </span>
+                </div>
+              )}
 
               <div>
                 <span className="equipe-carte-titre">Rôle attribué</span>
@@ -870,12 +901,8 @@ export default function EquipeGestion() {
                 </div>
               )}
 
-              <button className="equipe-btn-primaire" onClick={inviter} disabled={emailsParsed.length === 0 || envoi}>
-                {envoi
-                  ? 'Envoi en cours...'
-                  : emailsParsed.length > 1
-                    ? `Envoyer ${emailsParsed.length} invitations`
-                    : "Envoyer l'invitation"}
+              <button className="equipe-btn-primaire" onClick={inviter} disabled={emailsParsed.length === 0 || envoi || depasseSieges}>
+                {envoi ? 'Envoi en cours...' : libelleEnvoi}
               </button>
             </div>
           </div>

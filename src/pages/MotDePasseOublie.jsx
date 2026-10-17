@@ -12,7 +12,7 @@ export default function MotDePasseOublie() {
   const [envoye, setEnvoye] = useState(false)
   const [chargement, setChargement] = useState(false)
   const [logoSrc] = useState(() => `/adjuvet-logo-anime.svg?v=${Date.now()}`)
-  const { suggestion, quitterChamp } = useSuggestionCourriel(email)
+  const { suggestion, avertie, doitConfirmer } = useSuggestionCourriel(email)
 
   async function envoyer(e) {
     e.preventDefault()
@@ -21,6 +21,8 @@ export default function MotDePasseOublie() {
       setErreur('Format de courriel invalide (ex. nom@domaine.com).')
       return
     }
+    // Faute de frappe probable pas encore vue : on la montre d'abord.
+    if (doitConfirmer()) return
     setChargement(true)
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: `${window.location.origin}/nouveau-mot-de-passe`,
@@ -66,7 +68,6 @@ export default function MotDePasseOublie() {
                 className="auth2-input"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                onBlur={quitterChamp}
                 autoComplete="email"
                 placeholder=" "
                 required
@@ -74,7 +75,7 @@ export default function MotDePasseOublie() {
               />
               <span className="auth2-flottant-texte">Courriel</span>
             </label>
-            <SuggestionCourriel id="suggestion-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} surFond="violet" />
+            <SuggestionCourriel id="suggestion-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} avertie={avertie} bouton="Recevoir le lien" surFond="violet" />
             {erreur && <p className="erreur" style={{ textAlign: 'center', color: '#FFFFFF' }}>{erreur}</p>}
             <button type="submit" className="auth2-btn" disabled={chargement}>
               {chargement ? 'Envoi...' : 'Recevoir le lien'}

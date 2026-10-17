@@ -36,7 +36,7 @@ export default class ErrorBoundary extends Component {
             L'application a rencontré une erreur. Rechargez pour continuer.
           </p>
           <p style={{ fontSize: 12, color: '#213058', opacity: 0.7, textAlign: 'center', marginBottom: 28, wordBreak: 'break-word' }}>
-            {this.state.erreur?.message || String(this.state.erreur)}
+            Détail technique : {this.state.erreur?.message || String(this.state.erreur)}
           </p>
           <button
             type="button"

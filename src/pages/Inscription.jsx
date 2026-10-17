@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
+import { traduireErreur } from '../lib/messagesErreur'
 import { useNavigate, Link } from 'react-router-dom'
 import PopupTexteLegal from '../components/PopupTexteLegal'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
-import { suggererCourriel } from '../lib/suggestionCourriel'
+import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
 import SuggestionCourriel from '../components/SuggestionCourriel'
 import { CONDITIONS_COMPLETES_SECTIONS, CONFIDENTIALITE_SECTIONS } from '../data/textesLegaux'
 
@@ -93,7 +94,8 @@ export default function Inscription() {
         ? 'Format de courriel invalide (ex. nom@domaine.com).'
         : null
   // Faute de frappe probable dans un domaine courant (ex. nom@gmial.com).
-  const suggestion = courrielVerifie ? suggererCourriel(email) : null
+  const verifCourriel = useSuggestionCourriel(email)
+  const suggestion = verifCourriel.suggestion
 
   const allerVue = (prochaine, direction) => {
     if (prochaine === vue) return
@@ -111,8 +113,11 @@ export default function Inscription() {
     if (!FORMAT_COURRIEL.test(email.trim())) {
       // Le message s'affiche sous le champ courriel.
       setCourrielVerifie(true)
+      verifCourriel.afficher()
       return
     }
+    // Faute de frappe probable pas encore vue : on la montre d'abord.
+    if (verifCourriel.doitConfirmer()) return
     const evaluation = await verifierMotDePasse(motDePasse, { email, nom })
     if (!evaluation.valide) {
       setErreur(evaluation.message)
@@ -165,7 +170,7 @@ export default function Inscription() {
       : data?.user?.identities?.length === 0
 
     if (error || dejaInscrit) {
-      setErreur(dejaInscrit ? MSG_COMPTE_EXISTANT : "Erreur lors de l'inscription. Vérifiez votre courriel.")
+      setErreur(dejaInscrit ? MSG_COMPTE_EXISTANT : traduireErreur(error, "L'inscription a échoué. Vérifiez votre courriel et réessayez."))
       allerVue('form', 'back')
       return
     }
@@ -283,7 +288,7 @@ export default function Inscription() {
           </label>
           {/* Une faute de frappe probable passe avant le format : la correction proposée règle les deux. */}
           {suggestion ? (
-            <SuggestionCourriel id="erreur-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} surFond="violet" />
+            <SuggestionCourriel id="erreur-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} avertie={verifCourriel.avertie} bouton="Créer mon compte" surFond="violet" />
           ) : erreurCourriel && (
             <p id="erreur-courriel" className="erreur" aria-live="polite" style={{ color: '#FFFFFF', textAlign: 'left', margin: '-4px 8px 0', fontWeight: 600 }}>
               {erreurCourriel}

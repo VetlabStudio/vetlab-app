@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { traduireErreur } from '../lib/messagesErreur'
 import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 
@@ -142,7 +143,7 @@ export default function AjouterMedicament() {
     })
 
     if (error) {
-      setErreur('Erreur : ' + error.message)
+      setErreur(traduireErreur(error, "Le médicament n'a pas pu être enregistré."))
       setSauvegarde(false)
       return
     }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { traduireErreur } from '../lib/messagesErreur'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
 
@@ -55,7 +56,7 @@ export default function NouveauMotDePasse() {
     const { error } = await supabase.auth.updateUser({ password: motDePasse })
     setChargement(false)
     if (error) {
-      setErreur("Le mot de passe n'a pas pu être changé. Redemandez un lien et réessayez.")
+      setErreur(traduireErreur(error, "Le mot de passe n'a pas pu être changé. Redemandez un lien et réessayez."))
       return
     }
     setEtat('termine')

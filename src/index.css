@@ -1309,7 +1309,7 @@ input {
 }
 
 .toggle-slider.droite {
-  background: #766f8c;
+  background: var(--accent-red);
 }
 
 .toggle-thumb {

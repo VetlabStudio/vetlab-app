@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { traduireErreur } from '../lib/messagesErreur'
 
 const CATEGORIES = [
   'Anesthésiques / Analgésiques',
@@ -171,7 +172,7 @@ export default function AdminMedicamentForm() {
     if (estNouveau) {
       const { error } = await supabase.from('medicaments').insert(basePayload)
       if (error) {
-        setErreur('Erreur : ' + error.message)
+        setErreur(traduireErreur(error, "Le médicament n'a pas pu être enregistré."))
         setSauvegarde(false)
         return
       }
@@ -181,7 +182,7 @@ export default function AdminMedicamentForm() {
         .update(basePayload)
         .eq('id', id)
       if (error) {
-        setErreur('Erreur : ' + error.message)
+        setErreur(traduireErreur(error, "Le médicament n'a pas pu être enregistré."))
         setSauvegarde(false)
         return
       }

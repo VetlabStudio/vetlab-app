@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { traduireErreur } from '../lib/messagesErreur'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
 import SuggestionCourriel from '../components/SuggestionCourriel'
@@ -120,7 +121,7 @@ export default function Profil() {
     setSaving(true)
     const { error } = await supabase.from('profiles').update({ nom: nouveauNom.trim() }).eq('id', profil.id)
     setSaving(false)
-    if (error) return setErreur('Erreur : ' + error.message)
+    if (error) return setErreur(traduireErreur(error, "Le nom n'a pas pu être enregistré."))
     setProfil(prev => ({ ...prev, nom: nouveauNom.trim() }))
     setModalNom(false)
     afficherSucces('Nom mis à jour !')
@@ -129,10 +130,12 @@ export default function Profil() {
   // ─── MODIFIER EMAIL ───────────────────────────
   async function sauvegarderEmail() {
     if (!nouveauEmail.trim()) return setErreur('Le courriel ne peut pas être vide.')
+    // Faute de frappe probable pas encore vue : on la montre d'abord.
+    if (suggestionEmail.doitConfirmer()) return
     setSaving(true)
     const { error } = await supabase.auth.updateUser({ email: nouveauEmail.trim() })
     setSaving(false)
-    if (error) return setErreur('Erreur : ' + error.message)
+    if (error) return setErreur(traduireErreur(error, "Le courriel n'a pas pu être modifié."))
     /* L'adresse affichée ne change pas encore : elle ne change dans
        le compte qu'une fois le lien de confirmation ouvert. */
     setModalEmail(false)
@@ -148,7 +151,7 @@ export default function Profil() {
     setSaving(true)
     const { error } = await supabase.auth.updateUser({ password: nouveauMdp })
     setSaving(false)
-    if (error) return setErreur('Erreur : ' + error.message)
+    if (error) return setErreur(traduireErreur(error, "Le mot de passe n'a pas pu être modifié."))
     setModalMdp(false)
     setNouveauMdp('')
     setConfirmMdp('')
@@ -176,7 +179,7 @@ export default function Profil() {
         .upload(path, image, { upsert: true, contentType: 'image/jpeg' })
       if (uploadError) {
         console.error('Envoi de la photo impossible:', uploadError)
-        throw new Error(`La photo n'a pas pu être envoyée (${uploadError.message}).`)
+        throw new Error(traduireErreur(uploadError, "La photo n'a pas pu être envoyée."))
       }
       const { data } = supabase.storage.from('avatars').getPublicUrl(path)
       const url = data.publicUrl + '?t=' + Date.now()
@@ -212,7 +215,8 @@ export default function Profil() {
     if (error) {
       const code = await lireCodeErreur(error)
       setSaving(false)
-      return setErreur(MESSAGES_SUPPRESSION[code] || 'Erreur : ' + (code || error.message))
+      return setErreur(MESSAGES_SUPPRESSION[code]
+        || traduireErreur(error, "La suppression du compte n'a pas pu se terminer. Réessayez dans quelques minutes, ou écrivez-nous."))
     }
     // Naviguer avant signOut : sinon la route protégée /profil redirige vers /connexion.
     navigate('/compte-supprime', { replace: true, state: { abonnementsAnnules: data?.abonnementsAnnules || 0 } })
@@ -365,8 +369,8 @@ export default function Profil() {
             </div>
             <div className="form-groupe">
               <label className="form-label" htmlFor="profil-courriel">Nouveau courriel</label>
-              <input id="profil-courriel" className="form-input" autoComplete="email" placeholder="ex. nom@clinique.ca" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} onBlur={suggestionEmail.quitterChamp} aria-describedby={suggestionEmail.suggestion ? 'suggestion-courriel' : undefined} autoFocus />
-              <SuggestionCourriel id="suggestion-courriel" suggestion={suggestionEmail.suggestion} onCorriger={() => setNouveauEmail(suggestionEmail.suggestion)} />
+              <input id="profil-courriel" className="form-input" autoComplete="email" placeholder="ex. nom@clinique.ca" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} aria-describedby={suggestionEmail.suggestion ? 'suggestion-courriel' : undefined} autoFocus />
+              <SuggestionCourriel id="suggestion-courriel" suggestion={suggestionEmail.suggestion} onCorriger={() => setNouveauEmail(suggestionEmail.suggestion)} avertie={suggestionEmail.avertie} bouton="Enregistrer" />
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderEmail} disabled={saving}>

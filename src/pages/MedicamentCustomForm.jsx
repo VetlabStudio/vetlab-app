@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { traduireErreur } from '../lib/messagesErreur'
 import { TitreContext } from '../context/NavigationContext'
 
 const VOIES = [
@@ -148,12 +149,12 @@ export default function MedicamentCustomForm() {
         .from('medicaments_custom')
         .update(payload)
         .eq('id', customId)
-      if (error) { setErreur('Erreur : ' + error.message); setSauvegarde(false); return }
+      if (error) { setErreur(traduireErreur(error, "Le médicament n'a pas pu être enregistré.")); setSauvegarde(false); return }
     } else {
       const { error } = await supabase
         .from('medicaments_custom')
         .insert(payload)
-      if (error) { setErreur('Erreur : ' + error.message); setSauvegarde(false); return }
+      if (error) { setErreur(traduireErreur(error, "Le médicament n'a pas pu être enregistré.")); setSauvegarde(false); return }
     }
 
     setSauvegarde(false)

@@ -1,6 +1,7 @@
 import { useState, useEffect, useEffectEvent, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { traduireErreur } from '../lib/messagesErreur'
 import { useProfil } from '../context/ProfilContext'
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
@@ -268,8 +269,13 @@ export default function Abonnement() {
           body: JSON.stringify({ newPriceId: PRICE_EQUIPE, quantity: nombreMembres }),
         }
       )
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Erreur')
+      const data = await response.json().catch(() => ({}))
+      // Les messages du serveur sont déjà en français.
+      if (!response.ok) {
+        setErreur(data.error || 'La mise à niveau a échoué. Réessayez.')
+        setUpgradeLoading(false)
+        return
+      }
       setModalUpgrade(false)
       setModalSieges(false)
       if (ajusterSieges) {
@@ -280,7 +286,7 @@ export default function Abonnement() {
         await attendrePlanActif('equipe')
       }
     } catch (err) {
-      setErreur(err.message || 'Erreur lors de la mise à niveau.')
+      setErreur(traduireErreur(err, 'La mise à niveau a échoué. Réessayez.'))
     }
     setUpgradeLoading(false)
   }

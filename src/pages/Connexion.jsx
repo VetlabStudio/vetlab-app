@@ -20,7 +20,7 @@ export default function Connexion() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectUrl = searchParams.get('redirect')
-  const { suggestion, quitterChamp } = useSuggestionCourriel(email)
+  const { suggestion } = useSuggestionCourriel(email)
 
   useEffect(() => {
     if (confirmé) window.history.replaceState(null, '', window.location.pathname)
@@ -48,7 +48,9 @@ export default function Connexion() {
         ? 'Connexion internet requise pour vous connecter.'
         : error.code === 'email_not_confirmed'
           ? 'Votre adresse courriel n\'est pas encore confirmée. Ouvrez le lien reçu par courriel (vérifiez aussi les courriels indésirables), puis connectez-vous.'
-          : 'Courriel ou mot de passe incorrect.')
+          : error.status === 429 || error.code === 'over_request_rate_limit'
+            ? 'Trop de tentatives. Réessayez dans quelques minutes.'
+            : 'Courriel ou mot de passe incorrect.')
     } else {
       navigate(redirectUrl || '/accueil')
     }
@@ -100,7 +102,6 @@ export default function Connexion() {
               className="auth2-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onBlur={quitterChamp}
               autoComplete="email"
               placeholder=" "
               required

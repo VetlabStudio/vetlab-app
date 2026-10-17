@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { TitreContext } from '../context/NavigationContext'
 import useCharteRadio from '../hooks/useCharteRadio'
+import { traduireErreur } from '../lib/messagesErreur'
 import { regions, qualiteOptions } from '../data/charteRadioOptions'
 import { ESPECES_CONFIG } from '../data/especes'
 
@@ -89,7 +90,7 @@ export default function LaRadiologieCharteForm() {
       ? await modifierEntree(id, payload)
       : await creerEntree(payload)
 
-    if (error) { setErreur('Erreur : ' + error.message); setSauvegarde(false); return }
+    if (error) { setErreur(traduireErreur(error, "L'entrée n'a pas pu être enregistrée.")); setSauvegarde(false); return }
 
     setSauvegarde(false)
     navigate(-1)
