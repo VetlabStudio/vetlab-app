@@ -142,15 +142,28 @@ async function mettreAJourMembresEquipe(proprietaireId: string, plan: 'equipe' |
   console.log(`mettreAJourMembresEquipe: ${membres.length} membre(s) → plan ${plan}`)
 }
 
+/* Adresse du compte : celle du profil, sinon celle du compte de
+   connexion (un profil n'a pas toujours son courriel, par exemple
+   s'il a été créé avant le correctif de la base). */
+async function adresseDuCompte(userId: string, emailProfil: string | null | undefined): Promise<string | null> {
+  if (emailProfil) return emailProfil
+  const { data } = await supabase.auth.admin.getUserById(userId)
+  return data?.user?.email || null
+}
+
 async function lireDestinataire(customerId: string): Promise<{ email: string; salutation: string } | null> {
   const { data: profil } = await supabase
     .from('profiles')
-    .select('email, nom')
+    .select('id, email, nom')
     .eq('stripe_customer_id', customerId)
     .maybeSingle()
-  if (!profil?.email) return null
+  const email = profil ? await adresseDuCompte(profil.id, profil.email) : null
+  if (!profil || !email) {
+    console.warn(`Courriel non envoyé : aucune adresse pour le client Stripe ${customerId}`)
+    return null
+  }
   const prenom = profil.nom ? echapper(profil.nom.split(' ')[0]) : ''
-  return { email: profil.email, salutation: prenom ? `Bonjour ${prenom},` : 'Bonjour,' }
+  return { email, salutation: prenom ? `Bonjour ${prenom},` : 'Bonjour,' }
 }
 
 async function envoyerConfirmationAbonnement(customerId: string, plan: string, quantity: number) {
@@ -370,9 +383,13 @@ async function destinataireParId(userId: string): Promise<{ email: string; salut
     await supabase.from('profiles').select('email, nom').eq('id', userId).maybeSingle(),
     'lecture du profil',
   )
-  if (!profil?.email) return null
-  const prenom = profil.nom ? echapper(profil.nom.split(' ')[0]) : ''
-  return { email: profil.email, salutation: prenom ? `Bonjour ${prenom},` : 'Bonjour,', nom: profil.nom || profil.email }
+  const email = await adresseDuCompte(userId, profil?.email)
+  if (!email) {
+    console.warn(`Courriel non envoyé : aucune adresse pour le compte ${userId}`)
+    return null
+  }
+  const prenom = profil?.nom ? echapper(profil.nom.split(' ')[0]) : ''
+  return { email, salutation: prenom ? `Bonjour ${prenom},` : 'Bonjour,', nom: profil?.nom || email }
 }
 
 async function annulerAbonnementInvalide(subId: string) {

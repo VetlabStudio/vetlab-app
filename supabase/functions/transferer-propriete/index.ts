@@ -153,8 +153,11 @@ Deno.serve(async (req) => {
 
     if (courrielsActifs()) {
       const { data: cible } = await supabase.from('profiles').select('email, nom').eq('id', cibleId).maybeSingle()
-      if (cible?.email) {
-        const prenom = cible.nom ? echapper(cible.nom.split(' ')[0]) : ''
+      // Profil sans courriel : on prend celui du compte de connexion.
+      const emailCible = cible?.email || (await supabase.auth.admin.getUserById(cibleId)).data?.user?.email
+      if (emailCible) {
+        const cibleNom = cible?.nom
+        const prenom = cibleNom ? echapper(cibleNom.split(' ')[0]) : ''
         const salutation = prenom ? `Bonjour ${prenom},` : 'Bonjour,'
         const html = gabaritCourriel({
           titre: `Transfert de ${nomEquipe}`,
@@ -165,7 +168,9 @@ Deno.serve(async (req) => {
           boutonUrl: 'https://adjuvet.app/equipe/transfert',
           noteHtml: `Cette demande expire le ${finValidite}.`,
         })
-        await envoyerCourriel(cible.email, `${nomDemandeur} veut vous transférer ${nomEquipe}`, html)
+        await envoyerCourriel(emailCible, `${nomDemandeur} veut vous transférer ${nomEquipe}`, html)
+      } else {
+        console.warn(`Courriel de transfert non envoyé : aucune adresse pour le compte ${cibleId}`)
       }
     }
 
