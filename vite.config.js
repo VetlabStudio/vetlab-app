@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { createHash } from 'node:crypto'
-import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { join, relative, resolve, sep } from 'node:path'
 
 /* Produit dist/sw.js à partir de src/sw.js avec la liste des fichiers
@@ -31,7 +31,10 @@ function serviceWorker() {
       racine = config.root
       dossierSortie = resolve(config.root, config.build.outDir)
     },
-    closeBundle() {
+    closeBundle(erreur) {
+      /* Si la compilation a échoué, dist n'existe pas : on s'arrête pour
+         laisser paraître la vraie cause (ex. un fichier introuvable). */
+      if (erreur || !existsSync(join(dossierSortie, 'index.html'))) return
       const fichiers = listerFichiers(dossierSortie)
         .map((chemin) => ({ chemin, adresse: '/' + relative(dossierSortie, chemin).split(sep).join('/') }))
         .filter(({ chemin, adresse }) => adresse !== '/sw.js' && (
