@@ -8,6 +8,9 @@ export default function Connexion() {
   const [motDePasse, setMotDePasse] = useState('')
   const [erreur, setErreur] = useState(null)
   const [chargement, setChargement] = useState(false)
+  // Adresse d'un compte pas encore confirmé, et état du renvoi du courriel.
+  const [nonConfirme, setNonConfirme] = useState(null)
+  const [renvoi, setRenvoi] = useState(null)
   // Retour du lien de confirmation (inscription ou nouveau courriel).
   const [confirmé] = useState(() => /type=(signup|email_change)/.test(window.location.hash))
   const [voirMdp, setVoirMdp] = useState(false)
@@ -24,6 +27,8 @@ export default function Connexion() {
     e.preventDefault()
     setChargement(true)
     setErreur(null)
+    setNonConfirme(null)
+    setRenvoi(null)
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -32,13 +37,39 @@ export default function Connexion() {
 
     if (error) {
       // Sans réseau, le message « mot de passe incorrect » serait trompeur.
-      setErreur(horsLigne() || isAuthRetryableFetchError(error)
+      // Supabase ne signale un courriel non confirmé qu'avec le bon mot de
+      // passe : ce message ne révèle donc pas si un compte existe.
+      const sansReseau = horsLigne() || isAuthRetryableFetchError(error)
+      if (!sansReseau && error.code === 'email_not_confirmed') setNonConfirme(email.trim())
+      setErreur(sansReseau
         ? 'Connexion internet requise pour vous connecter.'
-        : 'Courriel ou mot de passe incorrect.')
+        : error.code === 'email_not_confirmed'
+          ? 'Votre adresse courriel n\'est pas encore confirmée. Ouvrez le lien reçu par courriel (vérifiez aussi les courriels indésirables), puis connectez-vous.'
+          : 'Courriel ou mot de passe incorrect.')
     } else {
       navigate(redirectUrl || '/accueil')
     }
     setChargement(false)
+  }
+
+  // Renvoie le courriel de confirmation de l'inscription.
+  const renvoyerConfirmation = async () => {
+    setRenvoi('envoi')
+    const { error } = await supabase.auth.resend({ type: 'signup', email: nonConfirme })
+    if (!error) {
+      setErreur(null)
+      setRenvoi('envoye')
+      return
+    }
+    setRenvoi(null)
+    if (horsLigne() || isAuthRetryableFetchError(error)) {
+      setErreur('Connexion internet requise pour renvoyer le courriel.')
+    } else if (error.status === 429 || error.code === 'over_email_send_rate_limit') {
+      setErreur('Un courriel vient déjà d\'être envoyé. Attendez une minute avant d\'en demander un autre.')
+    } else {
+      console.error('Renvoi du courriel de confirmation:', error)
+      setErreur('Le courriel n\'a pas pu être envoyé. Réessayez dans quelques minutes.')
+    }
   }
 
   return (
@@ -91,6 +122,22 @@ export default function Connexion() {
           </div>
           <Link to="/mot-de-passe-oublie" className="auth2-oublie">Mot de passe oublié ?</Link>
           {erreur && <p className="erreur" style={{ textAlign: 'center' }}>{erreur}</p>}
+          {nonConfirme && renvoi !== 'envoye' && (
+            <button
+              type="button"
+              onClick={renvoyerConfirmation}
+              disabled={renvoi === 'envoi'}
+              style={{ alignSelf: 'center', background: 'none', border: 'none', padding: 0, fontSize: 14, fontWeight: 600, color: '#213058', textDecoration: 'underline', cursor: 'pointer' }}
+            >
+              {renvoi === 'envoi' ? 'Envoi...' : 'Renvoyer le courriel de confirmation'}
+            </button>
+          )}
+          {renvoi === 'envoye' && (
+            <div className="auth2-confirme" role="status">
+              <i className="ti ti-mail" style={{ fontSize: 20, flexShrink: 0 }} aria-hidden="true"></i>
+              <span>Courriel envoyé à {nonConfirme}. Ouvrez le lien qu'il contient, puis connectez-vous.</span>
+            </div>
+          )}
           <button type="submit" className="auth2-btn" disabled={chargement}>
             {chargement ? 'Connexion...' : 'Se connecter'}
           </button>
