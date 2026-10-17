@@ -569,7 +569,6 @@ export default function ChirurgieMonitoring() {
       }],
     }))
     setRechercheMed('')
-    setMedsOuverts(prev => new Set([...prev, newId]))
   }
 
   function modifierMedication(id, champ, valeur) {

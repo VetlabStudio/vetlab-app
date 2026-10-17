@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import IconesEspeces from '../components/IconesEspeces'
+import MenuDeroulant from '../components/MenuDeroulant'
 import { useProfil } from '../context/ProfilContext'
 
 export default function MesDrogues() {
@@ -136,23 +137,20 @@ export default function MesDrogues() {
         <>
           {/* ─── FILTRE ESPÈCE ─────────────────── */}
           <div className="champ">
-            <div className="champ-input">
-              <div className="champ-icone-wrapper">
-                <i className="ti ti-filter" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
-              </div>
-              <select
-                style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'var(--font)', fontSize: '1rem', color: 'var(--text-primary)', padding: '8px 0', appearance: 'none', WebkitAppearance: 'none' }}
-                value={especeFiltree}
-                onChange={e => setEspeceFiltree(e.target.value)}
-              >
-                {especesDisponibles.map(esp => (
-                  <option key={esp} value={esp}>
-                    {esp === 'tous' ? 'Toutes les espèces' : esp.charAt(0).toUpperCase() + esp.slice(1)}
-                  </option>
-                ))}
-              </select>
-              <i className="ti ti-chevron-down" style={{ color: 'var(--text-hint)', fontSize: 16, flexShrink: 0 }}></i>
-            </div>
+            <MenuDeroulant
+              etiquette="Filtrer par espèce"
+              valeur={especeFiltree}
+              onChange={setEspeceFiltree}
+              options={especesDisponibles.map(esp => ({
+                valeur: esp,
+                libelle: esp === 'tous' ? 'Toutes les espèces' : esp.charAt(0).toUpperCase() + esp.slice(1),
+              }))}
+              icone={(
+                <div className="champ-icone-wrapper">
+                  <i className="ti ti-filter" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
+                </div>
+              )}
+            />
           </div>
 
           {/* ─── LISTE ─────────────────────────── */}

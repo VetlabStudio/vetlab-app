@@ -6479,7 +6479,7 @@ input[type="number"] {
 .monitoring-table--suivi td {
   word-break: break-word;
   font-size: 12px;
-  padding: 6px 6px;
+  padding: 6px 12px;
 }
 
 .monitoring-table--suivi th:first-child,
