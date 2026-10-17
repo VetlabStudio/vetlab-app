@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { isAuthRetryableFetchError } from '@supabase/supabase-js'
 import { supabase, horsLigne } from '../lib/supabase'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
+import SuggestionCourriel from '../components/SuggestionCourriel'
+import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
 
 export default function Connexion() {
   const [email, setEmail] = useState('')
@@ -18,6 +20,7 @@ export default function Connexion() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectUrl = searchParams.get('redirect')
+  const { suggestion, quitterChamp } = useSuggestionCourriel(email)
 
   useEffect(() => {
     if (confirmé) window.history.replaceState(null, '', window.location.pathname)
@@ -97,12 +100,15 @@ export default function Connexion() {
               className="auth2-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onBlur={quitterChamp}
               autoComplete="email"
               placeholder=" "
               required
+              aria-describedby={suggestion ? 'suggestion-courriel' : undefined}
             />
             <span className="auth2-flottant-texte">Courriel</span>
           </label>
+          <SuggestionCourriel id="suggestion-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} surFond="violet" />
           <div className="auth2-input-wrap">
             <label className="auth2-flottant">
               <input

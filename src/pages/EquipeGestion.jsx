@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
+import SuggestionCourriel from '../components/SuggestionCourriel'
+import { suggererCourriel } from '../lib/suggestionCourriel'
 
 const BUCKET_LOGOS = 'logos-cliniques'
 const TAILLE_MAX_LOGO = 2 * 1024 * 1024 // 2 Mo
@@ -89,6 +91,8 @@ export default function EquipeGestion() {
   const [recherche, setRecherche] = useState('')
 
   const [emailsInput, setEmailsInput] = useState('')
+  // Les fautes de frappe se signalent une fois le champ quitté.
+  const [invitsQuittees, setInvitsQuittees] = useState(false)
   const [roleInvit, setRoleInvit] = useState('membre')
   const [envoi, setEnvoi] = useState(false)
   const [envoiProgress, setEnvoiProgress] = useState(null)
@@ -251,6 +255,20 @@ export default function EquipeGestion() {
 
   const emailsParsed = useMemo(() => parseEmails(emailsInput), [emailsInput])
 
+  // Faute de frappe probable dans une adresse (ex. nom@gmial.com).
+  const suggestionsInvit = invitsQuittees
+    ? emailsParsed
+      .map(avant => ({ avant, apres: suggererCourriel(avant) }))
+      .filter(s => s.apres && !emailsParsed.includes(s.apres))
+    : []
+
+  function corrigerInvit(avant, apres) {
+    setEmailsInput(texte => texte
+      .split(/([\s,;]+)/)
+      .map(morceau => (morceau.trim().toLowerCase() === avant ? apres : morceau))
+      .join(''))
+  }
+
   async function inviterUn(email, role) {
     await supabase.from('team_invitations').delete().eq('team_id', teamId).eq('email', email)
 
@@ -301,6 +319,7 @@ export default function EquipeGestion() {
     }
 
     setEmailsInput('')
+    setInvitsQuittees(false)
     await charger()
 
     if (erreurs.length === 0) {
@@ -764,11 +783,11 @@ export default function EquipeGestion() {
 
       {/* ═══ POPUP INVITATION ═══ */}
       {showInviteModal && (
-        <div className="popup-overlay" onClick={() => { setShowInviteModal(false); setEmailsInput(''); setErreurInvit(''); setMsgSucces('') }}>
+        <div className="popup-overlay" onClick={() => { setShowInviteModal(false); setEmailsInput(''); setInvitsQuittees(false); setErreurInvit(''); setMsgSucces('') }}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
               <span>Inviter une personne</span>
-              <button className="popup-close" onClick={() => { setShowInviteModal(false); setEmailsInput(''); setErreurInvit(''); setMsgSucces('') }}>✕</button>
+              <button className="popup-close" onClick={() => { setShowInviteModal(false); setEmailsInput(''); setInvitsQuittees(false); setErreurInvit(''); setMsgSucces('') }}>✕</button>
             </div>
 
             <div className="equipe-gestion">
@@ -791,6 +810,7 @@ export default function EquipeGestion() {
                   placeholder="adresse@clinique.com, autre@email.com..."
                   value={emailsInput}
                   onChange={e => { setEmailsInput(e.target.value); setErreurInvit('') }}
+                  onBlur={() => { if (emailsInput.trim()) setInvitsQuittees(true) }}
                   style={{ paddingLeft: 36 }}
                 />
               </div>
@@ -810,6 +830,10 @@ export default function EquipeGestion() {
                   ))}
                 </div>
               )}
+
+              {suggestionsInvit.map(s => (
+                <SuggestionCourriel key={s.avant} suggestion={s.apres} avant={suggestionsInvit.length > 1 || emailsParsed.length > 1 ? s.avant : undefined} onCorriger={() => corrigerInvit(s.avant, s.apres)} />
+              ))}
 
               <div>
                 <span className="equipe-carte-titre">Rôle attribué</span>

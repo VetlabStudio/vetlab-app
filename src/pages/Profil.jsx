@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
+import SuggestionCourriel from '../components/SuggestionCourriel'
+import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
 import { useProfil } from '../context/ProfilContext'
 
 const TAILLE_AVATAR = 512
@@ -57,6 +59,7 @@ export default function Profil() {
   // Champs édition
   const [nouveauNom, setNouveauNom] = useState('')
   const [nouveauEmail, setNouveauEmail] = useState('')
+  const suggestionEmail = useSuggestionCourriel(nouveauEmail)
   const [nouveauMdp, setNouveauMdp] = useState('')
   const [confirmMdp, setConfirmMdp] = useState('')
   const [erreur, setErreur] = useState('')
@@ -243,7 +246,7 @@ export default function Profil() {
     setErreur('')
     setSucces('')
     if (modal === 'nom') { setNouveauNom(profil?.nom || ''); setModalNom(true) }
-    if (modal === 'email') { setNouveauEmail(profil?.email || ''); setModalEmail(true) }
+    if (modal === 'email') { setNouveauEmail(profil?.email || ''); suggestionEmail.reinitialiser(); setModalEmail(true) }
     if (modal === 'mdp') { setNouveauMdp(''); setConfirmMdp(''); setModalMdp(true) }
     if (modal === 'supprimer') {
       chargerApercuSuppression()
@@ -362,7 +365,8 @@ export default function Profil() {
             </div>
             <div className="form-groupe">
               <label className="form-label" htmlFor="profil-courriel">Nouveau courriel</label>
-              <input id="profil-courriel" className="form-input" autoComplete="email" placeholder="ex. nom@clinique.ca" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} autoFocus />
+              <input id="profil-courriel" className="form-input" autoComplete="email" placeholder="ex. nom@clinique.ca" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} onBlur={suggestionEmail.quitterChamp} aria-describedby={suggestionEmail.suggestion ? 'suggestion-courriel' : undefined} autoFocus />
+              <SuggestionCourriel id="suggestion-courriel" suggestion={suggestionEmail.suggestion} onCorriger={() => setNouveauEmail(suggestionEmail.suggestion)} />
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderEmail} disabled={saving}>

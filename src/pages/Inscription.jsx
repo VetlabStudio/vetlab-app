@@ -4,6 +4,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import PopupTexteLegal from '../components/PopupTexteLegal'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
+import { suggererCourriel } from '../lib/suggestionCourriel'
+import SuggestionCourriel from '../components/SuggestionCourriel'
 import { CONDITIONS_COMPLETES_SECTIONS, CONFIDENTIALITE_SECTIONS } from '../data/textesLegaux'
 
 const CGU_PAGES = [
@@ -69,6 +71,8 @@ export default function Inscription() {
   const [motDePasse, setMotDePasse] = useState('')
   const [confirmation, setConfirmation] = useState('')
   const [erreur, setErreur] = useState(null)
+  // Le format du courriel se vérifie dès qu'on quitte le champ, puis à chaque frappe.
+  const [courrielVerifie, setCourrielVerifie] = useState(false)
   const [succes, setSucces] = useState(false)
   const [chargement, setChargement] = useState(false)
   // 'form' ou l'index de la page CGU affichée
@@ -80,6 +84,16 @@ export default function Inscription() {
   const [logoSrc] = useState(() => `/adjuvet-logo-anime.svg?v=${Date.now()}`)
   const touchStartX = useRef(null)
   const navigate = useNavigate()
+
+  const erreurCourriel = !courrielVerifie
+    ? null
+    : !email.trim()
+      ? 'Veuillez entrer votre courriel.'
+      : !FORMAT_COURRIEL.test(email.trim())
+        ? 'Format de courriel invalide (ex. nom@domaine.com).'
+        : null
+  // Faute de frappe probable dans un domaine courant (ex. nom@gmial.com).
+  const suggestion = courrielVerifie ? suggererCourriel(email) : null
 
   const allerVue = (prochaine, direction) => {
     if (prochaine === vue) return
@@ -95,7 +109,8 @@ export default function Inscription() {
       return
     }
     if (!FORMAT_COURRIEL.test(email.trim())) {
-      setErreur('Format de courriel invalide (ex. nom@domaine.com).')
+      // Le message s'affiche sous le champ courriel.
+      setCourrielVerifie(true)
       return
     }
     const evaluation = await verifierMotDePasse(motDePasse, { email, nom })
@@ -165,7 +180,7 @@ export default function Inscription() {
           <i className="ti ti-circle-check" style={{ fontSize: 64, color: '#213058', marginBottom: 20 }}></i>
           <h1 className="auth2-section-titre" style={{ textAlign: 'center', fontSize: 22 }}>Vérifiez votre courriel</h1>
           <p style={{ fontSize: 15, color: '#213058', textAlign: 'center', marginBottom: 28, lineHeight: 1.6 }}>
-            Un lien de confirmation vous a été envoyé. Cliquez dessus pour activer votre compte.
+            Un lien de confirmation vous a été envoyé à <strong>{email.trim()}</strong>. Cliquez dessus pour activer votre compte.
           </p>
           <Link to="/connexion" className="auth2-btn" style={{ display: 'block', textDecoration: 'none' }}>
             Retour à la connexion
@@ -257,12 +272,23 @@ export default function Inscription() {
               className="auth2-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => { if (email.trim()) setCourrielVerifie(true) }}
               autoComplete="email"
               placeholder=" "
               required
+              aria-invalid={erreurCourriel && !suggestion ? true : undefined}
+              aria-describedby={suggestion || erreurCourriel ? 'erreur-courriel' : undefined}
             />
             <span className="auth2-flottant-texte">Courriel</span>
           </label>
+          {/* Une faute de frappe probable passe avant le format : la correction proposée règle les deux. */}
+          {suggestion ? (
+            <SuggestionCourriel id="erreur-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} surFond="violet" />
+          ) : erreurCourriel && (
+            <p id="erreur-courriel" className="erreur" aria-live="polite" style={{ color: '#FFFFFF', textAlign: 'left', margin: '-4px 8px 0', fontWeight: 600 }}>
+              {erreurCourriel}
+            </p>
+          )}
           <div className="auth2-input-wrap">
             <label className="auth2-flottant">
               <input

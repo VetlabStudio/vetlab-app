@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import SuggestionCourriel from '../components/SuggestionCourriel'
+import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
 
 const FORMAT_COURRIEL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -10,6 +12,7 @@ export default function MotDePasseOublie() {
   const [envoye, setEnvoye] = useState(false)
   const [chargement, setChargement] = useState(false)
   const [logoSrc] = useState(() => `/adjuvet-logo-anime.svg?v=${Date.now()}`)
+  const { suggestion, quitterChamp } = useSuggestionCourriel(email)
 
   async function envoyer(e) {
     e.preventDefault()
@@ -63,12 +66,15 @@ export default function MotDePasseOublie() {
                 className="auth2-input"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={quitterChamp}
                 autoComplete="email"
                 placeholder=" "
                 required
+                aria-describedby={suggestion ? 'suggestion-courriel' : undefined}
               />
               <span className="auth2-flottant-texte">Courriel</span>
             </label>
+            <SuggestionCourriel id="suggestion-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} surFond="violet" />
             {erreur && <p className="erreur" style={{ textAlign: 'center', color: '#FFFFFF' }}>{erreur}</p>}
             <button type="submit" className="auth2-btn" disabled={chargement}>
               {chargement ? 'Envoi...' : 'Recevoir le lien'}
