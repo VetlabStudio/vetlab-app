@@ -16,7 +16,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Acceptation des termes',
-        texte: 'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et VetLab Studio.',
+        texte: 'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et ADJUVET.',
       },
     ],
   },
@@ -26,7 +26,7 @@ const CGU_PAGES = [
     sections: [
       {
         titre: 'Utilisation du service',
-        texte: 'ADJUVET est fourni à titre informatif uniquement et ne remplace pas le jugement clinique d\'un vétérinaire. VetLab Studio décline toute responsabilité pour les décisions thérapeutiques prises à partir de l\'application.',
+        texte: 'ADJUVET est fourni à titre informatif uniquement et ne remplace pas le jugement clinique d\'un vétérinaire. ADJUVET décline toute responsabilité pour les décisions thérapeutiques prises à partir de l\'application.',
       },
     ],
   },
@@ -35,8 +35,8 @@ const CGU_PAGES = [
     animal: '/Lapin01.png',
     sections: [
       {
-        titre: 'Abonnement et facturation',
-        texte: 'Le forfait Pro est un abonnement payant - mensuel ou annuel - géré via Stripe. Vous pouvez gérer ou annuler votre abonnement à tout moment depuis la page Profil. Aucun remboursement n\'est offert pour les périodes partiellement utilisées.',
+        titre: 'Responsabilité de l\'utilisateur',
+        texte: 'Toute décision clinique doit être validée par un professionnel vétérinaire qualifié, en tenant compte de l\'état particulier de chaque patient. L\'utilisateur assume l\'entière responsabilité des décisions ou actions prises à partir des informations contenues dans ADJUVET.',
       },
     ],
   },

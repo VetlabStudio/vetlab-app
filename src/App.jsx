@@ -266,9 +266,11 @@ function RenvoiRecuperation({ actif, onFait }) {
   const location = useLocation()
   useEffect(() => {
     if (!actif) return
-    if (location.pathname !== '/nouveau-mot-de-passe') navigate('/nouveau-mot-de-passe', { replace: true })
-    // Un seul renvoi : ensuite la personne circule librement.
-    onFait()
+    /* Le renvoi reste actif jusqu'à l'arrivée sur la page : une autre
+       redirection lancée au même moment (ex. la racine vers l'Accueil)
+       ne peut donc pas l'emporter. Ensuite, la personne circule librement. */
+    if (location.pathname === '/nouveau-mot-de-passe') onFait()
+    else navigate('/nouveau-mot-de-passe', { replace: true })
   }, [actif, location.pathname, navigate, onFait])
   return null
 }
@@ -462,7 +464,7 @@ export default function App() {
         <Route path="/admin/labo" element={<RouteProtegeeAdmin session={session}><AdminLaboProtocoles /></RouteProtegeeAdmin>} />
 
         {/* FALLBACK */}
-        <Route path="*" element={<Navigate to={session ? '/accueil' : '/connexion'} replace />} />
+        <Route path="*" element={<Navigate to={recuperation ? '/nouveau-mot-de-passe' : session ? '/accueil' : '/connexion'} replace />} />
 
       </Routes>
       </BrowserRouter>

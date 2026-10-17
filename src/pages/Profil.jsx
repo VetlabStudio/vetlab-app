@@ -26,7 +26,11 @@ async function preparerAvatar(fichier) {
     const canvas = document.createElement('canvas')
     canvas.width = Math.max(1, Math.round(img.width * echelle))
     canvas.height = Math.max(1, Math.round(img.height * echelle))
-    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+    const contexte = canvas.getContext('2d')
+    // Fond blanc : sinon les zones transparentes d'un PNG deviennent noires en JPEG.
+    contexte.fillStyle = '#FFFFFF'
+    contexte.fillRect(0, 0, canvas.width, canvas.height)
+    contexte.drawImage(img, 0, 0, canvas.width, canvas.height)
     return await new Promise((resolve, reject) =>
       canvas.toBlob(b => (b ? resolve(b) : reject(new Error('conversion'))), 'image/jpeg', 0.85)
     )
@@ -164,6 +168,12 @@ export default function Profil() {
     // Vider le champ permet de choisir de nouveau la même photo.
     e.target.value = ''
     if (!file) return
+    /* Un SVG est un dessin, pas une photo : il se charge mal et la photo
+       resterait vide. On le refuse avant l'envoi. */
+    if (file.type === 'image/svg+xml' || /\.svg$/i.test(file.name)) {
+      setErreur("Le format SVG n'est pas accepté pour la photo de profil. Choisissez une photo JPG ou PNG.")
+      return
+    }
     setEnvoiAvatar(true)
     setErreur('')
     try {
