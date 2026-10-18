@@ -27,14 +27,17 @@ export default function useCharteRadio() {
     return () => { actif = false }
   }, [estEquipe, teamId])
 
+  /* Une entrée de la clinique se modifie et se supprime par tous ses
+     membres, pas seulement par la personne qui l'a ajoutée. Les règles
+     d'accès de la base décident ; aucune ligne touchée veut dire refus. */
+  const REFUS = { code: '42501' }
+
   // Stable d'un affichage à l'autre : le formulaire s'en sert dans un effet.
   const obtenirEntree = useCallback(async (id) => {
-    const { data: { user } } = await supabase.auth.getUser()
     const { data, error } = await supabase
       .from('chartes_radio')
       .select('*')
       .eq('id', id)
-      .eq('user_id', user.id)
       .single()
     return { data, error }
   }, [])
@@ -52,25 +55,26 @@ export default function useCharteRadio() {
   }
 
   async function modifierEntree(id, payload) {
-    const { data: { user } } = await supabase.auth.getUser()
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('chartes_radio')
       .update({ ...payload, updated_at: new Date().toISOString() })
       .eq('id', id)
-      .eq('user_id', user.id)
-    return { error }
+      .select('id')
+    return { error: error || (data?.length ? null : REFUS) }
   }
 
   async function supprimerEntree(id) {
-    const { data: { user } } = await supabase.auth.getUser()
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('chartes_radio')
       .delete()
       .eq('id', id)
-      .eq('user_id', user.id)
-    if (!error) setEntrees(prev => prev.filter(e => e.id !== id))
-    return { error }
+      .select('id')
+    if (!error && data?.length) setEntrees(prev => prev.filter(e => e.id !== id))
+    return { error: error || (data?.length ? null : REFUS) }
   }
 
-  return { entrees, loading, userId, obtenirEntree, creerEntree, modifierEntree, supprimerEntree }
+  // Ses propres entrées, et toutes celles de sa clinique.
+  const peutModifier = (entree) => entree.user_id === userId || Boolean(teamId && entree.equipe_id === teamId)
+
+  return { entrees, loading, userId, peutModifier, obtenirEntree, creerEntree, modifierEntree, supprimerEntree }
 }

@@ -8,7 +8,7 @@ const QUALITE_LABEL = Object.fromEntries(qualiteOptions.map(q => [q.value, q.lab
 
 export default function LaRadiologieCharte() {
   const navigate = useNavigate()
-  const { entrees, loading, userId, supprimerEntree } = useCharteRadio()
+  const { entrees, loading, peutModifier, supprimerEntree } = useCharteRadio()
   const [rechercheEspece, setRechercheEspece] = useState('toutes')
   const [rechercheRegion, setRechercheRegion] = useState('toutes')
 
@@ -110,7 +110,7 @@ export default function LaRadiologieCharte() {
                   {e.ajoutee_par && (
                     <span className="charte-item-ajouteur">Ajouté par {e.ajoutee_par}</span>
                   )}
-                  {e.user_id === userId && (
+                  {peutModifier(e) && (
                     <div className="admin-item-actions">
                       <button className="btn-edit" onClick={() => navigate(`/labo/radiologie/charte/${e.id}/modifier`)}><i className="ti ti-edit"></i></button>
                       <button className="btn-delete" onClick={() => setASupprimer({ id: e.id, region: e.region, espece: ESPECES_CONFIG[e.espece]?.label || e.espece })}><i className="ti ti-trash"></i></button>
