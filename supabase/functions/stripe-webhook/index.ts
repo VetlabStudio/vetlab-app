@@ -166,17 +166,21 @@ async function lireDestinataire(customerId: string): Promise<{ email: string; sa
   return { email, salutation: prenom ? `Bonjour ${prenom},` : 'Bonjour,' }
 }
 
-async function envoyerConfirmationAbonnement(customerId: string, plan: string, quantity: number) {
+async function envoyerConfirmationAbonnement(customerId: string, plan: string, quantity: number, finEssai: number | null) {
   if (!courrielsActifs()) return
   const dest = await lireDestinataire(customerId)
   if (!dest) return
 
   const nomPlan = plan === 'equipe' ? `Équipe (${quantity} sièges)` : 'Pro'
+  // Essai gratuit : la date du premier paiement est annoncée clairement.
+  const essai = finEssai
+    ? `<br /><br />Votre essai gratuit se termine le <strong>${formaterDate(finEssai)}</strong>. Le premier paiement sera pr&eacute;lev&eacute; &agrave; cette date, sauf si vous annulez avant depuis la page Abonnement de l&rsquo;application.`
+    : ''
   const html = gabaritCourriel({
     titre: `Bienvenue sur Adjuvet ${nomPlan}`,
     apercu: `Votre abonnement Adjuvet ${nomPlan} est maintenant actif.`,
     titreHtml: `Bienvenue sur Adjuvet ${nomPlan}&nbsp;!`,
-    corpsHtml: `${dest.salutation}<br /><br />Votre abonnement <strong>Adjuvet ${nomPlan}</strong> est maintenant actif. Vous avez acc&egrave;s &agrave; toutes les fonctionnalit&eacute;s incluses dans votre forfait.`,
+    corpsHtml: `${dest.salutation}<br /><br />Votre abonnement <strong>Adjuvet ${nomPlan}</strong> est maintenant actif. Vous avez acc&egrave;s &agrave; toutes les fonctionnalit&eacute;s incluses dans votre forfait.${essai}`,
     boutonTexte: 'Ouvrir Adjuvet',
     boutonUrl: 'https://adjuvet.app',
     noteHtml: "Vous pouvez g&eacute;rer votre abonnement depuis votre profil dans l'application.",
@@ -216,6 +220,29 @@ async function envoyerAnnulationProgrammee(sub: Stripe.Subscription) {
     noteHtml: 'Vous avez chang&eacute; d&rsquo;avis&nbsp;? Vous pouvez r&eacute;activer votre abonnement depuis la page Abonnement de l&rsquo;application, avant cette date.',
   })
   await envoyerCourriel(dest.email, `Votre abonnement Adjuvet ${nom} prendra fin le ${fin}`, html)
+}
+
+async function envoyerReactivation(sub: Stripe.Subscription) {
+  if (!courrielsActifs()) return
+  const dest = await lireDestinataire(sub.customer as string)
+  if (!dest) return
+
+  const { nom, equipe } = decrirePlan(sub)
+  const renouvellement = formaterDate(sub.current_period_end)
+  const membres = equipe
+    ? '<br /><br />Les membres de votre clinique gardent leur acc&egrave;s.'
+    : ''
+
+  const html = gabaritCourriel({
+    titre: `Votre abonnement Adjuvet ${nom} est réactivé`,
+    apercu: `Votre abonnement continue : prochain renouvellement le ${renouvellement}.`,
+    titreHtml: 'Abonnement r&eacute;activ&eacute;',
+    corpsHtml: `${dest.salutation}<br /><br />Votre abonnement <strong>Adjuvet ${nom}</strong> est r&eacute;activ&eacute;&nbsp;: il ne prendra pas fin. Il se renouvellera normalement le <strong>${renouvellement}</strong>.${membres}`,
+    boutonTexte: 'G&eacute;rer mon abonnement',
+    boutonUrl: 'https://adjuvet.app/abonnement',
+    noteHtml: 'Vous pouvez g&eacute;rer ou annuler votre abonnement en tout temps depuis la page Abonnement de l&rsquo;application.',
+  })
+  await envoyerCourriel(dest.email, `Votre abonnement Adjuvet ${nom} est réactivé`, html)
 }
 
 async function envoyerPaiementRefuse(sub: Stripe.Subscription, accesMaintenu: boolean) {
@@ -555,7 +582,11 @@ Deno.serve(async (req) => {
         } else if (session.mode === 'subscription' && session.customer) {
           const etat = await synchroniserClient(session.customer as string)
           if (etat && etat.plan !== 'free') {
-            await envoyerConfirmationAbonnement(session.customer as string, etat.plan, etat.quantity)
+            const sub = session.subscription
+              ? await stripe.subscriptions.retrieve(session.subscription as string)
+              : null
+            const finEssai = sub?.status === 'trialing' ? sub.trial_end : null
+            await envoyerConfirmationAbonnement(session.customer as string, etat.plan, etat.quantity, finEssai)
           }
         }
         break
@@ -575,6 +606,15 @@ Deno.serve(async (req) => {
           ('cancel_at' in avant && !avant.cancel_at && Boolean(sub.cancel_at))
         if (etat && annulationActivee && (sub.status === 'active' || sub.status === 'trialing')) {
           await envoyerAnnulationProgrammee(sub)
+        }
+
+        // Annulation retirée avant la date de fin : l'abonnement continue.
+        const annulationRetiree =
+          ('cancel_at_period_end' in avant && avant.cancel_at_period_end && !sub.cancel_at_period_end) ||
+          ('cancel_at' in avant && Boolean(avant.cancel_at) && !sub.cancel_at)
+        if (etat && annulationRetiree && !sub.cancel_at_period_end && !sub.cancel_at &&
+            (sub.status === 'active' || sub.status === 'trialing')) {
+          await envoyerReactivation(sub)
         }
 
         // Premier refus de paiement : l'abonnement vient de passer en past_due.

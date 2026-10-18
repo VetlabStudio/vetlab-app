@@ -22,6 +22,8 @@ const PRIX_PRO = [
 
 const SIEGES_MIN = 2
 const SIEGES_MAX = 200
+// Essai gratuit du forfait Pro, offert une seule fois par personne.
+const JOURS_ESSAI = 14
 
 // Statuts où un abonnement existe encore et peut être facturé.
 const STATUTS_EN_COURS = ['active', 'trialing', 'past_due', 'unpaid', 'paused']
@@ -103,6 +105,8 @@ Deno.serve(async (req) => {
     .single()
 
   let customerId = profil?.stripe_customer_id
+  // A déjà eu un abonnement qui a démarré (même annulé) : l'essai gratuit a servi.
+  let dejaAbonne = false
 
   if (customerId) {
     try {
@@ -134,6 +138,7 @@ Deno.serve(async (req) => {
        profil à jour, annulait l'abonnement qui venait d'être payé.
        Maintenant on refuse simplement d'en créer un deuxième. */
     const existants = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 100 })
+    dejaAbonne = existants.data.some(s => !['incomplete', 'incomplete_expired'].includes(s.status))
     if (existants.data.some(s => STATUTS_EN_COURS.includes(s.status))) {
       return json({
         error: 'Vous avez déjà un abonnement en cours. Gérez-le depuis le portail de facturation.',
@@ -141,12 +146,19 @@ Deno.serve(async (req) => {
     }
   }
 
+  // Premier abonnement Pro : 14 jours gratuits, puis le paiement normal.
+  const essai = estPro && !dejaAbonne
+
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: 'subscription',
     line_items: [{ price: priceId as string, quantity }],
     allow_promotion_codes: true,
-    payment_method_collection: 'if_required',
+    /* Pendant un essai, la carte est demandée : l'abonnement continue
+       seul à la fin de l'essai. Sinon, seulement si un montant est dû
+       (un code à 100 % n'en demande pas). */
+    payment_method_collection: essai ? 'always' : 'if_required',
+    ...(essai ? { subscription_data: { trial_period_days: JOURS_ESSAI } } : {}),
     locale: 'fr',
     ui_mode: 'embedded',
     /* Paiement terminé dans la fenêtre intégrée, sans recharger l'app :

@@ -452,6 +452,10 @@ export default function Abonnement() {
 
             {estGratuit && (
               <>
+                {/* Essai offert par create-checkout à un premier abonnement Pro. */}
+                <p className="abo-prix-detail" style={{ margin: 0 }}>
+                  <i className="ti ti-gift" aria-hidden="true"></i> <strong>14 jours gratuits</strong> pour un premier abonnement Pro, sans frais si vous annulez avant la fin.
+                </p>
                 <button
                   className="abonnement-btn-abonner abo-cta"
                   onClick={() => {
