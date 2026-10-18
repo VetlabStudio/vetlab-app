@@ -335,7 +335,8 @@ export default function Abonnement() {
   async function quitterEquipe() {
     setQuitterEnCours(true)
     setErreur('')
-    const { error } = await supabase.rpc('quitter_equipe')
+    // La fonction serveur fait le départ, puis envoie une confirmation par courriel.
+    const { error } = await supabase.functions.invoke('quitter-equipe')
     setQuitterEnCours(false)
     setModalQuitter(false)
     if (error) {
