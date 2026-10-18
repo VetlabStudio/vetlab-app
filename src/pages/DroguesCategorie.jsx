@@ -15,7 +15,7 @@ export default function DroguesCategorie({ categorie }) {
   const [dropdownOuvert, setDropdownOuvert] = useState(false)
   const [sousCategorieFiltree, setSousCategorieFiltree] = useState('Tous')
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro, estEquipe, teamId, roleEquipe } = useProfil()
+  const { estPro, estEquipe, teamId, roleEquipe, lectureSeule } = useProfil()
 
   /* Rechargé quand le profil arrive (clinique) ; « actif » écarte la
      réponse d'un chargement devenu périmé. */
@@ -238,7 +238,8 @@ export default function DroguesCategorie({ categorie }) {
           )}
         </div>
       )}
-      {(() => {
+      {/* Un membre de la clinique consulte les médicaments sans en ajouter. */}
+      {!lectureSeule && (() => {
         const peutAjouter = estEquipe
           ? (roleEquipe === 'admin' || roleEquipe === 'proprietaire')
           : estPro

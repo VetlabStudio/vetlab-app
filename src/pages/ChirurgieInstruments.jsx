@@ -92,7 +92,7 @@ export default function ChirurgieInstruments() {
               <img
                 src={`${BASE_URL}/${inst.fichier}`}
                 alt={inst.nom}
-                className="labo-sediment-photo"
+                className="labo-instrument-photo"
               />
               <div className="labo-sediment-info">
                 <h3 className="labo-sediment-nom">{inst.nom}</h3>

@@ -13,6 +13,54 @@
       // Chrome envoie l'invitation d'installation au chargement, avant que React soit prêt.
       window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__adjuvetInstall = e; });
     </script>
+    <script>
+      /* Filet de démarrage. Si l'app n'affiche toujours rien après
+         12 secondes (fond violet vide), on propose de recharger, avec
+         l'erreur rencontrée s'il y en a une. Utile surtout dans l'app
+         installée, qui n'a pas de bouton pour recharger. */
+      (function () {
+        var erreurs = [];
+        window.addEventListener('error', function (e) {
+          var cible = e.target;
+          if (cible && cible !== window && (cible.src || cible.href)) erreurs.push('fichier non chargé ' + (cible.src || cible.href));
+          else if (e.message) erreurs.push(e.message);
+        }, true);
+        window.addEventListener('unhandledrejection', function (e) {
+          var r = e.reason;
+          erreurs.push(r && r.message ? r.message : String(r));
+        });
+        setTimeout(function () {
+          var racine = document.getElementById('root');
+          if (!racine || racine.firstChild) return;
+          // Posé par main.jsx : le code de l'app a démarré, mais n'affiche encore rien.
+          var etape = window.__adjuvetDemarre ? "l'app attend sa session" : "le code de l'app n'a pas démarré";
+          var boite = document.createElement('div');
+          boite.setAttribute('role', 'alert');
+          boite.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:32px;background:#b5a7d8;color:#213058;font-family:Gilroy,sans-serif;text-align:center';
+          var titre = document.createElement('p');
+          titre.textContent = "L'application met plus de temps que prévu à s'ouvrir.";
+          titre.style.cssText = 'margin:0;font-size:18px;font-weight:700;line-height:1.4';
+          var bouton = document.createElement('button');
+          bouton.type = 'button';
+          bouton.textContent = 'Recharger';
+          bouton.style.cssText = 'padding:14px 36px;border:none;border-radius:999px;background:#213058;color:#fff;font:inherit;font-size:16px;font-weight:700';
+          bouton.onclick = function () { location.reload(); };
+          var detail = document.createElement('p');
+          detail.textContent = 'Détail technique : ' + etape + (erreurs.length ? ' | ' + erreurs.slice(-3).join(' | ') : '');
+          detail.style.cssText = 'margin:0;font-size:12px;opacity:0.75;word-break:break-word';
+          boite.appendChild(titre);
+          boite.appendChild(bouton);
+          boite.appendChild(detail);
+          document.body.appendChild(boite);
+          // L'app finit par s'afficher : le message disparaît.
+          new MutationObserver(function (_, observateur) {
+            if (!racine.firstChild) return;
+            boite.remove();
+            observateur.disconnect();
+          }).observe(racine, { childList: true });
+        }, 12000);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

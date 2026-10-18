@@ -38,7 +38,7 @@ async function toutLire(requete) {
 
 export default function Pharmacologie() {
   const navigate = useNavigate()
-  const { estPro, estEquipe, teamId } = useProfil()
+  const { estPro, estEquipe, teamId, lectureSeule } = useProfil()
   const [showProMsg, setShowProMsg] = useState(false)
   const [recherche, setRecherche] = useState('')
   const [catalogue, setCatalogue] = useState([])
@@ -131,18 +131,21 @@ export default function Pharmacologie() {
         ))}
       </div>
 
-      <button
-        className="btn-fab"
-        aria-label={estPro ? 'Ajouter un médicament' : 'Ajouter un médicament (fonctionnalité Pro)'}
-        onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}
-      >
-        +
-        {!estPro && (
-          <span aria-hidden="true" style={{ position: 'absolute', top: -3, right: -3, width: 22, height: 22, borderRadius: '50%', background: 'var(--primary)', color: '#fff', border: '2px solid var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <i className="ti ti-lock" style={{ fontSize: 12 }}></i>
-          </span>
-        )}
-      </button>
+      {/* Un membre de la clinique consulte les médicaments sans en ajouter. */}
+      {!lectureSeule && (
+        <button
+          className="btn-fab"
+          aria-label={estPro ? 'Ajouter un médicament' : 'Ajouter un médicament (fonctionnalité Pro)'}
+          onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}
+        >
+          +
+          {!estPro && (
+            <span aria-hidden="true" style={{ position: 'absolute', top: -3, right: -3, width: 22, height: 22, borderRadius: '50%', background: 'var(--primary)', color: '#fff', border: '2px solid var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="ti ti-lock" style={{ fontSize: 12 }}></i>
+            </span>
+          )}
+        </button>
+      )}
 
       {showProMsg && <PopupPro onClose={() => setShowProMsg(false)} />}
     </div>

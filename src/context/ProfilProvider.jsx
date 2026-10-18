@@ -86,9 +86,12 @@ export function ProfilProvider({ children }) {
   const estEquipe = profil?.plan === 'equipe'
   const roleEquipe = profil?.role || null
   const teamId = profil?.equipe_id || null
+  /* Membre simple d'une clinique : il consulte les médicaments et les
+     protocoles de la clinique sans pouvoir en ajouter ni en modifier. */
+  const lectureSeule = estEquipe && roleEquipe !== 'admin' && roleEquipe !== 'proprietaire'
 
   return (
-    <ProfilContext.Provider value={{ profil, estPro, estEquipe, roleEquipe, teamId, chargement, erreurReseau, chargerProfil }}>
+    <ProfilContext.Provider value={{ profil, estPro, estEquipe, roleEquipe, teamId, lectureSeule, chargement, erreurReseau, chargerProfil }}>
       {children}
     </ProfilContext.Provider>
   )

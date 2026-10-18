@@ -33,7 +33,7 @@ export default function LaCytologie() {
   const [protocoles, setProtocoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [showProMsg, setShowProMsg] = useState(false)
-  const { estPro } = useProfil()
+  const { estPro, lectureSeule } = useProfil()
 
   // L'affichage démarre déjà en chargement (loading vaut true).
   useEffect(() => {
@@ -80,9 +80,12 @@ export default function LaCytologie() {
         )}
       </div>
 
-      <button className="labo-btn-ajouter" onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
-        {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} Ajouter un protocole
-      </button>
+      {/* Un membre de la clinique consulte les protocoles sans en ajouter. */}
+      {!lectureSeule && (
+        <button className="labo-btn-ajouter" onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
+          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} Ajouter un protocole
+        </button>
+      )}
 
       {/* ─── RÉFÉRENCES ─────────────────────── */}
       <div className="labo-section-titre" style={{ marginTop: 8 }}>Références & Interprétation</div>

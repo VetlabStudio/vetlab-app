@@ -6,6 +6,7 @@ export const ProfilContext = createContext({
   estEquipe: false,
   roleEquipe: null,
   teamId: null,
+  lectureSeule: false,
   chargement: true,
   erreurReseau: false,
 })

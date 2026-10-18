@@ -5447,6 +5447,15 @@ input[type="number"] {
   background: white;
   display: block;
 }
+
+/* Catalogue d'instruments : l'instrument en entier, sans recadrage. */
+.labo-instrument-photo {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  background: white;
+  display: block;
+}
 .labo-sediment-credit {
   position: absolute;
   bottom: 4px;

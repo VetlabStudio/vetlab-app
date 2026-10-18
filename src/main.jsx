@@ -12,6 +12,8 @@ createRoot(document.getElementById('root')).render(
     </ErrorBoundary>
   </StrictMode>
 )
+// Lu par le filet de démarrage d'index.html.
+window.__adjuvetDemarre = true
 
 /* Garde l'app sur l'appareil pour l'usage hors ligne (voir src/sw.js).
    Pour retirer le mode hors ligne, mettre false et publier : chaque
