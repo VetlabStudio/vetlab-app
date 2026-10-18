@@ -62,6 +62,13 @@ export default function NouveauMotDePasse() {
     setEtat('termine')
   }
 
+  /* Annuler : la session ouverte par le lien est fermée sur cet appareil
+     seulement, et le mot de passe reste celui d'avant. */
+  async function annuler() {
+    await supabase.auth.signOut({ scope: 'local' })
+    navigate('/connexion', { replace: true })
+  }
+
   return (
     <main className="auth2-page">
       <div className="auth2-contenu">
@@ -135,6 +142,15 @@ export default function NouveauMotDePasse() {
             <button type="submit" className="auth2-btn" disabled={chargement}>
               {chargement ? 'Enregistrement...' : 'Enregistrer'}
             </button>
+            <p className="auth2-lien">
+              <button
+                type="button"
+                onClick={annuler}
+                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', fontWeight: 600, color: '#213058', textDecoration: 'underline', cursor: 'pointer' }}
+              >
+                Retour à la connexion
+              </button>
+            </p>
           </form>
         )}
       </div>
