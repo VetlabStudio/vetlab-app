@@ -23,6 +23,8 @@ export default function RejoindreEquipe() {
   const [nom, setNom] = useState('')
   const [motDePasse, setMotDePasse] = useState('')
   const [confirmation, setConfirmation] = useState('')
+  const [voirMdp, setVoirMdp] = useState(false)
+  const [voirConfirm, setVoirConfirm] = useState(false)
   const [erreurInscription, setErreurInscription] = useState('')
 
   useEffect(() => {
@@ -159,19 +161,27 @@ export default function RejoindreEquipe() {
 
   const redirectUrl = encodeURIComponent(`/rejoindre?token=${token}`)
 
+  // Mêmes arrondis que les champs et les boutons du reste de l'app.
   const styleChamp = {
-    width: '100%', padding: '11px 13px', borderRadius: 10,
+    width: '100%', padding: '12px 16px', borderRadius: 'var(--radius-lg)',
     border: '1px solid var(--border)', fontSize: 15,
     fontFamily: 'inherit', color: 'var(--text-primary)',
     background: 'var(--bg-card)', boxSizing: 'border-box',
   }
+  // Œil pour afficher le mot de passe, à droite dans le champ.
+  const styleOeil = {
+    position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)',
+    width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center',
+    background: 'none', border: 'none', cursor: 'pointer',
+    color: 'var(--text-hint)', fontSize: 19, padding: 0,
+  }
   const stylePrincipal = {
-    width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
+    width: '100%', padding: '12px 0', borderRadius: 'var(--radius-pill)', border: 'none',
     background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
     cursor: 'pointer',
   }
   const styleSecondaire = {
-    width: '100%', padding: '12px 0', borderRadius: 10,
+    width: '100%', padding: '12px 0', borderRadius: 'var(--radius-pill)',
     border: '1.5px solid var(--primary)', background: 'transparent',
     color: 'var(--primary)', fontSize: 15, fontWeight: 700, cursor: 'pointer',
   }
@@ -210,11 +220,7 @@ export default function RejoindreEquipe() {
               <button
                 onClick={accepterInvitation}
                 disabled={loading}
-                style={{
-                  width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
-                  background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
-                  cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1,
-                }}
+                style={{ ...stylePrincipal, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
               >
                 {loading ? 'En cours...' : "Accepter l'invitation"}
               </button>
@@ -236,6 +242,7 @@ export default function RejoindreEquipe() {
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left' }}>
                     <input
+                      className="form-input"
                       style={styleChamp}
                       placeholder="Votre nom"
                       autoComplete="name"
@@ -243,24 +250,36 @@ export default function RejoindreEquipe() {
                       onChange={e => { setNom(e.target.value); setErreurInscription('') }}
                       autoFocus
                     />
-                    <input
-                      style={styleChamp}
-                      type="password"
-                      autoComplete="new-password"
-                      placeholder="Mot de passe"
-                      value={motDePasse}
-                      onChange={e => { setMotDePasse(e.target.value); setErreurInscription('') }}
-                    />
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        className="form-input"
+                        style={{ ...styleChamp, paddingRight: 46 }}
+                        type={voirMdp ? 'text' : 'password'}
+                        autoComplete="new-password"
+                        placeholder="Mot de passe"
+                        value={motDePasse}
+                        onChange={e => { setMotDePasse(e.target.value); setErreurInscription('') }}
+                      />
+                      <button type="button" style={styleOeil} onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
+                        <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
+                      </button>
+                    </div>
                     <IndicateurMotDePasse motDePasse={motDePasse} email={invitation?.email} nom={nom} />
-                    <input
-                      style={styleChamp}
-                      type="password"
-                      autoComplete="new-password"
-                      placeholder="Confirmer le mot de passe"
-                      value={confirmation}
-                      onChange={e => { setConfirmation(e.target.value); setErreurInscription('') }}
-                      onKeyDown={e => { if (e.key === 'Enter' && !loading) creerCompteEtRejoindre() }}
-                    />
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        className="form-input"
+                        style={{ ...styleChamp, paddingRight: 46 }}
+                        type={voirConfirm ? 'text' : 'password'}
+                        autoComplete="new-password"
+                        placeholder="Confirmer le mot de passe"
+                        value={confirmation}
+                        onChange={e => { setConfirmation(e.target.value); setErreurInscription('') }}
+                        onKeyDown={e => { if (e.key === 'Enter' && !loading) creerCompteEtRejoindre() }}
+                      />
+                      <button type="button" style={styleOeil} onClick={() => setVoirConfirm(v => !v)} aria-label={voirConfirm ? 'Masquer la confirmation' : 'Afficher la confirmation'}>
+                        <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
+                      </button>
+                    </div>
 
                     {erreurInscription && (
                       <p style={{ fontSize: 13, color: 'var(--accent-red)', lineHeight: 1.5, margin: 0 }}>
@@ -325,11 +344,7 @@ export default function RejoindreEquipe() {
             </p>
             <button
               onClick={() => { window.location.href = '/equipe/gestion' }}
-              style={{
-                width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
-                background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
-                cursor: 'pointer',
-              }}
+              style={stylePrincipal}
             >
               Gérer mon équipe
             </button>
@@ -353,11 +368,7 @@ export default function RejoindreEquipe() {
             </p>
             <button
               onClick={async () => { await supabase.auth.signOut(); window.location.reload() }}
-              style={{
-                width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
-                background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
-                cursor: 'pointer',
-              }}
+              style={stylePrincipal}
             >
               Se déconnecter
             </button>
@@ -373,11 +384,7 @@ export default function RejoindreEquipe() {
             </p>
             <button
               onClick={() => { window.location.href = '/equipe' }}
-              style={{
-                width: '100%', padding: '12px 0', borderRadius: 10, border: 'none',
-                background: 'var(--primary)', color: '#fff', fontSize: 15, fontWeight: 700,
-                cursor: 'pointer',
-              }}
+              style={stylePrincipal}
             >
               Accéder à l'équipe
             </button>
