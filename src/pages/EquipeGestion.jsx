@@ -380,9 +380,9 @@ export default function EquipeGestion() {
   }
 
   async function revoquerMembre(membre) {
-    const { error } = await supabase.rpc('revoquer_membre', {
-      membre_user_id: membre.user_id,
-      equipe_id_param: teamId,
+    // La fonction serveur révoque l'accès, puis prévient la personne par courriel.
+    const { error } = await supabase.functions.invoke('revoquer-membre', {
+      body: { membre_user_id: membre.user_id, equipe_id: teamId },
     })
     if (error) {
       signaler('erreur', "L'accès n'a pas pu être révoqué. Rien n'a été modifié.")
