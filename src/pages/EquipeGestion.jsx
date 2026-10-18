@@ -237,9 +237,13 @@ export default function EquipeGestion() {
      apprennent que l'équipe est pleine après avoir créé leur
      compte. Le compteur et la garde à l'envoi comptent donc les
      deux ensemble. */
-  /* Une invitation périmée ne peut plus être acceptée : elle
-     ne retient donc aucun siège. */
-  const invitationsVives = invitations.filter(i => !invitationExpiree(i.created_at))
+  // Adresses des membres actuels : les inviter de nouveau ne sert à rien.
+  const emailsMembres = new Set(membres.map(m => m.profiles?.email?.toLowerCase()).filter(Boolean))
+  const estDejaMembre = (email) => emailsMembres.has(email.toLowerCase())
+
+  /* Une invitation périmée ne peut plus être acceptée, et celle d'une
+     personne déjà membre ne sert plus : elles ne retiennent aucun siège. */
+  const invitationsVives = invitations.filter(i => !invitationExpiree(i.created_at) && !estDejaMembre(i.email))
   const occupes = membres.length + invitationsVives.length
   const siegesRestants = equipe?.max_membres ? equipe.max_membres - occupes : Infinity
   const plein = equipe?.max_membres ? occupes >= equipe.max_membres : false
@@ -254,6 +258,9 @@ export default function EquipeGestion() {
   }
 
   const emailsParsed = useMemo(() => parseEmails(emailsInput), [emailsInput])
+  // Une personne déjà dans la clinique ne reçoit pas d'invitation.
+  const dejaMembres = emailsParsed.filter(estDejaMembre)
+  const aInviter = emailsParsed.filter(e => !estDejaMembre(e))
 
   // Fautes de frappe probables dans les adresses (ex. nom@gmial.com).
   const verifInvit = useSuggestionCourriel(emailsInput, texte => {
@@ -267,9 +274,9 @@ export default function EquipeGestion() {
   /* Les réinvitations d'une adresse déjà en attente ne prennent pas
      de siège supplémentaire : inviterUn remplace l'invitation. */
   const emailsEnAttente = new Set(invitationsVives.map(i => i.email))
-  const nouveauxInvit = emailsParsed.filter(e => !emailsEnAttente.has(e)).length
+  const nouveauxInvit = aInviter.filter(e => !emailsEnAttente.has(e)).length
   const depasseSieges = Boolean(equipe?.max_membres) && nouveauxInvit > siegesRestants
-  const libelleEnvoi = emailsParsed.length > 1 ? `Envoyer ${emailsParsed.length} invitations` : "Envoyer l'invitation"
+  const libelleEnvoi = aInviter.length > 1 ? `Envoyer ${aInviter.length} invitations` : "Envoyer l'invitation"
 
   function corrigerInvit(avant, apres) {
     setEmailsInput(texte => texte
@@ -285,6 +292,8 @@ export default function EquipeGestion() {
     const { data: invitation, error } = await supabase.from('team_invitations').insert({
       team_id: teamId, email, role, invited_by: userId, token, status: 'pending',
     }).select('id').single()
+    // La base refuse d'inviter un membre actuel (ex. arrivé entre-temps).
+    if (error?.hint === 'deja_membre') return { ok: false, message: 'fait déjà partie de la clinique.' }
     if (error) return { ok: false, message: traduireErreur(error, "l'invitation n'a pas pu être créée.") }
 
     /* Le serveur retrouve l'adresse, le nom de la clinique et le lien
@@ -298,7 +307,7 @@ export default function EquipeGestion() {
   }
 
   async function inviter() {
-    if (emailsParsed.length === 0 || envoi) return
+    if (aInviter.length === 0 || envoi) return
     setErreurInvit('')
 
     // Le bouton est désactivé dans ce cas ; on revérifie par sécurité.
@@ -309,13 +318,13 @@ export default function EquipeGestion() {
     setEnvoi(true)
     let envoyes = 0
     const erreurs = []
-    setEnvoiProgress({ total: emailsParsed.length, envoyes: 0, erreurs: 0 })
+    setEnvoiProgress({ total: aInviter.length, envoyes: 0, erreurs: 0 })
 
-    for (const email of emailsParsed) {
+    for (const email of aInviter) {
       const resultat = await inviterUn(email, roleInvit)
       if (resultat.ok) envoyes++
       else erreurs.push(`${email} : ${resultat.message}`)
-      setEnvoiProgress({ total: emailsParsed.length, envoyes, erreurs: erreurs.length })
+      setEnvoiProgress({ total: aInviter.length, envoyes, erreurs: erreurs.length })
     }
 
     setEmailsInput('')
@@ -335,6 +344,10 @@ export default function EquipeGestion() {
   }
 
   async function renvoyerInvitation(invitation) {
+    if (estDejaMembre(invitation.email)) {
+      signaler('erreur', `${invitation.email} fait déjà partie de la clinique.`)
+      return
+    }
     const resultat = await inviterUn(invitation.email, invitation.role)
     if (resultat.ok) signaler('succes', `Invitation renvoyée à ${invitation.email}.`)
     else signaler('erreur', `Échec du renvoi : ${resultat.message}`)
@@ -708,6 +721,8 @@ export default function EquipeGestion() {
 
           const inv = ligne.donnee
           const expiree = invitationExpiree(inv.created_at)
+          // La personne a rejoint la clinique autrement : l'invitation ne sert plus.
+          const obsolete = estDejaMembre(inv.email)
           return (
             <div key={ligne.cle} className="equipe-membre">
               <div className="equipe-membre-avatar attente">
@@ -716,14 +731,14 @@ export default function EquipeGestion() {
               <div className="equipe-membre-textes">
                 <span className="equipe-membre-nom">{inv.email}</span>
                 <span className="equipe-membre-mail">
-                  <span className={`equipe-statut ${expiree ? 'vieille' : ''}`}>
-                    {expiree ? 'Expirée' : 'Invitation'} · {depuis(inv.created_at)}
+                  <span className={`equipe-statut ${expiree || obsolete ? 'vieille' : ''}`}>
+                    {obsolete ? 'Déjà membre' : expiree ? 'Expirée' : 'Invitation'} · {depuis(inv.created_at)}
                   </span>
                   {' '}{libelleRole(inv.role)}
                 </span>
               </div>
               <div className="equipe-invitation-actions">
-                <button className="equipe-lien" onClick={() => renvoyerInvitation(inv)}>Renvoyer</button>
+                {!obsolete && <button className="equipe-lien" onClick={() => renvoyerInvitation(inv)}>Renvoyer</button>}
                 <button className="equipe-lien danger" onClick={() => annulerInvitation(inv.id)}>Annuler</button>
               </div>
             </div>
@@ -820,13 +835,23 @@ export default function EquipeGestion() {
                     <span key={e} style={{
                       display: 'inline-flex', alignItems: 'center', gap: 5,
                       fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 999,
-                      background: 'rgba(37,77,86,0.08)', color: 'var(--primary)',
-                      border: '1px solid rgba(37,77,86,0.2)',
+                      ...(estDejaMembre(e)
+                        ? { background: 'var(--bg-secondary)', color: 'var(--text-hint)', border: '1px solid var(--border)', textDecoration: 'line-through' }
+                        : { background: 'rgba(37,77,86,0.08)', color: 'var(--primary)', border: '1px solid rgba(37,77,86,0.2)' }),
                     }}>
-                      <i className="ti ti-circle-check" style={{ fontSize: 11 }}></i>
+                      <i className={`ti ${estDejaMembre(e) ? 'ti-user-check' : 'ti-circle-check'}`} style={{ fontSize: 11 }}></i>
                       {e}
                     </span>
                   ))}
+                </div>
+              )}
+
+              {dejaMembres.length > 0 && (
+                <div className="equipe-message succes" role="status">
+                  <i className="ti ti-user-check"></i>
+                  <span>
+                    Déjà dans la clinique : {dejaMembres.join(', ')}. {dejaMembres.length > 1 ? 'Ces personnes ne recevront' : 'Cette personne ne recevra'} pas d'invitation.
+                  </span>
                 </div>
               )}
 
@@ -901,7 +926,7 @@ export default function EquipeGestion() {
                 </div>
               )}
 
-              <button className="equipe-btn-primaire" onClick={inviter} disabled={emailsParsed.length === 0 || envoi || depasseSieges}>
+              <button className="equipe-btn-primaire" onClick={inviter} disabled={aInviter.length === 0 || envoi || depasseSieges}>
                 {envoi ? 'Envoi en cours...' : libelleEnvoi}
               </button>
             </div>

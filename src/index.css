@@ -10955,11 +10955,11 @@ input[type="number"] {
   padding: 15px 16px;
   background: var(--primary);
   border-radius: var(--radius-lg);
-  color: #fff;
+  color: white;
 }
 
 .equipe-sieges.plein {
-  background: #7F1D1D;
+  background: var(--accent-mauve);
 }
 
 .equipe-sieges-cle {
@@ -11022,7 +11022,7 @@ input[type="number"] {
 }
 
 .equipe-sieges.plein .equipe-sieges-btn {
-  color: #7F1D1D;
+  color: var(--primary);
 }
 
 .equipe-sieges-btn i {
@@ -11031,6 +11031,7 @@ input[type="number"] {
 
 .equipe-sieges-note {
   font-size: 12px;
+  font-weight: bold;
   line-height: 1.45;
   opacity: 0.78;
   margin: 10px 0 0;
