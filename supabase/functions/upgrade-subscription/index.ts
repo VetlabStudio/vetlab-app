@@ -46,11 +46,21 @@ Deno.serve(async (req) => {
     return json({ error: 'Requête invalide.' }, 400)
   }
 
-  // ─── Le prix et la quantité viennent du navigateur : on les valide ici.
-  // Le seul changement offert par l'app est le passage à Équipe ou l'ajustement des sièges.
-  if (!PRICE_EQUIPE || newPriceId !== PRICE_EQUIPE) {
-    return json({ error: "Ce changement de forfait n'est pas disponible." }, 400)
+  /* Le seul changement offert par l'app est le passage à Équipe ou
+     l'ajustement des sièges : le prix est donc toujours celui
+     d'Équipe, lu ici. Celui envoyé par l'app vient de sa propre
+     configuration (Vercel ou .env) et pouvait différer, ce qui
+     bloquait tout changement de sièges. */
+  if (!PRICE_EQUIPE) {
+    console.error('upgrade-subscription: STRIPE_PRICE_EQUIPE non configuré')
+    return json({ error: "Ce changement de forfait n'est pas disponible pour le moment. Réessayez plus tard." }, 500)
   }
+  if (newPriceId !== PRICE_EQUIPE) {
+    // Sans effet ici, mais le même écart bloque l'achat d'Équipe (create-checkout).
+    console.warn(`upgrade-subscription: prix Équipe de l'app (${newPriceId}) différent de STRIPE_PRICE_EQUIPE (${PRICE_EQUIPE})`)
+  }
+
+  // La quantité vient du navigateur : on la valide ici.
   const quantity = Number(quantiteDemandee)
   if (!Number.isInteger(quantity) || quantity < SIEGES_MIN || quantity > SIEGES_MAX) {
     return json({ error: `Le nombre de sièges doit être entre ${SIEGES_MIN} et ${SIEGES_MAX}.` }, 400)
