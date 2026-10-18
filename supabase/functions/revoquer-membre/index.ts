@@ -43,6 +43,25 @@ Deno.serve(async (req) => {
     return json({ error: 'Requête invalide.' }, 400)
   }
 
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  )
+
+  const estMembre = async () => {
+    const { data } = await supabase
+      .from('membres_equipe')
+      .select('user_id')
+      .eq('equipe_id', equipeId)
+      .eq('user_id', membreUserId)
+      .maybeSingle()
+    return Boolean(data)
+  }
+
+  /* Déjà retirée (ex. deuxième appel pour la même révocation) : rien à
+     faire, et surtout pas un deuxième courriel. */
+  if (!(await estMembre())) return json({ ok: true, dejaRetire: true })
+
   // Au nom de la personne connectée : la base applique ses propres règles.
   const cleClient = Deno.env.get('SUPABASE_ANON_KEY') || req.headers.get('apikey') || ''
   const commeAppelant = createClient(Deno.env.get('SUPABASE_URL')!, cleClient, {
@@ -59,19 +78,8 @@ Deno.serve(async (req) => {
     return json({ error: "L'accès n'a pas pu être révoqué." }, 400)
   }
 
-  const supabase = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-  )
-
   // Aucun courriel si la personne fait toujours partie de la clinique.
-  const { data: toujoursMembre } = await supabase
-    .from('membres_equipe')
-    .select('user_id')
-    .eq('equipe_id', equipeId)
-    .eq('user_id', membreUserId)
-    .maybeSingle()
-  if (toujoursMembre) {
+  if (await estMembre()) {
     console.error(`revoquer-membre: ${membreUserId} fait toujours partie de l'équipe ${equipeId}`)
     return json({ error: "L'accès n'a pas pu être révoqué." }, 403)
   }

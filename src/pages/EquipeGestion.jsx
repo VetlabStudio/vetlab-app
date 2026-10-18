@@ -101,6 +101,7 @@ export default function EquipeGestion() {
   const [showInviteModal, setShowInviteModal] = useState(false)
 
   const [confirmRevoquer, setConfirmRevoquer] = useState(null)
+  const [revocationEnCours, setRevocationEnCours] = useState(false)
   const [membreGere, setMembreGere] = useState(null)
   const [showTransfertModal, setShowTransfertModal] = useState(false)
   const [cibleTransfert, setCibleTransfert] = useState(null)
@@ -380,10 +381,14 @@ export default function EquipeGestion() {
   }
 
   async function revoquerMembre(membre) {
+    // Un deuxième appui pendant l'envoi relançait tout, et le courriel partait deux fois.
+    if (revocationEnCours) return
+    setRevocationEnCours(true)
     // La fonction serveur révoque l'accès, puis prévient la personne par courriel.
     const { error } = await supabase.functions.invoke('revoquer-membre', {
       body: { membre_user_id: membre.user_id, equipe_id: teamId },
     })
+    setRevocationEnCours(false)
     if (error) {
       signaler('erreur', "L'accès n'a pas pu être révoqué. Rien n'a été modifié.")
       setConfirmRevoquer(null)
@@ -1010,7 +1015,7 @@ export default function EquipeGestion() {
 
       {/* ═══ CONFIRMATION RÉVOCATION ═══ */}
       {confirmRevoquer && (
-        <div className="popup-overlay" onClick={() => setConfirmRevoquer(null)}>
+        <div className="popup-overlay" onClick={() => { if (!revocationEnCours) setConfirmRevoquer(null) }}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="equipe-centre">
               <i className="ti ti-user-x equipe-icone-grande danger"></i>
@@ -1020,8 +1025,10 @@ export default function EquipeGestion() {
               </p>
             </div>
             <div className="popup-actions-centrees">
-              <button className="equipe-btn-secondaire" style={{ flex: 1 }} onClick={() => setConfirmRevoquer(null)}>Annuler</button>
-              <button className="equipe-btn-danger" style={{ flex: 1 }} onClick={() => revoquerMembre(confirmRevoquer)}>Révoquer</button>
+              <button className="equipe-btn-secondaire" style={{ flex: 1 }} onClick={() => setConfirmRevoquer(null)} disabled={revocationEnCours}>Annuler</button>
+              <button className="equipe-btn-danger" style={{ flex: 1 }} onClick={() => revoquerMembre(confirmRevoquer)} disabled={revocationEnCours}>
+                {revocationEnCours ? 'Révocation...' : 'Révoquer'}
+              </button>
             </div>
           </div>
         </div>
