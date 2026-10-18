@@ -26,20 +26,25 @@ function prixParSiege(n) {
   return TIERS_EQUIPE.find(t => n >= t.min && (t.max === null || n <= t.max))?.prix || 39
 }
 
-/* Détails de l'abonnement (prochain paiement, sièges). Facultatifs :
-   en cas d'erreur, la page s'affiche sans eux. */
-async function lireAbonnement() {
+/* Infos du serveur : l'abonnement (prochain paiement, sièges) et le
+   droit à l'essai gratuit. Facultatives : en cas d'erreur, la page
+   s'affiche sans elles, et sans annoncer d'essai. */
+async function lireInfosAbonnement() {
   try {
     const { data: { session } } = await supabase.auth.getSession()
     const response = await fetch(
       'https://jbvjruunwdrbrzipgezs.supabase.co/functions/v1/get-subscription',
       { headers: { 'Authorization': `Bearer ${session.access_token}` } }
     )
-    const data = await response.json()
-    return data.subscription || null
+    return await response.json()
   } catch {
     return null
   }
+}
+
+async function lireAbonnement() {
+  const infos = await lireInfosAbonnement()
+  return infos?.subscription || null
 }
 
 function formaterDate(timestamp) {
@@ -119,6 +124,8 @@ export default function Abonnement() {
   const [succes, setSucces] = useState('')
   const [subDetails, setSubDetails] = useState(null)
   const [nombreMembresActifs, setNombreMembresActifs] = useState(0)
+  // Essai gratuit offert à ce compte : { jours, fin } ou null (déjà abonné, ou pas encore su).
+  const [essai, setEssai] = useState(null)
   /* Paiement terminé : dans la fenêtre de paiement (sans recharger
      l'app) ou au retour de Stripe (adresse ?paiement=succes). */
   const [paiementTermine, setPaiementTermine] = useState(() => searchParams.get('paiement') === 'succes')
@@ -145,6 +152,19 @@ export default function Abonnement() {
     })
     return () => { actif = false }
   }, [aSonAbonnement])
+
+  /* Droit à l'essai gratuit, demandé au serveur : seulement pour qui
+     n'a jamais été abonné. Le bouton et le texte en dépendent. */
+  useEffect(() => {
+    if (estPro || estEquipe) return
+    let actif = true
+    lireInfosAbonnement().then((infos) => {
+      if (!actif) return
+      const jours = infos?.essai_disponible ? infos.jours_essai : 0
+      setEssai(jours ? { jours, fin: Math.floor(Date.now() / 1000) + jours * 86400 } : null)
+    })
+    return () => { actif = false }
+  }, [estPro, estEquipe])
 
   // Le nombre de sièges choisi part de celui de l'abonnement chargé.
   const [subAffiche, setSubAffiche] = useState(null)
@@ -379,7 +399,9 @@ export default function Abonnement() {
                       ? 'Paiement en retard : mettez à jour votre carte'
                       : subDetails.fin_programmee
                         ? `Se termine le ${formaterDate(subDetails.fin_programmee)}`
-                        : `Renouvellement le ${formaterDate(subDetails.current_period_end)}`}
+                        : subDetails.fin_essai
+                          ? `Essai gratuit jusqu'au ${formaterDate(subDetails.fin_essai)}, puis premier paiement`
+                          : `Renouvellement le ${formaterDate(subDetails.current_period_end)}`}
                   </p>
                 )}
               </div>
@@ -452,10 +474,6 @@ export default function Abonnement() {
 
             {estGratuit && (
               <>
-                {/* Essai offert par create-checkout à un premier abonnement Pro. */}
-                <p className="abo-prix-detail" style={{ margin: 0 }}>
-                  <i className="ti ti-gift" aria-hidden="true"></i> <strong>14 jours gratuits</strong> pour un premier abonnement Pro, sans frais si vous annulez avant la fin.
-                </p>
                 <button
                   className="abonnement-btn-abonner abo-cta"
                   onClick={() => {
@@ -464,8 +482,16 @@ export default function Abonnement() {
                   }}
                   disabled={checkoutLoading}
                 >
-                  {checkoutLoading ? 'Chargement...' : 'Passer à Pro'}
+                  {checkoutLoading
+                    ? 'Chargement...'
+                    : essai ? `Essayer ${essai.jours} jours gratuitement` : 'Passer à Pro'}
                 </button>
+                {/* Essai appliqué par create-checkout : le prix et la date du premier paiement sont dits clairement. */}
+                {essai && (
+                  <p className="abo-prix-detail" style={{ margin: 0 }}>
+                    Puis {periode === 'annuel' ? `${PRIX_PRO_ANNUEL} $ par année` : '7,99 $ par mois'}. Aucun prélèvement avant le <strong style={{ whiteSpace: 'nowrap' }}>{formaterDate(essai.fin)}</strong>.
+                  </p>
+                )}
                 <Rassurance />
               </>
             )}

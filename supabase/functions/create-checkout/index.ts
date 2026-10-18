@@ -1,6 +1,7 @@
 import Stripe from 'npm:stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { synchroniserCourrielStripe } from '../_shared/stripeCourriel.ts'
+import { JOURS_ESSAI, aDejaEuAbonnement } from '../_shared/essai.ts'
 
 const APP_URL = (Deno.env.get('APP_URL') || 'https://adjuvet.app').replace(/\/+$/, '')
 
@@ -22,8 +23,6 @@ const PRIX_PRO = [
 
 const SIEGES_MIN = 2
 const SIEGES_MAX = 200
-// Essai gratuit du forfait Pro, offert une seule fois par personne.
-const JOURS_ESSAI = 14
 
 // Statuts où un abonnement existe encore et peut être facturé.
 const STATUTS_EN_COURS = ['active', 'trialing', 'past_due', 'unpaid', 'paused']
@@ -138,7 +137,7 @@ Deno.serve(async (req) => {
        profil à jour, annulait l'abonnement qui venait d'être payé.
        Maintenant on refuse simplement d'en créer un deuxième. */
     const existants = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 100 })
-    dejaAbonne = existants.data.some(s => !['incomplete', 'incomplete_expired'].includes(s.status))
+    dejaAbonne = aDejaEuAbonnement(existants.data)
     if (existants.data.some(s => STATUTS_EN_COURS.includes(s.status))) {
       return json({
         error: 'Vous avez déjà un abonnement en cours. Gérez-le depuis le portail de facturation.',
