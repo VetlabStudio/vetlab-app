@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import LienFavoris from '../components/LienFavoris'
+import { lireNombrePositif } from '../lib/nombres'
 
 // ─── DÉMARCHE DE CALCUL ───────────────────────────────────
 function DemarcheCollapsible({ resultat, poids, unitePoids }) {
@@ -65,16 +66,22 @@ export default function Calculateurs() {
   const [concentration, setConcentration] = useState('')
   const [uniteConc, setUniteConc] = useState('mg/mL')
 
+  const poidsSaisi = lireNombrePositif(poids)
+  const posoSaisie = lireNombrePositif(posologie)
+  const concSaisie = lireNombrePositif(concentration)
+  // Un champ rempli mais invalide (lettres, zéro) affiche son message ; vide, il attend.
+  const invalide = (texte, valeur) => texte.trim() !== '' && valeur === null
+
   // Calcul automatique, refait à chaque saisie.
   const resultat = useMemo(() => {
-    if (!poids || !posologie || !concentration) return null
+    if (poidsSaisi === null || posoSaisie === null || concSaisie === null) return null
 
     const poidsKg = unitePoids === 'lb'
-      ? Math.round((parseFloat(poids.replace(',', '.')) / 2.205) * 100) / 100
-      : parseFloat(poids.replace(',', '.'))
+      ? Math.round((poidsSaisi / 2.205) * 100) / 100
+      : poidsSaisi
 
-    const poso = parseFloat(posologie.replace(',', '.'))
-    const conc = parseFloat(concentration.replace(',', '.'))
+    const poso = posoSaisie
+    const conc = concSaisie
 
     let doseTotale
     let etapeConversion = null
@@ -102,7 +109,7 @@ export default function Calculateurs() {
       conc,
       etapeConversion,
     }
-  }, [poids, unitePoids, posologie, uniteDose, concentration, uniteConc])
+  }, [poidsSaisi, unitePoids, posoSaisie, uniteDose, concSaisie, uniteConc, poids])
 
   return (
     <div className="page-calculateurs">
@@ -129,6 +136,9 @@ export default function Calculateurs() {
               <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
             </div>
           </div>
+          {invalide(poids, poidsSaisi) && (
+            <p className="fluido-erreur">Poids invalide, entrez une valeur supérieure à 0.</p>
+          )}
         </div>
 
         {/* Posologie */}
@@ -150,6 +160,9 @@ export default function Calculateurs() {
               <button className={`radio-btn ${uniteDose === 'mcg/kg' ? 'active' : ''}`} onClick={() => setUniteDose('mcg/kg')}>mcg/kg</button>
             </div>
           </div>
+          {invalide(posologie, posoSaisie) && (
+            <p className="fluido-erreur">Posologie invalide, entrez une valeur supérieure à 0.</p>
+          )}
         </div>
 
         {/* Concentration */}
@@ -171,6 +184,9 @@ export default function Calculateurs() {
               <button className={`radio-btn ${uniteConc === 'mcg/mL' ? 'active' : ''}`} onClick={() => setUniteConc('mcg/mL')}>mcg/mL</button>
             </div>
           </div>
+          {invalide(concentration, concSaisie) && (
+            <p className="fluido-erreur">Concentration invalide, entrez une valeur supérieure à 0.</p>
+          )}
         </div>
 
         {/* Résultats */}

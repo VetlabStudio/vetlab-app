@@ -5,6 +5,7 @@ import IconesEspeces from '../components/IconesEspeces'
 import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
+import { lireNombrePositif } from '../lib/nombres'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -157,6 +158,12 @@ useEffect(() => {
   return () => setTitreCustom('')
 }, [medicament?.nom, setTitreCustom])
 
+  const poidsSaisi = lireNombrePositif(poids)
+  const posoValide = lireNombrePositif(posologie)
+  const concSaisie = lireNombrePositif(concentration)
+  // Un champ rempli mais invalide (lettres, zéro) affiche son message ; vide, il attend.
+  const invalide = (texte, valeur) => texte.trim() !== '' && valeur === null
+
   // Calcul automatique, refait à chaque saisie.
   const { resultat, horsPlage } = useMemo(() => {
     /* L'avertissement ne dépend que de la posologie : il s'affiche dès
@@ -165,18 +172,18 @@ useEffect(() => {
     const horsPlage = Boolean(posologie && medicament?.dose_min && medicament?.dose_max)
       && (posoSaisie < medicament.dose_min || posoSaisie > medicament.dose_max)
 
-    if (!poids || !posologie || !concentration || !medicament) {
+    if (poidsSaisi === null || posoValide === null || concSaisie === null || !medicament) {
       return { resultat: null, horsPlage }
     }
 
     const poidsKg = unitePoids === 'lb'
-      ? Math.round((parseFloat(poids) / 2.205) * 100) / 100
-      : parseFloat(poids)
+      ? Math.round((poidsSaisi / 2.205) * 100) / 100
+      : poidsSaisi
 
     const uniteDose = medicament.unite_dose || 'mg/kg'
     const uniteConc = medicament.unite_concentration || 'mg/mL'
-    const poso = parseFloat(posologie)
-    const conc = parseFloat(concentration)
+    const poso = posoValide
+    const conc = concSaisie
 
     let doseTotale
     let etapeConversion = null
@@ -206,7 +213,7 @@ useEffect(() => {
       conc,
       etapeConversion,
     } }
-  }, [poids, unitePoids, posologie, concentration, medicament])
+  }, [poids, poidsSaisi, unitePoids, posologie, posoValide, concSaisie, medicament])
 
   async function toggleFavori() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -292,6 +299,9 @@ useEffect(() => {
       <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
     </div>
   </div>
+  {invalide(poids, poidsSaisi) && (
+    <p className="fluido-erreur">Poids invalide, entrez une valeur supérieure à 0.</p>
+  )}
 </div>
 
           {/* Posologie */}
@@ -310,6 +320,9 @@ useEffect(() => {
     />
     <span className="unite-fixe">{medicament.unite_dose || 'mg/kg'}</span>
   </div>
+  {invalide(posologie, posoValide) && (
+    <p className="fluido-erreur">Posologie invalide, entrez une valeur supérieure à 0.</p>
+  )}
   {plageTexte && <p className="range-hint">{plageTexte}</p>}
   {horsPlage && (
     <div className="avertissement-plage">
@@ -335,6 +348,9 @@ useEffect(() => {
     />
     <span className="unite-fixe">{medicament.unite_concentration || 'mg/mL'}</span>
   </div>
+  {invalide(concentration, concSaisie) && (
+    <p className="fluido-erreur">Concentration invalide, entrez une valeur supérieure à 0.</p>
+  )}
 </div>
 
           {/* Résultats */}

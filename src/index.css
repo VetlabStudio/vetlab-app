@@ -3230,13 +3230,22 @@ input[type="number"] {
 .fluido-barre-detail {
   font-size: 13px;
   font-weight: 600;
-  color: var(--primary-light);
+  /* Même couleur que le fond auparavant : « pendant 24 h » était invisible. */
+  color: var(--text-secondary);
+}
+
+.fluido-barre-ouvrir {
+  margin-left: auto;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .fluido-barre i {
-  margin-left: auto;
   font-size: 18px;
-  align-self: center;
 }
 
 /* ─── PANNEAU DE DÉTAIL ─────────────────────────────────── */

@@ -126,6 +126,20 @@ export default function Fluidotherapie() {
   const [copie, setCopie] = useState(false)
 
   const blocPatientRef = useRef(null)
+  // Vrai tant qu'un doigt ou un bouton de souris est appuyé.
+  const appuiEnCours = useRef(false)
+  useEffect(() => {
+    const debut = () => { appuiEnCours.current = true }
+    const fin = () => { appuiEnCours.current = false }
+    window.addEventListener('pointerdown', debut, true)
+    window.addEventListener('pointerup', fin, true)
+    window.addEventListener('pointercancel', fin, true)
+    return () => {
+      window.removeEventListener('pointerdown', debut, true)
+      window.removeEventListener('pointerup', fin, true)
+      window.removeEventListener('pointercancel', fin, true)
+    }
+  }, [])
 
   /* ─── PRÉFÉRENCES PERSISTANTES ───────────────────────── */
   useEffect(() => {
@@ -293,7 +307,16 @@ export default function Fluidotherapie() {
   /* ─── COMPORTEMENT DU BLOC PATIENT ───────────────────── */
   function replierPatient(e) {
     if (blocPatientRef.current && e.relatedTarget && blocPatientRef.current.contains(e.relatedTarget)) return
-    if (poidsKg > 0) setPatientOuvert(false)
+    if (!(poidsKg > 0)) return
+    /* Replier pendant l'appui faisait remonter la page sous le doigt : le
+       clic tombait à côté, et « + Déshydratation » ne réagissait pas au
+       premier appui. On replie donc une fois le clic terminé. */
+    const plier = () => setTimeout(() => setPatientOuvert(false), 0)
+    if (!appuiEnCours.current) { plier(); return }
+    const relache = new AbortController()
+    const apresClic = () => { relache.abort(); plier() }
+    window.addEventListener('pointerup', apresClic, { signal: relache.signal })
+    window.addEventListener('pointercancel', apresClic, { signal: relache.signal })
   }
 
   const rangeeActive = pourcentDeshy > 0 ? rangeeDeshydratation(pourcentDeshy) : null
@@ -664,7 +687,11 @@ export default function Fluidotherapie() {
         <button className="fluido-barre" onClick={() => setDetailOuvert(true)}>
           <span className="fluido-barre-valeur">{fmt(debitHoraire)} ml/h</span>
           {aRemplacer && <span className="fluido-barre-detail">pendant {duree} h</span>}
-          <i className="ti ti-chevron-up"></i>
+          {/* Le mot dit qu'un appui ouvre le détail du calcul ; la flèche seule passait inaperçue. */}
+          <span className="fluido-barre-ouvrir">
+            Détails
+            <i className="ti ti-chevron-up" aria-hidden="true"></i>
+          </span>
         </button>
       )}
 
