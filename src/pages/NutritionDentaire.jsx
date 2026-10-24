@@ -1,151 +1,65 @@
-import { useState } from 'react'
+import FicheNutrition from '../components/FicheNutrition'
 
-const CONSEILS = [
-  {
-    icone: 'ti-bowl',
-    titre: 'Nourriture et gâteries',
-    apercu: 'Sceau VOHC · croquettes abrasives · éviter os durs',
-    type: 'bullets',
-    bullets: [
-      "Une nourriture ou des gâteries dentaires avec le sceau VOHC (vohc.org) ont été testées pour vraiment réduire la plaque et le tartre, contrairement à beaucoup de produits qui le prétendent sans preuve.",
-      "Éviter les aliments trop mous exclusivement : ils collent davantage aux dents et favorisent l'accumulation de plaque.",
-      "Les gâteries dentaires ne devraient pas dépasser 10 % de l'apport total de la journée, même si elles sont bonnes pour les dents.",
+const FICHE = {
+  especes: ['chien', 'chat'],
+  objectif: 'Limiter la plaque et le tartre pour prévenir la maladie des gencives.',
+  pourQui: 'tous les chiens et chats, surtout après un détartrage.',
+
+  messages: [
+    { titre: "Le brossage, c'est le meilleur", texte: 'Idéalement chaque jour ; quelques fois par semaine aide déjà.' },
+    { titre: 'Chercher le sceau VOHC', texte: 'Diètes et gâteries testées pour réduire plaque et tartre.' },
+    { titre: "Pas d'os durs ni de bois de cerf", texte: 'Ils peuvent casser les dents.' },
+  ],
+
+  privilegier: ['Brossage, dentifrice pour animaux', 'Diète dentaire VOHC', 'Gâteries VOHC, moins de 10 %', 'Habituer dès le jeune âge'],
+  eviter: ['Os, bois de cerf, sabots', 'Jouets très durs', 'Dentifrice pour humains', "Produits sans preuve d'efficacité"],
+
+  alertes: [
+    { titre: 'Les croquettes ordinaires ne nettoient pas', texte: 'Seules les diètes testées (sceau VOHC) ont un effet prouvé.' },
+    { titre: 'Mauvaise haleine : consulter', texte: "C'est souvent un signe de maladie des gencives, qui fait mal." },
+  ],
+
+  transition: { duree: '7 jours' },
+  pratique: [
+    'Habituer peu à peu : toucher la bouche, frotter avec une gaze, puis passer à la brosse.',
+    'Brosser à 45° vers la gencive, avec de petits cercles.',
+    'Après un traitement, le vétérinaire peut prescrire un gel à la chlorhexidine pour quelques jours.',
+  ],
+
+  appeler: [
+    'Mauvaise haleine marquée',
+    'Gencives rouges ou qui saignent',
+    "Mâche d'un côté ou laisse tomber sa nourriture",
+    'Dent cassée ou qui bouge',
+  ],
+  suivi: [
+    'Examen de la bouche à chaque visite, au moins une fois par année.',
+    'Détartrage selon le vétérinaire.',
+  ],
+
+  dietes: [
+    { nom: 'Royal Canin Veterinary Diet Canine Dental', img: '/logo-royal-canin.jpg' },
+    { nom: "Hill's Prescription Diet t/d", img: '/logo-hills.jpg' },
+  ],
+
+  equipe: {
+    reperes: {
+      chien: ['Protéines 16-35 % MS', 'Ca 0,5-1,5 % MS', 'Vit. E ≥ 400 UI/kg MS', 'Gâteries ≤ 10 % kcal'],
+      chat: ['Protéines 30-50 % MS', 'Ca 0,5-1,5 % MS', 'Vit. E ≥ 500 UI/kg MS', 'Gâteries ≤ 10 % kcal'],
+    },
+    notes: [
+      'La gingivite est réversible ; la parodontite ne l\'est pas.',
+      'Chlorhexidine à 0,1-0,2 % : efficace contre la plaque, peut tacher les dents.',
+      'Les polyphosphates (hexamétaphosphate) réduisent le tartre, pas la plaque.',
     ],
   },
-  {
-    icone: 'ti-sparkles',
-    titre: "Ce qui aide en plus de la nourriture",
-    apercu: 'Brossage 2-3x/sem · chlorhexidine en complément',
-    type: 'bullets',
-    bullets: [
-      "Le brossage des dents à la maison reste le geste le plus efficace, même fait 2 à 3 fois par semaine : brosser en angle vers la gencive, pas juste sur le bout des dents.",
-      "Un gel ou rinçage à la chlorhexidine peut être utilisé en complément du brossage, sur les conseils du vétérinaire, pour aider à contrôler les bactéries en bouche.",
-    ],
-  },
-]
 
-const ALIMENTS = [
-  { nom: 'Royal Canin Veterinary Diet Canine Dental', img: '/logo-royal-canin.jpg' },
-  { nom: "Hill's Prescription Diet t/d",              img: '/logo-hills.jpg' },
-]
+  sources: [
+    'Wortinger et Burns, Nutrition and Disease Management for Veterinary Technicians and Nurses, 3e éd., chap. 49',
+    'Veterinary Oral Health Council (vohc.org)',
+  ],
+}
 
 export default function NutritionDentaire() {
-  const [ouverts, setOuverts] = useState([])
-
-  const toggleConseil = (i) =>
-    setOuverts(o => o.includes(i) ? o.filter(x => x !== i) : [...o, i])
-
-  return (
-    <div className="labo-detail-page">
-
-      {/* À conseiller au client */}
-      <section>
-        <div className="nutri-sec-label">Essentiel</div>
-        <div className="nutri-sec-titre">À conseiller au client</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-          {CONSEILS.map((c, i) => (
-            <div key={i} className={`nutri-conseil-card${ouverts.includes(i) ? ' ouvert' : ''}`}>
-              <button className="nutri-conseil-row" onClick={() => toggleConseil(i)}>
-                <div className="nutri-conseil-icone">
-                  <i className={`ti ${c.icone}`}></i>
-                </div>
-                <div className="nutri-conseil-corps">
-                  <div className="nutri-conseil-titre">{c.titre}</div>
-                  <div className="nutri-conseil-apercu">{c.apercu}</div>
-                </div>
-                <i className="ti ti-chevron-right nutri-conseil-chevron"></i>
-              </button>
-              <div className="nutri-conseil-detail">
-                <div className="nutri-bullet-liste">
-                  {c.bullets.map((b, j) => (
-                    <div key={j} className="nutri-bullet-item">
-                      <div className="nutri-bullet-puce"></div>
-                      <span>{b}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Repères */}
-      <section>
-        <div className="nutri-sec-label">Données à retenir</div>
-        <div className="nutri-sec-titre">Repères</div>
-        <div className="nutri-reperes-grille">
-          <div className="nutri-repere-col">
-            <div className="nutri-repere-en-tete">
-              <div className="nutri-repere-point" style={{ background: 'var(--primary)' }}></div>
-              <span className="nutri-repere-titre" style={{ color: 'var(--primary)' }}>Alimentation</span>
-            </div>
-            <div className="nutri-repere-pilules">
-              <span className="nutri-repere-pilule">Sceau VOHC recommandé</span>
-              <span className="nutri-repere-pilule">Gâteries ≤ 10 % kcal</span>
-            </div>
-          </div>
-          <div className="nutri-repere-col">
-            <div className="nutri-repere-en-tete">
-              <div className="nutri-repere-point" style={{ background: 'var(--accent-red)' }}></div>
-              <span className="nutri-repere-titre" style={{ color: 'var(--accent-red)' }}>Hygiène</span>
-            </div>
-            <div className="nutri-repere-pilules">
-              {[
-                'Brossage 2-3x / semaine',
-                'Chlorhexidine si prescrit',
-              ].map((p, i) => (
-                <span key={i} className="nutri-repere-pilule"
-                  style={{ background: 'rgba(112,47,58,0.07)', color: 'var(--accent-red)', borderColor: 'rgba(112,47,58,0.2)' }}>
-                  {p}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Aliments à proposer */}
-      <section>
-        <div className="nutri-sec-label">Exemples de diètes adaptées</div>
-        <div className="nutri-sec-titre">Aliments à proposer</div>
-        <div className="nutri-aliments-liste">
-          {ALIMENTS.map((a, i) => (
-            <div key={i} className="nutri-aliment-item">
-              <img src={a.img} alt="" className="nutri-aliment-logo" />
-              <span className="nutri-aliment-nom">{a.nom}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Points de vigilance */}
-      <section>
-        <div className="nutri-sec-titre">Points de vigilance</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-          <div className="nutri-alerte nutri-alerte--rouge">
-            <i className="ti ti-alert-triangle" style={{ fontSize: 18, color: 'var(--accent-red)', flexShrink: 0, marginTop: 1 }}></i>
-            <div>
-              <div className="nutri-alerte-titre">Éviter les os durs et bois de cervidé</div>
-              <p className="nutri-alerte-texte">
-                Os de bœuf, bois de cervidé, sabots - cause fréquente de dents cassées,
-                surtout les prémolaires et molaires. La règle : si ça ne plie pas, ça peut casser une dent.
-              </p>
-            </div>
-          </div>
-          <div className="nutri-alerte nutri-alerte--amber">
-            <i className="ti ti-alert-triangle" style={{ fontSize: 18, color: '#7A500A', flexShrink: 0, marginTop: 1 }}></i>
-            <div>
-              <div className="nutri-alerte-titre">Méfiance envers les produits sans certification</div>
-              <p className="nutri-alerte-texte">
-                Beaucoup de produits "dentaires" n'ont pas de preuve d'efficacité. Privilégier ceux
-                portant le sceau VOHC (Veterinary Oral Health Council).
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    </div>
-  )
+  return <FicheNutrition fiche={FICHE} />
 }

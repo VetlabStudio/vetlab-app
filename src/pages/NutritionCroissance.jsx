@@ -1,200 +1,68 @@
-import { useState } from 'react'
+import FicheNutrition from '../components/FicheNutrition'
 
-const CONSEILS = [
-  {
-    icone: 'ti-bowl',
-    titre: 'Portions et repas',
-    apercu: 'Mesurés et fractionnés · BCS cible 4-5/9',
-    type: 'bullets',
-    bullets: [
-      <>Un chiot ou chaton mange beaucoup plus qu'un adulte proportionnellement à son poids, mais les repas restent mesurés et fractionnés - ne pas laisser à volonté, même s'il semble toujours avoir faim.</>,
-      <>Objectif : corps ferme, côtes faciles à sentir sans être visibles (<em>Body Condition Score</em> (BCS) cible 4-5/9).</>,
-    ],
-  },
-  {
-    icone: 'ti-checklist',
-    titre: 'Choisir la bonne nourriture',
-    apercu: 'Formule croissance adaptée à la taille · déjà équilibrée',
-    type: 'especes',
-    especes: [
-      {
-        label: 'Grandes races',
-        texte: "Choisir spécifiquement une formule 'grande race' : le calcium et la densité énergétique y sont mieux contrôlés pour ralentir la croissance osseuse et réduire le risque de troubles articulaires.",
-      },
-      {
-        label: 'Petites races et chats',
-        texte: "Une formule 'chiot'/'chaton' standard de bonne qualité convient. Ces formules sont déjà équilibrées en protéines, calcium et phosphore - pas besoin de calculer.",
-      },
-    ],
-  },
-  {
-    icone: 'ti-arrows-exchange',
-    titre: 'Transition vers adulte',
-    apercu: 'Progressive sur 7 à 10 jours',
-    type: 'bullets',
-    bullets: [
-      "Une fois la taille adulte presque atteinte, passer progressivement à la nourriture adulte sur 7 à 10 jours en mélangeant les deux.",
-      "Chez les petites races, préférer des repas plus fréquents pour éviter les baisses de sucre pendant toute la période de croissance.",
-    ],
-  },
-]
+const FICHE = {
+  especes: ['chien', 'chat'],
+  objectif: 'Une croissance régulière, ni trop rapide ni trop grasse.',
+  pourQui: 'chiots et chatons, du sevrage à la taille adulte.',
 
-const ALIMENTS = [
-  { nom: 'Royal Canin Mini / Medium / Maxi Puppy (ou Kitten)', img: '/logo-royal-canin.jpg' },
-  { nom: "Hill's Science Diet Puppy ou Kitten",                 img: '/logo-hills.jpg' },
-  { nom: 'Purina Pro Plan Puppy ou Kitten',                    img: '/logo-purina.jpg' },
-]
+  messages: [
+    { titre: 'Nourriture de croissance adaptée', texte: 'Grande race : formule « grande race », pour protéger les os.' },
+    { titre: 'Des portions mesurées', texte: 'Ajustées selon la silhouette, pas seulement selon le sac.' },
+    { titre: 'Une silhouette mince', texte: 'Côtes faciles à sentir : un chiot gras grandit trop vite.' },
+  ],
+
+  privilegier: ['Formule chiot ou chaton', 'Formule grande race si gros chien', 'Portions mesurées', 'Gâteries : moins de 10 %'],
+  eviter: ['Suppléments de calcium', 'Chiot nourri à volonté', 'Nourriture adulte trop tôt', 'Lait de vache'],
+
+  alertes: [
+    { titre: 'Aucun calcium ajouté', texte: "Surtout en grande race : l'excès de calcium nuit aux os et aux articulations." },
+    { titre: 'Chat stérilisé : réduire la ration', texte: "Les besoins baissent d'environ 25 % dès la stérilisation." },
+  ],
+
+  transition: { duree: '7 jours' },
+  pratique: [
+    'Chiot : 2 à 4 repas mesurés par jour, jamais à volonté.',
+    "Chaton : à volonté possible ; repas mesurés s'il y a d'autres chats ou un risque d'embonpoint.",
+    'Passage à la nourriture adulte : petite race vers 8-12 mois, moyenne 12-18 mois, grande et géante 18-24 mois ; chaton vers 10-12 mois.',
+    'Petites races : plusieurs petits repas par jour pour éviter les baisses de sucre.',
+  ],
+
+  appeler: [
+    'Boiterie ou douleur aux pattes',
+    'Diarrhée ou vomissements plus de 24 h',
+    'Ne prend pas de poids',
+    'Petite race faible ou tremblante',
+  ],
+  suivi: [
+    'Chiot : peser chaque semaine ; silhouette vérifiée idéalement toutes les 2 semaines.',
+    "Chaton : peser chaque mois jusqu'à 4-5 mois, aux visites de vaccins.",
+  ],
+
+  dietes: [
+    { nom: 'Royal Canin Mini / Medium / Maxi Puppy (ou Kitten)', img: '/logo-royal-canin.jpg' },
+    { nom: "Hill's Science Diet Puppy ou Kitten", img: '/logo-hills.jpg' },
+    { nom: 'Purina Pro Plan Puppy ou Kitten', img: '/logo-purina.jpg' },
+  ],
+
+  equipe: {
+    reperes: {
+      chien: ['BCS 4-5/9 (grande race : 4/9)', 'Protéines 22-32 % MS', 'Gras 10-25 % MS', 'Grande race : Ca 0,7-1,2 % MS', 'Grande race : P 0,6-1,1 % MS'],
+      chat: ['BCS 4-5/9', 'Gras 18-35 % MS', 'Ca:P 1,1:1 à 1,5:1', '~200 kcal/kg/jour vers 10 sem.', 'Stérilisation : -24 à 33 %'],
+    },
+    notes: [
+      "Facteur de croissance du chiot : x3 jusqu'à 50 % du poids adulte, x2,5 de 50 à 80 %, x1,8 à 2 au-delà.",
+      'Petite et moyenne race : Ca 0,7-1,7 % MS, Ca:P 1:1 à 1,8:1. Grande race : Ca:P 1:1 à 1,5:1.',
+      'Étude sur des Labradors : 25 % de nourriture en moins a donné 2 ans de vie de plus et une arthrose plus tardive.',
+    ],
+  },
+
+  sources: [
+    'Wortinger et Burns, Nutrition and Disease Management for Veterinary Technicians and Nurses, 3e éd., chap. 27 et 28',
+    'VCA, chiots de grande et très grande race',
+    'Tufts Petfoodology, passer à la nourriture adulte',
+  ],
+}
 
 export default function NutritionCroissance() {
-  const [ouverts, setOuverts]     = useState([])
-  const [msOuverte, setMsOuverte] = useState(false)
-
-  const toggleConseil = (i) =>
-    setOuverts(o => o.includes(i) ? o.filter(x => x !== i) : [...o, i])
-
-  return (
-    <div className="labo-detail-page">
-
-      {/* ── À conseiller au client ── */}
-      <section>
-        <div className="nutri-sec-label">Essentiel</div>
-        <div className="nutri-sec-titre">À conseiller au client</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-          {CONSEILS.map((c, i) => (
-            <div key={i} className={`nutri-conseil-card${ouverts.includes(i) ? ' ouvert' : ''}`}>
-              <button className="nutri-conseil-row" onClick={() => toggleConseil(i)}>
-                <div className="nutri-conseil-icone">
-                  <i className={`ti ${c.icone}`}></i>
-                </div>
-                <div className="nutri-conseil-corps">
-                  <div className="nutri-conseil-titre">{c.titre}</div>
-                  <div className="nutri-conseil-apercu">{c.apercu}</div>
-                </div>
-                <i className="ti ti-chevron-right nutri-conseil-chevron"></i>
-              </button>
-              <div className="nutri-conseil-detail">
-                {c.type === 'especes' && (
-                  <div>
-                    {c.especes.map((e, j) => (
-                      <div key={j} className="nutri-espece-ligne">
-                        <span className="nutri-espece-tag" style={{ color: 'var(--primary)' }}>{e.label}</span>
-                        <span className="nutri-espece-arrow">→</span>
-                        <span className="nutri-espece-texte">{e.texte}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {c.type === 'bullets' && (
-                  <div className="nutri-bullet-liste">
-                    {c.bullets.map((b, j) => (
-                      <div key={j} className="nutri-bullet-item">
-                        <div className="nutri-bullet-puce"></div>
-                        <span>{b}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Repères nutritionnels ── */}
-      <section>
-        <div className="nutri-sec-label">Données à retenir</div>
-        <div className="nutri-sec-titre">Repères nutritionnels</div>
-        <div className="nutri-reperes-grille">
-          <div className="nutri-repere-col">
-            <div className="nutri-repere-en-tete">
-              <div className="nutri-repere-point" style={{ background: 'var(--primary)' }}></div>
-              <span className="nutri-repere-titre" style={{ color: 'var(--primary)' }}>Général</span>
-            </div>
-            <div className="nutri-repere-pilules">
-              <span className="nutri-repere-pilule">Prot. 22-32 % MS</span>
-              <span className="nutri-repere-pilule">3,5-4,5 kcal/g MS</span>
-            </div>
-          </div>
-          <div className="nutri-repere-col">
-            <div className="nutri-repere-en-tete">
-              <div className="nutri-repere-point" style={{ background: 'var(--accent-red)' }}></div>
-              <span className="nutri-repere-titre" style={{ color: 'var(--accent-red)' }}>Grande race</span>
-            </div>
-            <div className="nutri-repere-pilules">
-              {[
-                'Ca 0,7-1,2 % MS',
-                'P 0,6-1,1 % MS',
-              ].map((p, i) => (
-                <span key={i} className="nutri-repere-pilule"
-                  style={{ background: 'rgba(112,47,58,0.07)', color: 'var(--accent-red)', borderColor: 'rgba(112,47,58,0.2)' }}>
-                  {p}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className={`nutri-ms-expand${msOuverte ? ' ouvert' : ''}`}>
-          <button className="nutri-ms-btn" onClick={() => setMsOuverte(v => !v)}>
-            <i className="ti ti-info-circle" style={{ color: 'var(--text-hint)', fontSize: 15 }}></i>
-            Comprendre la matière sèche (MS)
-            <i className="ti ti-chevron-down nutri-ms-chevron"></i>
-          </button>
-          <div className="nutri-ms-detail">
-            <p>
-              La <strong>matière sèche (MS)</strong> permet de comparer les aliments indépendamment
-              de leur teneur en eau. Une conserve contient environ 75-80 % d'eau, une croquette
-              environ 10 % - on ne peut pas les comparer directement en pourcentage tel quel.
-            </p>
-            <div className="nutri-formule">
-              <strong>Formule :</strong><br />
-              % nutriment (MS) = % nutriment (tel quel) ÷ (1 - % humidité) × 100
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Aliments à proposer ── */}
-      <section>
-        <div className="nutri-sec-label">Exemples de diètes adaptées</div>
-        <div className="nutri-sec-titre">Aliments à proposer</div>
-        <div className="nutri-aliments-liste">
-          {ALIMENTS.map((a, i) => (
-            <div key={i} className="nutri-aliment-item">
-              <img src={a.img} alt="" className="nutri-aliment-logo" />
-              <span className="nutri-aliment-nom">{a.nom}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Points de vigilance ── */}
-      <section>
-        <div className="nutri-sec-titre">Points de vigilance</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-          <div className="nutri-alerte nutri-alerte--rouge">
-            <i className="ti ti-alert-triangle" style={{ fontSize: 18, color: 'var(--accent-red)', flexShrink: 0, marginTop: 1 }}></i>
-            <div>
-              <div className="nutri-alerte-titre">Jamais de supplément de calcium chez les grandes races</div>
-              <p className="nutri-alerte-texte">
-                Supplémenter en calcium un chiot de grande race peut nuire au développement osseux
-                plutôt que l'aider. Les formules croissance contiennent déjà les bons ratios.
-              </p>
-            </div>
-          </div>
-          <div className="nutri-alerte nutri-alerte--amber">
-            <i className="ti ti-alert-triangle" style={{ fontSize: 18, color: '#7A500A', flexShrink: 0, marginTop: 1 }}></i>
-            <div>
-              <div className="nutri-alerte-titre">Éviter tous suppléments sans avis vétérinaire</div>
-              <p className="nutri-alerte-texte">
-                Calcium, phosphore, vitamines - même les produits vendus en animalerie peuvent
-                déséquilibrer la ration d'une formule croissance déjà complète.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    </div>
-  )
+  return <FicheNutrition fiche={FICHE} />
 }

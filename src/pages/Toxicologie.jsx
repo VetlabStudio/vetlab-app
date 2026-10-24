@@ -713,16 +713,42 @@ function PhotoToxique({ img, nom, dossier = 'plantes', style, onClick }) {
 
 // ─── ONGLETS ─────────────────────────────────────────────
 const ONGLETS = [
-  { id: 'plantes', label: 'Plantes', icone: 'ti-plant' },
-  { id: 'aliments', label: 'Aliments', icone: 'ti-apple' },
-  { id: 'medicaments', label: 'Médicaments', icone: 'ti-pill' },
-  { id: 'produits_menagers', label: 'Produits ménagers', icone: 'ti-home' },
-  { id: 'metaux', label: 'Métaux et pesticides', icone: 'ti-flask' },
-  { id: 'antidotes', label: 'Antidotes', icone: 'ti-first-aid-kit' },
-  { id: 'diagnostic', label: 'Aide au diagnostic', icone: 'ti-stethoscope' },
-  { id: 'decontamination', label: 'Décontamination', icone: 'ti-droplet' },
-  { id: 'ressources', label: 'Ressources et contacts', icone: 'ti-phone' },
+  { id: 'plantes', label: 'Plantes', svg: '/icone-tox-plantes.svg' },
+  { id: 'aliments', label: 'Aliments', svg: '/icone-tox-aliments.svg' },
+  { id: 'medicaments', label: 'Médicaments', svg: '/icone-tox-medicaments.svg' },
+  { id: 'produits_menagers', label: 'Produits ménagers', svg: '/icone-tox-menagers.svg' },
+  { id: 'metaux', label: 'Métaux et pesticides', svg: '/icone-tox-metaux.svg' },
+  { id: 'antidotes', label: 'Antidotes', svg: '/icone-tox-antidotes.svg' },
+  { id: 'diagnostic', label: 'Aide au diagnostic', svg: '/icone-tox-diagnostic.svg' },
+  { id: 'decontamination', label: 'Décontamination', svg: '/icone-tox-decontamination.svg' },
+  { id: 'ressources', label: 'Ressources et contacts', svg: '/icone-tox-ressources.svg' },
 ]
+
+/* Icônes maison des onglets, affichées en masque : elles prennent la
+   couleur de l'onglet (grise, blanche une fois l'onglet actif), comme
+   les icônes Tabler qu'elles remplacent. */
+function IconeOnglet({ svg, actif }) {
+  const masque = `url(${svg})`
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        width: 26,
+        height: 26,
+        flexShrink: 0,
+        backgroundColor: actif ? 'white' : 'var(--text-hint)',
+        WebkitMaskImage: masque,
+        maskImage: masque,
+        WebkitMaskSize: 'contain',
+        maskSize: 'contain',
+        WebkitMaskRepeat: 'no-repeat',
+        maskRepeat: 'no-repeat',
+        WebkitMaskPosition: 'center',
+        maskPosition: 'center',
+      }}
+    ></span>
+  )
+}
 
 const SOUS_ONGLETS_DIAG = [
   { id: 'demarche', label: 'Démarche' },
@@ -785,7 +811,7 @@ export default function Toxicologie() {
               className={`dilution-mode-btn ${onglet === o.id ? 'actif' : ''}`}
               onClick={() => setOnglet(o.id)}
             >
-              <i className={`ti ${o.icone}`}></i>
+              <IconeOnglet svg={o.svg} actif={onglet === o.id} />
               <span className="dilution-mode-label">{o.label}</span>
             </button>
           ))}

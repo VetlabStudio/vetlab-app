@@ -1,3 +1,5 @@
+import FichesMicroorganismes from '../components/FichesMicroorganismes'
+
 const BACTERIES = [
   {
     nom: 'Staphylococcus pseudintermedius',
@@ -65,58 +67,24 @@ const BACTERIES = [
   },
 ]
 
+const FICHES = BACTERIES.map(b => ({
+  nom: b.nom,
+  pastilles: [
+    { texte: `Gram ${b.gram}`, ton: b.gram === '+' ? 'rouge' : 'bleu' },
+    { texte: b.morphologie },
+  ],
+  sections: [
+    { titre: 'Infections associées', liste: b.infections },
+    { titre: 'Antibiotiques', texte: b.resistances },
+  ],
+  note: b.notes,
+}))
+
 export default function LaMicrobiologieBacteries() {
   return (
-    <div className="labo-detail-page">
-      <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: '0 0 8px 0', lineHeight: 1.5 }}>
-        Bactéries les plus fréquemment isolées en clinique vétérinaire pour chiens et chats.
-      </p>
-
-      {BACTERIES.map((b, i) => (
-        <div key={i} className="labo-etape-card">
-          <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0, fontStyle: 'italic' }}>{b.nom}</h3>
-              <span style={{
-                fontSize: 12,
-                fontWeight: 700,
-                padding: '2px 8px',
-                borderRadius: 6,
-                background: b.gram === '+' ? 'rgba(112,47,58,0.1)' : 'rgba(37,77,86,0.1)',
-                color: b.gram === '+' ? 'var(--accent-red)' : 'var(--primary)',
-              }}>
-                Gram {b.gram} / {b.morphologie}
-              </span>
-            </div>
-          </div>
-
-          <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border)' }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', margin: '0 0 6px 0', textTransform: 'uppercase' }}>Infections associées</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {b.infections.map((inf, j) => (
-                <span key={j} style={{
-                  fontSize: 12,
-                  padding: '3px 8px',
-                  background: 'var(--bg)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 6,
-                  color: 'var(--text-secondary)',
-                }}>{inf}</span>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ padding: '8px 14px', borderBottom: '1px solid var(--border)', display: 'flex', gap: 8 }}>
-            <i className="ti ti-shield-exclamation" style={{ color: 'var(--accent-red)', flexShrink: 0, marginTop: 1 }}></i>
-            <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>{b.resistances}</p>
-          </div>
-
-          <div style={{ padding: '8px 14px', display: 'flex', gap: 8 }}>
-            <i className="ti ti-info-circle" style={{ color: 'var(--primary)', flexShrink: 0, marginTop: 1 }}></i>
-            <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: 0, lineHeight: 1.4 }}>{b.notes}</p>
-          </div>
-        </div>
-      ))}
-    </div>
+    <FichesMicroorganismes
+      intro="Bactéries les plus fréquemment isolées en clinique vétérinaire pour chiens et chats."
+      fiches={FICHES}
+    />
   )
 }
