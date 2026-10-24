@@ -5,6 +5,7 @@ import { useContext } from 'react'
 import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
+import SignalerErreur from '../components/SignalerErreur'
 
 export default function LaboProtocoleDetail() {
   const navigate = useNavigate()
@@ -405,6 +406,10 @@ async function supprimerProtocole() {
     </button>
   </div>
 )}
+
+      {type === 'base' && !modeEdit && (
+        <SignalerErreur categorie="Protocole labo" page={protocole.titre} icone="ti-flask" />
+      )}
 
       {/* ─── MODAL RÉORGANISER ──────────────── */}
       {showReorganiser && (

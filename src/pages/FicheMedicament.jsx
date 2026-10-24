@@ -5,6 +5,7 @@ import IconesEspeces from '../components/IconesEspeces'
 import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
+import SignalerErreur from '../components/SignalerErreur'
 import { lireNombrePositif } from '../lib/nombres'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -423,7 +424,10 @@ useEffect(() => {
           contenu={medicament.notes}
         />
 
-
+        {/* Seulement la fiche d'Adjuvet : pas une version personnalisée ni un médicament de clinique. */}
+        {!estMedCustom && medicament.id === id && (
+          <SignalerErreur categorie="Médicament" page={medicament.nom} icone="ti-pill" />
+        )}
 
         <div style={{ height: 40 }} />
 

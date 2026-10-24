@@ -31,7 +31,8 @@ function echapper(texte: string) {
    la base, jamais de la requête : sinon n'importe qui pourrait
    envoyer, au nom d'Adjuvet, le courriel et le lien de son choix.
    Seuls le propriétaire et les admins de la clinique peuvent
-   déclencher l'envoi.
+   déclencher l'envoi, ainsi que l'administration d'Adjuvet
+   (table admins_app).
    ════════════════════════════════════════════════════════════ */
 
 Deno.serve(async (req) => {
@@ -72,7 +73,9 @@ Deno.serve(async (req) => {
     .maybeSingle()
 
   if (membre?.role !== 'admin' && membre?.role !== 'proprietaire') {
-    return json({ error: 'Accès refusé' }, 403)
+    // L'administration d'Adjuvet peut aussi renvoyer une invitation (Admin - Comptes).
+    const { data: adminApp } = await supabase.from('admins_app').select('user_id').eq('user_id', user.id).maybeSingle()
+    if (!adminApp) return json({ error: 'Accès refusé' }, 403)
   }
 
   const { data: equipe } = await supabase

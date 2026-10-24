@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import IconesEspeces from '../components/IconesEspeces'
+import SignalerErreur from '../components/SignalerErreur'
 
 // ─── DONNÉES ─────────────────────────────────────────────
 
@@ -1090,6 +1091,8 @@ export default function Toxicologie() {
             ))}
           </div>
         )}
+
+        <SignalerErreur categorie="Toxicologie" page={`Toxicologie : ${ONGLETS.find(o => o.id === onglet)?.label}`} icone="ti-skull" />
 
       </div>
 

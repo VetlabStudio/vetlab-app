@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 // Mêmes icônes maison que la barre principale (BottomNav), dans le même style.
 const ONGLETS = [
   { label: 'Accueil', svg: '/icone-accueil-nav.svg', route: '/accueil', actif: () => false },
-  { label: 'Admin', svg: '/icone-admin-nav.svg', route: '/admin', actif: chemin => chemin === '/admin' || chemin === '/admin/comptes' },
+  { label: 'Admin', svg: '/icone-admin-nav.svg', route: '/admin', actif: chemin => chemin === '/admin' || chemin === '/admin/comptes' || chemin === '/admin/signalements' },
   { label: 'Médicaments', svg: '/icone-pill-nav.svg', route: '/admin/medicaments', actif: chemin => chemin.startsWith('/admin/medicaments') },
   { label: 'Labo', svg: '/icone-labo-nav.svg', route: '/admin/labo', actif: chemin => chemin.startsWith('/admin/labo') },
 ]

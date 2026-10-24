@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import SignalerErreur from './SignalerErreur'
 
 /* ════════════════════════════════════════════════════════════
    GABARIT DES FICHES NUTRITION
@@ -304,6 +305,8 @@ export default function FicheNutrition({ fiche }) {
           <strong>Sources&nbsp;:</strong> {fiche.sources.join(' · ')}
         </p>
       )}
+
+      <SignalerErreur categorie="Nutrition" icone="ti-bowl" />
     </div>
   )
 }
