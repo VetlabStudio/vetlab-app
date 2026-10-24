@@ -1,7 +1,7 @@
 import Stripe from 'npm:stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { synchroniserCourrielStripe } from '../_shared/stripeCourriel.ts'
-import { JOURS_ESSAI, aDejaEuAbonnement } from '../_shared/essai.ts'
+import { JOURS_ESSAI, aDejaEuAbonnement, essaiDejaUtilise } from '../_shared/essai.ts'
 
 const APP_URL = (Deno.env.get('APP_URL') || 'https://adjuvet.app').replace(/\/+$/, '')
 
@@ -144,6 +144,9 @@ Deno.serve(async (req) => {
       }, 409)
     }
   }
+
+  // Même adresse, autre compte (supprimé depuis) : l'essai a déjà servi.
+  if (estPro && !dejaAbonne) dejaAbonne = await essaiDejaUtilise(stripe, profil?.email || user.email)
 
   // Premier abonnement Pro : 14 jours gratuits, puis le paiement normal.
   const essai = estPro && !dejaAbonne

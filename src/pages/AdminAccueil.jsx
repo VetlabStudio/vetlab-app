@@ -6,12 +6,16 @@ export default function AdminAccueil() {
   return (
     <div className="admin-page">
       <div className="admin-liste" style={{ padding: '0 1rem' }}>
-        <button className="admin-item" style={{ cursor: 'pointer', width: '100%' }} onClick={() => navigate('/admin/medicaments')}>
+        <button className="admin-item" style={{ cursor: 'pointer' }} onClick={() => navigate('/admin/medicaments')}>
           <span className="admin-item-nom"><i className="ti ti-pill" style={{ marginRight: 8 }}></i>Médicaments</span>
           <i className="ti ti-chevron-right" style={{ color: 'var(--text-hint)' }}></i>
         </button>
-        <button className="admin-item" style={{ cursor: 'pointer', width: '100%' }} onClick={() => navigate('/admin/labo')}>
+        <button className="admin-item" style={{ cursor: 'pointer' }} onClick={() => navigate('/admin/labo')}>
           <span className="admin-item-nom"><i className="ti ti-flask" style={{ marginRight: 8 }}></i>Protocoles labo</span>
+          <i className="ti ti-chevron-right" style={{ color: 'var(--text-hint)' }}></i>
+        </button>
+        <button className="admin-item" style={{ cursor: 'pointer' }} onClick={() => navigate('/admin/comptes')}>
+          <span className="admin-item-nom"><i className="ti ti-users" style={{ marginRight: 8 }}></i>Comptes</span>
           <i className="ti ti-chevron-right" style={{ color: 'var(--text-hint)' }}></i>
         </button>
       </div>

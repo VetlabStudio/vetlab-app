@@ -33,6 +33,7 @@ const AdminMedicaments = lazy(() => import('./pages/AdminMedicaments'))
 const AdminMedicamentForm = lazy(() => import('./pages/AdminMedicamentForm'))
 const AdminAccueil = lazy(() => import('./pages/AdminAccueil'))
 const AdminLaboProtocoles = lazy(() => import('./pages/AdminLaboProtocoles'))
+const AdminComptes = lazy(() => import('./pages/AdminComptes'))
 const FicheMedicament = lazy(() => import('./pages/FicheMedicament'))
 const Fluidotherapie = lazy(() => import('./pages/Fluidotherapie'))
 const CRI = lazy(() => import('./pages/CRI'))
@@ -462,6 +463,7 @@ export default function App() {
         <Route path="/admin/medicaments" element={<RouteProtegeeAdmin session={session}><AdminMedicaments /></RouteProtegeeAdmin>} />
         <Route path="/admin/medicaments/:id" element={<RouteProtegeeAdmin session={session}><AdminMedicamentForm /></RouteProtegeeAdmin>} />
         <Route path="/admin/labo" element={<RouteProtegeeAdmin session={session}><AdminLaboProtocoles /></RouteProtegeeAdmin>} />
+        <Route path="/admin/comptes" element={<RouteProtegeeAdmin session={session}><AdminComptes /></RouteProtegeeAdmin>} />
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to={recuperation ? '/nouveau-mot-de-passe' : session ? '/accueil' : '/connexion'} replace />} />

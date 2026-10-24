@@ -1,6 +1,6 @@
 import Stripe from 'npm:stripe@14'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { JOURS_ESSAI, aDejaEuAbonnement } from '../_shared/essai.ts'
+import { JOURS_ESSAI, aDejaEuAbonnement, essaiDejaUtilise } from '../_shared/essai.ts'
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!)
 
@@ -33,9 +33,12 @@ Deno.serve(async (req) => {
       .eq('id', user.id)
       .single()
 
-    // Jamais passé par le paiement : l'essai gratuit est disponible.
+    /* Jamais passé par le paiement avec ce compte : l'essai est
+       disponible, sauf si cette adresse l'a déjà eu avec un compte
+       supprimé depuis. */
     if (!profile?.stripe_customer_id) {
-      return new Response(JSON.stringify({ subscription: null, essai_disponible: true, jours_essai: JOURS_ESSAI }), {
+      const essaiDispo = !(await essaiDejaUtilise(stripe, user.email))
+      return new Response(JSON.stringify({ subscription: null, essai_disponible: essaiDispo, jours_essai: JOURS_ESSAI }), {
         status: 200,
         headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
       })
@@ -47,7 +50,8 @@ Deno.serve(async (req) => {
       limit: 100,
     })
     // Même règle que create-checkout : un seul essai par personne.
-    const essai = { essai_disponible: !aDejaEuAbonnement(subscriptions.data), jours_essai: JOURS_ESSAI }
+    const dejaEu = aDejaEuAbonnement(subscriptions.data) || await essaiDejaUtilise(stripe, user.email)
+    const essai = { essai_disponible: !dejaEu, jours_essai: JOURS_ESSAI }
 
     const sub = subscriptions.data.find(s => ['active', 'trialing', 'past_due'].includes(s.status))
     if (!sub) {
