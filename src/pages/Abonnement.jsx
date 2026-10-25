@@ -53,6 +53,54 @@ function formaterDate(timestamp) {
   })
 }
 
+/* Fenêtre d'activation, après un paiement ou un passage à Équipe.
+   Une fenêtre plutôt qu'un bandeau en haut de page : on paie souvent
+   après avoir défilé jusqu'au bas, où le bandeau ne se voyait pas.
+   activation : { etat: 'attente' | 'active' | 'delai', plan, finEssai } */
+function FenetreActivation({ activation, onFermer }) {
+  const nom = activation.plan === 'equipe' ? 'Équipe' : 'Pro'
+  const enAttente = activation.etat === 'attente'
+
+  let icone, couleur, titre, texte
+  if (enAttente) {
+    icone = 'ti-loader-2 abo-activation-attente'
+    couleur = 'var(--primary)'
+    titre = 'Paiement reçu'
+    texte = 'Activation de votre abonnement… Quelques secondes suffisent habituellement.'
+  } else if (activation.etat === 'active') {
+    icone = 'ti-circle-check'
+    couleur = '#2E7D62'
+    titre = `Abonnement ${nom} activé !`
+    texte = activation.finEssai
+      ? `Votre essai gratuit commence maintenant. Aucun prélèvement avant le ${formaterDate(activation.finEssai)}, et vous pouvez annuler sans frais d'ici là.`
+      : activation.plan === 'equipe'
+        ? "Votre clinique est prête : invitez vos collègues depuis la gestion de l'équipe."
+        : 'Bienvenue dans la famille Pro ! Toutes les fonctionnalités Pro sont maintenant ouvertes.'
+  } else {
+    icone = 'ti-clock'
+    couleur = 'var(--accent-gold)'
+    titre = 'Paiement reçu'
+    texte = `Votre abonnement est en cours d'activation. Si les fonctionnalités ${nom} ne sont pas encore ouvertes, fermez l'app et rouvrez-la dans une minute.`
+  }
+
+  return (
+    <div className="popup-overlay" onClick={enAttente ? undefined : onFermer}>
+      <div className="popup-card" role="dialog" aria-modal="true" aria-labelledby="activation-titre" onClick={e => e.stopPropagation()}>
+        <div style={{ textAlign: 'center', padding: '8px 0 4px' }} role="status">
+          <i className={`ti ${icone}`} aria-hidden="true" style={{ fontSize: 44, color: couleur, display: 'inline-block', marginBottom: 12 }}></i>
+          <h2 id="activation-titre" style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px' }}>{titre}</h2>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>{texte}</p>
+        </div>
+        {!enAttente && (
+          <button className="labo-btn-primary" style={{ width: '100%', padding: '12px 0', fontSize: 14 }} onClick={onFermer}>
+            Fermer
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 const PRIX_PRO_ANNUEL = 59
 const PRIX_PRO_ANNUEL_PAR_MOIS = `${(PRIX_PRO_ANNUEL / 12).toFixed(2).replace('.', ',')} $`
 const SIEGES_MIN = 2
@@ -129,8 +177,8 @@ export default function Abonnement() {
   /* Paiement terminé : dans la fenêtre de paiement (sans recharger
      l'app) ou au retour de Stripe (adresse ?paiement=succes). */
   const [paiementTermine, setPaiementTermine] = useState(() => searchParams.get('paiement') === 'succes')
-  // Activation en cours : le webhook Stripe met le forfait à jour.
-  const [activation, setActivation] = useState(false)
+  // Fenêtre d'activation (voir FenetreActivation) : le webhook Stripe met le forfait à jour.
+  const [activation, setActivation] = useState(null)
 
   // L'onglet Équipe s'ouvre quand le forfait devient Équipe.
   const [planAffiche, setPlanAffiche] = useState(profil?.plan)
@@ -198,14 +246,19 @@ export default function Abonnement() {
   }
 
   async function attendrePlanActif(planAttendu) {
-    setActivation(true)
+    setActivation({ etat: 'attente', plan: planAttendu })
+    let resultat = { etat: 'delai' }
     try {
-      await attendrePlan(planAttendu)
-    } finally {
-      setActivation(false)
+      resultat = await attendrePlan(planAttendu)
+    } catch (err) {
+      // Le paiement est fait : on dit seulement que l'activation se poursuit.
+      console.error("Suivi de l'activation impossible :", err)
     }
+    setActivation({ ...resultat, plan: planAttendu })
   }
 
+  /* { etat: 'active', finEssai } dès que le webhook a mis le forfait à
+     jour ; { etat: 'delai' } s'il n'y est pas après 20 secondes. */
   async function attendrePlan(planAttendu) {
     for (let i = 0; i < 10; i++) {
       await new Promise(r => setTimeout(r, 2000))
@@ -217,15 +270,13 @@ export default function Abonnement() {
         : (data?.plan && data.plan !== 'free')
       if (planAtteint) {
         if (chargerProfil) await chargerProfil()
-        await chargerSubDetails()
-        afficherSucces(planAttendu === 'equipe'
-          ? 'Abonnement Équipe activé !'
-          : 'Abonnement Pro activé ! Bienvenue dans la famille Pro.')
-        return
+        const abonnement = await lireAbonnement()
+        if (abonnement) setSubDetails(abonnement)
+        return { etat: 'active', finEssai: abonnement?.fin_essai || null }
       }
     }
     if (chargerProfil) await chargerProfil()
-    afficherSucces(planAttendu === 'equipe' ? 'Abonnement Équipe activé !' : 'Abonnement Pro activé !')
+    return { etat: 'delai' }
   }
 
   // Paiement terminé : traité une seule fois, puis attente du forfait.
@@ -358,14 +409,6 @@ export default function Abonnement() {
   return (
     <div className="abonnement-page">
 
-      {activation && !succes && (
-        <div role="status" style={{
-          background: 'var(--bg-secondary)', borderRadius: 12, padding: '12px 16px',
-          color: 'var(--text-primary)', fontSize: 14, fontWeight: 500,
-        }}>
-          Paiement reçu. Activation de votre abonnement...
-        </div>
-      )}
       {succes && (
         <div style={{
           background: 'rgba(46,158,91,0.1)', border: '1px solid rgba(46,158,91,0.3)',
@@ -734,6 +777,9 @@ export default function Abonnement() {
           </div>
         </div>
       )}
+
+      {/* ─── FENÊTRE D'ACTIVATION ─── */}
+      {activation && <FenetreActivation activation={activation} onFermer={() => setActivation(null)} />}
 
       {/* ─── MODAL CHECKOUT STRIPE ─── */}
       {modalCheckout && clientSecret && (

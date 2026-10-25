@@ -86,7 +86,8 @@ export default function Profil() {
           setEquipeProprietaire({ id: eq.id, nom: eq.nom })
         }
       }
-      setProfil({ ...data, email: user.email })
+      // new_email : changement d'adresse demandé, pas encore confirmé des deux côtés.
+      setProfil({ ...data, email: user.email, emailEnAttente: user.new_email || null })
       setAvatarUrl(data?.avatar_url || null)
       setLoading(false)
     }
@@ -140,10 +141,20 @@ export default function Profil() {
     const { error } = await supabase.auth.updateUser({ email: nouveauEmail.trim() })
     setSaving(false)
     if (error) return setErreur(traduireErreur(error, "Le courriel n'a pas pu être modifié."))
-    /* L'adresse affichée ne change pas encore : elle ne change dans
-       le compte qu'une fois le lien de confirmation ouvert. */
+    /* L'adresse affichée ne change pas encore : Supabase envoie un lien
+       à l'ancienne adresse et un à la nouvelle, et le changement ne se
+       fait qu'une fois les deux ouverts. La note sous « Courriel » le
+       rappelle tant qu'il est en attente. */
+    setProfil(prev => ({ ...prev, emailEnAttente: nouveauEmail.trim() }))
     setModalEmail(false)
-    afficherSucces(`Ouvrez le lien de confirmation envoyé à ${nouveauEmail.trim()} : votre adresse changera ensuite.`)
+    afficherSucces('Deux liens de confirmation envoyés.')
+  }
+
+  async function renvoyerLiensCourriel() {
+    setErreur('')
+    const { error } = await supabase.auth.resend({ type: 'email_change', email: profil.emailEnAttente })
+    if (error) return setErreur(traduireErreur(error, "Les liens n'ont pas pu être renvoyés. Réessayez dans une minute."))
+    afficherSucces('Liens de confirmation renvoyés aux deux adresses.')
   }
 
   // ─── MODIFIER MOT DE PASSE ────────────────────
@@ -322,6 +333,20 @@ export default function Profil() {
           </div>
           <button className="profil-modifier" onClick={() => ouvrirModal('email')}>Modifier</button>
         </div>
+        {profil?.emailEnAttente && (
+          <div role="status" style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'rgba(148,100,31,0.08)', fontSize: 13, lineHeight: 1.55, color: 'var(--text-primary)', overflowWrap: 'anywhere' }}>
+            <p style={{ margin: '0 0 4px', fontWeight: 700, color: '#7A500A' }}>
+              <i className="ti ti-clock" aria-hidden="true" style={{ marginRight: 6 }}></i>
+              Changement en attente vers {profil.emailEnAttente}
+            </p>
+            <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
+              Pour le terminer, ouvrez les deux liens de confirmation : celui envoyé à {profil.email} et celui envoyé à {profil.emailEnAttente}.
+            </p>
+            <button type="button" onClick={renvoyerLiensCourriel} style={{ marginTop: 8, padding: 0, background: 'none', border: 'none', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer' }}>
+              Renvoyer les liens
+            </button>
+          </div>
+        )}
         <div className="profil-item">
           <div>
             <p className="profil-item-label">Mot de passe</p>
@@ -382,6 +407,9 @@ export default function Profil() {
               <input id="profil-courriel" className="form-input" autoComplete="email" placeholder="ex. nom@clinique.ca" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} aria-describedby={suggestionEmail.suggestion ? 'suggestion-courriel' : undefined} autoFocus />
               <SuggestionCourriel id="suggestion-courriel" suggestion={suggestionEmail.suggestion} onCorriger={() => setNouveauEmail(suggestionEmail.suggestion)} avertie={suggestionEmail.avertie} bouton="Enregistrer" />
             </div>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
+              Par sécurité, un lien de confirmation sera envoyé à votre adresse actuelle et un autre à la nouvelle. L'adresse changera une fois les deux liens ouverts.
+            </p>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderEmail} disabled={saving}>
               {saving ? 'Envoi...' : 'Enregistrer'}

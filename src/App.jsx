@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, useNavigationType } from 'react-router-dom'
 import { useEffect, useState, useRef, useLayoutEffect, useCallback, lazy, Suspense } from 'react'
-import { supabase, ouvertDepuisLienRecuperation, sessionEnregistree } from './lib/supabase'
+import { supabase, ouvertDepuisLienRecuperation, premiereConfirmationCourriel, sessionEnregistree } from './lib/supabase'
 import { ProfilProvider } from './context/ProfilProvider'
 import { TitreContext, NavGuardContext, NavDirectionContext } from './context/NavigationContext'
 
@@ -293,9 +293,30 @@ function RouteProtegeeAdmin({ session, children }) {
   return <LayoutAdmin>{children}</LayoutAdmin>
 }
 
+// Premier des deux liens d'un changement de courriel ouvert : il reste l'autre.
+function AvisConfirmationCourriel({ onFermer }) {
+  return (
+    <div className="popup-overlay" onClick={onFermer}>
+      <div className="popup-card" role="dialog" aria-modal="true" aria-labelledby="avis-courriel-titre" onClick={e => e.stopPropagation()}>
+        <div style={{ textAlign: 'center', padding: '8px 0 4px' }}>
+          <i className="ti ti-mail-check" aria-hidden="true" style={{ fontSize: 44, color: 'var(--primary)', display: 'inline-block', marginBottom: 12 }}></i>
+          <h2 id="avis-courriel-titre" style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px' }}>Première confirmation reçue</h2>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+            Pour terminer le changement d'adresse, ouvrez aussi le lien envoyé à votre autre adresse courriel. L'adresse changera après ce deuxième lien.
+          </p>
+        </div>
+        <button className="labo-btn-primary" style={{ width: '100%', padding: '12px 0', fontSize: 14 }} onClick={onFermer}>
+          OK
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const [session, setSession] = useState(undefined)
   const [recuperation, setRecuperation] = useState(ouvertDepuisLienRecuperation)
+  const [avisCourriel, setAvisCourriel] = useState(premiereConfirmationCourriel)
   const finirRecuperation = useCallback(() => setRecuperation(false), [])
 
   useEffect(() => {
@@ -326,6 +347,7 @@ export default function App() {
     <BrowserRouter>
       <ScrollToTop />
       <RenvoiRecuperation actif={recuperation} onFait={finirRecuperation} />
+      {avisCourriel && <AvisConfirmationCourriel onFermer={() => setAvisCourriel(false)} />}
       <Routes>
 
         {/* AUTH */}

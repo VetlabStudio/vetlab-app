@@ -9151,6 +9151,15 @@ input[type="number"] {
   font-weight: 700;
 }
 
+/* Icône qui tourne pendant l'activation d'un abonnement. */
+.abo-activation-attente {
+  animation: aboActivationRotation 1.1s linear infinite;
+}
+
+@keyframes aboActivationRotation {
+  to { transform: rotate(360deg); }
+}
+
 .abo-gratuit {
   display: flex;
   flex-direction: column;

@@ -9,6 +9,14 @@ const supabaseAnonKey = 'sb_publishable_0K2R-bz97kwtmvALb9cc6w_HkG6QUvn'
 export const ouvertDepuisLienRecuperation =
   typeof window !== 'undefined' && /type=recovery/.test(window.location.hash + window.location.search)
 
+/* Changement de courriel : Supabase envoie un lien à l'ancienne adresse
+   et un à la nouvelle, et l'adresse ne change qu'une fois les deux
+   ouverts. Au premier, il revient avec ce message dans l'adresse
+   (« Confirmation link accepted. Please proceed to confirm link sent
+   to the other email »), que la redirection de l'app ferait perdre. */
+export const premiereConfirmationCourriel =
+  typeof window !== 'undefined' && /confirmation(\+|%20| )link(\+|%20| )accepted/i.test(window.location.hash + window.location.search)
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 /* ─── HORS LIGNE ──────────────────────────────────

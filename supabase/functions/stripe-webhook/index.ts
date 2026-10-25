@@ -592,7 +592,16 @@ Deno.serve(async (req) => {
         break
       }
       case 'customer.subscription.updated': {
-        const sub = event.data.object as Stripe.Subscription
+        /* Le contenu de l'événement suit la version d'API du point de
+           terminaison webhook, réglée chez Stripe, pas celle de ce client.
+           Depuis 2025-03-31, current_period_start et current_period_end
+           ne sont plus sur l'abonnement mais sur ses éléments : les
+           courriels affichaient « Invalid Date ». On relit donc
+           l'abonnement avec ce client (2023-10-16) ; seuls les champs
+           modifiés (previous_attributes) viennent de l'événement. Un
+           événement reçu en retard ne décrit donc plus un état dépassé
+           (ex. annulation déjà retirée : pas de courriel d'annulation). */
+        const sub = await stripe.subscriptions.retrieve((event.data.object as Stripe.Subscription).id)
         const etat = await synchroniserClient(sub.customer as string)
 
         /* Courriel seulement quand l'annulation vient d'être activée
