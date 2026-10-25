@@ -100,7 +100,8 @@ input {
 .header {
   background: var(--bg);
   color: var(--text-primary);
-  padding: 30px 1rem;
+  /* Bord à bord : l'en-tête couvre aussi la barre d'état si l'app passe dessous (0 sinon). */
+  padding: calc(30px + env(safe-area-inset-top, 0px)) 1rem 30px;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -145,7 +146,7 @@ input {
 .contenu-principal {
   flex: 1;
   padding: 0;
-  padding-bottom: 5rem;
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
 }
 
@@ -244,7 +245,7 @@ input {
 
 .accueil-v2 {
   background: #eef3f3 url('/background-accueil.jpg') top center / cover no-repeat;
-  padding: 20px 16px 0px;
+  padding: calc(20px + env(safe-area-inset-top, 0px)) 16px 0px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -784,6 +785,12 @@ input {
    BOTTOM NAV V2 — iOS Style
    =========================== */
 
+/* Bord à bord (viewport-fit=cover dans index.html) : la barre se
+   prolonge sous les boutons d'Android et la barre d'accueil de
+   l'iPhone, au lieu de laisser une bande de la couleur du thème.
+   env(safe-area-inset-*) vaut 0 là où l'app ne passe pas dessous.
+   Les pages qui mesurent la barre (Fluido, examen, monitoring,
+   besoin énergétique) suivent d'elles-mêmes : la hauteur l'inclut. */
 .bottom-nav-v2 {
   position: fixed;
   bottom: 0;
@@ -795,7 +802,7 @@ input {
   border-top: none;
   display: flex;
   justify-content: space-around;
-  padding: 8px 0 16px;
+  padding: 8px 0 calc(16px + env(safe-area-inset-bottom, 0px));
   z-index: 100;
 }
 
@@ -964,7 +971,7 @@ input {
   align-items: center;
   justify-content: center;
   background: var(--bg);
-  padding: 1.5rem;
+  padding: calc(1.5rem + env(safe-area-inset-top, 0px)) 1.5rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
 }
 
 .auth-card {
@@ -2197,7 +2204,7 @@ select.form-input {
 
 .btn-fab {
   position: fixed;
-  bottom: 90px;
+  bottom: calc(90px + env(safe-area-inset-bottom, 0px));
   right: 24px;
   width: 52px;
   height: 52px;
@@ -3268,7 +3275,7 @@ input[type="number"] {
   overflow-y: auto;
   background: var(--bg-card);
   border-radius: 16px 16px 0 0;
-  padding: 10px 16px 28px;
+  padding: 10px 16px calc(28px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -9712,6 +9719,8 @@ input[type="number"] {
 
 .auth2-page {
   min-height: 100vh;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: #BCAADC url('/background-connexion.jpg') center/cover no-repeat;
   position: relative;
   overflow: hidden;
@@ -10252,6 +10261,8 @@ input[type="number"] {
 
 .cgu-page {
   min-height: 100vh;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
