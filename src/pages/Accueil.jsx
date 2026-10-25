@@ -6,25 +6,29 @@ import PopupPro from '../components/PopupPro'
 import ModalInstallation from '../components/ModalInstallation'
 import { useProfil } from '../context/ProfilContext'
 
+/* Équipe : cloche toujours affichée, tenue à jour en direct. Autres
+   forfaits : elle n'apparaît que s'il y a du non lu à l'ouverture de
+   l'accueil (ex. un signalement d'erreur traité). */
 function ClocheMiniAccueil() {
   const [count, setCount] = useState(0)
   const { estEquipe } = useProfil()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!estEquipe) return
+    let active = true
+    let channel = null
     async function charger() {
       const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
       const { data } = await supabase
         .from('notifications')
         .select('id, lu')
         .eq('user_id', user.id)
         .eq('lu', false)
-      setCount((data || []).length)
+      if (active) setCount((data || []).length)
     }
     charger()
-    let active = true
-    let channel = null
+    if (!estEquipe) return () => { active = false }
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!active || !user) return
       const name = 'notifs-acc-' + user.id + '-' + Date.now()
@@ -39,7 +43,7 @@ function ClocheMiniAccueil() {
     return () => { active = false; if (channel) supabase.removeChannel(channel) }
   }, [estEquipe])
 
-  if (!estEquipe) return null
+  if (!estEquipe && count === 0) return null
 
   return (
     <button

@@ -1,4 +1,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { courrielsActifs, echapper, envoyerCourriel, gabaritCourriel } from '../_shared/courriel.ts'
+
+const APP_URL = (Deno.env.get('APP_URL') || 'https://adjuvet.app').replace(/\/+$/, '')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,7 +26,8 @@ function refus(error: string, message: string, status: number) {
    La table signalements n'a aucune règle d'accès : tout passe par
    cette fonction (clé service).
    - « envoyer » : tout compte connecté, depuis le lien « Signaler
-     une erreur » au bas d'une fiche. Au plus 20 par jour ;
+     une erreur » au bas d'une page. Au plus 20 par jour. Avise
+     l'administration (aviserAdministration) ;
    - « compter », « lister », « traiter » : réservées aux comptes de
      la table admins_app (Admin - Signalements). Traiter un
      signalement peut aviser la personne par une notification.
@@ -33,7 +38,64 @@ function refus(error: string, message: string, status: number) {
    ════════════════════════════════════════════════════════════ */
 
 const TYPES = ['dose', 'info', 'coquille', 'autre']
+const LIBELLES_TYPES: Record<string, string> = {
+  dose: 'Dose ou concentration', info: 'Information inexacte', coquille: 'Faute ou coquille', autre: 'Autre',
+}
 const MAX_PAR_JOUR = 20
+
+/* Chaque signalement envoie un courriel à chaque compte de
+   l'administration. Dans l'app, une seule notification « nouveaux
+   signalements » attend d'être lue : pas une par signalement. Une
+   fois lue, le prochain signalement en crée une nouvelle. Rien de
+   tout ça ne bloque l'envoi du signalement. */
+async function aviserAdministration(
+  supabase: SupabaseClient,
+  s: { categorie: string, pageNom: string, type: string, message: string, source: string, auteur: string },
+) {
+  const { data: admins } = await supabase.from('admins_app').select('user_id')
+  const ids = (admins || []).map((a: { user_id: string }) => a.user_id)
+  if (!ids.length) return
+
+  const { data: enAttente } = await supabase
+    .from('notifications')
+    .select('user_id')
+    .in('user_id', ids)
+    .eq('type', 'signalements')
+    .eq('lu', false)
+  const dejaAvises = new Set((enAttente || []).map((n: { user_id: string }) => n.user_id))
+  const aAviser = ids.filter((id: string) => !dejaAvises.has(id))
+  if (aAviser.length) {
+    const { error } = await supabase.from('notifications').insert(aAviser.map((id: string) => ({
+      user_id: id,
+      type: 'signalements',
+      message: "Nouveaux signalements d'erreurs à traiter dans le panneau admin.",
+      reference_type: 'signalements',
+      reference_id: null,
+      lu: false,
+    })))
+    if (error) console.error("signalements: notification de l'administration impossible", error)
+  }
+
+  if (!courrielsActifs()) return
+  const html = gabaritCourriel({
+    // Tout ce qui vient de la requête est échappé, titre et aperçu compris.
+    titre: echapper(`Nouveau signalement : ${s.pageNom}`),
+    apercu: echapper(`${LIBELLES_TYPES[s.type]} · ${s.categorie} · ${s.pageNom}`),
+    titreHtml: 'Nouveau signalement',
+    corpsHtml: `<strong>${echapper(s.categorie)} : ${echapper(s.pageNom)}</strong><br />${echapper(LIBELLES_TYPES[s.type])}<br /><br />`
+      + `&laquo;&nbsp;${echapper(s.message).replace(/\n/g, '<br />')}&nbsp;&raquo;`
+      + (s.source ? `<br /><br />Source&nbsp;: ${echapper(s.source)}` : '')
+      + `<br /><br />Envoy&eacute; par ${echapper(s.auteur)}`,
+    boutonTexte: 'Voir les signalements',
+    boutonUrl: `${APP_URL}/admin/signalements`,
+    noteHtml: 'Courriel envoy&eacute; &agrave; l&rsquo;administration d&rsquo;Adjuvet pour chaque signalement d&rsquo;erreur.',
+  })
+  for (const id of ids) {
+    const { data: profil } = await supabase.from('profiles').select('email').eq('id', id).maybeSingle()
+    const email = profil?.email || (await supabase.auth.admin.getUserById(id)).data?.user?.email
+    if (email) await envoyerCourriel(email, `Nouveau signalement : ${s.pageNom}`, html)
+  }
+}
 
 function texte(valeur: unknown, max: number): string | null {
   if (typeof valeur !== 'string') return null
@@ -90,6 +152,11 @@ Deno.serve(async (req) => {
     if (error) {
       console.error('signalements: enregistrement impossible', error)
       return refus('enregistrement_impossible', "Le signalement n'a pas pu être envoyé. Réessayez.", 500)
+    }
+    try {
+      await aviserAdministration(supabase, { categorie, pageNom, type, message, source: source || '', auteur: user.email || 'compte sans courriel' })
+    } catch (err) {
+      console.error("signalements: avis à l'administration impossible", err)
     }
     return json({ ok: true })
   }
