@@ -5,8 +5,8 @@ import { traduireErreur } from '../lib/messagesErreur'
 
 /* ════════════════════════════════════════════════════════════
    ADMIN - SIGNALEMENTS
-   Les erreurs signalées par les utilisateurs au bas des fiches
-   (components/SignalerErreur). Pour chacun : ouvrir la fiche,
+   Les erreurs signalées par les utilisateurs au bas des pages
+   de contenu (components/SignalerErreur). Pour chacun : ouvrir la page,
    corriger, puis marquer « Corrigé » ou « Rejeter ». La personne
    peut être avisée par une notification, avec un mot facultatif.
    ════════════════════════════════════════════════════════════ */
@@ -22,7 +22,16 @@ const STATUTS = {
   corrige: { label: 'Corrigé', couleur: VERT, fond: 'rgba(46,125,98,0.1)' },
   rejete: { label: 'Rejeté', couleur: 'var(--text-secondary)', fond: 'var(--bg-secondary)' },
 }
-const ICONES = { 'Médicament': 'ti-pill', 'Protocole labo': 'ti-flask', 'Nutrition': 'ti-bowl', 'Toxicologie': 'ti-skull' }
+const ICONES = {
+  'Médicament': 'ti-pill',
+  'Protocole labo': 'ti-flask',
+  'Labo': 'ti-flask',
+  'Nutrition': 'ti-bowl',
+  'Toxicologie': 'ti-skull',
+  'Calculateur': 'ti-calculator',
+  'Chirurgie': 'ti-heart-rate-monitor',
+  'Soins généraux': 'ti-stethoscope',
+}
 
 const styleNote = { fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }
 
@@ -156,7 +165,7 @@ export default function AdminSignalements() {
 
                       <button type="button" className="labo-btn-secondary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }} onClick={() => navigate(s.route)}>
                         <i className="ti ti-external-link" aria-hidden="true"></i>
-                        Ouvrir la fiche
+                        Ouvrir la page
                       </button>
 
                       {s.statut === 'a_traiter' && (

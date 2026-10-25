@@ -1,18 +1,60 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { traduireErreur } from '../lib/messagesErreur'
 import { titrePage } from '../lib/titresPages'
+import { TitreContext } from '../context/NavigationContext'
 
 /* ════════════════════════════════════════════════════════════
    SIGNALER UNE ERREUR
-   Lien discret au bas d'une fiche, qui ouvre une fenêtre pour
-   décrire la correction. Le nom de la fiche et son adresse sont
+   Lien discret au bas d'une page, qui ouvre une fenêtre pour
+   décrire la correction. Le nom de la page et son adresse sont
    joints automatiquement ; les signalements arrivent dans
    Admin - Signalements (fonction signalements).
 
-   page : le nom de la fiche ; sinon, le titre de l'en-tête.
+   page : le nom de la page ; sinon, le titre de l'en-tête.
+
+   SignalementAuto, placé une fois dans la mise en page, ajoute le
+   lien au bas de chaque page des sections de contenu (SECTIONS).
    ════════════════════════════════════════════════════════════ */
+
+/* Le premier préfixe qui correspond décide. Sans catégorie : pas de
+   lien automatique, soit parce que la page place le sien (fiche
+   médicament, protocole, toxicologie), soit parce que c'est le
+   contenu de la personne ou de sa clinique, pas celui d'Adjuvet. */
+const SECTIONS = [
+  ['/drogues/fiche/', null],
+  ['/drogues/toxicologie', null],
+  ['/drogues/mes-drogues', null],
+  ['/drogues/ajouter', null],
+  ['/labo/protocole/', null],
+  ['/labo/nouveau', null],
+  ['/labo/radiologie/charte', null],
+  ['/drogues', 'Médicament'],
+  ['/labo', 'Labo'],
+  ['/nutrition', 'Nutrition'],
+  ['/calculateurs', 'Calculateur'],
+  ['/chirurgie', 'Chirurgie'],
+  ['/soins-generaux', 'Soins généraux'],
+]
+
+const ICONES = {
+  'Médicament': 'ti-pill',
+  'Labo': 'ti-flask',
+  'Nutrition': 'ti-bowl',
+  'Calculateur': 'ti-calculator',
+  'Chirurgie': 'ti-heart-rate-monitor',
+  'Soins généraux': 'ti-stethoscope',
+}
+
+export function SignalementAuto() {
+  const { pathname } = useLocation()
+  const { titreCustom } = useContext(TitreContext)
+  const categorie = SECTIONS.find(([prefixe]) => pathname.startsWith(prefixe))?.[1]
+  if (!categorie) return null
+  // Le titre posé par la page (ex. le nom d'un protocole) l'emporte sur celui de la route.
+  return <SignalerErreur categorie={categorie} page={titreCustom || undefined} icone={ICONES[categorie]} />
+}
 
 const TYPES_ERREUR = [
   { id: 'dose', label: 'Dose ou concentration' },
@@ -75,10 +117,10 @@ export default function SignalerErreur({ categorie, page, icone = 'ti-file-text'
       <button
         type="button"
         onClick={() => setOuvert(true)}
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, margin: '16px auto 0', padding: 8, background: 'none', border: 'none', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: 'var(--text-hint)', cursor: 'pointer' }}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, margin: '16px auto 8px', padding: 8, background: 'none', border: 'none', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: 'var(--text-hint)', cursor: 'pointer' }}
       >
         <i className="ti ti-flag" aria-hidden="true" style={{ fontSize: 16 }}></i>
-        Signaler une erreur sur cette fiche
+        Signaler une erreur
       </button>
 
       {ouvert && (
@@ -150,7 +192,7 @@ export default function SignalerErreur({ categorie, page, icone = 'ti-file-text'
                 </div>
 
                 <p style={{ fontSize: 12, color: 'var(--text-hint)', lineHeight: 1.5, margin: 0 }}>
-                  Le nom de la fiche est joint automatiquement. Vous recevrez une notification quand le signalement sera traité.
+                  Le nom de la page est joint automatiquement. Vous recevrez une notification quand le signalement sera traité.
                 </p>
 
                 {erreur && <div className="form-erreur" role="alert">{erreur}</div>}

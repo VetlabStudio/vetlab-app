@@ -131,6 +131,7 @@ import BottomNav from './components/BottomNav'
 import BottomNavAdmin from './components/BottomNavAdmin'
 import ProGate from './components/ProGate'
 import RequiertInternet from './components/RequiertInternet'
+import { SignalementAuto } from './components/SignalerErreur'
 import BandeauHorsLigne from './components/BandeauHorsLigne'
 import { prechargerDonnees, oublierDonnees } from './lib/horsLigne'
 
@@ -208,7 +209,11 @@ function LayoutPrincipal({ children }) {
                 : { height: '100%' }}
               onAnimationEnd={transition ? () => setTransition(null) : undefined}
             >
-              <Suspense fallback={<div className="admin-loading">Chargement...</div>}>{children}</Suspense>
+              {/* Le lien « Signaler une erreur » suit la page : caché tant qu'elle charge. */}
+              <Suspense fallback={<div className="admin-loading">Chargement...</div>}>
+                {children}
+                <SignalementAuto />
+              </Suspense>
             </div>
           </main>
           <BottomNav />
