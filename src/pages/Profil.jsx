@@ -157,6 +157,19 @@ export default function Profil() {
     afficherSucces('Liens de confirmation renvoyés aux deux adresses.')
   }
 
+  /* Supabase n'offre pas d'annulation : la fonction SQL efface la
+     demande en attente, et les deux liens déjà envoyés ne
+     fonctionnent plus. L'adresse actuelle reste la même. */
+  async function annulerChangementCourriel() {
+    setErreur('')
+    setSaving(true)
+    const { error } = await supabase.rpc('annuler_changement_courriel')
+    setSaving(false)
+    if (error) return setErreur(traduireErreur(error, "La demande n'a pas pu être annulée. Réessayez."))
+    setProfil(prev => ({ ...prev, emailEnAttente: null }))
+    afficherSucces('Changement de courriel annulé. Les liens déjà envoyés ne fonctionnent plus.')
+  }
+
   // ─── MODIFIER MOT DE PASSE ────────────────────
   async function sauvegarderMdp() {
     if (!nouveauMdp) return setErreur('Le mot de passe ne peut pas être vide.')
@@ -342,9 +355,14 @@ export default function Profil() {
             <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
               Pour le terminer, ouvrez les deux liens de confirmation : celui envoyé à {profil.email} et celui envoyé à {profil.emailEnAttente}.
             </p>
-            <button type="button" onClick={renvoyerLiensCourriel} style={{ marginTop: 8, padding: 0, background: 'none', border: 'none', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer' }}>
-              Renvoyer les liens
-            </button>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 20px', marginTop: 8 }}>
+              <button type="button" onClick={renvoyerLiensCourriel} disabled={saving} style={{ padding: 0, background: 'none', border: 'none', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer' }}>
+                Renvoyer les liens
+              </button>
+              <button type="button" onClick={annulerChangementCourriel} disabled={saving} style={{ padding: 0, background: 'none', border: 'none', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: 'var(--accent-red)', textDecoration: 'underline', cursor: 'pointer' }}>
+                {saving ? 'Annulation...' : 'Annuler la demande'}
+              </button>
+            </div>
           </div>
         )}
         <div className="profil-item">

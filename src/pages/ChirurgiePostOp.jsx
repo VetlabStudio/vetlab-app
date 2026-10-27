@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const SECTIONS = [
   {
     id: 'surveillance',
@@ -81,6 +83,9 @@ const SIGNES_ALERTE = [
 ]
 
 export default function ChirurgiePostOp() {
+  // Même accordéon que « Choix du tube » : une section ouverte à la fois.
+  const [ouverte, setOuverte] = useState(null)
+
   return (
     <div className="labo-detail-page">
 
@@ -93,24 +98,37 @@ export default function ChirurgiePostOp() {
       </div>
 
       {/* ─── SECTIONS ───────────────────────────── */}
-      {SECTIONS.map(section => (
-        <div key={section.id} className="postop-section">
-          <div className="postop-section-header">
-            <div className="postop-section-icone" style={{ background: section.couleur + '18', color: section.couleur }}>
-              <i className={`ti ${section.icone}`}></i>
+      <div className="labo-tubes-liste" style={{ gap: 8 }}>
+        {SECTIONS.map(section => {
+          const estOuverte = ouverte === section.id
+          return (
+            <div key={section.id} className="labo-tube-card">
+              <button
+                type="button"
+                className={`labo-tube-header${estOuverte ? ' ouvert' : ''}`}
+                onClick={() => setOuverte(estOuverte ? null : section.id)}
+                aria-expanded={estOuverte}
+              >
+                <div className="postop-section-icone" style={{ background: section.couleur + '18', color: section.couleur }}>
+                  <i className={`ti ${section.icone}`} aria-hidden="true"></i>
+                </div>
+                <span className="labo-tube-nom">{section.titre}</span>
+                <i className={`ti ti-chevron-down labo-tube-chevron${estOuverte ? ' ouvert' : ''}`} aria-hidden="true"></i>
+              </button>
+              {estOuverte && (
+                <ol className="postop-liste">
+                  {section.items.map((item, i) => (
+                    <li key={i} className="postop-liste-item">
+                      <span className="postop-num">{i + 1}</span>
+                      <span className="postop-texte">{item}</span>
+                    </li>
+                  ))}
+                </ol>
+              )}
             </div>
-            <h2 className="postop-section-titre">{section.titre}</h2>
-          </div>
-          <ol className="postop-liste">
-            {section.items.map((item, i) => (
-              <li key={i} className="postop-liste-item">
-                <span className="postop-num">{i + 1}</span>
-                <span className="postop-texte">{item}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      ))}
+          )
+        })}
+      </div>
 
       {/* ─── SIGNES D'ALERTE ────────────────────── */}
       <div className="postop-alerte-section">
