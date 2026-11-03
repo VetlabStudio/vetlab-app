@@ -15,6 +15,7 @@ export default function NouveauMotDePasse() {
   const [motDePasse, setMotDePasse] = useState('')
   const [confirmation, setConfirmation] = useState('')
   const [voirMdp, setVoirMdp] = useState(false)
+  const [voirConfirm, setVoirConfirm] = useState(false)
   const [erreur, setErreur] = useState(null)
   const [chargement, setChargement] = useState(false)
   const [logoSrc] = useState(() => `/adjuvet-logo-anime.svg?v=${Date.now()}`)
@@ -126,18 +127,23 @@ export default function NouveauMotDePasse() {
               </button>
             </div>
             <IndicateurMotDePasse motDePasse={motDePasse} email={utilisateur?.email} nom={utilisateur?.user_metadata?.nom} />
-            <label className="auth2-flottant">
-              <input
-                type={voirMdp ? 'text' : 'password'}
-                className="auth2-input"
-                value={confirmation}
-                onChange={(e) => setConfirmation(e.target.value)}
-                autoComplete="new-password"
-                placeholder=" "
-                required
-              />
-              <span className="auth2-flottant-texte">Confirmer le mot de passe</span>
-            </label>
+            <div className="auth2-input-wrap">
+              <label className="auth2-flottant">
+                <input
+                  type={voirConfirm ? 'text' : 'password'}
+                  className="auth2-input"
+                  value={confirmation}
+                  onChange={(e) => setConfirmation(e.target.value)}
+                  autoComplete="new-password"
+                  placeholder=" "
+                  required
+                />
+                <span className="auth2-flottant-texte">Confirmer le mot de passe</span>
+              </label>
+              <button type="button" className="auth2-oeil" onClick={() => setVoirConfirm(v => !v)} aria-label={voirConfirm ? 'Masquer la confirmation' : 'Afficher la confirmation'}>
+                <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
+              </button>
+            </div>
             {erreur && <p className="erreur" style={{ textAlign: 'center', color: '#FFFFFF' }}>{erreur}</p>}
             <button type="submit" className="auth2-btn" disabled={chargement}>
               {chargement ? 'Enregistrement...' : 'Enregistrer'}
