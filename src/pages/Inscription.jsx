@@ -83,7 +83,8 @@ export default function Inscription() {
   const [voirMdp, setVoirMdp] = useState(false)
   const [voirConfirm, setVoirConfirm] = useState(false)
   const [logoSrc] = useState(() => `/adjuvet-logo-anime.svg?v=${Date.now()}`)
-  const touchStartX = useRef(null)
+  const touchDepart = useRef(null)
+  const touchDernier = useRef(null)
   const navigate = useNavigate()
 
   const erreurCourriel = !courrielVerifie
@@ -142,16 +143,31 @@ export default function Inscription() {
   }
 
   const handleSwipeStart = (e) => {
-    touchStartX.current = e.touches[0].clientX
+    const t = e.touches[0]
+    touchDepart.current = { x: t.clientX, y: t.clientY }
+    touchDernier.current = touchDepart.current
   }
 
+  const handleSwipeMove = (e) => {
+    const t = e.touches[0]
+    if (touchDepart.current && t) touchDernier.current = { x: t.clientX, y: t.clientY }
+  }
+
+  /* Sur iPhone, Safari peut prendre le geste en charge en cours de route
+     et envoyer touchcancel au lieu de touchend : on se fie alors au
+     dernier point connu. Un geste surtout vertical fait défiler la
+     page, il ne change pas de page. */
   const handleSwipeEnd = (e) => {
-    if (touchStartX.current === null || vue === 'form' || texteLegal) return
-    const delta = e.changedTouches[0].clientX - touchStartX.current
-    touchStartX.current = null
-    if (delta < -50 && vue < CGU_PAGES.length - 1) {
+    const depart = touchDepart.current
+    touchDepart.current = null
+    if (!depart || vue === 'form' || texteLegal) return
+    const t = e.type === 'touchend' ? e.changedTouches[0] : null
+    const fin = t ? { x: t.clientX, y: t.clientY } : touchDernier.current
+    const dx = fin.x - depart.x
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(fin.y - depart.y)) return
+    if (dx < 0 && vue < CGU_PAGES.length - 1) {
       allerVue(vue + 1, 'forward')
-    } else if (delta > 50 && vue > 0) {
+    } else if (dx > 0 && vue > 0) {
       allerVue(vue - 1, 'back')
     }
   }
@@ -198,8 +214,10 @@ export default function Inscription() {
   const renderCgu = (index) => {
     const { fond, animal, sections } = CGU_PAGES[index]
     const estDernier = index === CGU_PAGES.length - 1
+    // pan-y : le navigateur garde le défilement vertical et le zoom, et
+    // laisse les glissements horizontaux à la page (changement de page).
     return (
-      <div className="cgu-page" style={{ backgroundImage: `url('${fond}')` }}>
+      <div className="cgu-page" style={{ backgroundImage: `url('${fond}')`, touchAction: 'pan-y pinch-zoom' }}>
         <div className="cgu-contenu">
           <img src="/icone-logo-bleu.svg" alt="" className="cgu-icone" />
           <h1 className="cgu-titre">Conditions d'utilisations</h1>
@@ -352,7 +370,9 @@ export default function Inscription() {
     <main
       style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh' }}
       onTouchStart={handleSwipeStart}
+      onTouchMove={handleSwipeMove}
       onTouchEnd={handleSwipeEnd}
+      onTouchCancel={handleSwipeEnd}
     >
       {transition && (
         <div
