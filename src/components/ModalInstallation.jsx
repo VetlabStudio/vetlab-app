@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react'
+import { sessionEnregistree } from '../lib/supabase'
 
 const CLE_VU = 'adjuvet_installation_vue'
 
+/* Retenu par compte plutôt que par appareil : sur un téléphone ou une
+   tablette partagés, ou avec un nouveau compte sur le même téléphone,
+   chaque personne voit les instructions une fois. */
+function cleVu() {
+  const id = sessionEnregistree()?.user?.id
+  return id ? `${CLE_VU}:${id}` : CLE_VU
+}
+
 function dejaVu() {
   try {
-    return localStorage.getItem(CLE_VU) === '1'
+    return localStorage.getItem(cleVu()) === '1'
   } catch {
     // Stockage bloqué : on n'insiste pas à chaque ouverture.
     return true
@@ -12,7 +21,7 @@ function dejaVu() {
 }
 
 function marquerVu() {
-  try { localStorage.setItem(CLE_VU, '1') } catch { /* stockage bloqué */ }
+  try { localStorage.setItem(cleVu(), '1') } catch { /* stockage bloqué */ }
 }
 
 // 'ios' | 'android' | null (ordinateur, ou app déjà installée)
