@@ -13,6 +13,12 @@ export default function Connexion() {
   // Adresse d'un compte pas encore confirmé, et état du renvoi du courriel.
   const [nonConfirme, setNonConfirme] = useState(null)
   const [renvoi, setRenvoi] = useState(null)
+  /* Supabase refuse un nouvel envoi avant une minute. On garde l'heure de
+     fin plutôt qu'un compte à rebours : la personne quitte souvent l'app
+     pour lire ses courriels, et les minuteries y sont alors suspendues. */
+  const [finAttente, setFinAttente] = useState(0)
+  const [maintenant, setMaintenant] = useState(0)
+  const attenteRenvoi = Math.max(0, Math.ceil((finAttente - maintenant) / 1000))
   // Retour du lien de confirmation (inscription ou nouveau courriel).
   const [confirmé] = useState(() => /type=(signup|email_change)/.test(window.location.hash))
   const [voirMdp, setVoirMdp] = useState(false)
@@ -25,6 +31,16 @@ export default function Connexion() {
   useEffect(() => {
     if (confirmé) window.history.replaceState(null, '', window.location.pathname)
   }, [confirmé])
+
+  useEffect(() => {
+    if (!finAttente) return
+    const minuterie = setInterval(() => {
+      const t = Date.now()
+      setMaintenant(t)
+      if (t >= finAttente) clearInterval(minuterie)
+    }, 1000)
+    return () => clearInterval(minuterie)
+  }, [finAttente])
 
   const handleConnexion = async (e) => {
     e.preventDefault()
@@ -64,6 +80,9 @@ export default function Connexion() {
     if (!error) {
       setErreur(null)
       setRenvoi('envoye')
+      const t = Date.now()
+      setMaintenant(t)
+      setFinAttente(t + 60000)
       return
     }
     setRenvoi(null)
@@ -139,11 +158,27 @@ export default function Connexion() {
               {renvoi === 'envoi' ? 'Envoi...' : 'Renvoyer le courriel de confirmation'}
             </button>
           )}
+          {/* Supabase crée un nouveau lien à chaque envoi : celui des courriels
+              précédents ne fonctionne plus. Gmail range souvent le nouveau
+              courriel dans la conversation du premier, d'où le rappel. */}
           {renvoi === 'envoye' && (
-            <div className="auth2-confirme" role="status">
-              <i className="ti ti-mail" style={{ fontSize: 20, flexShrink: 0 }} aria-hidden="true"></i>
-              <span>Courriel envoyé à {nonConfirme}. Ouvrez le lien qu'il contient, puis connectez-vous.</span>
-            </div>
+            <>
+              <div className="auth2-confirme" role="status">
+                <i className="ti ti-mail" style={{ fontSize: 20, flexShrink: 0 }} aria-hidden="true"></i>
+                <span>
+                  Courriel envoyé à {nonConfirme}. Ouvrez le lien du courriel le plus récent : ceux des courriels précédents ne fonctionnent plus.
+                  Il peut prendre quelques minutes à arriver. Vérifiez aussi les courriels indésirables et, dans Gmail, la conversation du premier courriel.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={renvoyerConfirmation}
+                disabled={attenteRenvoi > 0}
+                style={{ alignSelf: 'center', background: 'none', border: 'none', padding: 0, fontSize: 14, fontWeight: 600, color: '#213058', textDecoration: attenteRenvoi > 0 ? 'none' : 'underline', opacity: attenteRenvoi > 0 ? 0.6 : 1, cursor: attenteRenvoi > 0 ? 'default' : 'pointer' }}
+              >
+                {attenteRenvoi > 0 ? `Renvoyer de nouveau dans ${attenteRenvoi} s` : 'Rien reçu ? Renvoyer de nouveau'}
+              </button>
+            </>
           )}
           <button type="submit" className="auth2-btn" disabled={chargement}>
             {chargement ? 'Connexion...' : 'Se connecter'}
