@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
+import CorrespondanceMotDePasse from '../components/CorrespondanceMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
 
 const JOURS_VALIDITE = 7
@@ -23,6 +24,7 @@ export default function RejoindreEquipe() {
   const [nom, setNom] = useState('')
   const [motDePasse, setMotDePasse] = useState('')
   const [confirmation, setConfirmation] = useState('')
+  const [confirmationTerminee, setConfirmationTerminee] = useState(false)
   const [voirMdp, setVoirMdp] = useState(false)
   const [voirConfirm, setVoirConfirm] = useState(false)
   const [erreurInscription, setErreurInscription] = useState('')
@@ -111,11 +113,13 @@ export default function RejoindreEquipe() {
      avec le courriel confirmé, sans second aller-retour. */
   async function creerCompteEtRejoindre() {
     setErreurInscription('')
+    // La correspondance s'affiche sous la confirmation, même si autre chose bloque plus bas.
+    setConfirmationTerminee(true)
 
     if (!nom.trim()) return setErreurInscription('Le nom est requis.')
     const evaluation = await verifierMotDePasse(motDePasse, { email: invitation?.email, nom })
     if (!evaluation.valide) return setErreurInscription(evaluation.message)
-    if (motDePasse !== confirmation) return setErreurInscription('Les deux mots de passe ne correspondent pas.')
+    if (motDePasse !== confirmation) return
 
     setLoading(true)
 
@@ -274,12 +278,14 @@ export default function RejoindreEquipe() {
                         placeholder="Confirmer le mot de passe"
                         value={confirmation}
                         onChange={e => { setConfirmation(e.target.value); setErreurInscription('') }}
+                        onBlur={() => { if (confirmation) setConfirmationTerminee(true) }}
                         onKeyDown={e => { if (e.key === 'Enter' && !loading) creerCompteEtRejoindre() }}
                       />
                       <button type="button" style={styleOeil} onClick={() => setVoirConfirm(v => !v)} aria-label={voirConfirm ? 'Masquer la confirmation' : 'Afficher la confirmation'}>
                         <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
                       </button>
                     </div>
+                    <CorrespondanceMotDePasse motDePasse={motDePasse} confirmation={confirmation} termine={confirmationTerminee} />
 
                     {erreurInscription && (
                       <p style={{ fontSize: 13, color: 'var(--accent-red)', lineHeight: 1.5, margin: 0 }}>

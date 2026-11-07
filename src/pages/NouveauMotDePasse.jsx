@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { traduireErreur } from '../lib/messagesErreur'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
+import CorrespondanceMotDePasse from '../components/CorrespondanceMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
 
 /* Page ouverte par le lien « mot de passe oublié ». Le client Supabase
@@ -14,6 +15,7 @@ export default function NouveauMotDePasse() {
   const [utilisateur, setUtilisateur] = useState(null)
   const [motDePasse, setMotDePasse] = useState('')
   const [confirmation, setConfirmation] = useState('')
+  const [confirmationTerminee, setConfirmationTerminee] = useState(false)
   const [voirMdp, setVoirMdp] = useState(false)
   const [voirConfirm, setVoirConfirm] = useState(false)
   const [erreur, setErreur] = useState(null)
@@ -41,6 +43,8 @@ export default function NouveauMotDePasse() {
   async function enregistrer(e) {
     e.preventDefault()
     setErreur(null)
+    // La correspondance s'affiche sous la confirmation, même si le mot de passe est refusé.
+    setConfirmationTerminee(true)
     const evaluation = await verifierMotDePasse(motDePasse, {
       email: utilisateur?.email,
       nom: utilisateur?.user_metadata?.nom,
@@ -49,10 +53,7 @@ export default function NouveauMotDePasse() {
       setErreur(evaluation.message)
       return
     }
-    if (motDePasse !== confirmation) {
-      setErreur('Les mots de passe ne correspondent pas.')
-      return
-    }
+    if (motDePasse !== confirmation) return
     setChargement(true)
     const { error } = await supabase.auth.updateUser({ password: motDePasse })
     setChargement(false)
@@ -134,6 +135,7 @@ export default function NouveauMotDePasse() {
                   className="auth2-input"
                   value={confirmation}
                   onChange={(e) => setConfirmation(e.target.value)}
+                  onBlur={() => { if (confirmation) setConfirmationTerminee(true) }}
                   autoComplete="new-password"
                   placeholder=" "
                   required
@@ -144,6 +146,7 @@ export default function NouveauMotDePasse() {
                 <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
               </button>
             </div>
+            <CorrespondanceMotDePasse motDePasse={motDePasse} confirmation={confirmation} termine={confirmationTerminee} />
             {erreur && <p className="erreur" style={{ textAlign: 'center', color: '#FFFFFF' }}>{erreur}</p>}
             <button type="submit" className="auth2-btn" disabled={chargement}>
               {chargement ? 'Enregistrement...' : 'Enregistrer'}

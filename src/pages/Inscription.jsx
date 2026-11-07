@@ -4,6 +4,7 @@ import { traduireErreur } from '../lib/messagesErreur'
 import { useNavigate, Link } from 'react-router-dom'
 import PopupTexteLegal from '../components/PopupTexteLegal'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
+import CorrespondanceMotDePasse from '../components/CorrespondanceMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
 import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
 import SuggestionCourriel from '../components/SuggestionCourriel'
@@ -71,6 +72,7 @@ export default function Inscription() {
   const [email, setEmail] = useState('')
   const [motDePasse, setMotDePasse] = useState('')
   const [confirmation, setConfirmation] = useState('')
+  const [confirmationTerminee, setConfirmationTerminee] = useState(false)
   const [erreur, setErreur] = useState(null)
   // Le format du courriel se vérifie dès qu'on quitte le champ, puis à chaque frappe.
   const [courrielVerifie, setCourrielVerifie] = useState(false)
@@ -107,6 +109,8 @@ export default function Inscription() {
   const handleInscription = async (e) => {
     e.preventDefault()
     setErreur(null)
+    // La correspondance s'affiche sous la confirmation, même si autre chose bloque plus bas.
+    setConfirmationTerminee(true)
     if (!nom.trim()) {
       setErreur('Veuillez entrer votre nom.')
       return
@@ -124,10 +128,7 @@ export default function Inscription() {
       setErreur(evaluation.message)
       return
     }
-    if (motDePasse !== confirmation) {
-      setErreur('Les mots de passe ne correspondent pas.')
-      return
-    }
+    if (motDePasse !== confirmation) return
 
     setChargement(true)
     const { data: existe, error } = await supabase.rpc('email_existe', { p_email: email.trim() })
@@ -338,6 +339,7 @@ export default function Inscription() {
                 className="auth2-input"
                 value={confirmation}
                 onChange={(e) => setConfirmation(e.target.value)}
+                onBlur={() => { if (confirmation) setConfirmationTerminee(true) }}
                 autoComplete="new-password"
                 placeholder=" "
                 required
@@ -348,6 +350,7 @@ export default function Inscription() {
               <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>
           </div>
+          <CorrespondanceMotDePasse motDePasse={motDePasse} confirmation={confirmation} termine={confirmationTerminee} />
           {erreur && <p className="erreur" style={{ textAlign: 'center', color: '#FFFFFF' }}>{erreur}</p>}
           <button type="submit" className="auth2-btn" disabled={chargement}>
             {chargement ? 'Vérification...' : 'Créer mon compte'}

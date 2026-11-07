@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { traduireErreur } from '../lib/messagesErreur'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
+import CorrespondanceMotDePasse from '../components/CorrespondanceMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
 import SuggestionCourriel from '../components/SuggestionCourriel'
 import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
@@ -67,6 +68,7 @@ export default function Profil() {
   const suggestionEmail = useSuggestionCourriel(nouveauEmail)
   const [nouveauMdp, setNouveauMdp] = useState('')
   const [confirmMdp, setConfirmMdp] = useState('')
+  const [confirmMdpTerminee, setConfirmMdpTerminee] = useState(false)
   const [erreur, setErreur] = useState('')
   const [succes, setSucces] = useState('')
   const [saving, setSaving] = useState(false)
@@ -172,10 +174,12 @@ export default function Profil() {
 
   // ─── MODIFIER MOT DE PASSE ────────────────────
   async function sauvegarderMdp() {
+    // La correspondance s'affiche sous la confirmation, même si le mot de passe est refusé.
+    setConfirmMdpTerminee(true)
     if (!nouveauMdp) return setErreur('Le mot de passe ne peut pas être vide.')
     const evaluation = await verifierMotDePasse(nouveauMdp, { email: profil?.email, nom: profil?.nom })
     if (!evaluation.valide) return setErreur(evaluation.message)
-    if (nouveauMdp !== confirmMdp) return setErreur('Les mots de passe ne correspondent pas.')
+    if (nouveauMdp !== confirmMdp) return
     setSaving(true)
     const { error } = await supabase.auth.updateUser({ password: nouveauMdp })
     setSaving(false)
@@ -285,7 +289,7 @@ export default function Profil() {
     setSucces('')
     if (modal === 'nom') { setNouveauNom(profil?.nom || ''); setModalNom(true) }
     if (modal === 'email') { setNouveauEmail(profil?.email || ''); suggestionEmail.reinitialiser(); setModalEmail(true) }
-    if (modal === 'mdp') { setNouveauMdp(''); setConfirmMdp(''); setModalMdp(true) }
+    if (modal === 'mdp') { setNouveauMdp(''); setConfirmMdp(''); setConfirmMdpTerminee(false); setModalMdp(true) }
     if (modal === 'supprimer') {
       chargerApercuSuppression()
       if (equipeProprietaire) {
@@ -452,7 +456,8 @@ export default function Profil() {
               </div>
               <div className="form-groupe">
                 <label className="form-label" htmlFor="profil-mdp-confirmation">Confirmer le mot de passe</label>
-                <input id="profil-mdp-confirmation" className="form-input" autoComplete="new-password" placeholder="Retapez le mot de passe" type="password" value={confirmMdp} onChange={e => setConfirmMdp(e.target.value)} />
+                <input id="profil-mdp-confirmation" className="form-input" autoComplete="new-password" placeholder="Retapez le mot de passe" type="password" value={confirmMdp} onChange={e => setConfirmMdp(e.target.value)} onBlur={() => { if (confirmMdp) setConfirmMdpTerminee(true) }} />
+                <CorrespondanceMotDePasse motDePasse={nouveauMdp} confirmation={confirmMdp} termine={confirmMdpTerminee} />
               </div>
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
