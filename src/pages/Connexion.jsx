@@ -159,15 +159,16 @@ export default function Connexion() {
             </button>
           )}
           {/* Supabase crée un nouveau lien à chaque envoi : celui des courriels
-              précédents ne fonctionne plus. Gmail range souvent le nouveau
-              courriel dans la conversation du premier, d'où le rappel. */}
+              précédents ne fonctionne plus. Gmail et Outlook rangent souvent le
+              nouveau courriel dans la conversation du premier (même sujet),
+              d'où le rappel. */}
           {renvoi === 'envoye' && (
             <>
               <div className="auth2-confirme" role="status">
                 <i className="ti ti-mail" style={{ fontSize: 20, flexShrink: 0 }} aria-hidden="true"></i>
                 <span>
                   Courriel envoyé à {nonConfirme}. Ouvrez le lien du courriel le plus récent : ceux des courriels précédents ne fonctionnent plus.
-                  Il peut prendre quelques minutes à arriver. Vérifiez aussi les courriels indésirables et, dans Gmail, la conversation du premier courriel.
+                  Il peut prendre quelques minutes à arriver. Vérifiez aussi les courriels indésirables et la conversation du premier courriel, où Gmail et Outlook l'ajoutent souvent.
                 </span>
               </div>
               <button
