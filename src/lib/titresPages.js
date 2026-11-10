@@ -21,6 +21,7 @@ const titres = {
   '/drogues/antidiarrheiques': 'Antidiarrhéiques',
   '/drogues/antiemetiques': 'Antiémétiques',
   '/drogues/antihistaminiques': 'Antihistaminiques',
+  '/drogues/anti-inflammatoires': 'Anti-inflammatoires',
   '/drogues/cardiovasculaires': 'Cardiovasculaires',
   '/drogues/gastroprotecteurs': 'Gastroprotecteurs',
   '/drogues/neurologiques': 'Neurologiques',

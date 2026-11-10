@@ -9,6 +9,7 @@ const CATEGORIES = [
   'Antidiarrhéiques',
   'Antiémétiques',
   'Antihistaminiques',
+  'Anti-inflammatoires',
   'Urgence',
   'Cardiovasculaires',
   'Gastroprotecteurs',

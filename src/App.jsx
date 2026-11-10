@@ -24,6 +24,7 @@ const DroguesAntibiotiques = lazy(() => import('./pages/DroguesAntibiotiques'))
 const DroguesAntidiarrheiques = lazy(() => import('./pages/DroguesAntidiarrheiques'))
 const DroguesAntiemetiques = lazy(() => import('./pages/DroguesAntiemetiques'))
 const DroguesAntihistaminiques = lazy(() => import('./pages/DroguesAntihistaminiques'))
+const DroguesAntiInflammatoires = lazy(() => import('./pages/DroguesAntiInflammatoires'))
 const DroguesCardiovasculaires = lazy(() => import('./pages/DroguesCardiovasculaires'))
 const DroguesGastroprotecteurs = lazy(() => import('./pages/DroguesGastroprotecteurs'))
 const DroguesNeurologiques = lazy(() => import('./pages/DroguesNeurologiques'))
@@ -399,6 +400,7 @@ export default function App() {
         <Route path="/drogues/antidiarrheiques" element={<RouteProtegee session={session}><DroguesAntidiarrheiques /></RouteProtegee>} />
         <Route path="/drogues/antiemetiques" element={<RouteProtegee session={session}><DroguesAntiemetiques /></RouteProtegee>} />
         <Route path="/drogues/antihistaminiques" element={<RouteProtegee session={session}><DroguesAntihistaminiques /></RouteProtegee>} />
+        <Route path="/drogues/anti-inflammatoires" element={<RouteProtegee session={session}><DroguesAntiInflammatoires /></RouteProtegee>} />
         <Route path="/drogues/cardiovasculaires" element={<RouteProtegee session={session}><DroguesCardiovasculaires /></RouteProtegee>} />
         <Route path="/drogues/gastroprotecteurs" element={<RouteProtegee session={session}><DroguesGastroprotecteurs /></RouteProtegee>} />
         <Route path="/drogues/neurologiques" element={<RouteProtegee session={session}><DroguesNeurologiques /></RouteProtegee>} />
