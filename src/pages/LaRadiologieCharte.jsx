@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import useCharteRadio from '../hooks/useCharteRadio'
 import { qualiteOptions } from '../data/charteRadioOptions'
 import { ESPECES_CONFIG } from '../data/especes'
+import { useProfil } from '../context/ProfilContext'
 
 const QUALITE_LABEL = Object.fromEntries(qualiteOptions.map(q => [q.value, q.label]))
 
 export default function LaRadiologieCharte() {
   const navigate = useNavigate()
   const { entrees, loading, peutModifier, supprimerEntree } = useCharteRadio()
+  const { estEquipe, teamId } = useProfil()
   const [rechercheEspece, setRechercheEspece] = useState('toutes')
   const [rechercheRegion, setRechercheRegion] = useState('toutes')
 
@@ -38,6 +40,19 @@ export default function LaRadiologieCharte() {
   return (
     <div className="admin-page">
 
+      {/* À quoi sert la charte, pour qui l'ouvre la première fois. */}
+      <div style={{ padding: '12px 16px 0' }}>
+        <div className="postop-intro">
+          <i className="ti ti-notebook postop-intro-icone"></i>
+          <p className="postop-intro-texte">
+            Votre aide-mémoire de réglages. Après un bon cliché, notez le kV, le mAs et la distance utilisés, avec l'espèce, la région et l'épaisseur mesurée.
+            La prochaine fois, pour un animal semblable, vous repartez de ces valeurs au lieu de chercher.
+            Chaque appareil est différent : une charte faite sur le vôtre est plus fiable qu'un tableau général.
+            {estEquipe && teamId && ' Vos entrées sont partagées avec votre clinique.'}
+          </p>
+        </div>
+      </div>
+
       <div className="admin-filtres">
         <select className="admin-select" value={rechercheEspece} onChange={e => setRechercheEspece(e.target.value)}>
           <option value="toutes">Toutes les espèces</option>
@@ -56,7 +71,7 @@ export default function LaRadiologieCharte() {
           {entreesFiltrees.length === 0 ? (
             <div className="admin-vide">
               {entrees.length === 0
-                ? 'Créez votre propre charte radiographique selon les spécifications de la machine à votre clinique.'
+                ? 'Aucune entrée pour l\'instant. Après votre prochain bon cliché, appuyez sur + pour noter ses réglages.'
                 : 'Aucune entrée ne correspond à ce filtre.'}
             </div>
           ) : (

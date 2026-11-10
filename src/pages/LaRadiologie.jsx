@@ -8,6 +8,8 @@ import PopupPro from '../components/PopupPro'
 const CATEGORIE_ID = 'af3ffd7b-ac2f-4e43-adf0-7108bf79099c'
 
 const REFERENCES = [
+  // Gratuite : c'est de la sécurité au travail, pas une fonction Pro.
+  { id: 'radioprotection', label: 'Radioprotection', icone: 'ti-shield-check', route: '/labo/radiologie/radioprotection', pro: false },
   { id: 'notions-base', label: 'Notions de base : mA, kVp et distance', icone: 'ti-radioactive', route: '/labo/radiologie/notions-base', pro: true },
   { id: 'charte', label: 'Charte radiographique personnalisée', icone: 'ti-notebook', route: '/labo/radiologie/charte', pro: true },
 ]

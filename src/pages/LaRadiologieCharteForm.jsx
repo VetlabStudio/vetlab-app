@@ -171,6 +171,7 @@ export default function LaRadiologieCharteForm() {
             <input className="form-input" placeholder="Min" type="text" inputMode="decimal" value={form.epaisseur_min} onChange={e => handleChange('epaisseur_min', e.target.value)} />
             <input className="form-input" placeholder="Max" type="text" inputMode="decimal" value={form.epaisseur_max} onChange={e => handleChange('epaisseur_max', e.target.value)} />
           </div>
+          <p className="form-aide">Mesurée au point le plus épais de la région, avec un compas d'épaisseur. C'est elle qui vous permet de retrouver le bon réglage pour un animal de taille semblable.</p>
         </div>
 
         {/* ─── kV + mAs CÔTE À CÔTE ───────────── */}
@@ -185,12 +186,14 @@ export default function LaRadiologieCharteForm() {
               <input className="form-input" type="text" inputMode="decimal" value={form.mas} onChange={e => handleChange('mas', e.target.value)} />
             </div>
           </div>
+          <p className="form-aide">Tels qu'affichés sur la console de l'appareil pour ce cliché.</p>
         </div>
 
         {/* ─── DFF ────────────────────────────── */}
         <div className="form-groupe">
           <label className="form-label">DFF (cm)</label>
           <input className="form-input" type="text" inputMode="decimal" value={form.dff} onChange={e => handleChange('dff', e.target.value)} />
+          <p className="form-aide">Distance foyer-film : du tube à rayons X jusqu'à la plaque. Souvent 100 cm.</p>
         </div>
 
         {/* ─── GRILLE ─────────────────────────── */}
@@ -213,6 +216,7 @@ export default function LaRadiologieCharteForm() {
               }} />
             </button>
           </div>
+          <p className="form-aide">Activez-la si le cliché a été pris avec la grille.</p>
         </div>
 
         {/* ─── QUALITÉ ────────────────────────── */}
@@ -236,6 +240,7 @@ export default function LaRadiologieCharteForm() {
               </button>
             ))}
           </div>
+          <p className="form-aide">Un réglage « À ajuster » garde la trace d'un essai à corriger, pour ne pas le refaire.</p>
         </div>
 
         {/* ─── NOTES ──────────────────────────── */}
