@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
 import LienFavoris from '../components/LienFavoris'
 import { lireNombrePositif } from '../lib/nombres'
+import { arrondirDose, arrondirMcg, calculComprimes } from '../lib/doses'
+import { ChoixForme, ChampTeneur, ResultatComprimes } from '../components/Comprimes'
 
 // ─── DÉMARCHE DE CALCUL ───────────────────────────────────
 function DemarcheCollapsible({ resultat, poids, unitePoids }) {
@@ -32,25 +34,15 @@ function DemarcheCollapsible({ resultat, poids, unitePoids }) {
               <p className="demarche-calcul">{resultat.poso} {resultat.uniteDose}</p>
             </div>
           </div>
-          <div className="demarche-etape">
-            <span className="demarche-num">3</span>
-            <div>
-              <p className="demarche-titre">Dose totale = poids (kg) × posologie</p>
-              <p className="demarche-calcul">
-                {resultat.etapeConversion ||
-                  `${resultat.poidsKg} kg × ${resultat.poso} ${resultat.uniteDose} = ${resultat.doseTotale} mg`}
-              </p>
+          {resultat.etapes.map((etape, i) => (
+            <div key={etape.titre} className="demarche-etape">
+              <span className="demarche-num">{i + 3}</span>
+              <div>
+                <p className="demarche-titre">{etape.titre}</p>
+                <p className="demarche-calcul">{etape.calcul}</p>
+              </div>
             </div>
-          </div>
-          <div className="demarche-etape">
-            <span className="demarche-num">4</span>
-            <div>
-              <p className="demarche-titre">Volume = dose totale ÷ concentration</p>
-              <p className="demarche-calcul">
-                {resultat.doseTotale} mg ÷ {resultat.conc} {resultat.uniteConc} = {resultat.volume} mL
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       )}
     </div>
@@ -65,51 +57,61 @@ export default function Calculateurs() {
   const [uniteDose, setUniteDose] = useState('mg/kg')
   const [concentration, setConcentration] = useState('')
   const [uniteConc, setUniteConc] = useState('mg/mL')
+  // Liquide (volume en mL) ou comprimé (nombre de comprimés).
+  const [forme, setForme] = useState('liquide')
+  const [teneur, setTeneur] = useState('')
+  const [uniteTeneur, setUniteTeneur] = useState('mg')
 
   const poidsSaisi = lireNombrePositif(poids)
   const posoSaisie = lireNombrePositif(posologie)
   const concSaisie = lireNombrePositif(concentration)
+  const teneurSaisie = lireNombrePositif(teneur)
   // Un champ rempli mais invalide (lettres, zéro) affiche son message ; vide, il attend.
   const invalide = (texte, valeur) => texte.trim() !== '' && valeur === null
 
-  // Calcul automatique, refait à chaque saisie.
+  // Calcul automatique, refait à chaque saisie. Tout se calcule en mg.
   const resultat = useMemo(() => {
-    if (poidsSaisi === null || posoSaisie === null || concSaisie === null) return null
+    const enComprimes = forme === 'comprime'
+    if (poidsSaisi === null || posoSaisie === null || (enComprimes ? teneurSaisie : concSaisie) === null) return null
 
     const poidsKg = unitePoids === 'lb'
       ? Math.round((poidsSaisi / 2.205) * 100) / 100
       : poidsSaisi
-
+    const kg = poidsKg.toFixed(2)
     const poso = posoSaisie
-    const conc = concSaisie
 
-    let doseTotale
-    let etapeConversion = null
-
-    if (uniteDose === 'mcg/kg' && uniteConc === 'mg/mL') {
-      doseTotale = (poidsKg * poso) / 1000
-      etapeConversion = `${poidsKg} kg × ${poso} mcg/kg ÷ 1000 = ${doseTotale.toFixed(2)} mg`
-    } else if (uniteDose === 'mg/kg' && uniteConc === 'mcg/mL') {
-      doseTotale = poidsKg * poso * 1000
-      etapeConversion = `${poidsKg} kg × ${poso} mg/kg × 1000 = ${doseTotale.toFixed(2)} mcg`
-    } else {
-      doseTotale = poidsKg * poso
+    const doseMg = poidsKg * poso * (uniteDose === 'mcg/kg' ? 0.001 : 1)
+    const mg = arrondirDose(doseMg)
+    const mcg = arrondirMcg(doseMg * 1000)
+    const etapeDose = {
+      titre: 'Dose totale = poids (kg) × posologie',
+      calcul: uniteDose === 'mcg/kg' ? `${kg} kg × ${poso} mcg/kg = ${mcg} mcg = ${mg} mg` : `${kg} kg × ${poso} mg/kg = ${mg} mg`,
     }
-
-    const volume = doseTotale / conc
-
-    return {
-      poidsKg: poidsKg.toFixed(2),
-      unitePoids: unitePoids === 'lb' ? `(${poids} lb → ${poidsKg.toFixed(2)} kg)` : '',
+    const base = {
+      poidsKg: kg,
       poso,
-      doseTotale: doseTotale.toFixed(2),
-      volume: volume.toFixed(2),
       uniteDose,
-      uniteConc,
-      conc,
-      etapeConversion,
+      doseTotale: uniteDose === 'mcg/kg' ? `${mg} mg (${mcg} mcg)` : `${mg} mg`,
     }
-  }, [poidsSaisi, unitePoids, posoSaisie, uniteDose, concSaisie, uniteConc, poids])
+
+    if (enComprimes) {
+      const calcul = calculComprimes(doseMg, teneurSaisie, uniteTeneur)
+      return { ...base, comprimes: calcul, etapes: [etapeDose, ...calcul.etapes] }
+    }
+
+    const conc = concSaisie
+    const volume = doseMg / (uniteConc === 'mcg/mL' ? conc / 1000 : conc)
+    return {
+      ...base,
+      volume: volume.toFixed(2),
+      etapes: [etapeDose, {
+        titre: 'Volume = dose totale ÷ concentration',
+        calcul: uniteConc === 'mcg/mL'
+          ? `${mcg} mcg ÷ ${conc} mcg/mL = ${volume.toFixed(2)} mL`
+          : `${mg} mg ÷ ${conc} mg/mL = ${volume.toFixed(2)} mL`,
+      }],
+    }
+  }, [poidsSaisi, unitePoids, posoSaisie, uniteDose, concSaisie, uniteConc, forme, teneurSaisie, uniteTeneur])
 
   return (
     <div className="page-calculateurs">
@@ -165,7 +167,12 @@ export default function Calculateurs() {
           )}
         </div>
 
-        {/* Concentration */}
+        <ChoixForme forme={forme} onChange={setForme} />
+
+        {forme === 'comprime' ? (
+          <ChampTeneur teneur={teneur} onTeneur={setTeneur} unite={uniteTeneur} onUnite={setUniteTeneur} />
+        ) : (
+        /* Concentration */
         <div className="champ">
           <label>Concentration</label>
           <div className="champ-input">
@@ -188,6 +195,7 @@ export default function Calculateurs() {
             <p className="fluido-erreur">Concentration invalide, entrez une valeur supérieure à 0.</p>
           )}
         </div>
+        )}
 
         {/* Résultats */}
         <div className="resultat-card">
@@ -205,8 +213,11 @@ export default function Calculateurs() {
               </div>
               Dose totale
             </span>
-            <strong>{resultat ? `${resultat.doseTotale} mg` : '—'}</strong>
+            <strong>{resultat ? resultat.doseTotale : '—'}</strong>
           </div>
+          {forme === 'comprime' ? (
+            <ResultatComprimes resultat={resultat?.comprimes || null} />
+          ) : (
           <div className="resultat-ligne">
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div className="champ-icone-wrapper">
@@ -216,6 +227,7 @@ export default function Calculateurs() {
             </span>
             <strong>{resultat ? `${resultat.volume} mL` : '—'}</strong>
           </div>
+          )}
         </div>
 
         <div className="calc-avertissement">

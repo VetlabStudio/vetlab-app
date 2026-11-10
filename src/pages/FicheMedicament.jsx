@@ -7,8 +7,19 @@ import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 import SignalerErreur from '../components/SignalerErreur'
 import { lireNombrePositif } from '../lib/nombres'
+import { arrondirDose, arrondirMcg, calculComprimes } from '../lib/doses'
+import { ChoixForme, ChampTeneur, ResultatComprimes } from '../components/Comprimes'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/* Posologie en mg/kg ou en mcg/kg, au choix, pour les médicaments dosés
+   dans l'une de ces deux unités. Valeur : facteur vers les mg/kg. */
+const UNITES_POSO = { 'mg/kg': 1, 'mcg/kg': 0.001 }
+// Concentration ramenée en mg/mL pour le calcul du volume.
+const UNITES_CONC = { 'mg/mL': 1, 'mcg/mL': 0.001 }
+
+// Sans bruit d'arrondi binaire (0.005 et non 0.0049999999).
+const nombreNet = n => String(Number(n.toPrecision(6)))
 
 
 // ─── DÉMARCHE DE CALCUL ───────────────────────────────────
@@ -41,25 +52,15 @@ function DemarcheCollapsible({ resultat, poids, unitePoids }) {
               <p className="demarche-calcul">{resultat.poso} {resultat.uniteDose}</p>
             </div>
           </div>
-          <div className="demarche-etape">
-            <span className="demarche-num">3</span>
-            <div>
-              <p className="demarche-titre">Dose totale = poids (kg) × posologie</p>
-              <p className="demarche-calcul">
-                {resultat.etapeConversion ||
-                  `${resultat.poidsKg} kg × ${resultat.poso} ${resultat.uniteDose} = ${resultat.doseTotale} mg`}
-              </p>
+          {resultat.etapes.map((etape, i) => (
+            <div key={etape.titre} className="demarche-etape">
+              <span className="demarche-num">{i + 3}</span>
+              <div>
+                <p className="demarche-titre">{etape.titre}</p>
+                <p className="demarche-calcul">{etape.calcul}</p>
+              </div>
             </div>
-          </div>
-          <div className="demarche-etape">
-            <span className="demarche-num">4</span>
-            <div>
-              <p className="demarche-titre">Volume = dose totale ÷ concentration</p>
-              <p className="demarche-calcul">
-                {resultat.doseTotale} mg ÷ {resultat.conc} {resultat.uniteConc} = {resultat.volume} mL
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       )}
     </div>
@@ -99,7 +100,13 @@ const { setTitreCustom } = useContext(TitreContext)
   const [poids, setPoids] = useState('')
   const [unitePoids, setUnitePoids] = useState('kg')
   const [posologie, setPosologie] = useState('')
+  // Unité choisie pour la posologie (null : celle de la fiche).
+  const [unitePoso, setUnitePoso] = useState(null)
   const [concentration, setConcentration] = useState('')
+  // Liquide (volume en mL) ou comprimé (nombre de comprimés).
+  const [forme, setForme] = useState('liquide')
+  const [teneur, setTeneur] = useState('')
+  const [uniteTeneur, setUniteTeneur] = useState('mg')
   const [showProMsg, setShowProMsg] = useState(false)
   const { estPro, roleEquipe } = useProfil()
   /* Pendant une transition de page, l'ancienne fiche reste montée
@@ -134,6 +141,9 @@ const { setTitreCustom } = useContext(TitreContext)
 
         if (med) {
           setMedicament(med)
+          setUnitePoso(null)
+          setForme('liquide')
+          setTeneur('')
           setPosologie(med.dose_min?.toString() || '')
           setConcentration(med.concentration?.toString() || '')
         }
@@ -162,59 +172,110 @@ useEffect(() => {
   const poidsSaisi = lireNombrePositif(poids)
   const posoValide = lireNombrePositif(posologie)
   const concSaisie = lireNombrePositif(concentration)
+  const teneurSaisie = lireNombrePositif(teneur)
   // Un champ rempli mais invalide (lettres, zéro) affiche son message ; vide, il attend.
   const invalide = (texte, valeur) => texte.trim() !== '' && valeur === null
+
+  const uniteBase = medicament?.unite_dose || 'mg/kg'
+  const uniteConc = medicament?.unite_concentration || 'mg/mL'
+  // Le choix d'unité n'existe que si le calcul sait convertir la dose et la concentration.
+  const uniteConvertible = uniteBase in UNITES_POSO && uniteConc in UNITES_CONC
+  const uniteChoisie = uniteConvertible ? (unitePoso || uniteBase) : uniteBase
+  /* Comprimés : dose en mg ou en mcg, et médicament donné par la bouche
+     (ou voies non renseignées). Pas de comprimé pour un injectable. */
+  const voies = medicament?.voies_admin || []
+  const comprimePossible = uniteBase in UNITES_POSO && (voies.length === 0 || voies.some(v => /\bPO\b|per os|oral/i.test(v)))
+  const enComprimes = comprimePossible && forme === 'comprime'
+  // Valeur de la fiche (dans son unité) exprimée dans l'unité choisie.
+  const versChoisie = v => (uniteConvertible ? nombreNet(v * UNITES_POSO[uniteBase] / UNITES_POSO[uniteChoisie]) : v)
+
+  /* Changer d'unité convertit la valeur saisie : 5 mcg/kg devient
+     0.005 mg/kg. Garder le chiffre tel quel multiplierait la dose par 1000. */
+  function changerUnitePoso(nouvelle) {
+    if (nouvelle === uniteChoisie) return
+    const valeur = lireNombrePositif(posologie)
+    if (valeur !== null) setPosologie(nombreNet(valeur * UNITES_POSO[uniteChoisie] / UNITES_POSO[nouvelle]))
+    setUnitePoso(nouvelle)
+  }
 
   // Calcul automatique, refait à chaque saisie.
   const { resultat, horsPlage } = useMemo(() => {
     /* L'avertissement ne dépend que de la posologie : il s'affiche dès
-       qu'elle sort de la plage du médicament, même sans poids saisi. */
+       qu'elle sort de la plage du médicament, même sans poids saisi.
+       La comparaison se fait dans l'unité de la fiche. */
     const posoSaisie = parseFloat(posologie)
+    const posoFiche = uniteConvertible ? posoSaisie * UNITES_POSO[uniteChoisie] / UNITES_POSO[uniteBase] : posoSaisie
+    const marge = 1e-9
     const horsPlage = Boolean(posologie && medicament?.dose_min && medicament?.dose_max)
-      && (posoSaisie < medicament.dose_min || posoSaisie > medicament.dose_max)
+      && (posoFiche < medicament.dose_min * (1 - marge) || posoFiche > medicament.dose_max * (1 + marge))
 
-    if (poidsSaisi === null || posoValide === null || concSaisie === null || !medicament) {
+    if (poidsSaisi === null || posoValide === null || (enComprimes ? teneurSaisie : concSaisie) === null || !medicament) {
       return { resultat: null, horsPlage }
     }
 
     const poidsKg = unitePoids === 'lb'
       ? Math.round((poidsSaisi / 2.205) * 100) / 100
       : poidsSaisi
-
-    const uniteDose = medicament.unite_dose || 'mg/kg'
-    const uniteConc = medicament.unite_concentration || 'mg/mL'
+    const kg = poidsKg.toFixed(2)
     const poso = posoValide
     const conc = concSaisie
 
-    let doseTotale
-    let etapeConversion = null
-
-    if (uniteDose === 'mcg/kg' && uniteConc === 'mg/mL') {
-      doseTotale = (poidsKg * poso) / 1000
-      etapeConversion = `${poidsKg} kg × ${poso} mcg/kg ÷ 1000 = ${doseTotale.toFixed(2)} mg`
-    } else if (uniteDose === 'mg/kg' && uniteConc === 'mcg/mL') {
-      doseTotale = poidsKg * poso * 1000
-      etapeConversion = `${poidsKg} kg × ${poso} mg/kg × 1000 = ${doseTotale.toFixed(2)} mcg`
+    let doseTotale, etapeDose, etapeVolume, volume
+    if (enComprimes) {
+      const doseMg = poidsKg * poso * UNITES_POSO[uniteChoisie]
+      const mg = arrondirDose(doseMg)
+      const mcg = arrondirMcg(doseMg * 1000)
+      const calcul = calculComprimes(doseMg, teneurSaisie, uniteTeneur)
+      return { horsPlage, resultat: {
+        poidsKg: kg,
+        poso,
+        uniteDose: uniteChoisie,
+        doseTotale: uniteChoisie === 'mcg/kg' ? `${mg} mg (${mcg} mcg)` : `${mg} mg`,
+        comprimes: calcul,
+        etapes: [
+          {
+            titre: 'Dose totale = poids (kg) × posologie',
+            calcul: uniteChoisie === 'mcg/kg' ? `${kg} kg × ${poso} mcg/kg = ${mcg} mcg = ${mg} mg` : `${kg} kg × ${poso} mg/kg = ${mg} mg`,
+          },
+          ...calcul.etapes,
+        ],
+      } }
+    }
+    if (uniteConvertible) {
+      // Tout se calcule en mg, puis s'affiche dans les unités saisies.
+      const doseMg = poidsKg * poso * UNITES_POSO[uniteChoisie]
+      volume = doseMg / (conc * UNITES_CONC[uniteConc])
+      const mg = arrondirDose(doseMg)
+      const mcg = arrondirMcg(doseMg * 1000)
+      doseTotale = uniteChoisie === 'mcg/kg' ? `${mg} mg (${mcg} mcg)` : `${mg} mg`
+      etapeDose = uniteChoisie === 'mcg/kg'
+        ? `${kg} kg × ${poso} mcg/kg = ${mcg} mcg = ${mg} mg`
+        : `${kg} kg × ${poso} mg/kg = ${mg} mg`
+      etapeVolume = uniteConc === 'mcg/mL'
+        ? `${mcg} mcg ÷ ${conc} mcg/mL = ${volume.toFixed(2)} mL`
+        : `${mg} mg ÷ ${conc} mg/mL = ${volume.toFixed(2)} mL`
     } else {
-      doseTotale = poidsKg * poso
+      // Autres unités (UI/kg, mL/kg, g/kg) : la dose reste dans l'unité de la fiche.
+      const unite = uniteBase.split('/')[0]
+      const dose = poidsKg * poso
+      volume = dose / conc
+      doseTotale = `${dose.toFixed(2)} ${unite}`
+      etapeDose = `${kg} kg × ${poso} ${uniteBase} = ${dose.toFixed(2)} ${unite}`
+      etapeVolume = `${dose.toFixed(2)} ${unite} ÷ ${conc} ${uniteConc} = ${volume.toFixed(2)} mL`
     }
 
-    const volume = doseTotale / conc
-
-    /* Sans le else, une fiche sans dose maximale conservait
-       l'avertissement du médicament consulté précédemment. */
     return { horsPlage, resultat: {
-      poidsKg: poidsKg.toFixed(2),
-      unitePoids: unitePoids === 'lb' ? `(${poids} lb → ${poidsKg.toFixed(2)} kg)` : '',
+      poidsKg: kg,
       poso,
-      doseTotale: doseTotale.toFixed(2),
+      uniteDose: uniteChoisie,
+      doseTotale,
       volume: volume.toFixed(2),
-      uniteDose,
-      uniteConc,
-      conc,
-      etapeConversion,
+      etapes: [
+        { titre: 'Dose totale = poids (kg) × posologie', calcul: etapeDose },
+        { titre: 'Volume = dose totale ÷ concentration', calcul: etapeVolume },
+      ],
     } }
-  }, [poids, poidsSaisi, unitePoids, posologie, posoValide, concSaisie, medicament])
+  }, [poidsSaisi, unitePoids, posologie, posoValide, concSaisie, teneurSaisie, uniteTeneur, enComprimes, medicament, uniteBase, uniteConc, uniteConvertible, uniteChoisie])
 
   async function toggleFavori() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -233,9 +294,9 @@ useEffect(() => {
   }
 
   const plageTexte = medicament?.dose_min && medicament?.dose_max
-    ? `Recommandé : ${medicament.dose_min} à ${medicament.dose_max} ${medicament.unite_dose || 'mg/kg'}`
+    ? `Recommandé : ${versChoisie(medicament.dose_min)} à ${versChoisie(medicament.dose_max)} ${uniteChoisie}`
     : medicament?.dose_min
-    ? `Recommandé : ${medicament.dose_min} ${medicament.unite_dose || 'mg/kg'}`
+    ? `Recommandé : ${versChoisie(medicament.dose_min)} ${uniteChoisie}`
     : null
 
   if (idValide && loading) return <div className="admin-loading">Chargement...</div>
@@ -319,7 +380,15 @@ useEffect(() => {
       onChange={e => setPosologie(e.target.value.replace(',', '.'))}
       placeholder="Ex: 0.05"
     />
-    <span className="unite-fixe">{medicament.unite_dose || 'mg/kg'}</span>
+    {uniteConvertible ? (
+      <div className="radio-groupe">
+        {Object.keys(UNITES_POSO).map(u => (
+          <button key={u} className={`radio-btn ${uniteChoisie === u ? 'active' : ''}`} onClick={() => changerUnitePoso(u)}>{u}</button>
+        ))}
+      </div>
+    ) : (
+      <span className="unite-fixe">{uniteBase}</span>
+    )}
   </div>
   {invalide(posologie, posoValide) && (
     <p className="fluido-erreur">Posologie invalide, entrez une valeur supérieure à 0.</p>
@@ -333,7 +402,12 @@ useEffect(() => {
   )}
 </div>
 
-          {/* Concentration */}
+          {comprimePossible && <ChoixForme forme={forme} onChange={setForme} />}
+
+          {enComprimes ? (
+            <ChampTeneur teneur={teneur} onTeneur={setTeneur} unite={uniteTeneur} onUnite={setUniteTeneur} />
+          ) : (
+          /* Concentration */
           <div className="champ">
   <label>Concentration</label>
   <div className="champ-input">
@@ -347,12 +421,13 @@ useEffect(() => {
       onChange={e => setConcentration(e.target.value.replace(',', '.'))}
       placeholder="Ex: 10"
     />
-    <span className="unite-fixe">{medicament.unite_concentration || 'mg/mL'}</span>
+    <span className="unite-fixe">{uniteConc}</span>
   </div>
   {invalide(concentration, concSaisie) && (
     <p className="fluido-erreur">Concentration invalide, entrez une valeur supérieure à 0.</p>
   )}
 </div>
+          )}
 
           {/* Résultats */}
           <div className="resultat-card">
@@ -369,8 +444,11 @@ useEffect(() => {
       </div>
       Dose totale
     </span>
-    <strong>{resultat ? `${resultat.doseTotale} mg` : '—'}</strong>
+    <strong>{resultat ? resultat.doseTotale : '—'}</strong>
   </div>
+  {enComprimes ? (
+    <ResultatComprimes resultat={resultat?.comprimes || null} />
+  ) : (
   <div className="resultat-ligne">
     <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <div className="champ-icone-wrapper">
@@ -380,6 +458,7 @@ useEffect(() => {
     </span>
     <strong>{resultat ? `${resultat.volume} mL` : '—'}</strong>
   </div>
+  )}
   <div className="resultat-ligne">
     <span>Voies</span>
     <strong>{medicament.voies_admin?.join(', ') || '—'}</strong>

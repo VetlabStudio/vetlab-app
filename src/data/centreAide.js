@@ -12,9 +12,9 @@ export const SECTIONS_AIDE = [
         titre: "Installer Adjuvet sur l'écran d'accueil (iPhone)",
         texte: "Adjuvet s'ouvre alors comme une application, en plein écran, sans passer par le navigateur.",
         etapes: [
-          'Ouvrez Adjuvet dans Safari ou Chrome.',
-          'Appuyez sur le bouton Partager (en bas de l\'écran dans Safari, en haut à droite dans Chrome).',
-          'Choisissez « Sur l\'écran d\'accueil ». Faites défiler la liste si vous ne le voyez pas.',
+          "Ouvrez Adjuvet dans Safari ou Chrome. Si vous l'avez ouvert depuis un courriel ou une autre app, ouvrez-le d'abord dans Safari : le navigateur intégré d'une autre app ne permet pas l'installation.",
+          "Appuyez sur le bouton Partager : en bas de l'écran dans Safari ou, depuis iOS 26, dans le menu ⋯ à côté de l'adresse. Dans Chrome, il est en haut à droite.",
+          "Choisissez « Sur l'écran d'accueil ». Faites défiler la liste. Si l'option n'y est pas, appuyez sur « Modifier les actions » au bas de la liste pour l'ajouter.",
           'Appuyez sur « Ajouter ».',
         ],
       },
@@ -171,7 +171,7 @@ export const SECTIONS_AIDE = [
       },
       {
         titre: 'Soins généraux',
-        texte: 'Examen physique guidé, score de Glasgow, charte dentaire, abréviations et termes directionnels. Ces guides sont réservés au forfait Pro.',
+        texte: "Aide-mémoire d'examen physique (les 12 systèmes et les constats à vérifier), score de Glasgow, charte dentaire, abréviations et termes directionnels. Ces guides sont réservés au forfait Pro.",
         lien: { route: '/soins-generaux', label: 'Ouvrir la section' },
       },
       {

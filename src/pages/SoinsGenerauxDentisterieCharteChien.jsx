@@ -29,12 +29,14 @@ export default function SoinsGenerauxDentisterieCharteChien() {
               <span>{item.permanentes}</span>
             </div>
           ))}
+          {/* Le total suit les colonnes du tableau : lait, puis permanentes. */}
+          <div className="labo-ref-ligne" style={{ background: 'var(--bg-secondary)', fontWeight: 700 }}>
+            <span className="labo-ref-normal">Nombre de dents</span>
+            <span>28</span>
+            <span>42</span>
+          </div>
         </div>
       </div>
-
-      <p style={{ fontSize: 13, color: 'var(--text-hint)', textAlign: 'center', marginTop: 12 }}>
-        Nombre de dents de lait : 28 — Nombre de dents permanentes : 42
-      </p>
 
     </div>
   )

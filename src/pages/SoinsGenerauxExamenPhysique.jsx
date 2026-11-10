@@ -957,7 +957,7 @@ export default function SoinsGenerauxExamenPhysique() {
         <div className="postop-intro">
           <i className="ti ti-clipboard-check postop-intro-icone"></i>
           <p className="postop-intro-texte">
-            Consultez vos anciens examens ou commencez-en un nouveau.
+            Un aide-mémoire pour ne rien oublier : les 12 systèmes un par un, les constats à vérifier et les plages normales des signes vitaux chez le chien et le chat. Idéal en préconsultation. Vos anciens examens sont plus bas.
           </p>
         </div>
 

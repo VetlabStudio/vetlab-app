@@ -114,7 +114,7 @@ const AVANTAGES_PRO = [
   { icone: 'ti-pill', titre: 'Vos médicaments et protocoles', texte: 'Créez vos propres fiches et protocoles, prêts à utiliser en clinique.' },
   { icone: 'ti-flask', titre: 'Références labo complètes', texte: 'Valeurs de référence, tubes, cytologie, microbiologie et plus.' },
   { icone: 'ti-heart-rate-monitor', titre: 'Monitoring anesthésique et ECG', texte: 'Suivez vos anesthésies et interprétez les tracés ECG.' },
-  { icone: 'ti-stethoscope', titre: 'Examen physique et toxicologie', texte: 'Examens guidés et calculs de toxicité en quelques secondes.' },
+  { icone: 'ti-stethoscope', titre: 'Examen physique et toxicologie', texte: "Un aide-mémoire d'examen complet et des calculs de toxicité en quelques secondes." },
   { icone: 'ti-check', titre: 'Tout le forfait Gratuit inclus', texte: 'Fiches médicaments et calculateurs de dosage.' },
 ]
 
