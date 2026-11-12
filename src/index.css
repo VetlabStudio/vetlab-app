@@ -12044,8 +12044,55 @@ summary:focus-visible {
   color: var(--text-hint);
 }
 
-.exotique-valeurs-titre {
-  padding: 14px 16px 10px;
+.exotique-valeurs-source {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.exotique-valeurs-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exotique-valeurs-entete {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.exotique-valeurs-latin {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-hint);
+}
+
+.exotique-valeurs-compte {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-hint);
+  white-space: nowrap;
+}
+
+.exotique-valeurs-compte + .labo-tube-chevron {
+  margin-left: 0;
+}
+
+.exotique-valeurs-sous-titre {
+  margin: 0;
+  padding: 12px 12px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border);
+}
+
+.exotique-valeurs-sous-titre + .exotique-valeurs-ligne,
+.exotique-valeurs-contenu > .exotique-valeurs-ligne:first-child,
+.exotique-valeurs-contenu > section:first-child > .exotique-valeurs-sous-titre {
+  border-top: none;
 }
 
 .exotique-valeurs-ligne {
