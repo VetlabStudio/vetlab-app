@@ -69,6 +69,13 @@ const PROCEDURES = [
   'Réparation de plaie', 'Imagerie sous sédation',
 ]
 const CALIBRES = ['18G', '20G', '22G', '24G']
+// Code couleur international des cathéters (ISO 10555-5), affiché sous chaque calibre.
+const COULEURS_CALIBRES = {
+  '18G': { nom: 'vert', hex: '#2e9e4f' },
+  '20G': { nom: 'rose', hex: '#f08cb4' },
+  '22G': { nom: 'bleu', hex: '#2f7fd8' },
+  '24G': { nom: 'jaune', hex: '#f5d10a' },
+}
 const SITES_CATHETER = [
   'Membre antérieur droit', 'Membre antérieur gauche',
   'Membre postérieur droit', 'Membre postérieur gauche', 'Jugulaire',
@@ -752,22 +759,34 @@ export default function ChirurgieMonitoring() {
     modifierChamp(champ, form[champ] === option ? '' : option)
   }
 
-  function champChoix(champ, label, options, { placeholder, aide } = {}) {
+  function champChoix(champ, label, options, { placeholder, aide, couleurs } = {}) {
     const autre = estAutre(champ, options)
     return (
       <div className="form-groupe">
         <label className="form-label">{label}</label>
         <div className="examen-valeurs">
-          {options.map(opt => (
-            <button
-              key={opt}
-              type="button"
-              className={`examen-valeur-btn ${!autre && form[champ] === opt ? 'actif' : ''}`}
-              onClick={() => choisirOption(champ, opt)}
-            >
-              {opt}
-            </button>
-          ))}
+          {options.map(opt => {
+            const actif = !autre && form[champ] === opt
+            const couleur = couleurs?.[opt]
+            return (
+              <button
+                key={opt}
+                type="button"
+                className={`examen-valeur-btn ${actif ? 'actif' : ''}`}
+                onClick={() => choisirOption(champ, opt)}
+                aria-label={couleur ? `${opt} (${couleur.nom})` : undefined}
+                style={couleur ? { display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 4 } : undefined}
+              >
+                {opt}
+                {couleur && (
+                  <span
+                    aria-hidden="true"
+                    style={{ width: 12, height: 12, borderRadius: '50%', background: couleur.hex, border: `1.5px solid ${actif ? '#fff' : 'rgba(0, 0, 0, 0.35)'}` }}
+                  ></span>
+                )}
+              </button>
+            )
+          })}
           <button
             type="button"
             className={`examen-valeur-btn ${autre ? 'actif' : ''}`}
@@ -1325,7 +1344,8 @@ export default function ChirurgieMonitoring() {
                 item.donnees?.procedure,
               ].filter(Boolean).join(' · ')
               return (
-                <button key={item.id} className={`monitoring-actif ${demarre ? 'demarre' : ''}`} onClick={() => modifier(item)}>
+                <div key={item.id} style={{ position: 'relative' }}>
+                <button className={`monitoring-actif ${demarre ? 'demarre' : ''}`} style={{ paddingRight: 56 }} onClick={() => modifier(item)}>
                   <div className="monitoring-actif-haut">
                     <span className="monitoring-actif-nom">{item.animal_nom}</span>
                     <span className={`monitoring-actif-badge ${demarre ? '' : 'preparation'}`}>
@@ -1344,6 +1364,17 @@ export default function ChirurgieMonitoring() {
                     </span>
                   </div>
                 </button>
+                {/* Suppression rapide, avec la même confirmation que l'historique. */}
+                <button
+                  type="button"
+                  className="examen-historique-supprimer"
+                  aria-label={`Supprimer le monitoring de ${item.animal_nom}`}
+                  onClick={() => setShowConfirmSupprimer(item)}
+                  style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}
+                >
+                  <i className="ti ti-trash"></i>
+                </button>
+                </div>
               )
             })}
           </div>
@@ -1512,7 +1543,9 @@ export default function ChirurgieMonitoring() {
               <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
                 <i className="ti ti-alert-triangle" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
                 <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  Avez-vous bien noté ces informations dans le dossier de <strong>{showConfirmSupprimer.animal_nom}</strong> avant de supprimer ?
+                  {showConfirmSupprimer.resume
+                    ? <>Avez-vous bien noté ces informations dans le dossier de <strong>{showConfirmSupprimer.animal_nom}</strong> avant de supprimer ?</>
+                    : <>Ce monitoring n'est pas terminé : toutes les données saisies pour <strong>{showConfirmSupprimer.animal_nom}</strong> seront effacées. Cette action est irréversible.</>}
                 </p>
               </div>
               <div className="popup-actions-centrees">
@@ -1886,7 +1919,7 @@ export default function ChirurgieMonitoring() {
             ouvert={sectionOuverte === 'acces'}
             onToggle={() => ouvrirSection('acces')}
           >
-            {champChoix('accesCalibre', 'Calibre du cathéter', CALIBRES, { placeholder: 'Ex. : 16G' })}
+            {champChoix('accesCalibre', 'Calibre du cathéter', CALIBRES, { placeholder: 'Ex. : 16G', couleurs: COULEURS_CALIBRES })}
             {champChoix('accesSite', 'Site', SITES_CATHETER, { placeholder: 'Préciser le site' })}
             {champChoix('soluteType', 'Type de soluté', SOLUTES, { placeholder: 'Préciser le soluté' })}
 
