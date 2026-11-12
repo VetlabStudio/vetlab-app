@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { traduireErreur } from '../lib/messagesErreur'
 import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
+import { ESPECES_EXOTIQUES, estExotiqueSeulement } from '../lib/especesExotiques'
 
 const CATEGORIES = [
   'Anesthésiques / Analgésiques',
@@ -18,6 +19,16 @@ const CATEGORIES = [
   'Neurologiques',
   'Respiratoires',
   'Antagonistes',
+  // Catégories surtout utilisées chez les exotiques
+  'Antiparasitaires',
+  'Antifongiques',
+  'Antiviraux',
+  'Hormones',
+  'Vitamines et minéraux',
+  'Oncologie',
+  'Ophtalmologie',
+  'Antiseptiques et bains',
+  'Divers',
 ]
 
 const VOIES = [
@@ -28,6 +39,19 @@ const VOIES = [
   'Intranasal (IN)',
   'Épidural',
   'Topique',
+  // Voies surtout utilisées chez les exotiques
+  'Intraosseux (IO)',
+  'Intrapéritonéal (IP)',
+  'Intracœlomique',
+  'Intratrachéal',
+  'Nébulisation',
+  'Bain',
+  'Eau de boisson',
+  'Nourriture',
+  'Ophtalmique',
+  'Auriculaire',
+  'Intralésionnel',
+  'Infiltration locale',
 ]
 
 const UNITES_DOSE = ['mg/kg', 'mcg/kg', 'UI/kg', 'mL/kg']
@@ -62,9 +86,13 @@ export default function AjouterMedicament() {
     if (!peutModifier) navigate(-1)
   }, [peutModifier, navigate])
   const categorieParam = searchParams.get('categorie')
-  const [form, setForm] = useState(
-    CATEGORIES.includes(categorieParam) ? { ...VIDE, categorie: categorieParam } : VIDE
-  )
+  // Depuis la liste d'une espèce exotique, l'espèce est cochée d'avance.
+  const especeParam = searchParams.get('espece')
+  const [form, setForm] = useState(() => ({
+    ...VIDE,
+    ...(CATEGORIES.includes(categorieParam) ? { categorie: categorieParam } : {}),
+    ...(ESPECES_EXOTIQUES.includes(especeParam) ? { especes: [especeParam] } : {}),
+  }))
   const [sauvegarde, setSauvegarde] = useState(false)
   const [erreur, setErreur] = useState('')
   const [popupEspece, setPopupEspece] = useState(false)
@@ -113,8 +141,10 @@ export default function AjouterMedicament() {
     if (!form.nom.trim())     return setErreur('Le nom est requis.')
     if (!form.categorie)      return setErreur('La catégorie est requise.')
     if (!form.especes.length) return setErreur('Choisir au moins une espèce.')
-    if (!form.dose_min)       return setErreur('La dose est requise.')
-    if (!form.concentration)  return setErreur('La concentration est requise.')
+    // Exotiques : une posologie sans dose par kg (bain, gouttes, par animal) est permise.
+    const posologieSeule = estExotiqueSeulement(form.especes) && !form.dose_min
+    if (!form.dose_min && !posologieSeule) return setErreur('La dose est requise.')
+    if (!form.concentration && !posologieSeule) return setErreur('La concentration est requise.')
 
     setSauvegarde(true)
     const { data: { user } } = await supabase.auth.getUser()
@@ -124,10 +154,10 @@ export default function AjouterMedicament() {
       nom:                 form.nom.trim(),
       categorie:           form.categorie,
       indication:          form.indication,
-      dose_min:            parseFloat(form.dose_min),
+      dose_min:            form.dose_min ? parseFloat(form.dose_min) : null,
       dose_max:            form.type_dose === 'min_max' && form.dose_max ? parseFloat(form.dose_max) : null,
-      unite_dose:          form.unite_dose,
-      concentration:       parseFloat(form.concentration),
+      unite_dose:          posologieSeule ? null : form.unite_dose,
+      concentration:       form.concentration ? parseFloat(form.concentration) : null,
       unite_concentration: form.unite_concentration,
       voies_admin:         form.voies_admin,
       interactions:        form.interactions,

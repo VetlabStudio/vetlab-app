@@ -39,7 +39,7 @@ export const SECTIONS_AIDE = [
         titre: 'Utiliser Adjuvet sans internet',
         texte: "Une fois ouverte avec internet sur un appareil, l'app s'ouvre aussi sans connexion. Votre session reste ouverte et le contenu enregistré se met à jour chaque fois qu'internet revient.",
         etapes: [
-          'Disponibles sans internet : les calculateurs, la pharmacologie (avec vos médicaments personnalisés et vos favoris), le laboratoire, la chirurgie, les soins généraux, la nutrition et le centre d\'aide.',
+          'Disponibles sans internet : les calculateurs, la pharmacologie (avec vos médicaments personnalisés et vos favoris), les exotiques, le laboratoire, la chirurgie, les soins généraux et le centre d\'aide.',
           "Hors ligne, le contenu est celui de votre dernière connexion. Les images s'enregistrent la première fois qu'elles s'affichent.",
           "Demandent internet : l'équipe, les notes, les notifications, le profil, l'abonnement, le monitoring, l'examen physique et tout ajout ou modification. Ces sections l'indiquent et s'ouvrent dès que la connexion revient.",
           'Un bandeau jaune sous le titre de la page indique que vous êtes hors ligne.',
@@ -160,6 +160,11 @@ export const SECTIONS_AIDE = [
         lien: { route: '/drogues', label: 'Ouvrir la section' },
       },
       {
+        titre: 'Exotiques',
+        texte: "Choisissez l'espèce (lapin, furet, oiseau, reptile...) pour ouvrir ses outils : ses médicaments et, pour les petits mammifères, ses valeurs de référence (signes vitaux, sang, biochimie rénale, urine). Dans la fiche d'un médicament, la posologie s'affiche en premier, selon le groupe (perroquets, rapaces...) et l'usage, avec les mises en garde propres à l'espèce. Le poids peut s'entrer en grammes, et une alerte s'affiche quand le volume à administrer est trop petit pour être mesuré avec précision. Quand la dose n'est pas par kilo (bain, gouttes, dose par animal), la fiche donne la posologie sans calculatrice. Les fiches mises en favori se retrouvent dans vos favoris, avec celles du chien et du chat.",
+        lien: { route: '/exotiques', label: 'Ouvrir la section' },
+      },
+      {
         titre: 'Laboratoire',
         texte: 'Protocoles de laboratoire, valeurs de référence (biochimie, urologie), cytologie, microbiologie, parasitologie et radiologie. La plupart des guides détaillés sont réservés au forfait Pro.',
         lien: { route: '/labo', label: 'Ouvrir la section' },
@@ -173,11 +178,6 @@ export const SECTIONS_AIDE = [
         titre: 'Soins généraux',
         texte: "Aide-mémoire d'examen physique (les 12 systèmes et les constats à vérifier), score de Glasgow, charte dentaire, abréviations et termes directionnels. Ces guides sont réservés au forfait Pro.",
         lien: { route: '/soins-generaux', label: 'Ouvrir la section' },
-      },
-      {
-        titre: 'Nutrition clinique',
-        texte: 'Guides nutritionnels par condition : croissance, gestation, gériatrie, rénal, diabète, perte de poids, etc. Ces guides sont réservés au forfait Pro.',
-        lien: { route: '/nutrition', label: 'Ouvrir la section' },
       },
     ],
   },

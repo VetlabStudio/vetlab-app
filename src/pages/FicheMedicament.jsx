@@ -9,6 +9,7 @@ import SignalerErreur from '../components/SignalerErreur'
 import { lireNombrePositif } from '../lib/nombres'
 import { arrondirDose, arrondirMcg, calculComprimes } from '../lib/doses'
 import { ChoixForme, ChampTeneur, ResultatComprimes } from '../components/Comprimes'
+import { ESPECES_EXOTIQUES, estExotiqueSeulement } from '../lib/especesExotiques'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -20,6 +21,11 @@ const UNITES_CONC = { 'mg/mL': 1, 'mcg/mL': 0.001 }
 
 // Sans bruit d'arrondi binaire (0.005 et non 0.0049999999).
 const nombreNet = n => String(Number(n.toPrecision(6)))
+
+/* Petits patients (souris, gecko) : sous 0,1 mL, une troisième décimale
+   compte. Sous 0,05 mL, le volume est trop petit pour être mesuré juste. */
+const formaterVolume = v => (v >= 0.1 ? v.toFixed(2) : v >= 0.001 ? v.toFixed(3) : '< 0.001')
+const VOLUME_MINIMAL = 0.05
 
 
 // ─── DÉMARCHE DE CALCUL ───────────────────────────────────
@@ -41,6 +47,8 @@ function DemarcheCollapsible({ resultat, poids, unitePoids }) {
               <p className="demarche-calcul">
                 {unitePoids === 'lb'
                   ? `${poids} lb ÷ 2,205 = ${resultat.poidsKg} kg`
+                  : unitePoids === 'g'
+                  ? `${poids} g ÷ 1000 = ${resultat.poidsKg} kg`
                   : `${resultat.poidsKg} kg`}
               </p>
             </div>
@@ -63,6 +71,29 @@ function DemarcheCollapsible({ resultat, poids, unitePoids }) {
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+// ─── POSOLOGIE (fiches exotiques) ─────────────────────────
+/* Les doses d'une fiche exotique, lisibles d'emblée : selon le groupe
+   (perroquets, rapaces...) et l'usage. Les lignes « Attention : »
+   (interdictions selon l'espèce ou la voie) passent en premier. */
+function Posologie({ texte }) {
+  if (!texte) return null
+  const lignes = texte.split('\n')
+  const attentions = lignes.filter(l => l.startsWith('Attention : ')).map(l => l.slice('Attention : '.length))
+  const reste = lignes.filter(l => !l.startsWith('Attention : ')).join('\n').trim()
+  return (
+    <div className="resultat-card fiche-posologie">
+      <h2>Doses</h2>
+      {attentions.map(a => (
+        <div key={a} className="avertissement-plage fiche-posologie-attention">
+          <i className="ti ti-alert-triangle" aria-hidden="true"></i>
+          {a}
+        </div>
+      ))}
+      {reste && <p className="fiche-posologie-texte">{reste}</p>}
     </div>
   )
 }
@@ -98,7 +129,7 @@ export default function FicheMedicament() {
 const { setTitreCustom } = useContext(TitreContext)
   // Calculateur
   const [poids, setPoids] = useState('')
-  const [unitePoids, setUnitePoids] = useState('kg')
+  const [unitePoidsChoisie, setUnitePoids] = useState('kg')
   const [posologie, setPosologie] = useState('')
   // Unité choisie pour la posologie (null : celle de la fiche).
   const [unitePoso, setUnitePoso] = useState(null)
@@ -165,8 +196,10 @@ useEffect(() => {
   }
 }, [medicament])
   useEffect(() => {
-  if (medicament?.nom) setTitreCustom(medicament.nom)
-  return () => setTitreCustom('')
+  const nom = medicament?.nom
+  if (nom) setTitreCustom(nom)
+  // Au retour vers une liste (une espèce exotique), ne pas effacer le titre qu'elle a repris.
+  return () => setTitreCustom(t => (t === nom ? '' : t))
 }, [medicament?.nom, setTitreCustom])
 
   const poidsSaisi = lireNombrePositif(poids)
@@ -175,6 +208,15 @@ useEffect(() => {
   const teneurSaisie = lireNombrePositif(teneur)
   // Un champ rempli mais invalide (lettres, zéro) affiche son message ; vide, il attend.
   const invalide = (texte, valeur) => texte.trim() !== '' && valeur === null
+
+  /* Fiche réservée aux exotiques : la posologie est affichée en premier.
+     Sans dose par kg (bain, gouttes, par animal), pas de calculatrice. */
+  const exotique = estExotiqueSeulement(medicament?.especes)
+  const calculable = !(exotique && !medicament?.unite_dose)
+
+  // Le poids en grammes n'est proposé que pour une fiche qui vise une espèce exotique.
+  const avecGrammes = Boolean(medicament?.especes?.some(e => ESPECES_EXOTIQUES.includes(e)))
+  const unitePoids = unitePoidsChoisie === 'g' && !avecGrammes ? 'kg' : unitePoidsChoisie
 
   const uniteBase = medicament?.unite_dose || 'mg/kg'
   const uniteConc = medicament?.unite_concentration || 'mg/mL'
@@ -215,8 +257,11 @@ useEffect(() => {
 
     const poidsKg = unitePoids === 'lb'
       ? Math.round((poidsSaisi / 2.205) * 100) / 100
+      : unitePoids === 'g'
+      ? poidsSaisi / 1000
       : poidsSaisi
-    const kg = poidsKg.toFixed(2)
+    // Sous 1 kg, on garde les grammes : 0.035 kg et non 0.04 kg.
+    const kg = poidsKg < 1 ? nombreNet(poidsKg) : poidsKg.toFixed(2)
     const poso = posoValide
     const conc = concSaisie
 
@@ -252,8 +297,8 @@ useEffect(() => {
         ? `${kg} kg × ${poso} mcg/kg = ${mcg} mcg = ${mg} mg`
         : `${kg} kg × ${poso} mg/kg = ${mg} mg`
       etapeVolume = uniteConc === 'mcg/mL'
-        ? `${mcg} mcg ÷ ${conc} mcg/mL = ${volume.toFixed(2)} mL`
-        : `${mg} mg ÷ ${conc} mg/mL = ${volume.toFixed(2)} mL`
+        ? `${mcg} mcg ÷ ${conc} mcg/mL = ${formaterVolume(volume)} mL`
+        : `${mg} mg ÷ ${conc} mg/mL = ${formaterVolume(volume)} mL`
     } else {
       // Autres unités (UI/kg, mL/kg, g/kg) : la dose reste dans l'unité de la fiche.
       const unite = uniteBase.split('/')[0]
@@ -261,7 +306,7 @@ useEffect(() => {
       volume = dose / conc
       doseTotale = `${dose.toFixed(2)} ${unite}`
       etapeDose = `${kg} kg × ${poso} ${uniteBase} = ${dose.toFixed(2)} ${unite}`
-      etapeVolume = `${dose.toFixed(2)} ${unite} ÷ ${conc} ${uniteConc} = ${volume.toFixed(2)} mL`
+      etapeVolume = `${dose.toFixed(2)} ${unite} ÷ ${conc} ${uniteConc} = ${formaterVolume(volume)} mL`
     }
 
     return { horsPlage, resultat: {
@@ -269,7 +314,8 @@ useEffect(() => {
       poso,
       uniteDose: uniteChoisie,
       doseTotale,
-      volume: volume.toFixed(2),
+      volume: formaterVolume(volume),
+      volumeTropPetit: volume < VOLUME_MINIMAL,
       etapes: [
         { titre: 'Dose totale = poids (kg) × posologie', calcul: etapeDose },
         { titre: 'Volume = dose totale ÷ concentration', calcul: etapeVolume },
@@ -339,7 +385,10 @@ useEffect(() => {
 
       <div className="fiche-scroll">
 
+        {exotique && <Posologie texte={medicament.indication} />}
+
         {/* CALCULATEUR */}
+        {calculable ? (
         <div className="calc-form">
 
           {/* Poids */}
@@ -354,9 +403,12 @@ useEffect(() => {
       inputMode="decimal"
       value={poids}
       onChange={e => setPoids(e.target.value.replace(',', '.'))}
-      placeholder="Ex: 5.2"
+      placeholder={unitePoids === 'g' ? 'Ex: 350' : 'Ex: 5.2'}
     />
     <div className="radio-groupe">
+      {avecGrammes && (
+        <button className={`radio-btn ${unitePoids === 'g' ? 'active' : ''}`} onClick={() => setUnitePoids('g')}>g</button>
+      )}
       <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
       <button className={`radio-btn ${unitePoids === 'lb' ? 'active' : ''}`} onClick={() => setUnitePoids('lb')}>lb</button>
     </div>
@@ -459,6 +511,12 @@ useEffect(() => {
     <strong>{resultat ? `${resultat.volume} mL` : '—'}</strong>
   </div>
   )}
+  {!enComprimes && resultat?.volumeTropPetit && (
+    <div className="avertissement-plage">
+      <i className="ti ti-alert-triangle"></i>
+      Volume inférieur à 0,05 mL : difficile à mesurer avec précision. Une concentration plus faible (autre formulation ou dilution) peut être nécessaire, à voir avec le vétérinaire.
+    </div>
+  )}
   <div className="resultat-ligne">
     <span>Voies</span>
     <strong>{medicament.voies_admin?.join(', ') || '—'}</strong>
@@ -475,13 +533,21 @@ useEffect(() => {
           )}
 
         </div>
+        ) : (
+          <div className="calc-avertissement">
+            <i className="ti ti-alert-circle"></i>
+            Valide toujours le dosage avec un vétérinaire avant d'administrer un médicament. Votre jugement clinique prime en tout temps.
+          </div>
+        )}
 
-        {/* INFOS MÉDICAMENT */}
-        <SectionCollapsible
-          titre="Indication"
-          icone="ti-stethoscope"
-          contenu={medicament.indication}
-        />
+        {/* INFOS MÉDICAMENT (l'indication d'une fiche exotique est sa posologie, déjà affichée) */}
+        {!exotique && (
+          <SectionCollapsible
+            titre="Indication"
+            icone="ti-stethoscope"
+            contenu={medicament.indication}
+          />
+        )}
         <SectionCollapsible
           titre="Interactions médicamenteuses"
           icone="ti-alert-circle"

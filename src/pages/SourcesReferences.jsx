@@ -34,6 +34,7 @@ const SECTIONS = [
       'HOVDA, L.R., BRUTLAG, A.G., POPPENGA, R.H. et EPSTEIN, S.E. Blackwell\'s Five-Minute Veterinary Consult Clinical Companion: Small Animal Toxicology (3e éd.). Wiley Blackwell, 2024, 947 p.',
       'SIROIS, M. Mosby\'s veterinary PDQ: Veterinary facts at hand (3e éd.). Elsevier, 2018, 326 p.',
       'PLUMB, C. Plumb\'s Veterinary Drug Handbook (7e éd.). PharmaVet Inc, 2011, 1299 p.',
+      'ALLERTON, F. (dir.) BSAVA Small Animal Formulary, Part A: Canine and Feline (12e éd.). BSAVA Publications, 2026, 458 p.',
       'PETERSON, M.E., KUTZLER, M.-A. Small Animal Pediatrics. Elsevier, 2011, 544 p.',
       { texte: 'MERCK MANUAL, Veterinary Manual. En ligne :', href: 'https://www.merckvetmanual.com/pharmacology/' },
       { texte: 'ASPCA Animal Poison Control. En ligne :', href: 'https://www.aspca.org/pet-care/aspca-poison-control/toxic-and-non-toxic-plants' },
@@ -65,6 +66,17 @@ const SECTIONS = [
       { texte: 'University of Minnesota. En ligne :', href: 'https://vetmed.umn.edu/urolith-center' },
       { texte: 'University of Saskatchewan. En ligne :', href: 'https://wcvm.usask.ca/learnaboutparasites/index.php' },
       { texte: 'Minnesota Department of Health — Darkroom Fog Test. En ligne :', href: 'https://www.health.state.mn.us/communities/environment/radiation/xray/darkfogmed.html' },
+    ],
+  },
+  {
+    titre: 'Exotiques',
+    icone: 'ti-paw',
+    paragraphes: [],
+    liste: [
+      'HEDLEY, J. (dir.) BSAVA Small Animal Formulary, Part B: Exotic Pets (12e éd.). BSAVA Publications, 2026.',
+      'GRAHAM, J.E., DOSS, G.A. et BEAUFRÈRE, H. (dir.) Exotic Animal Emergency and Critical Care Medicine. Wiley Blackwell, 2021.',
+      'VARGA SMITH, M. Textbook of Rabbit Medicine (3e éd.). Elsevier, 2023.',
+      'CARPENTER, J.W. (dir.) Carpenter\'s Exotic Animal Formulary (6e éd.). Elsevier, 2023.',
     ],
   },
 ]

@@ -6,6 +6,7 @@ import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 import LienFavoris from '../components/LienFavoris'
 import { correspond } from '../lib/recherche'
+import { estExotiqueSeulement } from '../lib/especesExotiques'
 
 const DROGUES = [
   { id: 'anesthesiques',     label: 'Anesthésiques /\nAnalgésiques', route: '/drogues/anesthesiques', accent: false },
@@ -60,7 +61,9 @@ export default function Pharmacologie() {
           ? supabase.from('medicaments_custom').select(champs).eq('equipe_id', teamId).order('nom')
           : supabase.from('medicaments_custom').select(champs).eq('user_id', user?.id).order('nom')),
       ])
-      if (actif) setCatalogue([...meds, ...custom].sort((a, b) => a.nom.localeCompare(b.nom, 'fr')))
+      // Les fiches réservées aux exotiques vivent dans la section Exotiques.
+      const chienChat = [...meds, ...custom].filter(m => !estExotiqueSeulement(m.especes))
+      if (actif) setCatalogue(chienChat.sort((a, b) => a.nom.localeCompare(b.nom, 'fr')))
     }
     charger()
     return () => { actif = false }

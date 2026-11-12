@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { traduireErreur } from '../lib/messagesErreur'
 import { TitreContext } from '../context/NavigationContext'
+import { estExotiqueSeulement } from '../lib/especesExotiques'
 
 const VOIES = [
   'Intraveineux (IV)',
@@ -12,6 +13,19 @@ const VOIES = [
   'Intranasal (IN)',
   'Épidural',
   'Topique',
+  // Voies surtout utilisées chez les exotiques
+  'Intraosseux (IO)',
+  'Intrapéritonéal (IP)',
+  'Intracœlomique',
+  'Intratrachéal',
+  'Nébulisation',
+  'Bain',
+  'Eau de boisson',
+  'Nourriture',
+  'Ophtalmique',
+  'Auriculaire',
+  'Intralésionnel',
+  'Infiltration locale',
 ]
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -64,6 +78,8 @@ export default function MedicamentCustomForm() {
         setForm({
           ...custom,
           type_dose: custom.dose_max ? 'min_max' : 'fixe',
+          unite_dose: custom.unite_dose || 'mg/kg',
+          unite_concentration: custom.unite_concentration || 'mg/mL',
           especes: custom.especes || [],
           voies_admin: custom.voies_admin || [],
           sous_categories: custom.sous_categories || [],
@@ -81,6 +97,9 @@ export default function MedicamentCustomForm() {
           setForm({
             ...base,
             type_dose: base.dose_max ? 'min_max' : 'fixe',
+            // Fiche exotique en posologie seule : unités par défaut si on ajoute une dose.
+            unite_dose: base.unite_dose || 'mg/kg',
+            unite_concentration: base.unite_concentration || 'mg/mL',
             especes: base.especes || [],
             voies_admin: base.voies_admin || [],
             sous_categories: base.sous_categories || [],
@@ -118,8 +137,10 @@ export default function MedicamentCustomForm() {
   async function sauvegarder() {
     setErreur('')
     if (!form.nom?.trim()) return setErreur('Le nom est requis.')
-    if (!form.dose_min)    return setErreur('La dose est requise.')
-    if (!form.concentration) return setErreur('La concentration est requise.')
+    // Exotiques : une posologie sans dose par kg (bain, gouttes, par animal) est permise.
+    const posologieSeule = estExotiqueSeulement(form.especes) && !form.dose_min
+    if (!form.dose_min && !posologieSeule) return setErreur('La dose est requise.')
+    if (!form.concentration && !posologieSeule) return setErreur('La concentration est requise.')
 
     setSauvegarde(true)
     const { data: { user } } = await supabase.auth.getUser()
@@ -130,10 +151,10 @@ export default function MedicamentCustomForm() {
       nom:                 form.nom.trim(),
       categorie:           form.categorie,
       indication:          form.indication,
-      dose_min:            parseFloat(form.dose_min),
+      dose_min:            form.dose_min ? parseFloat(form.dose_min) : null,
       dose_max:            form.type_dose === 'min_max' && form.dose_max ? parseFloat(form.dose_max) : null,
-      unite_dose:          form.unite_dose,
-      concentration:       parseFloat(form.concentration),
+      unite_dose:          posologieSeule ? null : form.unite_dose,
+      concentration:       form.concentration ? parseFloat(form.concentration) : null,
       unite_concentration: form.unite_concentration,
       voies_admin:         form.voies_admin,
       sous_categories:     form.sous_categories,
@@ -169,6 +190,8 @@ export default function MedicamentCustomForm() {
 
     // Un médicament créé de zéro peut n'avoir aucune catégorie.
     if (!form.categorie) { navigate('/drogues'); return }
+    // Fiche exotique : sa liste est celle de l'espèce, pas une catégorie de Pharmacologie.
+    if (estExotiqueSeulement(form.especes)) { navigate(-1); return }
 
     navigate(`/drogues/${form.categorie
   .toLowerCase()

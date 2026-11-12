@@ -5,8 +5,27 @@ import IconesEspeces from '../components/IconesEspeces'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 import { correspond } from '../lib/recherche'
+import { estExotiqueSeulement, NOMS_EXOTIQUES } from '../lib/especesExotiques'
 
-export default function DroguesCategorie({ categorie }) {
+/* Supabase renvoie au plus 1 000 lignes par requête : en mode espèce, on
+   lit tout le catalogue par pages, puis on garde les fiches de l'espèce. */
+const TAILLE_PAGE = 1000
+async function toutLire(requete) {
+  let tout = []
+  for (let debut = 0; ; debut += TAILLE_PAGE) {
+    const { data, error } = await requete().range(debut, debut + TAILLE_PAGE - 1)
+    if (error || !data) break
+    tout = tout.concat(data)
+    if (data.length < TAILLE_PAGE) break
+  }
+  return tout
+}
+
+/* Deux usages : une catégorie de Pharmacologie (chien et chat ; les fiches
+   réservées aux exotiques n'y paraissent pas), ou une catégorie pour une
+   espèce de la section Exotiques (fiches de cette espèce seulement). Sans
+   catégorie, la liste d'une espèce montre toutes ses catégories. */
+export default function DroguesCategorie({ categorie, espece }) {
   const navigate = useNavigate()
   const [medicaments, setMedicaments] = useState([])
   const [favorisIds, setFavorisIds] = useState(new Set())
@@ -25,22 +44,27 @@ export default function DroguesCategorie({ categorie }) {
       try {
         const { data: { user } } = await supabase.auth.getUser()
 
-        const [{ data: meds }, { data: favs }, { data: customBasePersonnel }, { data: newMedsPersonnel }] = await Promise.all([
-          supabase.from('medicaments').select('*').eq('categorie', categorie).order('nom', { ascending: true }),
+        // Filtre de catégorie s'il y en a une (en mode espèce, le tri par espèce se fait ensuite).
+        const parCategorie = q => (categorie ? q.eq('categorie', categorie) : q)
+        const [medsLus, { data: favs }, { data: customBasePersonnel }, { data: newMedsPersonnel }] = await Promise.all([
+          espece && !categorie
+            ? toutLire(() => supabase.from('medicaments').select('*').order('nom', { ascending: true }))
+            : supabase.from('medicaments').select('*').eq('categorie', categorie).order('nom', { ascending: true }).then(r => r.data || []),
           supabase.from('favoris').select('medicament_id, custom_medicament_id').eq('user_id', user.id),
           // Overrides personnels de médicaments de base
-          supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('categorie', categorie).not('medicament_id', 'is', null).is('equipe_id', null),
+          parCategorie(supabase.from('medicaments_custom').select('*').eq('user_id', user.id)).not('medicament_id', 'is', null).is('equipe_id', null),
           // Nouveaux médicaments personnels
-          supabase.from('medicaments_custom').select('*').eq('user_id', user.id).eq('categorie', categorie).is('medicament_id', null).is('equipe_id', null),
+          parCategorie(supabase.from('medicaments_custom').select('*').eq('user_id', user.id)).is('medicament_id', null).is('equipe_id', null),
         ])
+        const meds = medsLus.filter(m => (espece ? m.especes?.includes(espece) : !estExotiqueSeulement(m.especes)))
 
         // Médicaments d'équipe (visibles par tous les membres)
         let customBaseEquipe = []
         let newMedsEquipe = []
         if (estEquipe && teamId) {
           const [{ data: cbe }, { data: nme }] = await Promise.all([
-            supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).eq('categorie', categorie).not('medicament_id', 'is', null),
-            supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId).eq('categorie', categorie).is('medicament_id', null),
+            parCategorie(supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId)).not('medicament_id', 'is', null),
+            parCategorie(supabase.from('medicaments_custom').select('*').eq('equipe_id', teamId)).is('medicament_id', null),
           ])
           customBaseEquipe = cbe || []
           newMedsEquipe = nme || []
@@ -51,7 +75,7 @@ export default function DroguesCategorie({ categorie }) {
         setFavorisIds(ids)
 
         // Override équipe prioritaire sur personnel pour un même médicament de base
-        const medsAvecCustom = (meds || []).map(m => {
+        const medsAvecCustom = meds.map(m => {
           const customEq = customBaseEquipe.find(c => c.medicament_id === m.id)
           if (customEq) return { ...customEq, estCustom: true, badge: 'equipe' }
           const customPers = (customBasePersonnel || []).find(c => c.medicament_id === m.id)
@@ -59,10 +83,11 @@ export default function DroguesCategorie({ categorie }) {
           return m
         })
 
+        const pourCetteListe = m => (espece ? m.especes?.includes(espece) : !estExotiqueSeulement(m.especes))
         const tries = [
           ...medsAvecCustom,
-          ...(newMedsPersonnel || []).map(m => ({ ...m, estCustom: true, badge: 'personnel' })),
-          ...newMedsEquipe.map(m => ({ ...m, estCustom: true, badge: 'equipe' })),
+          ...(newMedsPersonnel || []).filter(pourCetteListe).map(m => ({ ...m, estCustom: true, badge: 'personnel' })),
+          ...newMedsEquipe.filter(pourCetteListe).map(m => ({ ...m, estCustom: true, badge: 'equipe' })),
         ].sort((a, b) => {
           const aFav = ids.has(a.id)
           const bFav = ids.has(b.id)
@@ -80,7 +105,7 @@ export default function DroguesCategorie({ categorie }) {
     }
     chargerDonnees()
     return () => { actif = false }
-  }, [categorie, estEquipe, teamId])
+  }, [categorie, espece, estEquipe, teamId])
 
   async function toggleFavori(medicamentId, estCustom = false) {
   const { data: { user } } = await supabase.auth.getUser()
@@ -117,16 +142,14 @@ export default function DroguesCategorie({ categorie }) {
     }))
   }
 
-  // Sous-catégories uniques
-  const sousCats = ['Tous', ...new Set(
-    medicaments.flatMap(m => m.sous_categories || [])
-  )]
+  // Filtres : sous-catégories dans une catégorie, catégories dans une espèce sans catégorie.
+  const groupesDe = m => (espece && !categorie ? [m.categorie].filter(Boolean) : (m.sous_categories || []))
+  const sousCats = ['Tous', ...new Set(medicaments.flatMap(groupesDe))]
 
   // Filtrer par recherche et sous-catégorie
   const medsFiltres = medicaments.filter(m => {
     const matchRecherche = correspond(m.nom, recherche)
-    const matchSousCat = sousCategorieFiltree === 'Tous' ||
-      (m.sous_categories || []).includes(sousCategorieFiltree)
+    const matchSousCat = sousCategorieFiltree === 'Tous' || groupesDe(m).includes(sousCategorieFiltree)
     return matchRecherche && matchSousCat
   })
 
@@ -204,7 +227,11 @@ export default function DroguesCategorie({ categorie }) {
       ) : (
         <div className="drogues-liste">
           {medsFiltres.length === 0 ? (
-            <div className="admin-vide">Aucun médicament trouvé</div>
+            <div className="admin-vide">
+              {espece && medicaments.length === 0
+                ? `Aucun médicament pour ${NOMS_EXOTIQUES[espece]?.le}${categorie ? ' dans cette catégorie' : ''} pour l'instant.`
+                : 'Aucun médicament trouvé'}
+            </div>
           ) : (
             medsFiltres.map(m => (
               <div
@@ -221,7 +248,9 @@ export default function DroguesCategorie({ categorie }) {
 
                 <div className="drogue-info">
                   <span className="drogue-nom">{m.nom}</span>
-                  {m.sous_categories?.length > 0 && (
+                  {espece && !categorie && m.categorie ? (
+                    <span className="drogue-sous-cat">{m.categorie}</span>
+                  ) : m.sous_categories?.length > 0 && (
                     <span className="drogue-sous-cat">{m.sous_categories.join(', ')}</span>
                   )}
                   {m.badge === 'equipe' && (
@@ -247,7 +276,9 @@ export default function DroguesCategorie({ categorie }) {
           <button
             className="btn-fab"
             aria-label={peutAjouter ? 'Ajouter un médicament' : 'Ajouter un médicament (fonctionnalité Pro)'}
-            onClick={() => peutAjouter ? navigate(`/drogues/ajouter?categorie=${encodeURIComponent(categorie)}`) : setShowProMsg(true)}
+            onClick={() => peutAjouter
+              ? navigate(`/drogues/ajouter?${[espece && `espece=${espece}`, categorie && `categorie=${encodeURIComponent(categorie)}`].filter(Boolean).join('&')}`)
+              : setShowProMsg(true)}
           >
             +
             {!peutAjouter && (

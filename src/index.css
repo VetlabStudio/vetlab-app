@@ -439,8 +439,8 @@ input {
 }
 
 .bottom-nav-v2-icone {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
 }
 
 .bottom-nav-v2-btn.active .bottom-nav-v2-icone {
@@ -646,6 +646,13 @@ input {
   color: var(--text-hint);
 }
 
+/* Nombre de fiches d'une catégorie (Médicaments d'une espèce exotique). */
+.menu-page-item-compte {
+  font-size: 13px;
+  color: var(--text-hint);
+  font-variant-numeric: tabular-nums;
+}
+
 .menu-page-version {
   text-align: center;
   font-size: 12px;
@@ -802,7 +809,7 @@ input {
   border-top: none;
   display: flex;
   justify-content: space-around;
-  padding: 8px 0 calc(16px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 0 calc(12px + env(safe-area-inset-bottom, 0px));
   z-index: 100;
 }
 
@@ -810,14 +817,16 @@ input {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  justify-content: center;
+  gap: 7px;
+  min-height: 48px;
   background: none;
   border: none;
   font-family: var(--font);
   font-size: 12px;
   font-weight: 500;
   color: var(--primary-light);
-  padding: 4px 12px;
+  padding: 6px 0 4px;
   cursor: pointer;
   transition: color 0.15s;
   white-space: pre-line;
@@ -827,7 +836,19 @@ input {
 }
 
 .bottom-nav-v2-btn i {
-  font-size: 25px;
+  font-size: 26px;
+}
+
+/* Trait sous l'onglet actif : sans libellé, il montre où l'on est. */
+.bottom-nav-v2-indicateur {
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+  background: transparent;
+}
+
+.bottom-nav-v2-btn.active .bottom-nav-v2-indicateur {
+  background: var(--primary-light);
 }
 
 .bottom-nav-v2-btn.active span {
@@ -11773,4 +11794,288 @@ summary:focus-visible {
 
 .page-hors-ligne-aide {
   color: var(--text-hint);
+}
+
+/* ─── EXOTIQUES : CHOIX DE L'ESPÈCE ──────────── */
+
+.exotiques-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px;
+}
+
+.exotiques-intro {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.exotiques-groupe {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exotiques-groupe-titre {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.exotiques-grille {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* Oiseaux et reptiles : quatre espèces sur une rangée. */
+.exotiques-grille--4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.exotiques-tuile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px 6px 10px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.exotiques-tuile:active {
+  transform: scale(0.96);
+  box-shadow: none;
+}
+
+.exotiques-tuile-icone {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+/* ─── EXOTIQUES : PAGE DE L'ESPÈCE ──────────── */
+
+.exotique-espece-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 16px 100px;
+}
+
+.exotique-espece-banniere {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--accent-light);
+}
+
+.exotique-espece-pastille {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: white;
+}
+
+.exotique-espece-pastille img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.exotique-espece-noms {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.exotique-espece-nom {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.exotique-espece-latin,
+.exotique-espece-precision {
+  font-size: 14px;
+  color: var(--text-hint);
+}
+
+.exotique-espece-latin {
+  font-style: italic;
+}
+
+.exotique-espece-changer {
+  flex-shrink: 0;
+  padding: 12px 0;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.exotique-outils {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exotique-outil {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  text-align: left;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.exotique-outil:active {
+  background: var(--accent-light);
+}
+
+.exotique-outil-icone {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.exotique-outil-textes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.exotique-outil-titre {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.exotique-outil-detail {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-hint);
+}
+
+.exotique-outil-chevron {
+  flex-shrink: 0;
+  font-size: 18px;
+  color: var(--text-hint);
+}
+
+.exotique-ajout {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.exotique-ajout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 10px 16px;
+  background: white;
+  border: 1.5px dashed var(--primary-light);
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.exotique-ajout-btn .ti {
+  font-size: 18px;
+}
+
+.exotique-ajout-aide {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--text-hint);
+}
+
+/* ─── EXOTIQUES : VALEURS DE RÉFÉRENCE ──────── */
+
+.exotique-valeurs-intro {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-hint);
+}
+
+.exotique-valeurs-titre {
+  padding: 14px 16px 10px;
+}
+
+.exotique-valeurs-ligne {
+  font-size: 13px;
+}
+
+.exotique-valeurs-unite,
+.exotique-valeurs-detail {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-hint);
+}
+
+/* ─── FICHE EXOTIQUE : POSOLOGIE ─────────────── */
+
+.fiche-posologie {
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.fiche-posologie .fiche-posologie-attention {
+  margin-top: 0;
+}
+
+.fiche-posologie-texte {
+  margin: 0;
+  white-space: pre-line;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-primary);
 }

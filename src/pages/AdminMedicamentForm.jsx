@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { traduireErreur } from '../lib/messagesErreur'
+import { estExotiqueSeulement } from '../lib/especesExotiques'
 
 const CATEGORIES = [
   'Anesthésiques / Analgésiques',
@@ -16,6 +17,16 @@ const CATEGORIES = [
   'Neurologiques',
   'Respiratoires',
   'Antagonistes',
+  // Catégories surtout utilisées chez les exotiques
+  'Antiparasitaires',
+  'Antifongiques',
+  'Antiviraux',
+  'Hormones',
+  'Vitamines et minéraux',
+  'Oncologie',
+  'Ophtalmologie',
+  'Antiseptiques et bains',
+  'Divers',
 ]
 
 const VOIES = [
@@ -26,6 +37,19 @@ const VOIES = [
   'Intranasal (IN)',
   'Épidural',
   'Topique',
+  // Voies surtout utilisées chez les exotiques
+  'Intraosseux (IO)',
+  'Intrapéritonéal (IP)',
+  'Intracœlomique',
+  'Intratrachéal',
+  'Nébulisation',
+  'Bain',
+  'Eau de boisson',
+  'Nourriture',
+  'Ophtalmique',
+  'Auriculaire',
+  'Intralésionnel',
+  'Infiltration locale',
 ]
 
 const UNITES_DOSE = ['mg/kg', 'mcg/kg', 'UI/kg', 'mL/kg']
@@ -146,8 +170,10 @@ export default function AdminMedicamentForm() {
     if (!form.nom.trim())     return setErreur('Le nom est requis.')
     if (!form.categorie)      return setErreur('La catégorie est requise.')
     if (!form.especes.length) return setErreur('Choisir au moins une espèce.')
-    if (!form.dose_min)       return setErreur('La dose est requise.')
-    if (!form.concentration)  return setErreur('La concentration est requise.')
+    // Exotiques : une posologie sans dose par kg (bain, gouttes, par animal) est permise.
+    const posologieSeule = estExotiqueSeulement(form.especes) && !form.dose_min
+    if (!form.dose_min && !posologieSeule) return setErreur('La dose est requise.')
+    if (!form.concentration && !posologieSeule) return setErreur('La concentration est requise.')
 
     setSauvegarde(true)
 
@@ -155,11 +181,11 @@ export default function AdminMedicamentForm() {
       nom:                 form.nom.trim(),
       categorie:           form.categorie,
       indication:          form.indication,
-      dose_min:            parseFloat(form.dose_min),
+      dose_min:            form.dose_min ? parseFloat(form.dose_min) : null,
       dose_max:            form.type_dose === 'min_max' && form.dose_max
                              ? parseFloat(form.dose_max) : null,
-      unite_dose:          form.unite_dose,
-      concentration:       parseFloat(form.concentration),
+      unite_dose:          posologieSeule ? null : form.unite_dose,
+      concentration:       form.concentration ? parseFloat(form.concentration) : null,
       unite_concentration: form.unite_concentration,
       voies_admin:         form.voies_admin,
       sous_categories:     form.sous_categories,

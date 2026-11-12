@@ -24,6 +24,7 @@ const STATUTS = {
 }
 const ICONES = {
   'Médicament': 'ti-pill',
+  'Exotiques': 'ti-paw',
   'Protocole labo': 'ti-flask',
   'Labo': 'ti-flask',
   'Nutrition': 'ti-bowl',

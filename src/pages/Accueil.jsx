@@ -88,11 +88,11 @@ const CALCULATEURS = [
 
 const REFERENCES = [
   { id: 'pharmacologie', label: 'Pharmacologie', icone: '/icone-pharmaco.svg', route: '/drogues' },
+  { id: 'exotiques', label: 'Exotiques', icone: '/icone-lapin.svg', route: '/exotiques' },
   { id: 'laboratoire', label: 'Laboratoire', icone: '/icone-laboratoire.svg', route: '/labo' },
   { id: 'chirurgie', label: 'Chirurgie', icone: '/icone-chirurgie-ref.svg', route: '/chirurgie' },
   { id: 'soins-generaux', label: 'Soins\ngénéraux', icone: '/icone-soins-generaux.svg', route: '/soins-generaux' },
   { id: 'toxicologie', label: 'Toxicologie', icone: '/toxico.svg', route: '/drogues/toxicologie', pro: true },
-  { id: 'nutrition', label: 'Nutrition', icone: '/icone-nutrition.svg', route: '/nutrition' },
 ]
 
 export default function Accueil() {

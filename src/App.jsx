@@ -51,6 +51,11 @@ const EvaluationDouleurAigue = lazy(() => import('./pages/EvaluationDouleurAigue
 const EvaluationDouleurAigueChien = lazy(() => import('./pages/EvaluationDouleurAigueChien'))
 const EvaluationDouleurAigueChat = lazy(() => import('./pages/EvaluationDouleurAigueChat'))
 const Pharmacologie = lazy(() => import('./pages/Pharmacologie'))
+const Exotiques = lazy(() => import('./pages/Exotiques'))
+const ExotiqueEspece = lazy(() => import('./pages/ExotiqueEspece'))
+const ExotiqueMedicaments = lazy(() => import('./pages/ExotiqueMedicaments'))
+const ExotiqueCategorie = lazy(() => import('./pages/ExotiqueCategorie'))
+const ExotiqueValeurs = lazy(() => import('./pages/ExotiqueValeurs'))
 const ChirurgieListe = lazy(() => import('./pages/ChirurgieListe'))
 const SoinsGeneraux = lazy(() => import('./pages/SoinsGeneraux'))
 const SoinsGenerauxDentisterie = lazy(() => import('./pages/SoinsGenerauxDentisterie'))
@@ -112,21 +117,6 @@ const SoinsGenerauxExamenPhysique = lazy(() => import('./pages/SoinsGenerauxExam
 const ScoreGlasgow = lazy(() => import('./pages/ScoreGlasgow'))
 const Menu = lazy(() => import('./pages/Menu'))
 const Notifications = lazy(() => import('./pages/Notifications'))
-const NutritionListe = lazy(() => import('./pages/NutritionListe'))
-const NutritionGestationLactation = lazy(() => import('./pages/NutritionGestationLactation'))
-const NutritionCroissance = lazy(() => import('./pages/NutritionCroissance'))
-const NutritionGeriatrique = lazy(() => import('./pages/NutritionGeriatrique'))
-const NutritionGastroIntestinal = lazy(() => import('./pages/NutritionGastroIntestinal'))
-const NutritionPeau = lazy(() => import('./pages/NutritionPeau'))
-const NutritionDiabete = lazy(() => import('./pages/NutritionDiabete'))
-const NutritionHyperthyroidisme = lazy(() => import('./pages/NutritionHyperthyroidisme'))
-const NutritionCancer = lazy(() => import('./pages/NutritionCancer'))
-const NutritionCardiaque = lazy(() => import('./pages/NutritionCardiaque'))
-const NutritionPertePoids = lazy(() => import('./pages/NutritionPertePoids'))
-const NutritionDentaire = lazy(() => import('./pages/NutritionDentaire'))
-const NutritionRenale = lazy(() => import('./pages/NutritionRenale'))
-const NutritionUrinaire = lazy(() => import('./pages/NutritionUrinaire'))
-const NutritionNeonatologie = lazy(() => import('./pages/NutritionNeonatologie'))
 
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -383,6 +373,11 @@ export default function App() {
         <Route path="/calculateurs/douleur-aigue/chien" element={<RouteProtegee session={session}><EvaluationDouleurAigueChien /></RouteProtegee>} />
         <Route path="/calculateurs/douleur-aigue/chat" element={<RouteProtegee session={session}><EvaluationDouleurAigueChat /></RouteProtegee>} />
         <Route path="/drogues" element={<RouteProtegee session={session}><Pharmacologie /></RouteProtegee>} />
+        <Route path="/exotiques" element={<RouteProtegee session={session}><Exotiques /></RouteProtegee>} />
+        <Route path="/exotiques/:espece" element={<RouteProtegee session={session}><ExotiqueEspece /></RouteProtegee>} />
+        <Route path="/exotiques/:espece/medicaments" element={<RouteProtegee session={session}><ExotiqueMedicaments /></RouteProtegee>} />
+        <Route path="/exotiques/:espece/medicaments/:categorie" element={<RouteProtegee session={session}><ExotiqueCategorie /></RouteProtegee>} />
+        <Route path="/exotiques/:espece/valeurs" element={<RouteProtegee session={session}><ExotiqueValeurs /></RouteProtegee>} />
         <Route path="/chirurgie" element={<RouteProtegee session={session}><ChirurgieListe /></RouteProtegee>} />
         <Route path="/soins-generaux" element={<RouteProtegee session={session}><SoinsGeneraux /></RouteProtegee>} />
         <Route path="/soins-generaux/dentisterie" element={<RouteProtegee session={session}><ProGate><SoinsGenerauxDentisterie /></ProGate></RouteProtegee>} />
@@ -458,22 +453,6 @@ export default function App() {
         <Route path="/soins-generaux/examen-physique" element={<RouteProtegee session={session}><ProGate><RequiertInternet><SoinsGenerauxExamenPhysique /></RequiertInternet></ProGate></RouteProtegee>} />
         <Route path="/soins-generaux/glasgow" element={<RouteProtegee session={session}><ProGate><ScoreGlasgow /></ProGate></RouteProtegee>} />
 
-        {/* NUTRITION */}
-        <Route path="/nutrition" element={<RouteProtegee session={session}><NutritionListe /></RouteProtegee>} />
-        <Route path="/nutrition/gestation-lactation" element={<RouteProtegee session={session}><NutritionGestationLactation /></RouteProtegee>} />
-        <Route path="/nutrition/croissance" element={<RouteProtegee session={session}><NutritionCroissance /></RouteProtegee>} />
-        <Route path="/nutrition/neonatologie" element={<RouteProtegee session={session}><NutritionNeonatologie /></RouteProtegee>} />
-        <Route path="/nutrition/geriatrique" element={<RouteProtegee session={session}><NutritionGeriatrique /></RouteProtegee>} />
-        <Route path="/nutrition/gastro-intestinal" element={<RouteProtegee session={session}><NutritionGastroIntestinal /></RouteProtegee>} />
-        <Route path="/nutrition/peau" element={<RouteProtegee session={session}><NutritionPeau /></RouteProtegee>} />
-        <Route path="/nutrition/diabete" element={<RouteProtegee session={session}><NutritionDiabete /></RouteProtegee>} />
-        <Route path="/nutrition/hyperthyroidisme" element={<RouteProtegee session={session}><NutritionHyperthyroidisme /></RouteProtegee>} />
-        <Route path="/nutrition/cancer" element={<RouteProtegee session={session}><NutritionCancer /></RouteProtegee>} />
-        <Route path="/nutrition/cardiaque" element={<RouteProtegee session={session}><NutritionCardiaque /></RouteProtegee>} />
-        <Route path="/nutrition/perte-poids" element={<RouteProtegee session={session}><NutritionPertePoids /></RouteProtegee>} />
-        <Route path="/nutrition/dentaire" element={<RouteProtegee session={session}><NutritionDentaire /></RouteProtegee>} />
-        <Route path="/nutrition/renale" element={<RouteProtegee session={session}><NutritionRenale /></RouteProtegee>} />
-        <Route path="/nutrition/urinaire" element={<RouteProtegee session={session}><NutritionUrinaire /></RouteProtegee>} />
 
         {/* MENU */}
         <Route path="/menu" element={<RouteProtegee session={session}><Menu /></RouteProtegee>} />

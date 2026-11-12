@@ -31,8 +31,8 @@ const SECTIONS = [
   ['/labo/nouveau', null],
   ['/labo/radiologie/charte', null],
   ['/drogues', 'Médicament'],
+  ['/exotiques', 'Exotiques'],
   ['/labo', 'Labo'],
-  ['/nutrition', 'Nutrition'],
   ['/calculateurs', 'Calculateur'],
   ['/chirurgie', 'Chirurgie'],
   ['/soins-generaux', 'Soins généraux'],
@@ -40,8 +40,8 @@ const SECTIONS = [
 
 const ICONES = {
   'Médicament': 'ti-pill',
+  'Exotiques': 'ti-paw',
   'Labo': 'ti-flask',
-  'Nutrition': 'ti-bowl',
   'Calculateur': 'ti-calculator',
   'Chirurgie': 'ti-heart-rate-monitor',
   'Soins généraux': 'ti-stethoscope',
