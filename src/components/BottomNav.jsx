@@ -3,15 +3,16 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { NavGuardContext, NavDirectionContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import useNotificationsNonLues from '../hooks/useNotificationsNonLues'
+import { t, tn } from '../lib/i18n'
 
 /* Icônes sans libellés : avec les favoris et l'équipe, une clinique a six
    onglets, trop serrés avec du texte sur un téléphone. Chaque bouton garde
    son nom pour les lecteurs d'écran (aria-label) et en info-bulle. */
-const ACCUEIL      = { id: 'accueil',      label: 'Accueil',             svg: '/icone-accueil-nav.svg', route: '/accueil' }
-const CALCULATEURS = { id: 'calculateurs', label: 'Calcul rapide',       svg: '/icone-calc-nav.svg',    route: '/calculateurs' }
-const FAVORIS      = { id: 'favoris',      label: 'Médicaments favoris', icone: 'ti-star',              route: '/drogues/mes-drogues' }
-const NOTES        = { id: 'notes',        label: 'Notes',               svg: '/icone-note-nav.svg',    route: '/notes' }
-const EQUIPE       = { id: 'equipe',       label: 'Équipe',              svg: '/icone-equipe-nav.svg',  route: '/equipe' }
+const ACCUEIL      = { id: 'accueil',      label: t('Accueil'),          svg: '/icone-accueil-nav.svg', route: '/accueil' }
+const CALCULATEURS = { id: 'calculateurs', label: t('Calcul rapide'),    svg: '/icone-calc-nav.svg',    route: '/calculateurs' }
+const FAVORIS      = { id: 'favoris',      label: t('Médicaments favoris'), icone: 'ti-star',              route: '/drogues/mes-drogues' }
+const NOTES        = { id: 'notes',        label: t('Notes'),            svg: '/icone-note-nav.svg',    route: '/notes' }
+const EQUIPE       = { id: 'equipe',       label: t('Équipe'),           svg: '/icone-equipe-nav.svg',  route: '/equipe' }
 
 const ONGLETS_BASE = [ACCUEIL, CALCULATEURS, FAVORIS, NOTES]
 const ONGLETS_EQUIPE = [ACCUEIL, CALCULATEURS, FAVORIS, NOTES, EQUIPE]
@@ -51,7 +52,7 @@ export default function BottomNav() {
             key={o.id}
             className={`bottom-nav-v2-btn ${actif ? 'active' : ''}`}
             onClick={() => allerVers(() => { navigate('/accueil', { replace: true }); navigate(o.route) })}
-            aria-label={pastille ? `${o.label}, ${nonLues} notification${nonLues > 1 ? 's' : ''} non lue${nonLues > 1 ? 's' : ''}` : o.label}
+            aria-label={pastille ? tn(nonLues, '{label}, {n} notification non lue', '{label}, {n} notifications non lues', { label: o.label }) : o.label}
             aria-current={actif ? 'page' : undefined}
             title={o.label}
           >
@@ -68,9 +69,9 @@ export default function BottomNav() {
       <button
         className={`bottom-nav-v2-btn ${location.pathname === '/menu' ? 'active' : ''}`}
         onClick={() => allerVers(() => navigate('/menu'))}
-        aria-label="Plus"
+        aria-label={t('Plus')}
         aria-current={location.pathname === '/menu' ? 'page' : undefined}
-        title="Plus"
+        title={t('Plus')}
       >
         <i className="ti ti-menu-2" aria-hidden="true"></i>
         <span className="bottom-nav-v2-indicateur" aria-hidden="true"></span>

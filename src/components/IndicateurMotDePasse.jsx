@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { chargerListes, evaluerMotDePasse, listesChargees } from '../lib/motDePasse'
+import { t } from '../lib/i18n'
 
-const LIBELLES = ['', 'Faible', 'Correct', 'Fort']
+const LIBELLES = ['', t('Faible'), t('Correct'), t('Fort')]
 
 // Barre de force et conseil sous le champ du nouveau mot de passe.
 export default function IndicateurMotDePasse({ motDePasse, email, nom }) {

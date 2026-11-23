@@ -126,6 +126,7 @@ import RequiertInternet from './components/RequiertInternet'
 import { SignalementAuto } from './components/SignalerErreur'
 import BandeauHorsLigne from './components/BandeauHorsLigne'
 import { prechargerDonnees, oublierDonnees } from './lib/horsLigne'
+import { t } from './lib/i18n'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -142,7 +143,7 @@ function LayoutPrincipal({ children }) {
   const [titreCustom, setTitreCustom] = useState('')
   const [navGuardActif, setNavGuardActif] = useState(false)
   const [actionEnAttente, setActionEnAttente] = useState(null)
-  const [navGuardMessage, setNavGuardMessage] = useState('Voulez-vous vraiment quitter ? Toutes les informations non enregistrées seront perdues.')
+  const [navGuardMessage, setNavGuardMessage] = useState(t('Voulez-vous vraiment quitter ? Toutes les informations non enregistrées seront perdues.'))
 
   const skipNextRef = useRef(false)
   const [transition, setTransition] = useState(null)
@@ -202,7 +203,7 @@ function LayoutPrincipal({ children }) {
               onAnimationEnd={transition ? () => setTransition(null) : undefined}
             >
               {/* Le lien « Signaler une erreur » suit la page : caché tant qu'elle charge. */}
-              <Suspense fallback={<div className="admin-loading">Chargement...</div>}>
+              <Suspense fallback={<div className="admin-loading">{t('Chargement...')}</div>}>
                 {children}
                 <SignalementAuto />
               </Suspense>
@@ -216,18 +217,18 @@ function LayoutPrincipal({ children }) {
               <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
                 <i className="ti ti-alert-triangle" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>
-                  Quitter sans enregistrer ?
+                  {t('Quitter sans enregistrer ?')}
                 </h2>
                 <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  {navGuardMessage}
+                  {t(navGuardMessage)}
                 </p>
               </div>
               <div className="popup-actions-centrees">
                 <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setActionEnAttente(null)}>
-                  Annuler
+                  {t('Annuler')}
                 </button>
                 <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => { const action = actionEnAttente; setActionEnAttente(null); action() }}>
-                  Quitter
+                  {t('Quitter')}
                 </button>
               </div>
             </div>
@@ -246,7 +247,7 @@ function LayoutAdmin({ children }) {
       <div className="app-layout">
         <Header />
         <main className="contenu-principal">
-          <Suspense fallback={<div className="admin-loading">Chargement...</div>}>
+          <Suspense fallback={<div className="admin-loading">{t('Chargement...')}</div>}>
             {children}
           </Suspense>
         </main>
@@ -292,9 +293,9 @@ function AvisConfirmationCourriel({ onFermer }) {
       <div className="popup-card" role="dialog" aria-modal="true" aria-labelledby="avis-courriel-titre" onClick={e => e.stopPropagation()}>
         <div style={{ textAlign: 'center', padding: '8px 0 4px' }}>
           <i className="ti ti-mail-check" aria-hidden="true" style={{ fontSize: 44, color: 'var(--primary)', display: 'inline-block', marginBottom: 12 }}></i>
-          <h2 id="avis-courriel-titre" style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px' }}>Première confirmation reçue</h2>
+          <h2 id="avis-courriel-titre" style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px' }}>{t('Première confirmation reçue')}</h2>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
-            Pour terminer le changement d'adresse, ouvrez aussi le lien envoyé à votre autre adresse courriel. L'adresse changera après ce deuxième lien.
+            {t('Pour terminer le changement d\'adresse, ouvrez aussi le lien envoyé à votre autre adresse courriel. L\'adresse changera après ce deuxième lien.')}
           </p>
         </div>
         <button className="labo-btn-primary" style={{ width: '100%', padding: '12px 0', fontSize: 14 }} onClick={onFermer}>

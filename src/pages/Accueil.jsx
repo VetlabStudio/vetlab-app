@@ -5,6 +5,7 @@ import BadgePro from '../components/BadgePro'
 import PopupPro from '../components/PopupPro'
 import ModalInstallation from '../components/ModalInstallation'
 import { useProfil } from '../context/ProfilContext'
+import { t, tn } from '../lib/i18n'
 
 /* Équipe : cloche toujours affichée, tenue à jour en direct. Autres
    forfaits : elle n'apparaît que s'il y a du non lu à l'ouverture de
@@ -47,7 +48,7 @@ function ClocheMiniAccueil() {
 
   return (
     <button
-      aria-label={count > 0 ? `Notifications, ${count} non lue${count > 1 ? 's' : ''}` : 'Notifications'}
+      aria-label={count > 0 ? tn(count, 'Notifications, {n} non lue', 'Notifications, {n} non lues') : t('Notifications')}
       onClick={() => navigate('/notifications')}
       style={{
         background: 'var(--primary)', border: 'none', cursor: 'pointer',
@@ -71,28 +72,28 @@ function ClocheMiniAccueil() {
 }
 
 const CALCULATEURS = [
-  { id: 'fluido',      label: 'Fluido',              icone: '/icone-fluido.svg',      route: '/calculateurs/fluido' },
-  { id: 'cri',         label: 'CRI',                 icone: '/icone-cri.svg',         route: '/calculateurs/cri' },
-  { id: 'conversion',  label: 'Conversion',          icone: '/icone-conversion.svg',  route: '/calculateurs/conversion' },
-  { id: 'dilution',    label: 'Dilution\nC1V1-C2V2', icone: '/icone-dilution.svg',    route: '/calculateurs/dilution',   pro: true },
-  { id: 'rcr',         label: 'RCR\nUrgence',        icone: '/icone-ecg.svg',         route: '/calculateurs/rcr' },
-  { id: 'mise-bas',    label: 'Date de\nmise bas',   icone: '/icone-calendrier.svg',  route: '/calculateurs/mise-bas',   pro: true },
-  { id: 'besoin',      label: 'Besoin\nénergétique', icone: '/icone-energie.svg',     route: '/calculateurs/besoin',     pro: true },
-  { id: 'transfusion', label: 'Transfusion\nsanguine', icone: '/icone-sang.svg',      route: '/calculateurs/transfusion', pro: true },
-  { id: 'toxicite',    label: 'Toxicité\nchocolat',  icone: '/icone-chocolat.svg',    route: '/calculateurs/toxicite',   pro: true },
-  { id: 'tempo',       label: 'Tap BPM',             icone: '/icone-tap.svg',         route: '/calculateurs/tempo',      pro: true },
-  { id: 'douleur-aigue', label: 'Évaluation de la\ndouleur aiguë', icone: '/icone-douleur.svg', route: '/calculateurs/douleur-aigue' },
-  { id: 'monitoring',    label: 'Monitoring\nanesthésique',  icone: '/icone-monitoring.svg',          route: '/chirurgie/monitoring', pro: true },
+  { id: 'fluido',      label: t('Fluido'),           icone: '/icone-fluido.svg',      route: '/calculateurs/fluido' },
+  { id: 'cri',         label: t('CRI'),                 icone: '/icone-cri.svg',         route: '/calculateurs/cri' },
+  { id: 'conversion',  label: t('Conversion'),          icone: '/icone-conversion.svg',  route: '/calculateurs/conversion' },
+  { id: 'dilution',    label: t('Dilution\nC1V1-C2V2'), icone: '/icone-dilution.svg',    route: '/calculateurs/dilution',   pro: true },
+  { id: 'rcr',         label: t('RCR\nUrgence'),        icone: '/icone-ecg.svg',         route: '/calculateurs/rcr' },
+  { id: 'mise-bas',    label: t('Date de\nmise bas'),   icone: '/icone-calendrier.svg',  route: '/calculateurs/mise-bas',   pro: true },
+  { id: 'besoin',      label: t('Besoin\nénergétique'), icone: '/icone-energie.svg',     route: '/calculateurs/besoin',     pro: true },
+  { id: 'transfusion', label: t('Transfusion\nsanguine'), icone: '/icone-sang.svg',      route: '/calculateurs/transfusion', pro: true },
+  { id: 'toxicite',    label: t('Toxicité\nchocolat'),  icone: '/icone-chocolat.svg',    route: '/calculateurs/toxicite',   pro: true },
+  { id: 'tempo',       label: t('Tap BPM'),             icone: '/icone-tap.svg',         route: '/calculateurs/tempo',      pro: true },
+  { id: 'douleur-aigue', label: t('Évaluation de la\ndouleur aiguë'), icone: '/icone-douleur.svg', route: '/calculateurs/douleur-aigue' },
+  { id: 'monitoring',    label: t('Monitoring\nanesthésique'),  icone: '/icone-monitoring.svg',          route: '/chirurgie/monitoring', pro: true },
 ]
 
 
 const REFERENCES = [
-  { id: 'pharmacologie', label: 'Pharmacologie', icone: '/icone-pharmaco.svg', route: '/drogues' },
-  { id: 'exotiques', label: 'Exotiques', icone: '/icone-lapin.svg', route: '/exotiques' },
-  { id: 'laboratoire', label: 'Laboratoire', icone: '/icone-laboratoire.svg', route: '/labo' },
-  { id: 'chirurgie', label: 'Chirurgie', icone: '/icone-chirurgie-ref.svg', route: '/chirurgie' },
-  { id: 'soins-generaux', label: 'Soins\ngénéraux', icone: '/icone-soins-generaux.svg', route: '/soins-generaux' },
-  { id: 'toxicologie', label: 'Toxicologie', icone: '/toxico.svg', route: '/drogues/toxicologie', pro: true },
+  { id: 'pharmacologie', label: t('Pharmacologie'), icone: '/icone-pharmaco.svg', route: '/drogues' },
+  { id: 'exotiques', label: t('Exotiques'), icone: '/icone-lapin.svg', route: '/exotiques' },
+  { id: 'laboratoire', label: t('Laboratoire'), icone: '/icone-laboratoire.svg', route: '/labo' },
+  { id: 'chirurgie', label: t('Chirurgie'), icone: '/icone-chirurgie-ref.svg', route: '/chirurgie' },
+  { id: 'soins-generaux', label: t('Soins\ngénéraux'), icone: '/icone-soins-generaux.svg', route: '/soins-generaux' },
+  { id: 'toxicologie', label: t('Toxicologie'), icone: '/toxico.svg', route: '/drogues/toxicologie', pro: true },
 ]
 
 export default function Accueil() {
@@ -134,8 +135,8 @@ export default function Accueil() {
           </div>
           <div>
            
-            <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: 0 }}>Bonjour</p>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{prenom || 'Bienvenue'}</h1>
+            <p style={{ fontSize: 14, color: 'var(--text-hint)', margin: 0 }}>{t('Bonjour')}</p>
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{prenom || t('Bienvenue')}</h1>
              {estEquipe && nomClinique && (
               <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1, margin: '0 0 2px 0' }}>{nomClinique}</p>
             )}
@@ -148,11 +149,11 @@ export default function Accueil() {
       <section className="accueil-v2-section">
         {/* BOUTON PRÉCONSULTATION */}
         <button className="accueil-v2-preconsult-btn" onClick={() => estPro ? navigate('/soins-generaux/examen-physique') : setShowProMsg(true)}>
-          <span>Démarrer un examen</span>
+          <span>{t('Démarrer un examen')}</span>
           <BadgePro />
         </button>
 
-        <h2 className="accueil-v2-titre-section">Boîte à outils</h2>
+        <h2 className="accueil-v2-titre-section">{t('Boîte à outils')}</h2>
         <div className="accueil-v2-calc-grid">
         {CALCULATEURS.map(c => (
             <button
@@ -171,7 +172,7 @@ export default function Accueil() {
 
       {/* SECTION RÉFÉRENCES */}
       <section className="accueil-v2-section">
-        <h2 className="accueil-v2-titre-section">Références</h2>
+        <h2 className="accueil-v2-titre-section">{t('Références')}</h2>
         <div className="accueil-v2-calc-grid accueil-v2-calc-grid--2col">
           {REFERENCES.map(r => (
             <button

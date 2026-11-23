@@ -1,3 +1,4 @@
+import { t, tn } from './i18n'
 // Règles pour un nouveau mot de passe, selon les recommandations actuelles
 // (NIST SP 800-63B rév. 4, OWASP ASVS 5) : la longueur compte plus que la
 // complexité, aucune règle de composition, et on refuse les mots de passe
@@ -8,7 +9,7 @@ export const LONGUEUR_MIN = 12
 // Supabase refuse les mots de passe de plus de 72 caractères.
 export const LONGUEUR_MAX = 72
 
-export const ASTUCE_MOT_DE_PASSE = `${LONGUEUR_MIN} caractères minimum. Astuce : une courte phrase est facile à retenir, par exemple « mon chien mange des carottes ».`
+export const ASTUCE_MOT_DE_PASSE = t('{n} caractères minimum. Astuce : une courte phrase est facile à retenir, par exemple « mon chien mange des carottes ».', { n: LONGUEUR_MIN })
 
 // Les listes pèsent environ 90 ko : on ne les charge qu'au besoin.
 let listes = null
@@ -70,36 +71,36 @@ export function evaluerMotDePasse(mdp, infos = {}) {
 
   if (mdp.length < LONGUEUR_MIN) {
     const reste = LONGUEUR_MIN - mdp.length
-    return { niveau: 1, valide: false, message: `Encore ${reste} caractère${reste > 1 ? 's' : ''} (${LONGUEUR_MIN} minimum).` }
+    return { niveau: 1, valide: false, message: tn(reste, 'Encore {n} caractère ({min} minimum).', 'Encore {n} caractères ({min} minimum).', { min: LONGUEUR_MIN }) }
   }
   if (mdp.length > LONGUEUR_MAX) {
-    return { niveau: 1, valide: false, message: `${LONGUEUR_MAX} caractères maximum.` }
+    return { niveau: 1, valide: false, message: t('{n} caractères maximum.', { n: LONGUEUR_MAX }) }
   }
 
   const minuscule = mdp.toLowerCase()
   if (estSuiteOuRepetition(mdp)) {
-    return { niveau: 1, valide: false, message: 'Évitez les répétitions et les suites (aaaa, 1234, azerty).' }
+    return { niveau: 1, valide: false, message: t('Évitez les répétitions et les suites (aaaa, 1234, azerty).') }
   }
   if (morceauxPersonnels(infos).some((m) => minuscule.includes(m))) {
-    return { niveau: 1, valide: false, message: "Évitez d'utiliser votre nom, votre courriel ou le nom de l'app." }
+    return { niveau: 1, valide: false, message: t("Évitez d'utiliser votre nom, votre courriel ou le nom de l'app.") }
   }
   if (listes) {
     if (listes.complets.has(minuscule)) {
-      return { niveau: 1, valide: false, message: 'Ce mot de passe est trop courant. Choisissez-en un autre.' }
+      return { niveau: 1, valide: false, message: t('Ce mot de passe est trop courant. Choisissez-en un autre.') }
     }
     // « Soleil2026!!! » : un mot courant, éventuellement répété, plus des chiffres ou symboles.
     const lettres = minuscule.replace(/[^a-z]/g, '')
     const base = lettres.match(/^(.+?)\1*$/)?.[1] || lettres
     if (lettres.length < 4 || listes.mots.has(base)) {
-      return { niveau: 1, valide: false, message: 'Trop prévisible : un mot courant avec des chiffres ou des symboles.' }
+      return { niveau: 1, valide: false, message: t('Trop prévisible : un mot courant avec des chiffres ou des symboles.') }
     }
   }
 
   const types = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^a-zA-Z0-9]/].filter((r) => r.test(mdp)).length
   if (mdp.length >= 16 || (mdp.length >= 14 && types >= 3)) {
-    return { niveau: 3, valide: true, message: 'Très difficile à deviner.' }
+    return { niveau: 3, valide: true, message: t('Très difficile à deviner.') }
   }
-  return { niveau: 2, valide: true, message: 'Quelques caractères de plus le rendraient encore plus solide.' }
+  return { niveau: 2, valide: true, message: t('Quelques caractères de plus le rendraient encore plus solide.') }
 }
 
 // Pour la validation à l'envoi du formulaire : s'assure que les listes sont chargées.

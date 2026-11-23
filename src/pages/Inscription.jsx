@@ -9,6 +9,8 @@ import { verifierMotDePasse } from '../lib/motDePasse'
 import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
 import SuggestionCourriel from '../components/SuggestionCourriel'
 import { CONDITIONS_COMPLETES_SECTIONS, CONFIDENTIALITE_SECTIONS } from '../data/textesLegaux'
+import { t, enAnglais, langue } from '../lib/i18n'
+import BoutonLangue from '../components/BoutonLangue'
 
 const CGU_PAGES = [
   {
@@ -16,8 +18,8 @@ const CGU_PAGES = [
     animal: '/Chat08.png',
     sections: [
       {
-        titre: 'Acceptation des termes',
-        texte: 'En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et ADJUVET.',
+        titre: t('Acceptation des termes'),
+        texte: t('En créant un compte et en utilisant ADJUVET, vous acceptez les présentes conditions d\'utilisation. Ces conditions constituent un accord entre vous et ADJUVET.'),
       },
     ],
   },
@@ -26,8 +28,8 @@ const CGU_PAGES = [
     animal: '/perroquet01.png',
     sections: [
       {
-        titre: 'Utilisation du service',
-        texte: 'ADJUVET est fourni à titre informatif uniquement et ne remplace pas le jugement clinique d\'un vétérinaire. ADJUVET décline toute responsabilité pour les décisions thérapeutiques prises à partir de l\'application.',
+        titre: t('Utilisation du service'),
+        texte: t('ADJUVET est fourni à titre informatif uniquement et ne remplace pas le jugement clinique d\'un vétérinaire. ADJUVET décline toute responsabilité pour les décisions thérapeutiques prises à partir de l\'application.'),
       },
     ],
   },
@@ -36,8 +38,8 @@ const CGU_PAGES = [
     animal: '/Lapin01.png',
     sections: [
       {
-        titre: 'Responsabilité de l\'utilisateur',
-        texte: 'Bien que le contenu d\'ADJUVET soit basé sur la littérature et la recherche vétérinaire, nous ne pouvons garantir son exactitude, son exhaustivité ou son actualité complètes. L\'utilisateur assume l\'entière responsabilité des décisions ou actions prises à partir des informations contenues dans ADJUVET.',
+        titre: t('Responsabilité de l\'utilisateur'),
+        texte: t('Bien que le contenu d\'ADJUVET soit basé sur la littérature et la recherche vétérinaire, nous ne pouvons garantir son exactitude, son exhaustivité ou son actualité complètes. L\'utilisateur assume l\'entière responsabilité des décisions ou actions prises à partir des informations contenues dans ADJUVET.'),
       },
     ],
   },
@@ -46,21 +48,21 @@ const CGU_PAGES = [
     animal: '/cheval.png',
     sections: [
       {
-        titre: 'Modifications',
-        texte: 'Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants vous seront communiqués par courriel. En continuant à utiliser ADJUVET après une mise à jour, vous acceptez les nouvelles conditions. Pour toute question, contactez-nous à info@vetlabstudio.ca.',
+        titre: t('Modifications'),
+        texte: t('Ces conditions peuvent être mises à jour à l\'occasion. Les changements importants vous seront communiqués par courriel. En continuant à utiliser ADJUVET après une mise à jour, vous acceptez les nouvelles conditions. Pour toute question, contactez-nous à info@vetlabstudio.ca.'),
       },
     ],
   },
 ]
 
 const TEXTES_LEGAUX = {
-  conditions: { titre: "Conditions d'utilisation", sections: CONDITIONS_COMPLETES_SECTIONS },
-  confidentialite: { titre: 'Politique de confidentialité', sections: CONFIDENTIALITE_SECTIONS },
+  conditions: { titre: t("Conditions d'utilisation"), sections: CONDITIONS_COMPLETES_SECTIONS },
+  confidentialite: { titre: t('Politique de confidentialité'), sections: CONFIDENTIALITE_SECTIONS },
 }
 
 const FORMAT_COURRIEL = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i
 
-const MSG_COMPTE_EXISTANT = 'Un compte existe déjà avec ce courriel. Connectez-vous plutôt.'
+const MSG_COMPTE_EXISTANT = t('Un compte existe déjà avec ce courriel. Connectez-vous plutôt.')
 
 const LIEN_STYLE = {
   background: 'none', border: 'none', padding: 0, font: 'inherit',
@@ -92,9 +94,9 @@ export default function Inscription() {
   const erreurCourriel = !courrielVerifie
     ? null
     : !email.trim()
-      ? 'Veuillez entrer votre courriel.'
+      ? t('Veuillez entrer votre courriel.')
       : !FORMAT_COURRIEL.test(email.trim())
-        ? 'Format de courriel invalide (ex. nom@domaine.com).'
+        ? t('Format de courriel invalide (ex. nom@domaine.com).')
         : null
   // Faute de frappe probable dans un domaine courant (ex. nom@gmial.com).
   const verifCourriel = useSuggestionCourriel(email)
@@ -112,7 +114,7 @@ export default function Inscription() {
     // La correspondance s'affiche sous la confirmation, même si autre chose bloque plus bas.
     setConfirmationTerminee(true)
     if (!nom.trim()) {
-      setErreur('Veuillez entrer votre nom.')
+      setErreur(t('Veuillez entrer votre nom.'))
       return
     }
     if (!FORMAT_COURRIEL.test(email.trim())) {
@@ -144,14 +146,14 @@ export default function Inscription() {
   }
 
   const handleSwipeStart = (e) => {
-    const t = e.touches[0]
-    touchDepart.current = { x: t.clientX, y: t.clientY }
+    const doigt = e.touches[0]
+    touchDepart.current = { x: doigt.clientX, y: doigt.clientY }
     touchDernier.current = touchDepart.current
   }
 
   const handleSwipeMove = (e) => {
-    const t = e.touches[0]
-    if (touchDepart.current && t) touchDernier.current = { x: t.clientX, y: t.clientY }
+    const doigt = e.touches[0]
+    if (touchDepart.current && doigt) touchDernier.current = { x: doigt.clientX, y: doigt.clientY }
   }
 
   /* Sur iPhone, Safari peut prendre le geste en charge en cours de route
@@ -162,8 +164,8 @@ export default function Inscription() {
     const depart = touchDepart.current
     touchDepart.current = null
     if (!depart || vue === 'form' || texteLegal) return
-    const t = e.type === 'touchend' ? e.changedTouches[0] : null
-    const fin = t ? { x: t.clientX, y: t.clientY } : touchDernier.current
+    const doigt = e.type === 'touchend' ? e.changedTouches[0] : null
+    const fin = doigt ? { x: doigt.clientX, y: doigt.clientY } : touchDernier.current
     const dx = fin.x - depart.x
     if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(fin.y - depart.y)) return
     if (dx < 0 && vue < CGU_PAGES.length - 1) {
@@ -178,7 +180,7 @@ export default function Inscription() {
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password: motDePasse,
-      options: { data: { nom: nom.trim() } },
+      options: { data: { nom: nom.trim(), langue } },
     })
     setChargement(false)
 
@@ -200,12 +202,14 @@ export default function Inscription() {
       <main className="auth2-page">
         <div className="auth2-contenu" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <i className="ti ti-circle-check" style={{ fontSize: 64, color: '#213058', marginBottom: 20 }}></i>
-          <h1 className="auth2-section-titre" style={{ textAlign: 'center', fontSize: 22 }}>Vérifiez votre courriel</h1>
+          <h1 className="auth2-section-titre" style={{ textAlign: 'center', fontSize: 22 }}>{t('Vérifiez votre courriel')}</h1>
           <p style={{ fontSize: 15, color: '#213058', textAlign: 'center', marginBottom: 28, lineHeight: 1.6 }}>
-            Un lien de confirmation vous a été envoyé à <strong>{email.trim()}</strong>. Cliquez dessus pour activer votre compte.
+            {enAnglais
+              ? <>A confirmation link has been sent to <strong>{email.trim()}</strong>. Click it to activate your account.</>
+              : <>Un lien de confirmation vous a été envoyé à <strong>{email.trim()}</strong>. Cliquez dessus pour activer votre compte.</>}
           </p>
           <Link to="/connexion" className="auth2-btn" style={{ display: 'block', textDecoration: 'none' }}>
-            Retour à la connexion
+            {t('Retour à la connexion')}
           </Link>
         </div>
       </main>
@@ -221,7 +225,7 @@ export default function Inscription() {
       <div className="cgu-page" style={{ backgroundImage: `url('${fond}')`, touchAction: 'pan-y pinch-zoom' }}>
         <div className="cgu-contenu">
           <img src="/icone-logo-bleu.svg" alt="" className="cgu-icone" />
-          <h1 className="cgu-titre">Conditions d'utilisations</h1>
+          <h1 className="cgu-titre">{t('Conditions d\'utilisation')}</h1>
           <div className="cgu-sections">
             {sections.map((s, i) => (
               <div key={i} className="cgu-section">
@@ -232,20 +236,20 @@ export default function Inscription() {
           </div>
           {estDernier && (
             <p style={{ fontSize: 14, color: '#213058', textAlign: 'center', lineHeight: 1.5, margin: '0 0 12px' }}>
-              Lire les{' '}
-              <button type="button" style={LIEN_STYLE} onClick={() => setTexteLegal('conditions')}>conditions complètes</button>
-              {' '}et la{' '}
-              <button type="button" style={LIEN_STYLE} onClick={() => setTexteLegal('confidentialite')}>politique de confidentialité</button>
+              {t('Lire les')}{' '}
+              <button type="button" style={LIEN_STYLE} onClick={() => setTexteLegal('conditions')}>{t('conditions complètes')}</button>
+              {' '}{t('et la')}{' '}
+              <button type="button" style={LIEN_STYLE} onClick={() => setTexteLegal('confidentialite')}>{t('politique de confidentialité')}</button>
             </p>
           )}
           {estDernier && (
             <div className="cgu-actions">
               {/* Annuler abandonne l'inscription : rien n'a encore été créé. */}
               <button className="cgu-btn-annuler" onClick={() => navigate('/connexion')} disabled={chargement}>
-                Annuler
+                {t('Annuler')}
               </button>
               <button className="cgu-btn" onClick={handleAccepter} disabled={chargement}>
-                {chargement ? 'Création...' : "J'accepte"}
+                {chargement ? t('Création...') : t("J'accepte")}
               </button>
             </div>
           )}
@@ -255,7 +259,7 @@ export default function Inscription() {
                 key={i}
                 className={`cgu-dot${i === index ? ' actif' : ''}`}
                 onClick={() => allerVue(i, i > index ? 'forward' : 'back')}
-                aria-label={`Page ${i + 1}`}
+                aria-label={t('Page {n}', { n: i + 1 })}
               />
             ))}
           </div>
@@ -270,12 +274,13 @@ export default function Inscription() {
   const renderFormulaire = () => (
     <div className="auth2-page">
       <div className="auth2-contenu">
+        <BoutonLangue />
         <div className="auth2-logo-zone">
           <img src={logoSrc} alt="adjuvet" className="auth2-logo" />
-          <p className="auth2-tagline">Copilote en santé animale</p>
+          <p className="auth2-tagline">{t('Copilote en santé animale')}</p>
         </div>
 
-        <h1 className="auth2-section-titre">Créer un compte</h1>
+        <h1 className="auth2-section-titre">{t('Créer un compte')}</h1>
 
         <form onSubmit={handleInscription} className="auth2-form" noValidate>
           <label className="auth2-flottant">
@@ -288,7 +293,7 @@ export default function Inscription() {
               placeholder=" "
               required
             />
-            <span className="auth2-flottant-texte">Nom complet</span>
+            <span className="auth2-flottant-texte">{t('Nom complet')}</span>
           </label>
           <label className="auth2-flottant">
             <input
@@ -303,11 +308,11 @@ export default function Inscription() {
               aria-invalid={erreurCourriel && !suggestion ? true : undefined}
               aria-describedby={suggestion || erreurCourriel ? 'erreur-courriel' : undefined}
             />
-            <span className="auth2-flottant-texte">Courriel</span>
+            <span className="auth2-flottant-texte">{t('Courriel')}</span>
           </label>
           {/* Une faute de frappe probable passe avant le format : la correction proposée règle les deux. */}
           {suggestion ? (
-            <SuggestionCourriel id="erreur-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} avertie={verifCourriel.avertie} bouton="Créer mon compte" surFond="violet" />
+            <SuggestionCourriel id="erreur-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} avertie={verifCourriel.avertie} bouton={t('Créer mon compte')} surFond="violet" />
           ) : erreurCourriel && (
             <p id="erreur-courriel" className="erreur" aria-live="polite" style={{ color: '#FFFFFF', textAlign: 'left', margin: '-4px 8px 0', fontWeight: 600 }}>
               {erreurCourriel}
@@ -325,9 +330,9 @@ export default function Inscription() {
                 minLength={12}
                 required
               />
-              <span className="auth2-flottant-texte">Mot de passe</span>
+              <span className="auth2-flottant-texte">{t('Mot de passe')}</span>
             </label>
-            <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
+            <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? t('Masquer le mot de passe') : t('Afficher le mot de passe')}>
               <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>
           </div>
@@ -344,22 +349,22 @@ export default function Inscription() {
                 placeholder=" "
                 required
               />
-              <span className="auth2-flottant-texte">Confirmer le mot de passe</span>
+              <span className="auth2-flottant-texte">{t('Confirmer le mot de passe')}</span>
             </label>
-            <button type="button" className="auth2-oeil" onClick={() => setVoirConfirm(v => !v)} aria-label={voirConfirm ? 'Masquer la confirmation' : 'Afficher la confirmation'}>
+            <button type="button" className="auth2-oeil" onClick={() => setVoirConfirm(v => !v)} aria-label={voirConfirm ? t('Masquer la confirmation') : t('Afficher la confirmation')}>
               <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>
           </div>
           <CorrespondanceMotDePasse motDePasse={motDePasse} confirmation={confirmation} termine={confirmationTerminee} />
           {erreur && <p className="erreur" style={{ textAlign: 'center', color: '#FFFFFF' }}>{erreur}</p>}
           <button type="submit" className="auth2-btn" disabled={chargement}>
-            {chargement ? 'Vérification...' : 'Créer mon compte'}
+            {chargement ? t('Vérification...') : t('Créer mon compte')}
           </button>
         </form>
 
         <p className="auth2-lien">
-          Déjà un compte ?{' '}
-          <Link to="/connexion">Se connecter</Link>
+          {t('Déjà un compte ?')}{' '}
+          <Link to="/connexion">{t('Se connecter')}</Link>
         </p>
       </div>
     </div>

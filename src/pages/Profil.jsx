@@ -8,6 +8,7 @@ import { verifierMotDePasse } from '../lib/motDePasse'
 import SuggestionCourriel from '../components/SuggestionCourriel'
 import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
 import { useProfil } from '../context/ProfilContext'
+import { t, tn, enAnglais } from '../lib/i18n'
 
 const TAILLE_AVATAR = 512
 
@@ -109,11 +110,11 @@ export default function Profil() {
   }
 
   const MESSAGES_SUPPRESSION = {
-    stripe_indisponible: "Impossible de joindre Stripe en ce moment. Rien n'a été supprimé, réessayez dans quelques minutes.",
-    annulation_impossible: "Votre abonnement n'a pas pu être annulé. Rien n'a été supprimé pour éviter que la facturation continue sans compte. Réessayez, ou écrivez-nous.",
-    retrogradation_impossible: "Les membres de votre clinique n'ont pas pu être rétrogradés. Rien n'a été supprimé.",
-    donnees_personnelles_impossible: "Vos examens et chartes personnels n'ont pas pu être supprimés. Votre compte est intact, réessayez.",
-    equipe_impossible: "Votre clinique n'a pas pu être supprimée. Votre compte est intact, réessayez.",
+    stripe_indisponible: t("Impossible de joindre Stripe en ce moment. Rien n'a été supprimé, réessayez dans quelques minutes."),
+    annulation_impossible: t("Votre abonnement n'a pas pu être annulé. Rien n'a été supprimé pour éviter que la facturation continue sans compte. Réessayez, ou écrivez-nous."),
+    retrogradation_impossible: t("Les membres de votre clinique n'ont pas pu être rétrogradés. Rien n'a été supprimé."),
+    donnees_personnelles_impossible: t("Vos examens et chartes personnels n'ont pas pu être supprimés. Votre compte est intact, réessayez."),
+    equipe_impossible: t("Votre clinique n'a pas pu être supprimée. Votre compte est intact, réessayez."),
   }
 
   function afficherSucces(msg) {
@@ -124,19 +125,19 @@ export default function Profil() {
 
   // ─── MODIFIER NOM ─────────────────────────────
   async function sauvegarderNom() {
-    if (!nouveauNom.trim()) return setErreur('Le nom ne peut pas être vide.')
+    if (!nouveauNom.trim()) return setErreur(t('Le nom ne peut pas être vide.'))
     setSaving(true)
     const { error } = await supabase.from('profiles').update({ nom: nouveauNom.trim() }).eq('id', profil.id)
     setSaving(false)
     if (error) return setErreur(traduireErreur(error, "Le nom n'a pas pu être enregistré."))
     setProfil(prev => ({ ...prev, nom: nouveauNom.trim() }))
     setModalNom(false)
-    afficherSucces('Nom mis à jour !')
+    afficherSucces(t('Nom mis à jour !'))
   }
 
   // ─── MODIFIER EMAIL ───────────────────────────
   async function sauvegarderEmail() {
-    if (!nouveauEmail.trim()) return setErreur('Le courriel ne peut pas être vide.')
+    if (!nouveauEmail.trim()) return setErreur(t('Le courriel ne peut pas être vide.'))
     // Faute de frappe probable pas encore vue : on la montre d'abord.
     if (suggestionEmail.doitConfirmer()) return
     setSaving(true)
@@ -149,14 +150,14 @@ export default function Profil() {
        rappelle tant qu'il est en attente. */
     setProfil(prev => ({ ...prev, emailEnAttente: nouveauEmail.trim() }))
     setModalEmail(false)
-    afficherSucces('Deux liens de confirmation envoyés.')
+    afficherSucces(t('Deux liens de confirmation envoyés.'))
   }
 
   async function renvoyerLiensCourriel() {
     setErreur('')
     const { error } = await supabase.auth.resend({ type: 'email_change', email: profil.emailEnAttente })
     if (error) return setErreur(traduireErreur(error, "Les liens n'ont pas pu être renvoyés. Réessayez dans une minute."))
-    afficherSucces('Liens de confirmation renvoyés aux deux adresses.')
+    afficherSucces(t('Liens de confirmation renvoyés aux deux adresses.'))
   }
 
   /* Supabase n'offre pas d'annulation : la fonction SQL efface la
@@ -169,14 +170,14 @@ export default function Profil() {
     setSaving(false)
     if (error) return setErreur(traduireErreur(error, "La demande n'a pas pu être annulée. Réessayez."))
     setProfil(prev => ({ ...prev, emailEnAttente: null }))
-    afficherSucces('Changement de courriel annulé. Les liens déjà envoyés ne fonctionnent plus.')
+    afficherSucces(t('Changement de courriel annulé. Les liens déjà envoyés ne fonctionnent plus.'))
   }
 
   // ─── MODIFIER MOT DE PASSE ────────────────────
   async function sauvegarderMdp() {
     // La correspondance s'affiche sous la confirmation, même si le mot de passe est refusé.
     setConfirmMdpTerminee(true)
-    if (!nouveauMdp) return setErreur('Le mot de passe ne peut pas être vide.')
+    if (!nouveauMdp) return setErreur(t('Le mot de passe ne peut pas être vide.'))
     const evaluation = await verifierMotDePasse(nouveauMdp, { email: profil?.email, nom: profil?.nom })
     if (!evaluation.valide) return setErreur(evaluation.message)
     if (nouveauMdp !== confirmMdp) return
@@ -187,7 +188,7 @@ export default function Profil() {
     setModalMdp(false)
     setNouveauMdp('')
     setConfirmMdp('')
-    afficherSucces('Mot de passe mis à jour !')
+    afficherSucces(t('Mot de passe mis à jour !'))
   }
 
   // ─── PHOTO DE PROFIL ──────────────────────────
@@ -199,7 +200,7 @@ export default function Profil() {
     /* Un SVG est un dessin, pas une photo : il se charge mal et la photo
        resterait vide. On le refuse avant l'envoi. */
     if (file.type === 'image/svg+xml' || /\.svg$/i.test(file.name)) {
-      setErreur("Le format SVG n'est pas accepté pour la photo de profil. Choisissez une photo JPG ou PNG.")
+      setErreur(t("Le format SVG n'est pas accepté pour la photo de profil. Choisissez une photo JPG ou PNG."))
       return
     }
     setEnvoiAvatar(true)
@@ -209,7 +210,7 @@ export default function Profil() {
       try {
         image = await preparerAvatar(file)
       } catch {
-        throw new Error("Ce format d'image n'est pas pris en charge. Essayez une photo JPG ou PNG.")
+        throw new Error(t("Ce format d'image n'est pas pris en charge. Essayez une photo JPG ou PNG."))
       }
       const path = `${profil.id}.jpg`
       const { error: uploadError } = await supabase.storage
@@ -224,7 +225,7 @@ export default function Profil() {
       const { error: majErr } = await supabase.from('profiles').update({ avatar_url: url }).eq('id', profil.id)
       if (majErr) {
         console.error('Enregistrement de la photo impossible:', majErr)
-        throw new Error("La photo a été envoyée, mais n'a pas pu être enregistrée dans votre profil.")
+        throw new Error(t("La photo a été envoyée, mais n'a pas pu être enregistrée dans votre profil."))
       }
       setAvatarUrl(url)
       // Les anciennes versions (autre extension) ne servent plus.
@@ -232,7 +233,7 @@ export default function Profil() {
         .remove(['png', 'jpeg', 'heic', 'webp', 'gif'].map(ext => `${profil.id}.${ext}`))
         .catch(() => {})
       if (rafraichirContexte) rafraichirContexte()
-      afficherSucces('Photo de profil mise à jour.')
+      afficherSucces(t('Photo de profil mise à jour.'))
     } catch (err) {
       setErreur(err.message)
     } finally {
@@ -301,7 +302,7 @@ export default function Profil() {
     }
   }
 
-  if (loading) return <div className="admin-loading">Chargement...</div>
+  if (loading) return <div className="admin-loading">{t('Chargement...')}</div>
 
   return (
     <div className="profil-page">
@@ -313,12 +314,12 @@ export default function Profil() {
           onClick={() => { if (!envoiAvatar) fileInputRef.current?.click() }}
           role="button"
           tabIndex={0}
-          aria-label={envoiAvatar ? 'Envoi de la photo en cours' : 'Changer la photo de profil'}
+          aria-label={envoiAvatar ? t('Envoi de la photo en cours') : t('Changer la photo de profil')}
           onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !envoiAvatar) { e.preventDefault(); fileInputRef.current?.click() } }}
           style={envoiAvatar ? { opacity: 0.6 } : undefined}
         >
           {avatarUrl
-            ? <img src={avatarUrl} alt="Avatar" className="profil-avatar-img" />
+            ? <img src={avatarUrl} alt={t('Avatar')} className="profil-avatar-img" />
             : <i className="ti ti-user" style={{ fontSize: 40, color: 'var(--text-hint)' }}></i>
           }
           <div className="profil-avatar-overlay">
@@ -326,7 +327,7 @@ export default function Profil() {
           </div>
         </div>
         <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={changerAvatar} />
-        <p className="profil-nom">{profil?.nom || 'Nom complet'}</p>
+        <p className="profil-nom">{profil?.nom || t('Nom complet')}</p>
         <p className="profil-email">{profil?.email}</p>
       </div>
 
@@ -338,43 +339,43 @@ export default function Profil() {
       <div className="profil-section">
         <div className="profil-item">
           <div>
-            <p className="profil-item-label">Nom</p>
+            <p className="profil-item-label">{t('Nom')}</p>
             <p className="profil-item-valeur">{profil?.nom || '—'}</p>
           </div>
-          <button className="profil-modifier" onClick={() => ouvrirModal('nom')}>Modifier</button>
+          <button className="profil-modifier" onClick={() => ouvrirModal('nom')}>{t('Modifier')}</button>
         </div>
         <div className="profil-item">
           <div>
-            <p className="profil-item-label">Courriel</p>
+            <p className="profil-item-label">{t('Courriel')}</p>
             <p className="profil-item-valeur">{profil?.email}</p>
           </div>
-          <button className="profil-modifier" onClick={() => ouvrirModal('email')}>Modifier</button>
+          <button className="profil-modifier" onClick={() => ouvrirModal('email')}>{t('Modifier')}</button>
         </div>
         {profil?.emailEnAttente && (
           <div role="status" style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'rgba(148,100,31,0.08)', fontSize: 13, lineHeight: 1.55, color: 'var(--text-primary)', overflowWrap: 'anywhere' }}>
             <p style={{ margin: '0 0 4px', fontWeight: 700, color: '#7A500A' }}>
               <i className="ti ti-clock" aria-hidden="true" style={{ marginRight: 6 }}></i>
-              Changement en attente vers {profil.emailEnAttente}
+              {t('Changement en attente vers {adresse}', { adresse: profil.emailEnAttente })}
             </p>
             <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
-              Pour le terminer, ouvrez les deux liens de confirmation : celui envoyé à {profil.email} et celui envoyé à {profil.emailEnAttente}.
+              {t('Pour le terminer, ouvrez les deux liens de confirmation : celui envoyé à {ancienne} et celui envoyé à {nouvelle}.', { ancienne: profil.email, nouvelle: profil.emailEnAttente })}
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 20px', marginTop: 8 }}>
               <button type="button" onClick={renvoyerLiensCourriel} disabled={saving} style={{ padding: 0, background: 'none', border: 'none', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer' }}>
-                Renvoyer les liens
+                {t('Renvoyer les liens')}
               </button>
               <button type="button" onClick={annulerChangementCourriel} disabled={saving} style={{ padding: 0, background: 'none', border: 'none', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: 'var(--accent-red)', textDecoration: 'underline', cursor: 'pointer' }}>
-                {saving ? 'Annulation...' : 'Annuler la demande'}
+                {saving ? t('Annulation...') : t('Annuler la demande')}
               </button>
             </div>
           </div>
         )}
         <div className="profil-item">
           <div>
-            <p className="profil-item-label">Mot de passe</p>
+            <p className="profil-item-label">{t('Mot de passe')}</p>
             <p className="profil-item-valeur">••••••••</p>
           </div>
-          <button className="profil-modifier" onClick={() => ouvrirModal('mdp')}>Modifier</button>
+          <button className="profil-modifier" onClick={() => ouvrirModal('mdp')}>{t('Modifier')}</button>
         </div>
       </div>
 
@@ -383,16 +384,16 @@ export default function Profil() {
         <div className="profil-section">
           <button className="profil-admin-btn" onClick={() => navigate('/admin')}>
             <i className="ti ti-shield"></i>
-            Panneau admin
+            {t('Panneau admin')}
           </button>
         </div>
       )}
 
       {/* ACTIONS */}
       <div className="profil-actions">
-        <button className="btn-deconnexion" onClick={deconnecter}>DÉCONNEXION</button>
+        <button className="btn-deconnexion" onClick={deconnecter}>{t('DÉCONNEXION')}</button>
         <button className="btn-supprimer-compte" onClick={() => ouvrirModal('supprimer')}>
-          Supprimer le compte
+          {t('Supprimer le compte')}
         </button>
       </div>
 
@@ -401,16 +402,16 @@ export default function Profil() {
         <div className="popup-overlay" onClick={() => setModalNom(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Modifier le nom</span>
+              <span>{t('Modifier le nom')}</span>
               <button className="popup-close" onClick={() => setModalNom(false)}>✕</button>
             </div>
             <div className="form-groupe">
-              <label className="form-label" htmlFor="profil-nom">Nom complet</label>
-              <input id="profil-nom" className="form-input" autoComplete="name" placeholder="ex. Marie Tremblay" value={nouveauNom} onChange={e => setNouveauNom(e.target.value)} autoFocus />
+              <label className="form-label" htmlFor="profil-nom">{t('Nom complet')}</label>
+              <input id="profil-nom" className="form-input" autoComplete="name" placeholder={t('ex. Marie Tremblay')} value={nouveauNom} onChange={e => setNouveauNom(e.target.value)} autoFocus />
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderNom} disabled={saving}>
-              {saving ? 'Sauvegarde...' : 'Enregistrer'}
+              {saving ? t('Sauvegarde...') : t('Enregistrer')}
             </button>
           </div>
         </div>
@@ -421,20 +422,20 @@ export default function Profil() {
         <div className="popup-overlay" onClick={() => setModalEmail(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Modifier le courriel</span>
+              <span>{t('Modifier le courriel')}</span>
               <button className="popup-close" onClick={() => setModalEmail(false)}>✕</button>
             </div>
             <div className="form-groupe">
-              <label className="form-label" htmlFor="profil-courriel">Nouveau courriel</label>
-              <input id="profil-courriel" className="form-input" autoComplete="email" placeholder="ex. nom@clinique.ca" type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} aria-describedby={suggestionEmail.suggestion ? 'suggestion-courriel' : undefined} autoFocus />
-              <SuggestionCourriel id="suggestion-courriel" suggestion={suggestionEmail.suggestion} onCorriger={() => setNouveauEmail(suggestionEmail.suggestion)} avertie={suggestionEmail.avertie} bouton="Enregistrer" />
+              <label className="form-label" htmlFor="profil-courriel">{t('Nouveau courriel')}</label>
+              <input id="profil-courriel" className="form-input" autoComplete="email" placeholder={t('ex. nom@clinique.ca')} type="email" value={nouveauEmail} onChange={e => setNouveauEmail(e.target.value)} aria-describedby={suggestionEmail.suggestion ? 'suggestion-courriel' : undefined} autoFocus />
+              <SuggestionCourriel id="suggestion-courriel" suggestion={suggestionEmail.suggestion} onCorriger={() => setNouveauEmail(suggestionEmail.suggestion)} avertie={suggestionEmail.avertie} bouton={t('Enregistrer')} />
             </div>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
-              Par sécurité, un lien de confirmation sera envoyé à votre adresse actuelle et un autre à la nouvelle. L'adresse changera une fois les deux liens ouverts.
+              {t('Par sécurité, un lien de confirmation sera envoyé à votre adresse actuelle et un autre à la nouvelle. L\'adresse changera une fois les deux liens ouverts.')}
             </p>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderEmail} disabled={saving}>
-              {saving ? 'Envoi...' : 'Enregistrer'}
+              {saving ? t('Envoi...') : t('Enregistrer')}
             </button>
           </div>
         </div>
@@ -445,24 +446,24 @@ export default function Profil() {
         <div className="popup-overlay" onClick={() => setModalMdp(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Modifier le mot de passe</span>
+              <span>{t('Modifier le mot de passe')}</span>
               <button className="popup-close" onClick={() => setModalMdp(false)}>✕</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div className="form-groupe">
-                <label className="form-label" htmlFor="profil-mdp">Nouveau mot de passe</label>
+                <label className="form-label" htmlFor="profil-mdp">{t('Nouveau mot de passe')}</label>
                 <input id="profil-mdp" className="form-input" autoComplete="new-password" type="password" value={nouveauMdp} onChange={e => setNouveauMdp(e.target.value)} autoFocus />
                 <IndicateurMotDePasse motDePasse={nouveauMdp} email={profil?.email} nom={profil?.nom} />
               </div>
               <div className="form-groupe">
-                <label className="form-label" htmlFor="profil-mdp-confirmation">Confirmer le mot de passe</label>
-                <input id="profil-mdp-confirmation" className="form-input" autoComplete="new-password" placeholder="Retapez le mot de passe" type="password" value={confirmMdp} onChange={e => setConfirmMdp(e.target.value)} onBlur={() => { if (confirmMdp) setConfirmMdpTerminee(true) }} />
+                <label className="form-label" htmlFor="profil-mdp-confirmation">{t('Confirmer le mot de passe')}</label>
+                <input id="profil-mdp-confirmation" className="form-input" autoComplete="new-password" placeholder={t('Retapez le mot de passe')} type="password" value={confirmMdp} onChange={e => setConfirmMdp(e.target.value)} onBlur={() => { if (confirmMdp) setConfirmMdpTerminee(true) }} />
                 <CorrespondanceMotDePasse motDePasse={nouveauMdp} confirmation={confirmMdp} termine={confirmMdpTerminee} />
               </div>
             </div>
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-sauvegarder" onClick={sauvegarderMdp} disabled={saving}>
-              {saving ? 'Sauvegarde...' : 'Enregistrer'}
+              {saving ? t('Sauvegarde...') : t('Enregistrer')}
             </button>
           </div>
         </div>
@@ -473,23 +474,23 @@ export default function Profil() {
         <div className="popup-overlay" onClick={() => setModalSupprimer(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Supprimer le compte</span>
+              <span>{t('Supprimer le compte')}</span>
               <button className="popup-close" onClick={() => setModalSupprimer(false)}>✕</button>
             </div>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 12 }}>
-              Cette action est irréversible. Toutes vos données seront supprimées définitivement.
+              {t('Cette action est irréversible. Toutes vos données seront supprimées définitivement.')}
             </p>
             {chargementApercu && (
-              <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 12 }}>Vérification en cours...</p>
+              <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 12 }}>{t('Vérification en cours...')}</p>
             )}
             {apercuSuppression?.nbAbonnements > 0 && (
               <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
-                Votre abonnement sera annulé immédiatement, vous ne serez plus facturé.
+                {t('Votre abonnement sera annulé immédiatement, vous ne serez plus facturé.')}
               </p>
             )}
             {erreur && <div className="form-erreur">{erreur}</div>}
             <button className="btn-supprimer-medicament" onClick={supprimerCompte} disabled={saving}>
-              {saving ? 'Suppression...' : 'Confirmer la suppression'}
+              {saving ? t('Suppression...') : t('Confirmer la suppression')}
             </button>
           </div>
         </div>
@@ -500,7 +501,7 @@ export default function Profil() {
         <div className="popup-overlay" onClick={() => { setModalSupprimerProprietaire(false); setConfirmerSuppressionEquipe(false) }}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Supprimer le compte</span>
+              <span>{t('Supprimer le compte')}</span>
               <button className="popup-close" onClick={() => { setModalSupprimerProprietaire(false); setConfirmerSuppressionEquipe(false) }}>✕</button>
             </div>
 
@@ -509,11 +510,11 @@ export default function Profil() {
                 <div style={{ textAlign: 'center', padding: '4px 0 16px' }}>
                   <i className="ti ti-users" style={{ fontSize: 36, color: 'var(--accent-red)', display: 'block', marginBottom: 12 }}></i>
                   <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                    Votre compte est propriétaire de l'équipe <strong>{equipeProprietaire?.nom}</strong>.
+                    {t('Votre compte est propriétaire de l\'équipe')} <strong>{equipeProprietaire?.nom}</strong>.
                     {apercuSuppression?.nbMembres > 0 && (
-                      <> Elle compte <strong>{apercuSuppression.nbMembres} autre{apercuSuppression.nbMembres > 1 ? 's' : ''} membre{apercuSuppression.nbMembres > 1 ? 's' : ''}</strong>.</>
+                      <> {t('Elle compte')} <strong>{tn(apercuSuppression.nbMembres, '{n} autre membre', '{n} autres membres')}</strong>.</>
                     )}
-                    {' '}Que souhaitez-vous faire ?
+                    {' '}{t('Que souhaitez-vous faire ?')}
                   </p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -522,19 +523,19 @@ export default function Profil() {
                     onClick={() => { setModalSupprimerProprietaire(false); navigate('/equipe/gestion', { state: { aideTransfert: true } }) }}
                   >
                     <i className="ti ti-arrow-right-circle"></i>
-                    Transférer la propriété d'abord
+                    {t('Transférer la propriété d\'abord')}
                   </button>
                   <button
                     className="btn-supprimer-medicament"
                     onClick={() => setConfirmerSuppressionEquipe(true)}
                   >
-                    Supprimer le compte et toutes les données d'équipe
+                    {t('Supprimer le compte et toutes les données d\'équipe')}
                   </button>
                   <button
                     style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 16px', fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer' }}
                     onClick={() => setModalSupprimerProprietaire(false)}
                   >
-                    Annuler
+                    {t('Annuler')}
                   </button>
                 </div>
               </>
@@ -543,16 +544,18 @@ export default function Profil() {
                 <div style={{ textAlign: 'center', padding: '4px 0 16px' }}>
                   <i className="ti ti-alert-triangle" style={{ fontSize: 36, color: 'var(--accent-red)', display: 'block', marginBottom: 12 }}></i>
                   <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                    Cette action est <strong>irréversible</strong>. Le compte propriétaire sera supprimé ainsi que toutes les données partagées de la clinique : médicaments personnalisés, protocoles, charte radiographique.
+                    {enAnglais
+                      ? <>This action is <strong>permanent</strong>. The owner account will be deleted along with all of the clinic's shared data: custom drugs, protocols, radiographic technique chart.</>
+                      : <>Cette action est <strong>irréversible</strong>. Le compte propriétaire sera supprimé ainsi que toutes les données partagées de la clinique : médicaments personnalisés, protocoles, charte radiographique.</>}
                   </p>
                   {apercuSuppression?.nbMembres > 0 && (
                     <p style={{ fontSize: 14, color: 'var(--accent-red)', fontWeight: 600, lineHeight: 1.6, marginTop: 12 }}>
-                      {apercuSuppression.nbMembres} personne{apercuSuppression.nbMembres > 1 ? 's' : ''} repassera{apercuSuppression.nbMembres > 1 ? 'ont' : ''} au forfait gratuit et perdra{apercuSuppression.nbMembres > 1 ? 'ont' : ''} l'accès aux données de la clinique.
+                      {tn(apercuSuppression.nbMembres, '{n} personne repassera au forfait gratuit et perdra l\'accès aux données de la clinique.', '{n} personnes repasseront au forfait gratuit et perdront l\'accès aux données de la clinique.')}
                     </p>
                   )}
                   {apercuSuppression?.nbAbonnements > 0 && (
                     <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginTop: 10 }}>
-                      Votre abonnement sera annulé immédiatement.
+                      {t('Votre abonnement sera annulé immédiatement.')}
                     </p>
                   )}
                 </div>
@@ -563,13 +566,13 @@ export default function Profil() {
                     onClick={supprimerEquipeEtCompte}
                     disabled={saving}
                   >
-                    {saving ? 'Suppression en cours...' : 'Confirmer la suppression définitive'}
+                    {saving ? t('Suppression en cours...') : t('Confirmer la suppression définitive')}
                   </button>
                   <button
                     style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 8, padding: '10px 16px', fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer' }}
                     onClick={() => setConfirmerSuppressionEquipe(false)}
                   >
-                    Retour
+                    {t('Retour')}
                   </button>
                 </div>
               </>

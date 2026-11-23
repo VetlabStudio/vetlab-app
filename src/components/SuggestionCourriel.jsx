@@ -1,3 +1,4 @@
+import { t } from '../lib/i18n'
 /* Propose de corriger une faute de frappe probable dans un courriel
    (ex. nom@gmial.com). Ce n'est qu'une suggestion : l'adresse tapée
    reste acceptée telle quelle.
@@ -16,8 +17,8 @@ export default function SuggestionCourriel({ id, suggestion, avant, onCorriger, 
         color: violet ? '#FFFFFF' : 'var(--text-secondary)',
       }}
     >
-      Voulez-vous dire <span style={{ textDecoration: 'underline' }}>{suggestion}</span>
-      {avant && <> au lieu de {avant}</>} ?{' '}
+      {t('Voulez-vous dire')} <span style={{ textDecoration: 'underline' }}>{suggestion}</span>
+      {avant && <> {t('au lieu de')} {avant}</>}{t(' ?')}{' '}
       <button
         type="button"
         onClick={onCorriger}
@@ -26,11 +27,11 @@ export default function SuggestionCourriel({ id, suggestion, avant, onCorriger, 
           textDecoration: 'underline', cursor: 'pointer', color: violet ? '#213058' : 'var(--primary)',
         }}
       >
-        Corriger
+        {t('Corriger')}
       </button>
       {avertie && bouton && (
         <span style={{ display: 'block', fontWeight: 400, marginTop: 2 }}>
-          Pour garder l'adresse telle quelle, appuyez de nouveau sur « {bouton} ».
+          {t('Pour garder l\'adresse telle quelle, appuyez de nouveau sur « {bouton} ».', { bouton })}
         </span>
       )}
     </p>

@@ -1,27 +1,28 @@
 import { useNavigate } from 'react-router-dom'
 import { useProfil } from '../context/ProfilContext'
+import { t, langue, LANGUES, changerLangue } from '../lib/i18n'
 
 const SECTIONS = [
   {
-    titre: 'Mon compte',
+    titre: t('Mon compte'),
     items: [
-      { id: 'profil', label: 'Profil', icone: 'ti-user', route: '/profil' },
-      { id: 'abonnement', label: 'Abonnement', icone: 'ti-crown', route: '/abonnement' },
+      { id: 'profil', label: t('Profil'), icone: 'ti-user', route: '/profil' },
+      { id: 'abonnement', label: t('Abonnement'), icone: 'ti-crown', route: '/abonnement' },
     ],
   },
   {
-    titre: 'Ressources',
+    titre: t('Ressources'),
     items: [
-      { id: 'sources', label: 'Sources et références', icone: 'ti-books', route: '/sources-references' },
-      { id: 'aide', label: 'Aide et tutoriels', icone: 'ti-help-circle', route: '/aide' },
+      { id: 'sources', label: t('Sources et références'), icone: 'ti-books', route: '/sources-references' },
+      { id: 'aide', label: t('Aide et tutoriels'), icone: 'ti-help-circle', route: '/aide' },
     ],
   },
   {
-    titre: 'Légal',
+    titre: t('Légal'),
     items: [
-      { id: 'disclaimer', label: 'Avertissement', icone: 'ti-alert-triangle', route: '/disclaimer' },
-      { id: 'confidentialite', label: 'Politique de confidentialité', icone: 'ti-lock', route: '/politique-confidentialite' },
-      { id: 'termes', label: 'Termes et services', icone: 'ti-file-text', route: '/termes-services' },
+      { id: 'disclaimer', label: t('Avertissement'), icone: 'ti-alert-triangle', route: '/disclaimer' },
+      { id: 'confidentialite', label: t('Politique de confidentialité'), icone: 'ti-lock', route: '/politique-confidentialite' },
+      { id: 'termes', label: t('Termes et services'), icone: 'ti-file-text', route: '/termes-services' },
     ],
   },
 ]
@@ -35,14 +36,14 @@ export default function Menu() {
       <div className="menu-page-profil-banner">
         <div className="menu-page-avatar">
           {profil?.avatar_url
-            ? <img src={profil.avatar_url} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ? <img src={profil.avatar_url} alt={t('Avatar')} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
             : <i className="ti ti-user" style={{ fontSize: 28, color: 'var(--primary)' }}></i>
           }
         </div>
         <div>
-          <p className="menu-page-profil-nom">{profil?.nom || profil?.email || 'Mon compte'}</p>
+          <p className="menu-page-profil-nom">{profil?.nom || profil?.email || t('Mon compte')}</p>
           <span className={`menu-page-badge-plan ${estEquipe ? 'equipe' : estPro ? 'pro' : 'gratuit'}`}>
-            {estEquipe ? 'Équipe' : estPro ? 'Pro' : 'Gratuit'}
+            {estEquipe ? t('Équipe') : estPro ? 'Pro' : t('Gratuit')}
           </span>
         </div>
       </div>
@@ -66,6 +67,24 @@ export default function Menu() {
           </div>
         </div>
       ))}
+
+      {/* Langue de l'app : le nom de chaque langue reste dans sa propre langue. */}
+      <div className="menu-page-section">
+        <p className="menu-page-section-titre">{t('Langue')} / {langue === 'fr' ? 'Language' : 'Langue'}</p>
+        <div className="drogues-filtres" role="group" aria-label={t('Langue')} style={{ padding: 0 }}>
+          {LANGUES.map(l => (
+            <button
+              key={l.id}
+              lang={l.id}
+              className={`drogues-filtre-btn ${langue === l.id ? 'actif' : ''}`}
+              aria-pressed={langue === l.id}
+              onClick={() => changerLangue(l.id)}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <p className="menu-page-version">Adjuvet © {new Date().getFullYear()}</p>
     </div>

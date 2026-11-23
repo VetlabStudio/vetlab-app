@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useContext } from 'react'
 import { TitreContext, NavGuardContext } from '../context/NavigationContext'
 import { titrePage } from '../lib/titresPages'
+import { t } from '../lib/i18n'
 
 export default function Header() {
   const navigate = useNavigate()
@@ -24,7 +25,7 @@ export default function Header() {
 
   return (
     <header className="header">
-      <button className="header-back" onClick={retour} aria-label="Retour">
+      <button className="header-back" onClick={retour} aria-label={t('Retour')}>
         <i className="ti ti-arrow-left" aria-hidden="true"></i>
       </button>
       <h1 style={{ textAlign: 'center', maxWidth: 'calc(100% - 80px)', lineHeight: 1.3, margin: 0, fontSize: 20 }}>{titre}</h1>

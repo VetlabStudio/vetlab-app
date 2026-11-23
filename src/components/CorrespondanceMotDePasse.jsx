@@ -1,3 +1,4 @@
+import { t } from '../lib/i18n'
 /* Sous le champ « Confirmer le mot de passe » : signale que les deux
    mots de passe diffèrent, peu importe la force du premier (à l'envoi,
    la force est vérifiée en premier et son message prenait toute la
@@ -14,7 +15,7 @@ export default function CorrespondanceMotDePasse({ motDePasse, confirmation, ter
     <div className="mdp-force">
       <p className="mdp-force-texte" role="alert">
         <i className="ti ti-alert-circle" aria-hidden="true" style={{ color: 'var(--accent-red)', marginRight: 6 }}></i>
-        Les mots de passe ne correspondent pas.
+        {t('Les mots de passe ne correspondent pas.')}
       </p>
     </div>
   )

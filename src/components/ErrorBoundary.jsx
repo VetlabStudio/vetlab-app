@@ -1,4 +1,5 @@
 import { Component } from 'react'
+import { t } from '../lib/i18n'
 
 // Après un déploiement, un vieux onglet peut demander des fichiers JS qui n'existent plus.
 const ERREUR_CHARGEMENT = /dynamically imported module|Importing a module script failed|Loading chunk|Failed to fetch/i
@@ -31,12 +32,12 @@ export default class ErrorBoundary extends Component {
       <div className="auth2-page">
         <div className="auth2-contenu" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <i className="ti ti-alert-triangle" style={{ fontSize: 56, color: '#213058', marginBottom: 20 }}></i>
-          <p className="auth2-section-titre" style={{ textAlign: 'center', fontSize: 22 }}>Oups, un problème est survenu</p>
+          <p className="auth2-section-titre" style={{ textAlign: 'center', fontSize: 22 }}>{t('Oups, un problème est survenu')}</p>
           <p style={{ fontSize: 15, color: '#213058', textAlign: 'center', marginBottom: 12, lineHeight: 1.6 }}>
-            L'application a rencontré une erreur. Rechargez pour continuer.
+            {t('L\'application a rencontré une erreur. Rechargez pour continuer.')}
           </p>
           <p style={{ fontSize: 12, color: '#213058', opacity: 0.7, textAlign: 'center', marginBottom: 28, wordBreak: 'break-word' }}>
-            Détail technique : {this.state.erreur?.message || String(this.state.erreur)}
+            {t('Détail technique :')} {this.state.erreur?.message || String(this.state.erreur)}
           </p>
           <button
             type="button"
@@ -46,7 +47,7 @@ export default class ErrorBoundary extends Component {
               window.location.assign('/accueil')
             }}
           >
-            Recharger l'application
+            {t('Recharger l\'application')}
           </button>
         </div>
       </div>

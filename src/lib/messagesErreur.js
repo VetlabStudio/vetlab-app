@@ -1,3 +1,4 @@
+import { t } from './i18n'
 // Traduit en français les erreurs de Supabase (connexion, base de données,
 // fichiers, fonctions) avant de les afficher. Supabase répond en anglais :
 // son texte ne doit jamais apparaître tel quel à l'écran.
@@ -52,6 +53,10 @@ function estErreurReseau(error) {
  * (ex. « Le nom n'a pas pu être enregistré. »).
  */
 export function traduireErreur(error, defaut = 'Une erreur est survenue. Réessayez dans quelques instants.') {
+  return t(messageFrancais(error, defaut))
+}
+
+function messageFrancais(error, defaut) {
   if (!error) return defaut
   if (estErreurReseau(error)) return RESEAU
 

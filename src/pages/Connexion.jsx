@@ -4,6 +4,8 @@ import { supabase, horsLigne } from '../lib/supabase'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import SuggestionCourriel from '../components/SuggestionCourriel'
 import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
+import { t } from '../lib/i18n'
+import BoutonLangue from '../components/BoutonLangue'
 
 export default function Connexion() {
   const [email, setEmail] = useState('')
@@ -35,9 +37,9 @@ export default function Connexion() {
   useEffect(() => {
     if (!finAttente) return
     const minuterie = setInterval(() => {
-      const t = Date.now()
-      setMaintenant(t)
-      if (t >= finAttente) clearInterval(minuterie)
+      const ms = Date.now()
+      setMaintenant(ms)
+      if (ms >= finAttente) clearInterval(minuterie)
     }, 1000)
     return () => clearInterval(minuterie)
   }, [finAttente])
@@ -61,12 +63,12 @@ export default function Connexion() {
       const sansReseau = horsLigne() || isAuthRetryableFetchError(error)
       if (!sansReseau && error.code === 'email_not_confirmed') setNonConfirme(email.trim())
       setErreur(sansReseau
-        ? 'Connexion internet requise pour vous connecter.'
+        ? t('Connexion internet requise pour vous connecter.')
         : error.code === 'email_not_confirmed'
-          ? 'Votre adresse courriel n\'est pas encore confirmée. Ouvrez le lien reçu par courriel (vérifiez aussi les courriels indésirables), puis connectez-vous.'
+          ? t('Votre adresse courriel n\'est pas encore confirmée. Ouvrez le lien reçu par courriel (vérifiez aussi les courriels indésirables), puis connectez-vous.')
           : error.status === 429 || error.code === 'over_request_rate_limit'
-            ? 'Trop de tentatives. Réessayez dans quelques minutes.'
-            : 'Courriel ou mot de passe incorrect.')
+            ? t('Trop de tentatives. Réessayez dans quelques minutes.')
+            : t('Courriel ou mot de passe incorrect.'))
     } else {
       navigate(redirectUrl || '/accueil')
     }
@@ -80,19 +82,19 @@ export default function Connexion() {
     if (!error) {
       setErreur(null)
       setRenvoi('envoye')
-      const t = Date.now()
-      setMaintenant(t)
-      setFinAttente(t + 60000)
+      const ms = Date.now()
+      setMaintenant(ms)
+      setFinAttente(ms + 60000)
       return
     }
     setRenvoi(null)
     if (horsLigne() || isAuthRetryableFetchError(error)) {
-      setErreur('Connexion internet requise pour renvoyer le courriel.')
+      setErreur(t('Connexion internet requise pour renvoyer le courriel.'))
     } else if (error.status === 429 || error.code === 'over_email_send_rate_limit') {
-      setErreur('Un courriel vient déjà d\'être envoyé. Attendez une minute avant d\'en demander un autre.')
+      setErreur(t('Un courriel vient déjà d\'être envoyé. Attendez une minute avant d\'en demander un autre.'))
     } else {
       console.error('Renvoi du courriel de confirmation:', error)
-      setErreur('Le courriel n\'a pas pu être envoyé. Réessayez dans quelques minutes.')
+      setErreur(t('Le courriel n\'a pas pu être envoyé. Réessayez dans quelques minutes.'))
     }
   }
 
@@ -100,17 +102,18 @@ export default function Connexion() {
     <main className="auth2-page">
 
       <div className="auth2-contenu">
+        <BoutonLangue />
         <div className="auth2-logo-zone">
           <img src={logoSrc} alt="adjuvet" className="auth2-logo" />
-          <p className="auth2-tagline">Copilote en santé animale</p>
+          <p className="auth2-tagline">{t('Copilote en santé animale')}</p>
         </div>
 
-        <h1 className="auth2-section-titre">Connexion</h1>
+        <h1 className="auth2-section-titre">{t('Connexion')}</h1>
 
         {confirmé && (
           <div className="auth2-confirme">
             <i className="ti ti-circle-check" style={{ fontSize: 20, flexShrink: 0 }}></i>
-            <span>Adresse courriel confirmée ! Vous pouvez maintenant vous connecter.</span>
+            <span>{t('Adresse courriel confirmée ! Vous pouvez maintenant vous connecter.')}</span>
           </div>
         )}
 
@@ -126,7 +129,7 @@ export default function Connexion() {
               required
               aria-describedby={suggestion ? 'suggestion-courriel' : undefined}
             />
-            <span className="auth2-flottant-texte">Courriel</span>
+            <span className="auth2-flottant-texte">{t('Courriel')}</span>
           </label>
           <SuggestionCourriel id="suggestion-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} surFond="violet" />
           <div className="auth2-input-wrap">
@@ -140,13 +143,13 @@ export default function Connexion() {
                 placeholder=" "
                 required
               />
-              <span className="auth2-flottant-texte">Mot de passe</span>
+              <span className="auth2-flottant-texte">{t('Mot de passe')}</span>
             </label>
-            <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
+            <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? t('Masquer le mot de passe') : t('Afficher le mot de passe')}>
               <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
             </button>
           </div>
-          <Link to="/mot-de-passe-oublie" className="auth2-oublie">Mot de passe oublié ?</Link>
+          <Link to="/mot-de-passe-oublie" className="auth2-oublie">{t('Mot de passe oublié ?')}</Link>
           {erreur && <p className="erreur" style={{ textAlign: 'center' }}>{erreur}</p>}
           {nonConfirme && renvoi !== 'envoye' && (
             <button
@@ -155,7 +158,7 @@ export default function Connexion() {
               disabled={renvoi === 'envoi'}
               style={{ alignSelf: 'center', background: 'none', border: 'none', padding: 0, fontSize: 14, fontWeight: 600, color: '#213058', textDecoration: 'underline', cursor: 'pointer' }}
             >
-              {renvoi === 'envoi' ? 'Envoi...' : 'Renvoyer le courriel de confirmation'}
+              {renvoi === 'envoi' ? t('Envoi...') : t('Renvoyer le courriel de confirmation')}
             </button>
           )}
           {/* Supabase crée un nouveau lien à chaque envoi : celui des courriels
@@ -167,8 +170,8 @@ export default function Connexion() {
               <div className="auth2-confirme" role="status">
                 <i className="ti ti-mail" style={{ fontSize: 20, flexShrink: 0 }} aria-hidden="true"></i>
                 <span>
-                  Courriel envoyé à {nonConfirme}. Ouvrez le lien du courriel le plus récent : ceux des courriels précédents ne fonctionnent plus.
-                  Il peut prendre quelques minutes à arriver. Vérifiez aussi les courriels indésirables et la conversation du premier courriel, où Gmail et Outlook l'ajoutent souvent.
+                  {t('Courriel envoyé à {adresse}. Ouvrez le lien du courriel le plus récent : ceux des courriels précédents ne fonctionnent plus.', { adresse: nonConfirme })}
+                  {' '}{t('Il peut prendre quelques minutes à arriver. Vérifiez aussi les courriels indésirables et la conversation du premier courriel, où Gmail et Outlook l\'ajoutent souvent.')}
                 </span>
               </div>
               <button
@@ -177,19 +180,19 @@ export default function Connexion() {
                 disabled={attenteRenvoi > 0}
                 style={{ alignSelf: 'center', background: 'none', border: 'none', padding: 0, fontSize: 14, fontWeight: 600, color: '#213058', textDecoration: attenteRenvoi > 0 ? 'none' : 'underline', opacity: attenteRenvoi > 0 ? 0.6 : 1, cursor: attenteRenvoi > 0 ? 'default' : 'pointer' }}
               >
-                {attenteRenvoi > 0 ? `Renvoyer de nouveau dans ${attenteRenvoi} s` : 'Rien reçu ? Renvoyer de nouveau'}
+                {attenteRenvoi > 0 ? t('Renvoyer de nouveau dans {n} s', { n: attenteRenvoi }) : t('Rien reçu ? Renvoyer de nouveau')}
               </button>
             </>
           )}
           <button type="submit" className="auth2-btn" disabled={chargement}>
-            {chargement ? 'Connexion...' : 'Se connecter'}
+            {chargement ? t('Connexion...') : t('Se connecter')}
           </button>
         </form>
 
         <p className="auth2-lien">
-          Pas encore de compte ?{' '}
+          {t('Pas encore de compte ?')}{' '}
           <Link to={redirectUrl ? `/inscription?redirect=${encodeURIComponent(redirectUrl)}` : '/inscription'}>
-            Créer un compte
+            {t('Créer un compte')}
           </Link>
         </p>
       </div>

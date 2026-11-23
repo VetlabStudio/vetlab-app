@@ -5,6 +5,8 @@ import { traduireErreur } from '../lib/messagesErreur'
 import IndicateurMotDePasse from '../components/IndicateurMotDePasse'
 import CorrespondanceMotDePasse from '../components/CorrespondanceMotDePasse'
 import { verifierMotDePasse } from '../lib/motDePasse'
+import { t } from '../lib/i18n'
+import BoutonLangue from '../components/BoutonLangue'
 
 /* Page ouverte par le lien « mot de passe oublié ». Le client Supabase
    lit le jeton de l'adresse et ouvre une session temporaire : c'est
@@ -74,22 +76,23 @@ export default function NouveauMotDePasse() {
   return (
     <main className="auth2-page">
       <div className="auth2-contenu">
+        <BoutonLangue />
         <div className="auth2-logo-zone">
           <img src={logoSrc} alt="adjuvet" className="auth2-logo" />
-          <p className="auth2-tagline">Copilote en santé animale</p>
+          <p className="auth2-tagline">{t('Copilote en santé animale')}</p>
         </div>
 
-        <h1 className="auth2-section-titre">Nouveau mot de passe</h1>
+        <h1 className="auth2-section-titre">{t('Nouveau mot de passe')}</h1>
 
-        {etat === 'verification' && <p className="auth2-aide">Vérification du lien...</p>}
+        {etat === 'verification' && <p className="auth2-aide">{t('Vérification du lien...')}</p>}
 
         {etat === 'invalide' && (
           <>
             <p className="auth2-aide">
-              Ce lien est expiré ou a déjà servi. Demandez-en un nouveau : il est valable une heure.
+              {t('Ce lien est expiré ou a déjà servi. Demandez-en un nouveau : il est valable une heure.')}
             </p>
             <Link to="/mot-de-passe-oublie" className="auth2-btn" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
-              Recevoir un nouveau lien
+              {t('Recevoir un nouveau lien')}
             </Link>
           </>
         )}
@@ -98,10 +101,10 @@ export default function NouveauMotDePasse() {
           <>
             <div className="auth2-confirme" role="status">
               <i className="ti ti-circle-check" style={{ fontSize: 20, flexShrink: 0 }} aria-hidden="true"></i>
-              <span>Votre mot de passe est changé.</span>
+              <span>{t('Votre mot de passe est changé.')}</span>
             </div>
             <button type="button" className="auth2-btn" onClick={() => navigate('/accueil', { replace: true })}>
-              Continuer
+              {t('Continuer')}
             </button>
           </>
         )}
@@ -121,9 +124,9 @@ export default function NouveauMotDePasse() {
                   placeholder=" "
                   required
                 />
-                <span className="auth2-flottant-texte">Nouveau mot de passe</span>
+                <span className="auth2-flottant-texte">{t('Nouveau mot de passe')}</span>
               </label>
-              <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
+              <button type="button" className="auth2-oeil" onClick={() => setVoirMdp(v => !v)} aria-label={voirMdp ? t('Masquer le mot de passe') : t('Afficher le mot de passe')}>
                 <i className={`ti ${voirMdp ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
               </button>
             </div>
@@ -140,16 +143,16 @@ export default function NouveauMotDePasse() {
                   placeholder=" "
                   required
                 />
-                <span className="auth2-flottant-texte">Confirmer le mot de passe</span>
+                <span className="auth2-flottant-texte">{t('Confirmer le mot de passe')}</span>
               </label>
-              <button type="button" className="auth2-oeil" onClick={() => setVoirConfirm(v => !v)} aria-label={voirConfirm ? 'Masquer la confirmation' : 'Afficher la confirmation'}>
+              <button type="button" className="auth2-oeil" onClick={() => setVoirConfirm(v => !v)} aria-label={voirConfirm ? t('Masquer la confirmation') : t('Afficher la confirmation')}>
                 <i className={`ti ${voirConfirm ? 'ti-eye-off' : 'ti-eye'}`} aria-hidden="true"></i>
               </button>
             </div>
             <CorrespondanceMotDePasse motDePasse={motDePasse} confirmation={confirmation} termine={confirmationTerminee} />
             {erreur && <p className="erreur" style={{ textAlign: 'center', color: '#FFFFFF' }}>{erreur}</p>}
             <button type="submit" className="auth2-btn" disabled={chargement}>
-              {chargement ? 'Enregistrement...' : 'Enregistrer'}
+              {chargement ? t('Enregistrement...') : t('Enregistrer')}
             </button>
             <p className="auth2-lien">
               <button
@@ -157,7 +160,7 @@ export default function NouveauMotDePasse() {
                 onClick={annuler}
                 style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', fontWeight: 600, color: '#213058', textDecoration: 'underline', cursor: 'pointer' }}
               >
-                Retour à la connexion
+                {t('Retour à la connexion')}
               </button>
             </p>
           </form>

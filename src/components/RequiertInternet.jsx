@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import useEnLigne from '../hooks/useEnLigne'
+import { t } from '../lib/i18n'
 
 /* Section qui a besoin d'internet (équipe, notes, profil, ajouts...).
    Ouverte hors ligne, elle affiche un message et s'ouvre d'elle-même
@@ -21,10 +22,10 @@ export default function RequiertInternet({ children }) {
   return (
     <div className="page-hors-ligne" role="status">
       <i className="ti ti-wifi-off" aria-hidden="true"></i>
-      <h2>Connexion internet requise</h2>
-      <p>Cette section a besoin d'internet. Elle s'ouvrira dès que la connexion reviendra.</p>
+      <h2>{t('Connexion internet requise')}</h2>
+      <p>{t('Cette section a besoin d\'internet. Elle s\'ouvrira dès que la connexion reviendra.')}</p>
       <p className="page-hors-ligne-aide">
-        Sans internet, les calculateurs, la pharmacologie, le laboratoire et les autres sections de référence restent disponibles.
+        {t('Sans internet, les calculateurs, la pharmacologie, le laboratoire et les autres sections de référence restent disponibles.')}
       </p>
     </div>
   )

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import SuggestionCourriel from '../components/SuggestionCourriel'
 import { useSuggestionCourriel } from '../hooks/useSuggestionCourriel'
+import { t } from '../lib/i18n'
+import BoutonLangue from '../components/BoutonLangue'
 
 const FORMAT_COURRIEL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -18,7 +20,7 @@ export default function MotDePasseOublie() {
     e.preventDefault()
     setErreur(null)
     if (!FORMAT_COURRIEL.test(email.trim())) {
-      setErreur('Format de courriel invalide (ex. nom@domaine.com).')
+      setErreur(t('Format de courriel invalide (ex. nom@domaine.com).'))
       return
     }
     // Faute de frappe probable pas encore vue : on la montre d'abord.
@@ -32,7 +34,7 @@ export default function MotDePasseOublie() {
        pas révéler quelles adresses ont un compte. Seule une limite
        d'envoi atteinte est signalée. */
     if (error && error.status === 429) {
-      setErreur('Trop de demandes. Réessayez dans quelques minutes.')
+      setErreur(t('Trop de demandes. Réessayez dans quelques minutes.'))
       return
     }
     if (error) console.error('Envoi du lien de réinitialisation:', error)
@@ -42,25 +44,26 @@ export default function MotDePasseOublie() {
   return (
     <main className="auth2-page">
       <div className="auth2-contenu">
+        <BoutonLangue />
         <div className="auth2-logo-zone">
           <img src={logoSrc} alt="adjuvet" className="auth2-logo" />
-          <p className="auth2-tagline">Copilote en santé animale</p>
+          <p className="auth2-tagline">{t('Copilote en santé animale')}</p>
         </div>
 
-        <h1 className="auth2-section-titre">Mot de passe oublié</h1>
+        <h1 className="auth2-section-titre">{t('Mot de passe oublié')}</h1>
 
         {envoye ? (
           <div className="auth2-confirme" role="status">
             <i className="ti ti-mail" style={{ fontSize: 20, flexShrink: 0 }} aria-hidden="true"></i>
             <span>
-              Si un compte existe pour cette adresse, un courriel vient de vous être envoyé.
-              Ouvrez le lien qu'il contient pour choisir un nouveau mot de passe.
+              {t('Si un compte existe pour cette adresse, un courriel vient de vous être envoyé.')}
+              {' '}{t('Ouvrez le lien qu\'il contient pour choisir un nouveau mot de passe.')}
             </span>
           </div>
         ) : (
           <form onSubmit={envoyer} className="auth2-form" noValidate>
             <p className="auth2-aide">
-              Entrez l'adresse de votre compte. Vous recevrez un lien pour choisir un nouveau mot de passe.
+              {t('Entrez l\'adresse de votre compte. Vous recevrez un lien pour choisir un nouveau mot de passe.')}
             </p>
             <label className="auth2-flottant">
               <input
@@ -73,18 +76,18 @@ export default function MotDePasseOublie() {
                 required
                 aria-describedby={suggestion ? 'suggestion-courriel' : undefined}
               />
-              <span className="auth2-flottant-texte">Courriel</span>
+              <span className="auth2-flottant-texte">{t('Courriel')}</span>
             </label>
-            <SuggestionCourriel id="suggestion-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} avertie={avertie} bouton="Recevoir le lien" surFond="violet" />
+            <SuggestionCourriel id="suggestion-courriel" suggestion={suggestion} onCorriger={() => setEmail(suggestion)} avertie={avertie} bouton={t('Recevoir le lien')} surFond="violet" />
             {erreur && <p className="erreur" style={{ textAlign: 'center', color: '#FFFFFF' }}>{erreur}</p>}
             <button type="submit" className="auth2-btn" disabled={chargement}>
-              {chargement ? 'Envoi...' : 'Recevoir le lien'}
+              {chargement ? t('Envoi...') : t('Recevoir le lien')}
             </button>
           </form>
         )}
 
         <p className="auth2-lien">
-          <Link to="/connexion">Retour à la connexion</Link>
+          <Link to="/connexion">{t('Retour à la connexion')}</Link>
         </p>
       </div>
 

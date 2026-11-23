@@ -1,3 +1,5 @@
+import { t } from './i18n'
+
 /* Titre affiché dans l'en-tête de chaque page. Sert aussi à nommer
    la page d'un signalement d'erreur (components/SignalerErreur). */
 const titres = {
@@ -105,9 +107,10 @@ const titres = {
 
 // Le titre exact du chemin, sinon celui du plus long préfixe connu.
 export function titrePage(chemin) {
-  return titres[chemin] ||
+  const titre = titres[chemin] ||
     Object.entries(titres)
       .sort((a, b) => b[0].length - a[0].length)
       .find(([cle]) => chemin.startsWith(cle))?.[1] ||
     null
+  return titre && t(titre)
 }
