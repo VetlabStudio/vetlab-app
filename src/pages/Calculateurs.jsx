@@ -3,6 +3,7 @@ import LienFavoris from '../components/LienFavoris'
 import { lireNombrePositif } from '../lib/nombres'
 import { arrondirDose, arrondirMcg, calculComprimes } from '../lib/doses'
 import { ChoixForme, ChampTeneur, ResultatComprimes } from '../components/Comprimes'
+import { t } from '../lib/i18n'
 
 // ─── DÉMARCHE DE CALCUL ───────────────────────────────────
 function DemarcheCollapsible({ resultat, poids, unitePoids }) {
@@ -11,7 +12,7 @@ function DemarcheCollapsible({ resultat, poids, unitePoids }) {
   return (
     <div className="demarche-card">
       <button className="demarche-header" onClick={() => setOuvert(!ouvert)}>
-        <h2>Démarche de calcul</h2>
+        <h2>{t('Démarche de calcul')}</h2>
         <i className={`ti ${ouvert ? 'ti-chevron-up' : 'ti-chevron-down'}`}></i>
       </button>
       {ouvert && (
@@ -19,7 +20,7 @@ function DemarcheCollapsible({ resultat, poids, unitePoids }) {
           <div className="demarche-etape">
             <span className="demarche-num">1</span>
             <div>
-              <p className="demarche-titre">Poids converti en kg</p>
+              <p className="demarche-titre">{t('Poids converti en kg')}</p>
               <p className="demarche-calcul">
                 {unitePoids === 'lb'
                   ? `${poids} lb ÷ 2,205 = ${resultat.poidsKg} kg`
@@ -30,7 +31,7 @@ function DemarcheCollapsible({ resultat, poids, unitePoids }) {
           <div className="demarche-etape">
             <span className="demarche-num">2</span>
             <div>
-              <p className="demarche-titre">Dose sélectionnée</p>
+              <p className="demarche-titre">{t('Dose sélectionnée')}</p>
               <p className="demarche-calcul">{resultat.poso} {resultat.uniteDose}</p>
             </div>
           </div>
@@ -84,7 +85,7 @@ export default function Calculateurs() {
     const mg = arrondirDose(doseMg)
     const mcg = arrondirMcg(doseMg * 1000)
     const etapeDose = {
-      titre: 'Dose totale = poids (kg) × posologie',
+      titre: t('Dose totale = poids (kg) × posologie'),
       calcul: uniteDose === 'mcg/kg' ? `${kg} kg × ${poso} mcg/kg = ${mcg} mcg = ${mg} mg` : `${kg} kg × ${poso} mg/kg = ${mg} mg`,
     }
     const base = {
@@ -105,7 +106,7 @@ export default function Calculateurs() {
       ...base,
       volume: volume.toFixed(2),
       etapes: [etapeDose, {
-        titre: 'Volume = dose totale ÷ concentration',
+        titre: t('Volume = dose totale ÷ concentration'),
         calcul: uniteConc === 'mcg/mL'
           ? `${mcg} mcg ÷ ${conc} mcg/mL = ${volume.toFixed(2)} mL`
           : `${mg} mg ÷ ${conc} mg/mL = ${volume.toFixed(2)} mL`,
@@ -121,7 +122,7 @@ export default function Calculateurs() {
 
         {/* Poids */}
         <div className="champ">
-          <label>Poids de l'animal</label>
+          <label>{t('Poids de l\'animal')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-poids.svg" alt="poids" />
@@ -139,13 +140,13 @@ export default function Calculateurs() {
             </div>
           </div>
           {invalide(poids, poidsSaisi) && (
-            <p className="fluido-erreur">Poids invalide, entrez une valeur supérieure à 0.</p>
+            <p className="fluido-erreur">{t('Poids invalide, entrez une valeur supérieure à 0.')}</p>
           )}
         </div>
 
         {/* Posologie */}
         <div className="champ">
-          <label>Posologie</label>
+          <label>{t('Posologie')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-seringue.svg" alt="posologie" />
@@ -163,7 +164,7 @@ export default function Calculateurs() {
             </div>
           </div>
           {invalide(posologie, posoSaisie) && (
-            <p className="fluido-erreur">Posologie invalide, entrez une valeur supérieure à 0.</p>
+            <p className="fluido-erreur">{t('Posologie invalide, entrez une valeur supérieure à 0.')}</p>
           )}
         </div>
 
@@ -174,7 +175,7 @@ export default function Calculateurs() {
         ) : (
         /* Concentration */
         <div className="champ">
-          <label>Concentration</label>
+          <label>{t('Concentration')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-fluido.svg" alt="concentration" />
@@ -192,7 +193,7 @@ export default function Calculateurs() {
             </div>
           </div>
           {invalide(concentration, concSaisie) && (
-            <p className="fluido-erreur">Concentration invalide, entrez une valeur supérieure à 0.</p>
+            <p className="fluido-erreur">{t('Concentration invalide, entrez une valeur supérieure à 0.')}</p>
           )}
         </div>
         )}
@@ -201,9 +202,9 @@ export default function Calculateurs() {
         <div className="resultat-card">
           <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div className="champ-icone-wrapper">
-              <img src="/icone-calc.svg" alt="résultats" />
+              <img src="/icone-calc.svg" alt={t('résultats')} />
             </div>
-            Résultats
+            {t('Résultats')}
           </h2>
           
           <div className="resultat-ligne">
@@ -211,7 +212,7 @@ export default function Calculateurs() {
               <div className="champ-icone-wrapper">
                 <img src="/icone-seringue.svg" alt="dose" />
               </div>
-              Dose totale
+              {t('Dose totale')}
             </span>
             <strong>{resultat ? resultat.doseTotale : '—'}</strong>
           </div>
@@ -223,7 +224,7 @@ export default function Calculateurs() {
               <div className="champ-icone-wrapper">
                 <img src="/icone-fluido.svg" alt="volume" />
               </div>
-              Volume à administrer
+              {t('Volume à administrer')}
             </span>
             <strong>{resultat ? `${resultat.volume} mL` : '—'}</strong>
           </div>
@@ -232,7 +233,7 @@ export default function Calculateurs() {
 
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
-          Valide toujours le dosage avec un vétérinaire avant d'administrer un médicament. Ce calculateur est un outil d'aide, votre jugement clinique prime en tout temps.
+          {t('Valide toujours le dosage avec un vétérinaire avant d\'administrer un médicament. Ce calculateur est un outil d\'aide, votre jugement clinique prime en tout temps.')}
         </div>
 
         {/* Démarche */}

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { t } from '../lib/i18n'
 
 function arrondir(val, decimales = 4) {
   if (!val || isNaN(val)) return ''
@@ -8,13 +9,13 @@ function arrondir(val, decimales = 4) {
 // ─── UNITÉS VOLUME ───────────────────────────────────────
 const UNITES_VOLUME = [
   { id: 'ml',       label: 'ml',             facteur: 1 },
-  { id: 'litre',    label: 'litre',          facteur: 1000 },
-  { id: 'oz',       label: 'oz liq.',        facteur: 29.5735 },
-  { id: 'tasse',    label: 'tasse',          facteur: 236.588 },
-  { id: 'pinte',    label: 'pinte',          facteur: 946.353 },
-  { id: 'gallon',   label: 'gallon',         facteur: 3785.41 },
-  { id: 'c_the',    label: 'c. à thé',       facteur: 4.92892 },
-  { id: 'c_soupe',  label: 'c. à soupe',     facteur: 14.7868 },
+  { id: 'litre',    label: t('litre'),          facteur: 1000 },
+  { id: 'oz',       label: t('oz liq.'),        facteur: 29.5735 },
+  { id: 'tasse',    label: t('tasse'),          facteur: 236.588 },
+  { id: 'pinte',    label: t('pinte'),          facteur: 946.353 },
+  { id: 'gallon',   label: t('gallon'),         facteur: 3785.41 },
+  { id: 'c_the',    label: t('c. à thé'),       facteur: 4.92892 },
+  { id: 'c_soupe',  label: t('c. à soupe'),     facteur: 14.7868 },
 ]
 
 // ─── UNITÉS MASSE ────────────────────────────────────────
@@ -32,16 +33,16 @@ const UNITES_MESURE = [
   { id: 'mm',    label: 'mm',    facteur: 1 },
   { id: 'cm',    label: 'cm',    facteur: 10 },
   { id: 'm',     label: 'm',     facteur: 1000 },
-  { id: 'pouce', label: 'pouce', facteur: 25.4 },
-  { id: 'pied',  label: 'pied',  facteur: 304.8 },
+  { id: 'pouce', label: t('pouce'), facteur: 25.4 },
+  { id: 'pied',  label: t('pied'),  facteur: 304.8 },
 ]
 
 // ─── MODES ───────────────────────────────────────────────
 const MODES = [
-  { id: 'poids',       label: 'Poids',        svg: '/icone-poids2.svg' },
-  { id: 'temperature', label: 'Température',  svg: '/icone-temperature.svg' },
-  { id: 'volume',      label: 'Volume',        svg: '/icone-volume.svg'},
-  { id: 'mesure',      label: 'Mesures',       svg: '/icone-mesures.svg' },
+  { id: 'poids',       label: t('Poids'),        svg: '/icone-poids2.svg' },
+  { id: 'temperature', label: t('Température'),  svg: '/icone-temperature.svg' },
+  { id: 'volume',      label: t('Volume'),        svg: '/icone-volume.svg'},
+  { id: 'mesure',      label: t('Mesures'),       svg: '/icone-mesures.svg' },
 ]
 
 function convertir(valeur, uniteSource, uniteCible, unites) {
@@ -87,10 +88,10 @@ export default function Conversion() {
   const [uniteTemp, setUniteTemp] = useState('C')
 
   const tempConvertie = useMemo(() => {
-    const t = parseFloat(temp)
-    if (isNaN(t) || temp === '') return ''
-    if (uniteTemp === 'C') return arrondir((t * 9/5) + 32, 1)
-    return arrondir((t - 32) * 5/9, 1)
+    const valeur = parseFloat(temp)
+    if (isNaN(valeur) || temp === '') return ''
+    if (uniteTemp === 'C') return arrondir((valeur * 9/5) + 32, 1)
+    return arrondir((valeur - 32) * 5/9, 1)
   }, [temp, uniteTemp])
 
   // ─── VOLUME ─────────────────────────────────────
@@ -142,7 +143,7 @@ export default function Conversion() {
         {mode === 'poids' && (
           <>
             <div className="champ">
-              <label>Poids de l'animal et surface corporelle</label>
+              <label>{t('Poids de l\'animal et surface corporelle')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <img src="/icone-poids.svg" alt="poids" />
@@ -168,20 +169,20 @@ export default function Conversion() {
                   <strong>{unitePoids === 'lb' ? `${poidsKg} kg` : `${poidsLb} lb`}</strong>
                 </div>
                 <div className="resultat-ligne" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                  <span>Surface corporelle</span>
+                  <span>{t('Surface corporelle')}</span>
                   <span></span>
                 </div>
                 <div className="resultat-ligne">
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <img src="/icone-chien.svg" alt="chien" style={{ width: 24, height: 24 }} />
-                    Chien
+                    {t('Chien')}
                   </span>
                   <strong>{bsaChien} m²</strong>
                 </div>
                 <div className="resultat-ligne" style={{ borderBottom: 'none', paddingBottom: 0 }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <img src="/icone-chat.svg" alt="chat" style={{ width: 24, height: 24 }} />
-                    Chat
+                    {t('Chat')}
                   </span>
                   <strong>{bsaChat} m²</strong>
                 </div>
@@ -190,7 +191,7 @@ export default function Conversion() {
 
             <div className="conversion-deux-colonnes">
               <div className="champ">
-                <label>Conversion de masse</label>
+                <label>{t('Conversion de masse')}</label>
                 <div className="champ-input">
                   <div className="champ-icone-wrapper">
                     <img src="/icone-dosage.svg" alt="masse" />
@@ -208,7 +209,7 @@ export default function Conversion() {
                 </select>
               </div>
               <div className="champ">
-                <label>Vers</label>
+                <label>{t('Vers')}</label>
                 <div className="champ-input">
                   <span style={{ flex: 1, padding: '8px 8px', fontWeight: 700, color: masse2 ? 'var(--primary)' : 'var(--text-hint)' }}>
                     {masse2 || '—'}
@@ -228,7 +229,7 @@ export default function Conversion() {
             <div className="champ">
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
-                  <img src="/icone-thermo.svg" alt="température" />
+                  <img src="/icone-thermo.svg" alt={t('température')} />
                 </div>
                 <input
                   type="text"
@@ -259,7 +260,7 @@ export default function Conversion() {
         {mode === 'volume' && (
           <div className="conversion-deux-colonnes">
             <div className="champ">
-              <label>De</label>
+              <label>{t('De')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <img src="/icone-fluido.svg" alt="volume" />
@@ -277,7 +278,7 @@ export default function Conversion() {
               </select>
             </div>
             <div className="champ">
-              <label>Vers</label>
+              <label>{t('Vers')}</label>
               <div className="champ-input">
                 <span style={{ flex: 1, padding: '8px 8px', fontWeight: 700, color: volume2 ? 'var(--primary)' : 'var(--text-hint)' }}>
                   {volume2 || '—'}
@@ -295,7 +296,7 @@ export default function Conversion() {
         {mode === 'mesure' && (
           <div className="conversion-deux-colonnes">
             <div className="champ">
-              <label>De</label>
+              <label>{t('De')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <img src="/icone-regle.svg" alt="mesure" />
@@ -313,7 +314,7 @@ export default function Conversion() {
               </select>
             </div>
             <div className="champ">
-              <label>Vers</label>
+              <label>{t('Vers')}</label>
               <div className="champ-input">
                 <span style={{ flex: 1, padding: '8px 8px', fontWeight: 700, color: mesure2 ? 'var(--primary)' : 'var(--text-hint)' }}>
                   {mesure2 || '—'}

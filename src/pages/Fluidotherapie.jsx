@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { t, decimal } from '../lib/i18n'
 
 /* ─── TABLEAU DÉSHYDRATATION ──────────────────────────────
    resume : ligne courte affichée sous la valeur choisie
@@ -9,32 +10,32 @@ const TABLEAU_DESHYDRATATION = [
   {
     degre: '< 5 %',
     min: 0,
-    resume: "Aucune anomalie visible.",
-    signes: "Aucune anomalie visible.",
+    resume: t('Aucune anomalie visible.'),
+    signes: t('Aucune anomalie visible.'),
   },
   {
     degre: '5-6 %',
     min: 5,
-    resume: "Élasticité cutanée légèrement diminuée, muqueuses humides.",
-    signes: "Perte modérée de l'élasticité cutanée. Lorsqu'on pince la peau, elle revient légèrement plus lentement à sa position normale. Les muqueuses restent toutefois humides.",
+    resume: t('Élasticité cutanée légèrement diminuée, muqueuses humides.'),
+    signes: t('Perte modérée de l\'élasticité cutanée. Lorsqu\'on pince la peau, elle revient légèrement plus lentement à sa position normale. Les muqueuses restent toutefois humides.'),
   },
   {
     degre: '6-8 %',
     min: 6,
-    resume: "Pli cutané nettement ralenti, TRC parfois supérieur à 2 s.",
-    signes: "Le pli cutané met clairement plus de temps à se remettre en place. Le temps de remplissage capillaire (TRC) peut être prolongé (>2 secondes).",
+    resume: t('Pli cutané nettement ralenti, TRC parfois supérieur à 2 s.'),
+    signes: t('Le pli cutané met clairement plus de temps à se remettre en place. Le temps de remplissage capillaire (TRC) peut être prolongé (>2 secondes).'),
   },
   {
     degre: '10-12 %',
     min: 10,
-    resume: "Pli cutané persistant, TRC très lent, yeux enfoncés, muqueuses sèches.",
-    signes: "Déshydratation sévère. La peau reste en position pincée, le TRC est très lent, les yeux sont profondément enfoncés et les muqueuses sont sèches, collantes ou pâles.",
+    resume: t('Pli cutané persistant, TRC très lent, yeux enfoncés, muqueuses sèches.'),
+    signes: t('Déshydratation sévère. La peau reste en position pincée, le TRC est très lent, les yeux sont profondément enfoncés et les muqueuses sont sèches, collantes ou pâles.'),
   },
   {
     degre: '12-15 %',
     min: 12,
-    resume: "État de choc probable, urgence vitale.",
-    signes: "Déshydratation extrême, souvent mortelle. L'état de choc est généralement manifeste, avec effondrement cardiovasculaire et détresse systémique. La mort peut survenir sans traitement d'urgence immédiat.",
+    resume: t('État de choc probable, urgence vitale.'),
+    signes: t('Déshydratation extrême, souvent mortelle. L\'état de choc est généralement manifeste, avec effondrement cardiovasculaire et détresse systémique. La mort peut survenir sans traitement d\'urgence immédiat.'),
   },
 ]
 
@@ -49,14 +50,14 @@ function rangeeDeshydratation(valeur) {
 /* ─── FORMULES MAINTENANCE ──────────────────────────────── */
 const FORMULES = {
   chien: [
-    { id: 'resting', court: 'RER',      label: '132 × (Poids en kg)⁰·⁷⁵ ÷ 24 = ml/h', calc: p => 132 * Math.pow(p, 0.75) / 24 },
-    { id: 'simple',  court: 'Simple',   label: '60 ml/kg/jour (2,5 ml/kg/h)',          calc: p => (60 * p) / 24 },
-    { id: 'linear',  court: 'Linéaire', label: '(30 × Poids en kg + 70) ÷ 24 = ml/h',  calc: p => (30 * p + 70) / 24 },
+    { id: 'resting', court: 'RER',      label: t('132 × (Poids en kg)⁰·⁷⁵ ÷ 24 = ml/h'), calc: p => 132 * Math.pow(p, 0.75) / 24 },
+    { id: 'simple',  court: t('Simple'),   label: t('60 ml/kg/jour (2,5 ml/kg/h)'),          calc: p => (60 * p) / 24 },
+    { id: 'linear',  court: t('Linéaire'), label: t('(30 × Poids en kg + 70) ÷ 24 = ml/h'),  calc: p => (30 * p + 70) / 24 },
   ],
   chat: [
-    { id: 'resting', court: 'RER',      label: '80 × (Poids en kg)⁰·⁷⁵ ÷ 24 = ml/h',  calc: p => 80 * Math.pow(p, 0.75) / 24 },
-    { id: 'simple',  court: 'Simple',   label: '40 ml/kg/jour (1,67 ml/kg/h)',         calc: p => (40 * p) / 24 },
-    { id: 'linear',  court: 'Linéaire', label: '(30 × Poids en kg + 70) ÷ 24 = ml/h',  calc: p => (30 * p + 70) / 24 },
+    { id: 'resting', court: 'RER',      label: t('80 × (Poids en kg)⁰·⁷⁵ ÷ 24 = ml/h'),  calc: p => 80 * Math.pow(p, 0.75) / 24 },
+    { id: 'simple',  court: t('Simple'),   label: t('40 ml/kg/jour (1,67 ml/kg/h)'),         calc: p => (40 * p) / 24 },
+    { id: 'linear',  court: t('Linéaire'), label: t('(30 × Poids en kg + 70) ÷ 24 = ml/h'),  calc: p => (30 * p + 70) / 24 },
   ],
 }
 
@@ -68,7 +69,7 @@ const VOLUMES_SAC = [250, 500, 1000]
 function fmt(valeur, decimales = 1) {
   if (!isFinite(valeur)) return '0'
   const arrondi = Math.round(valeur * Math.pow(10, decimales)) / Math.pow(10, decimales)
-  return String(arrondi).replace('.', ',')
+  return decimal(arrondi)
 }
 
 const CLE_PREFS = 'fluido-prefs'
@@ -276,24 +277,24 @@ export default function Fluidotherapie() {
 
   useEffect(() => {
     if (!annulation) return
-    const t = setTimeout(() => setAnnulation(null), 6000)
-    return () => clearTimeout(t)
+    const minuterie = setTimeout(() => setAnnulation(null), 6000)
+    return () => clearTimeout(minuterie)
   }, [annulation])
 
   /* ─── COPIE DU RÉSULTAT ──────────────────────────────── */
   async function copierResultat() {
     const lignes = [
-      `Fluidothérapie, ${espece} ${fmt(poidsKg, 2)} kg`,
-      `Entretien (${formuleActive.court}) : ${fmt(maintenance)} ml/h`,
+      t('Fluidothérapie, {espece} {poids} kg', { espece: (espece === 'chat' ? t('Chat') : t('Chien')), poids: fmt(poidsKg, 2) }),
+      t('Entretien ({formule}) : {debit} ml/h', { formule: t(formuleActive.court), debit: fmt(maintenance) }),
     ]
-    if (deficitFluide > 0) lignes.push(`Déficit ${fmt(pourcentDeshy)} % : ${fmt(deficitFluide, 0)} ml`)
-    if (pertes > 0) lignes.push(`Pertes en cours : ${fmt(pertes, 0)} ml`)
+    if (deficitFluide > 0) lignes.push(t('Déficit {pct} % : {vol} ml', { pct: fmt(pourcentDeshy), vol: fmt(deficitFluide, 0) }))
+    if (pertes > 0) lignes.push(t('Pertes en cours : {vol} ml', { vol: fmt(pertes, 0) }))
     lignes.push(
       aRemplacer
-        ? `Débit : ${fmt(debitHoraire)} ml/h pendant ${duree} h`
-        : `Débit : ${fmt(debitHoraire)} ml/h`
+        ? t('Débit : {debit} ml/h pendant {duree} h', { debit: fmt(debitHoraire), duree })
+        : t('Débit : {debit} ml/h', { debit: fmt(debitHoraire) })
     )
-    if (gttsParMin > 0) lignes.push(`Gouttes : ${fmt(gttsParMin)} gtt/min (${facteurGtts} gtt/ml)`)
+    if (gttsParMin > 0) lignes.push(t('Gouttes : {gtt} gtt/min ({facteur} gtt/ml)', { gtt: fmt(gttsParMin), facteur: facteurGtts }))
 
     try {
       await navigator.clipboard.writeText(lignes.join('\n'))
@@ -330,10 +331,10 @@ export default function Fluidotherapie() {
           className="fluido-reset"
           onClick={reinitialiser}
           disabled={!aDesDonnees}
-          aria-label="Réinitialiser le calcul"
+          aria-label={t('Réinitialiser le calcul')}
         >
           <i className="ti ti-refresh"></i>
-          Réinitialiser
+          {t('Réinitialiser')}
         </button>
       </div>
 
@@ -344,29 +345,29 @@ export default function Fluidotherapie() {
           <div className="fluido-bloc" ref={blocPatientRef} onBlur={replierPatient}>
 
             <div className="champ">
-              <label>Choisir l'espèce</label>
+              <label>{t('Choisir l\'espèce')}</label>
               <div className="espece-toggle">
                 <span className={`espece-label ${espece === 'chien' ? 'active' : ''}`}>
                   <img src="/icone-chien.svg" alt="" className="espece-icone" />
-                  Chien
+                  {t('Chien')}
                 </span>
                 <button
                   type="button"
                   className={`toggle-slider ${espece === 'chat' ? 'droite' : ''}`}
                   onClick={() => setEspece(espece === 'chien' ? 'chat' : 'chien')}
-                  aria-label={`Espèce : ${espece}. Changer d'espèce`}
+                  aria-label={t('Espèce : {espece}. Changer d\'espèce', { espece: (espece === 'chat' ? t('Chat') : t('Chien')) })}
                 >
                   <div className="toggle-thumb"></div>
                 </button>
                 <span className={`espece-label ${espece === 'chat' ? 'active' : ''}`}>
                   <img src="/icone-chat.svg" alt="" className="espece-icone" />
-                  Chat
+                  {t('Chat')}
                 </span>
               </div>
             </div>
 
             <div className="champ">
-              <label htmlFor="fluido-poids">Poids de l'animal</label>
+              <label htmlFor="fluido-poids">{t('Poids de l\'animal')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <img src="/icone-poids.svg" alt="" />
@@ -377,7 +378,7 @@ export default function Fluidotherapie() {
                   inputMode="decimal"
                   value={poids}
                   onChange={e => setPoids(e.target.value.replace(',', '.'))}
-                  placeholder="Ex: 10"
+                  placeholder={t('Ex: 10')}
                 />
                 <div className="radio-groupe">
                   <button className={`radio-btn ${unitePoids === 'kg' ? 'active' : ''}`} onClick={() => setUnitePoids('kg')}>kg</button>
@@ -385,7 +386,7 @@ export default function Fluidotherapie() {
                 </div>
               </div>
               {poids !== '' && poidsKg <= 0 && (
-                <p className="fluido-erreur">Poids invalide, entrez une valeur supérieure à 0.</p>
+                <p className="fluido-erreur">{t('Poids invalide, entrez une valeur supérieure à 0.')}</p>
               )}
               {unitePoids === 'lb' && poidsKg > 0 && (
                 <p className="range-hint">Soit {fmt(poidsKg, 2)} kg</p>
@@ -397,7 +398,7 @@ export default function Fluidotherapie() {
           <button className="fluido-resume" onClick={() => setPatientOuvert(true)}>
             <img src={espece === 'chat' ? '/icone-chat.svg' : '/icone-chien.svg'} alt="" className="fluido-resume-icone" />
             <span className="fluido-resume-texte">
-              {espece === 'chat' ? 'Chat' : 'Chien'}, {poids.replace('.', ',')} {unitePoids}
+              {espece === 'chat' ? t('Chat') : t('Chien')}, {decimal(poids)} {unitePoids}
             </span>
             <i className="ti ti-pencil"></i>
           </button>
@@ -408,12 +409,12 @@ export default function Fluidotherapie() {
           <div className="fluido-bloc">
 
             <div className="fluido-ligne-principale">
-              <span>Entretien</span>
+              <span>{t('Entretien')}</span>
               <strong>{fmt(maintenance)} ml/h</strong>
             </div>
 
             <button className="fluido-lien" onClick={() => setFormulesOuvertes(o => !o)}>
-              {formuleActive.court} · {formulesOuvertes ? 'masquer les formules' : 'changer de formule'}
+              {t(formuleActive.court)} · {formulesOuvertes ? t('masquer les formules') : t('changer de formule')}
             </button>
 
             {formulesOuvertes && (
@@ -438,7 +439,7 @@ export default function Fluidotherapie() {
                       width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
                       color: 'var(--text-secondary)', fontSize: 18, flexShrink: 0,
                     }}
-                    title="Fermer"
+                    title={t('Fermer')}
                   >
                     <i className="ti ti-chevron-up"></i>
                   </button>
@@ -452,16 +453,16 @@ export default function Fluidotherapie() {
                 onClick={() => setDeshyActive(a => !a)}
               >
                 {deshyActive
-                  ? <>Déshydratation{pourcentDeshy > 0 ? ` ${fmt(pourcentDeshy)} %` : ''} <i className="ti ti-x"></i></>
-                  : <>+ Déshydratation</>}
+                  ? <>{t('Déshydratation')}{pourcentDeshy > 0 ? ` ${fmt(pourcentDeshy)} %` : ''} <i className="ti ti-x"></i></>
+                  : <>{t('+ Déshydratation')}</>}
               </button>
               <button
                 className={`fluido-chip ${pertesActive ? 'actif' : ''}`}
                 onClick={() => setPertesActive(a => !a)}
               >
                 {pertesActive
-                  ? <>Pertes{pertes > 0 ? ` ${fmt(pertes, 0)} ml` : ''} <i className="ti ti-x"></i></>
-                  : <>+ Pertes en cours</>}
+                  ? <>{t('Pertes')}{pertes > 0 ? ` ${fmt(pertes, 0)} ml` : ''} <i className="ti ti-x"></i></>
+                  : <>{t('+ Pertes en cours')}</>}
               </button>
             </div>
 
@@ -481,7 +482,7 @@ export default function Fluidotherapie() {
                     className={`fluido-valeur-btn ${deshyChoix === 'autre' ? 'actif' : ''}`}
                     onClick={() => setDeshyChoix('autre')}
                   >
-                    Autre
+                    {t('Autre')}
                   </button>
                 </div>
 
@@ -493,7 +494,7 @@ export default function Fluidotherapie() {
                       value={deshyAutre}
                       onChange={e => setDeshyAutre(e.target.value.replace(',', '.'))}
                       placeholder="0"
-                      aria-label="Pourcentage de déshydratation"
+                      aria-label={t('Pourcentage de déshydratation')}
                     />
                     <span className="unite-fixe">%</span>
                   </div>
@@ -504,11 +505,11 @@ export default function Fluidotherapie() {
                 )}
 
                 {deficitFluide > 0 && (
-                  <p className="range-hint">Déficit en fluide : <strong>{fmt(deficitFluide, 0)} ml</strong></p>
+                  <p className="range-hint">{t('Déficit en fluide :')} <strong>{fmt(deficitFluide, 0)} ml</strong></p>
                 )}
 
                 <button className="fluido-lien" onClick={() => setPopupDeshy(true)}>
-                  Voir le tableau complet
+                  {t('Voir le tableau complet')}
                 </button>
               </div>
             )}
@@ -522,11 +523,11 @@ export default function Fluidotherapie() {
                     value={pertesValeur}
                     onChange={e => setPertesValeur(e.target.value.replace(',', '.'))}
                     placeholder="0"
-                    aria-label="Volume des pertes en cours"
+                    aria-label={t('Volume des pertes en cours')}
                   />
                   <span className="unite-fixe">ml</span>
                 </div>
-                <p className="fluido-aide">Volume estimé à remplacer sur la durée de correction.</p>
+                <p className="fluido-aide">{t('Volume estimé à remplacer sur la durée de correction.')}</p>
               </div>
             )}
 
@@ -536,7 +537,7 @@ export default function Fluidotherapie() {
         {/* ═══ BLOC 3 : DURÉE ═══════════════════════════ */}
         {poidsKg > 0 && aRemplacer && (
           <div className="fluido-bloc">
-            <div className="fluido-bloc-titre">Remplacer le déficit sur</div>
+            <div className="fluido-bloc-titre">{t('Remplacer le déficit sur')}</div>
             <div className="fluido-valeurs">
               {DUREES.map(h => (
                 <button
@@ -554,7 +555,7 @@ export default function Fluidotherapie() {
                 inputMode="numeric"
                 value={duree}
                 onChange={e => setDuree(Math.max(0, parseFloat(e.target.value.replace(',', '.')) || 0))}
-                aria-label="Durée de correction en heures"
+                aria-label={t('Durée de correction en heures')}
               />
               <span className="unite-fixe">h</span>
             </div>
@@ -564,7 +565,7 @@ export default function Fluidotherapie() {
         {/* ═══ SECTION REPLIABLE : GOUTTES ══════════════ */}
         <div className="fluido-repliable">
           <button className="fluido-repliable-header" onClick={() => setGouttesOuvert(o => !o)}>
-            <span>Convertisseur en gouttes</span>
+            <span>{t('Convertisseur en gouttes')}</span>
             <i className={`ti ti-chevron-${gouttesOuvert ? 'up' : 'down'}`}></i>
           </button>
 
@@ -572,7 +573,7 @@ export default function Fluidotherapie() {
             <div className="fluido-repliable-contenu">
 
               <div className="champ">
-                <label htmlFor="fluido-debit-gtts">Débit utilisé</label>
+                <label htmlFor="fluido-debit-gtts">{t('Débit utilisé')}</label>
                 <div className="champ-input">
                   <div className="champ-icone-wrapper">
                     <img src="/icone-debit.svg" alt="" />
@@ -588,7 +589,7 @@ export default function Fluidotherapie() {
                   <span className="unite-fixe">ml/h</span>
                 </div>
                 {debitSaisi === '' && debitHoraire > 0 && (
-                  <p className="fluido-aide">Repris du calcul ci-dessus.</p>
+                  <p className="fluido-aide">{t('Repris du calcul ci-dessus.')}</p>
                 )}
                 {debitSaisi !== '' && debitHoraire > 0 && (
                   <button className="fluido-lien" onClick={() => setDebitSaisi('')}>
@@ -598,7 +599,7 @@ export default function Fluidotherapie() {
               </div>
 
               <div className="champ">
-                <label>Facteur du perfuseur</label>
+                <label>{t('Facteur du perfuseur')}</label>
                 <div className="fluido-valeurs">
                   {[10, 15, 20, 60].map(f => (
                     <button
@@ -612,10 +613,10 @@ export default function Fluidotherapie() {
                 </div>
                 <p className="fluido-aide">
                   {debitPourGtts > 0 && debitPourGtts < 100
-                    ? `Débit sous 100 ml/h, microgoutteur recommandé (60 gtt/ml).`
+                    ? t('Débit sous 100 ml/h, microgoutteur recommandé (60 gtt/ml).')
                     : debitPourGtts >= 100
-                    ? `Débit de 100 ml/h ou plus, macrogoutteur recommandé (10 ou 15 gtt/ml).`
-                    : `Microgoutteur (60 gtt/ml) sous 100 ml/h, macrogoutteur (10 ou 15 gtt/ml) au-delà.`}
+                    ? t('Débit de 100 ml/h ou plus, macrogoutteur recommandé (10 ou 15 gtt/ml).')
+                    : t('Microgoutteur (60 gtt/ml) sous 100 ml/h, macrogoutteur (10 ou 15 gtt/ml) au-delà.')}
                 </p>
                 {facteurManuel !== null && facteurManuel !== facteurAuto && (
                   <button className="fluido-lien" onClick={() => setFacteurManuel(null)}>
@@ -627,11 +628,11 @@ export default function Fluidotherapie() {
               {gttsParMin > 0 && (
                 <div className="resultat-card">
                   <div className="resultat-ligne">
-                    <span>Gouttes par minute</span>
+                    <span>{t('Gouttes par minute')}</span>
                     <strong>{fmt(gttsParMin)} gtt/min</strong>
                   </div>
                   <div className="resultat-ligne" style={{ alignItems: 'center' }}>
-                    <span>Rythme des gouttes</span>
+                    <span>{t('Rythme des gouttes')}</span>
                     {gttsParMin > 0 && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <style>{`@keyframes gtt-pulse{0%,100%{transform:scale(1);opacity:.2}8%{transform:scale(1.8);opacity:1}30%{transform:scale(1);opacity:.2}}`}</style>
@@ -648,7 +649,7 @@ export default function Fluidotherapie() {
                             color: sonActif ? 'var(--primary)' : 'var(--text-hint)',
                             fontSize: 26,
                           }}
-                          title={sonActif ? 'Désactiver le son' : 'Activer le son'}
+                          title={sonActif ? t('Désactiver le son') : t('Activer le son')}
                         >
                           <i className={`ti ${sonActif ? 'ti-volume' : 'ti-volume-off'}`}></i>
                         </button>
@@ -670,14 +671,14 @@ export default function Fluidotherapie() {
               state: { debit: Math.round(debitHoraire * 100) / 100, poidsKg, espece },
             })}
           >
-            <span>Calculer une médication en CRI avec ce débit</span>
+            <span>{t('Calculer une médication en CRI avec ce débit')}</span>
             <i className="ti ti-chevron-right"></i>
           </button>
         )}
 
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
-          Valide toujours le dosage avec le vétérinaire responsable avant d'administrer. Ce calculateur est un outil d'aide, votre jugement clinique prime en tout temps.
+          {t('Valide toujours le dosage avec le vétérinaire responsable avant d\'administrer. Ce calculateur est un outil d\'aide, votre jugement clinique prime en tout temps.')}
         </div>
 
       </div>
@@ -689,7 +690,7 @@ export default function Fluidotherapie() {
           {aRemplacer && <span className="fluido-barre-detail">pendant {duree} h</span>}
           {/* Le mot dit qu'un appui ouvre le détail du calcul ; la flèche seule passait inaperçue. */}
           <span className="fluido-barre-ouvrir">
-            Détails
+            {t('Détails')}
             <i className="ti ti-chevron-up" aria-hidden="true"></i>
           </span>
         </button>
@@ -702,40 +703,40 @@ export default function Fluidotherapie() {
             <div className="fluido-sheet-poignee"></div>
 
             <div className="popup-header">
-              <span>Détail du calcul</span>
+              <span>{t('Détail du calcul')}</span>
               <button className="popup-close" onClick={() => setDetailOuvert(false)}>✕</button>
             </div>
 
             <div className="resultat-card">
               <div className="resultat-ligne">
-                <span>Entretien ({formuleActive.court})</span>
+                <span>{t('Entretien ({formule})', { formule: t(formuleActive.court) })}</span>
                 <strong>{fmt(maintenance)} ml/h</strong>
               </div>
               {deficitFluide > 0 && (
                 <div className="resultat-ligne">
-                  <span>Déficit {fmt(pourcentDeshy)} %</span>
+                  <span>{t('Déficit {pct} %', { pct: fmt(pourcentDeshy) })}</span>
                   <strong>{fmt(deficitFluide, 0)} ml</strong>
                 </div>
               )}
               {pertes > 0 && (
                 <div className="resultat-ligne">
-                  <span>Pertes en cours</span>
+                  <span>{t('Pertes en cours')}</span>
                   <strong>{fmt(pertes, 0)} ml</strong>
                 </div>
               )}
               {aRemplacer && (
                 <div className="resultat-ligne">
-                  <span>Remplacement sur {duree} h</span>
+                  <span>{t('Remplacement sur {duree} h', { duree })}</span>
                   <strong>{fmt(debitRemplacement)} ml/h</strong>
                 </div>
               )}
               <div className="resultat-ligne">
-                <span>Débit total</span>
+                <span>{t('Débit total')}</span>
                 <strong>{fmt(debitHoraire)} ml/h</strong>
               </div>
               {aRemplacer && (
                 <div className="resultat-ligne">
-                  <span>Volume sur {duree} h</span>
+                  <span>{t('Volume sur {duree} h', { duree })}</span>
                   <strong>{fmt(debitHoraire * duree, 0)} ml</strong>
                 </div>
               )}
@@ -747,19 +748,19 @@ export default function Fluidotherapie() {
                 <strong>{fmt(gttsParMin)} gtt/min</strong>
               </div>
               <div className="resultat-ligne">
-                <span>Aux 15 secondes</span>
+                <span>{t('Aux 15 secondes')}</span>
                 <strong>{fmt(gttsPar15Sec)} gtt/15 s</strong>
               </div>
               <button
                 className="fluido-lien"
                 onClick={() => { setDetailOuvert(false); setGouttesOuvert(true) }}
               >
-                Ajuster le débit ou le facteur
+                {t('Ajuster le débit ou le facteur')}
               </button>
             </div>
 
             <div className="resultat-card">
-              <div className="fluido-bloc-titre">Sac de fluide</div>
+              <div className="fluido-bloc-titre">{t('Sac de fluide')}</div>
               <div className="fluido-valeurs">
                 {VOLUMES_SAC.map(v => (
                   <button
@@ -773,14 +774,14 @@ export default function Fluidotherapie() {
               </div>
               {dureeSac > 0 && (
                 <div className="resultat-ligne">
-                  <span>Durée du sac</span>
+                  <span>{t('Durée du sac')}</span>
                   <strong>{fmt(dureeSac)} h</strong>
                 </div>
               )}
             </div>
 
             <button className="fluido-btn-copier" onClick={copierResultat}>
-              {copie ? 'Copié' : 'Copier le résultat'}
+              {copie ? t('Copié') : t('Copier le résultat')}
             </button>
           </div>
         </div>
@@ -789,8 +790,8 @@ export default function Fluidotherapie() {
       {/* ═══ BANDEAU D'ANNULATION ═════════════════════════ */}
       {annulation && (
         <div className="fluido-bandeau">
-          <span>Calcul réinitialisé</span>
-          <button onClick={annulerReinitialisation}>Annuler</button>
+          <span>{t('Calcul réinitialisé')}</span>
+          <button onClick={annulerReinitialisation}>{t('Annuler')}</button>
         </div>
       )}
 
@@ -799,13 +800,13 @@ export default function Fluidotherapie() {
         <div className="popup-overlay" onClick={() => setPopupDeshy(false)}>
           <div className="popup-card popup-large" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Évaluation de l'hydratation</span>
+              <span>{t('Évaluation de l\'hydratation')}</span>
               <button className="popup-close" onClick={() => setPopupDeshy(false)}>✕</button>
             </div>
             <div className="fluido-tableau">
               <div className="fluido-tableau-header">
-                <span>Degré de déshydratation</span>
-                <span>Signes cliniques</span>
+                <span>{t('Degré de déshydratation')}</span>
+                <span>{t('Signes cliniques')}</span>
               </div>
               {TABLEAU_DESHYDRATATION.map((row, i) => (
                 <div key={i} className="fluido-tableau-row">

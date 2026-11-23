@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { t, enAnglais } from '../lib/i18n'
 
 function arrondir(val, decimales = 1) {
   return Math.round(val * Math.pow(10, decimales)) / Math.pow(10, decimales)
@@ -15,26 +16,26 @@ const REPAS = [1, 2, 3, 4]
 
 const FACTEURS = {
   chat: [
-    { id: 'castre',      label: 'Adulte castré / stérilisé',          facteurMin: 1.2, facteurMax: 1.4 },
-    { id: 'intact',      label: 'Adulte entier',                      facteurMin: 1.4, facteurMax: 1.6 },
-    { id: 'inactif',     label: "Inactif / prédisposé à l'obésité",   facteurMin: 1.0, facteurMax: null },
-    { id: 'perte_poids', label: 'Perte de poids',                     facteurMin: 0.8, facteurMax: null },
-    { id: 'gestation',   label: 'Gestation',                          facteurMin: 1.6, facteurMax: 2.0 },
-    { id: 'lactation',   label: 'Lactation',                          facteurMin: 2.0, facteurMax: 6.0 },
-    { id: 'croissance',  label: 'Croissance (chaton)',                 facteurMin: 2.5, facteurMax: null },
+    { id: 'castre',      label: t('Adulte castré / stérilisé'),          facteurMin: 1.2, facteurMax: 1.4 },
+    { id: 'intact',      label: t('Adulte entier'),                      facteurMin: 1.4, facteurMax: 1.6 },
+    { id: 'inactif',     label: t('Inactif / prédisposé à l\'obésité'),   facteurMin: 1.0, facteurMax: null },
+    { id: 'perte_poids', label: t('Perte de poids'),                     facteurMin: 0.8, facteurMax: null },
+    { id: 'gestation',   label: t('Gestation'),                          facteurMin: 1.6, facteurMax: 2.0 },
+    { id: 'lactation',   label: t('Lactation'),                          facteurMin: 2.0, facteurMax: 6.0 },
+    { id: 'croissance',  label: t('Croissance (chaton)'),                 facteurMin: 2.5, facteurMax: null },
   ],
   chien: [
-    { id: 'castre',           label: 'Adulte castré / stérilisé',        facteurMin: 1.4, facteurMax: 1.6 },
-    { id: 'intact',           label: 'Adulte entier',                    facteurMin: 1.6, facteurMax: 1.8 },
-    { id: 'inactif',          label: "Inactif / prédisposé à l'obésité", facteurMin: 1.0, facteurMax: 1.2 },
-    { id: 'perte_poids',      label: 'Perte de poids',                   facteurMin: 1.0, facteurMax: null },
-    { id: 'gestation',        label: 'Gestation (21 derniers jours)',    facteurMin: 3.0, facteurMax: null },
-    { id: 'lactation',        label: 'Lactation',                        facteurMin: 3.0, facteurMax: 6.0, plus: true },
-    { id: 'croissance_jeune', label: 'Croissance (< 4 mois)',            facteurMin: 3.0, facteurMax: null },
-    { id: 'croissance_age',   label: 'Croissance (≥ 4 mois)',            facteurMin: 2.0, facteurMax: null },
-    { id: 'travail_leger',    label: 'Travail léger',                    facteurMin: 1.6, facteurMax: 2.0 },
-    { id: 'travail_modere',   label: 'Travail modéré',                   facteurMin: 2.0, facteurMax: 5.0 },
-    { id: 'travail_lourd',    label: 'Travail lourd',                    facteurMin: 5.0, facteurMax: 11.0 },
+    { id: 'castre',           label: t('Adulte castré / stérilisé'),        facteurMin: 1.4, facteurMax: 1.6 },
+    { id: 'intact',           label: t('Adulte entier'),                    facteurMin: 1.6, facteurMax: 1.8 },
+    { id: 'inactif',          label: t('Inactif / prédisposé à l\'obésité'), facteurMin: 1.0, facteurMax: 1.2 },
+    { id: 'perte_poids',      label: t('Perte de poids'),                   facteurMin: 1.0, facteurMax: null },
+    { id: 'gestation',        label: t('Gestation (21 derniers jours)'),    facteurMin: 3.0, facteurMax: null },
+    { id: 'lactation',        label: t('Lactation'),                        facteurMin: 3.0, facteurMax: 6.0, plus: true },
+    { id: 'croissance_jeune', label: t('Croissance (< 4 mois)'),            facteurMin: 3.0, facteurMax: null },
+    { id: 'croissance_age',   label: t('Croissance (≥ 4 mois)'),            facteurMin: 2.0, facteurMax: null },
+    { id: 'travail_leger',    label: t('Travail léger'),                    facteurMin: 1.6, facteurMax: 2.0 },
+    { id: 'travail_modere',   label: t('Travail modéré'),                   facteurMin: 2.0, facteurMax: 5.0 },
+    { id: 'travail_lourd',    label: t('Travail lourd'),                    facteurMin: 5.0, facteurMax: 11.0 },
   ],
 }
 
@@ -135,17 +136,17 @@ export default function BesoinEnergetique() {
     : null
 
   const traceFacteur = facteurPerso
-    ? `Facteur personnalisé · ${bee} × ${parseFloat(facteurCustom)}`
+    ? t('Facteur personnalisé · {bee} × {facteur}', { bee, facteur: parseFloat(facteurCustom) })
     : `${conditionSelectionnee.label} · ${bee} ${labelFacteur(conditionSelectionnee)}`
 
   function uniteJour(p, valeur) {
-    if (p.type === 'g') return 'g/jour'
-    return valeur <= 1 ? 'tasse/jour' : 'tasses/jour'
+    if (p.type === 'g') return t('g/jour')
+    return valeur <= 1 ? t('tasse/jour') : t('tasses/jour')
   }
 
   function uniteRepas(p, valeur) {
     if (p.type === 'g') return 'g'
-    return valeur <= 1 ? 'tasse' : 'tasses'
+    return valeur <= 1 ? t('tasse') : t('tasses')
   }
 
   const portionValeur = portion
@@ -158,9 +159,9 @@ export default function BesoinEnergetique() {
     : null
 
   const barre = useMemo(() => {
-    if (portionValeur) return { cle: 'Quantité à donner', valeur: `${portionValeur} ${portionUnite}` }
-    if (beqValeur) return { cle: 'BEQ estimé', valeur: `${beqValeur} kcal/jour` }
-    if (bee > 0) return { cle: 'Besoin d\'entretien', valeur: `${bee} kcal/jour` }
+    if (portionValeur) return { cle: t('Quantité à donner'), valeur: `${portionValeur} ${portionUnite}` }
+    if (beqValeur) return { cle: t('BEQ estimé'), valeur: `${beqValeur} ${t('kcal/jour')}` }
+    if (bee > 0) return { cle: t('Besoin d\'entretien'), valeur: `${bee} ${t('kcal/jour')}` }
     return null
   }, [portionValeur, portionUnite, beqValeur, bee])
 
@@ -187,11 +188,11 @@ export default function BesoinEnergetique() {
 
         {/* ─── ESPÈCE ─────────────────────────── */}
         <div className="champ">
-          <label>Choisir l'espèce</label>
+          <label>{t('Choisir l\'espèce')}</label>
           <div className="espece-toggle">
             <span className={`espece-label ${espece === 'chien' ? 'active' : ''}`}>
-              <img src="/icone-chien.svg" alt="Chien" className="espece-icone" />
-              Chien
+              <img src="/icone-chien.svg" alt={t('Chien')} className="espece-icone" />
+              {t('Chien')}
             </span>
             <div
               className={`toggle-slider ${espece === 'chat' ? 'droite' : ''}`}
@@ -200,15 +201,15 @@ export default function BesoinEnergetique() {
               <div className="toggle-thumb"></div>
             </div>
             <span className={`espece-label ${espece === 'chat' ? 'active' : ''}`}>
-              <img src="/icone-chat.svg" alt="Chat" className="espece-icone" />
-              Chat
+              <img src="/icone-chat.svg" alt={t('Chat')} className="espece-icone" />
+              {t('Chat')}
             </span>
           </div>
         </div>
 
         {/* ─── POIDS ──────────────────────────── */}
         <div className="champ">
-          <label>Poids de l'animal</label>
+          <label>{t('Poids de l\'animal')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-poids.svg" alt="poids" />
@@ -229,13 +230,13 @@ export default function BesoinEnergetique() {
 
         {/* ─── BEE (niveau 2 : étape de calcul) ── */}
         <div className={`res-etape ${bee > 0 ? '' : 'vide'}`}>
-          <span className="res-etape-cle">BEE, besoin énergétique d'entretien</span>
+          <span className="res-etape-cle">{t('BEE, besoin énergétique d\'entretien')}</span>
           <span className="res-etape-valeur">
             {bee > 0 ? bee : '—'}
-            {bee > 0 && <span className="res-unite">kcal/jour</span>}
+            {bee > 0 && <span className="res-unite">{t('kcal/jour')}</span>}
           </span>
           <span className="res-etape-trace">
-            {bee > 0 ? `(30 × ${arrondir(poidsKg, 2)}) + 70` : '(30 × poids en kg) + 70'}
+            {bee > 0 ? `(30 × ${arrondir(poidsKg, 2)}) + 70` : t('(30 × poids en kg) + 70')}
           </span>
         </div>
 
@@ -246,15 +247,15 @@ export default function BesoinEnergetique() {
           <div className="calc-avertissement" role="note">
             <i className="ti ti-alert-triangle" aria-hidden="true"></i>
             <span>
-              Sous 2 kg ou au-dessus de 45 kg, la formule linéaire perd en précision.
-              Avec 70 × poids<sup>0,75</sup>, le BEE serait d'environ {Math.round(70 * Math.pow(poidsKg, 0.75))} kcal/jour.
+              {t('Sous 2 kg ou au-dessus de 45 kg, la formule linéaire perd en précision.')}
+              {' '}{enAnglais ? 'With 70 × weight' : 'Avec 70 × poids'}<sup>{enAnglais ? '0.75' : '0,75'}</sup>{t(', le BEE serait d\'environ {n} kcal/jour.', { n: Math.round(70 * Math.pow(poidsKg, 0.75)) })}
             </span>
           </div>
         )}
 
         {/* ─── CONDITION ──────────────────────── */}
         <div className="champ">
-          <label>Condition / stade de vie</label>
+          <label>{t('Condition / stade de vie')}</label>
 
           {!facteurPerso ? (
             <>
@@ -271,7 +272,7 @@ export default function BesoinEnergetique() {
               </select>
               <button type="button" className="res-lien" onClick={activerFacteurPerso}>
                 <i className="ti ti-math-function"></i>
-                Utiliser un facteur personnalisé
+                {t('Utiliser un facteur personnalisé')}
               </button>
             </>
           ) : (
@@ -288,11 +289,11 @@ export default function BesoinEnergetique() {
                   placeholder="Ex : 1.8"
                   autoFocus
                 />
-                <span className="unite-fixe">× BEE</span>
+                <span className="unite-fixe">{t('× BEE')}</span>
               </div>
               <button type="button" className="res-lien" onClick={retourAuTableau}>
                 <i className="ti ti-arrow-back-up"></i>
-                Revenir aux facteurs du tableau
+                {t('Revenir aux facteurs du tableau')}
               </button>
             </>
           )}
@@ -301,10 +302,10 @@ export default function BesoinEnergetique() {
         {/* ─── BEQ (niveau 2 accentué) ────────── */}
         {bee > 0 && beqValeur && (
           <div className="res-etape fort">
-            <span className="res-etape-cle">BEQ, besoin quotidien estimé</span>
+            <span className="res-etape-cle">{t('BEQ, besoin quotidien estimé')}</span>
             <span className="res-etape-valeur">
               {beqValeur}
-              <span className="res-unite">kcal/jour</span>
+              <span className="res-unite">{t('kcal/jour')}</span>
             </span>
             <span className="res-etape-trace">{traceFacteur}</span>
           </div>
@@ -312,7 +313,7 @@ export default function BesoinEnergetique() {
 
         {/* ─── DENSITÉ CALORIQUE ──────────────── */}
         <div className="champ">
-          <label>Densité calorique de l'aliment (optionnel)</label>
+          <label>{t('Densité calorique de l\'aliment (optionnel)')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-energie.svg" alt="kcal" />
@@ -340,7 +341,7 @@ export default function BesoinEnergetique() {
         {/* ─── QUANTITÉ (niveau 1 : la réponse) ── */}
         {portion && (
           <div className="res-primaire">
-            <span className="res-primaire-cle">Quantité à donner</span>
+            <span className="res-primaire-cle">{t('Quantité à donner')}</span>
             <p className="res-primaire-valeur">
               {portionValeur}
               <span className="res-unite">{portionUnite}</span>
@@ -354,12 +355,12 @@ export default function BesoinEnergetique() {
                   className={n === nbRepas ? 'actif' : ''}
                   onClick={() => setNbRepas(n)}
                 >
-                  {n} repas
+                  {enAnglais ? `${n} ${n > 1 ? 'meals' : 'meal'}` : `${n} repas`}
                 </button>
               ))}
             </div>
             {nbRepas > 1 && repasTexte && (
-              <p className="res-primaire-note">≈ {repasTexte} par repas</p>
+              <p className="res-primaire-note">≈ {t('{q} par repas', { q: repasTexte })}</p>
             )}
           </div>
         )}
@@ -367,7 +368,7 @@ export default function BesoinEnergetique() {
         {/* ─── AVERTISSEMENT ──────────────────── */}
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
-          Ces valeurs sont des estimations théoriques. Ajuster selon l'évolution du poids corporel et de la condition corporelle (BCS).
+          {t('Ces valeurs sont des estimations théoriques. Ajuster selon l\'évolution du poids corporel et de la condition corporelle (BCS).')}
         </div>
 
         {barre && <div className="res-barre-espace"></div>}

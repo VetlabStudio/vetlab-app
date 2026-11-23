@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { t } from '../lib/i18n'
 
 function arrondir(val, decimales = 1) {
   if (!val || isNaN(val) || !isFinite(val)) return null
@@ -6,12 +7,12 @@ function arrondir(val, decimales = 1) {
 }
 
 const TYPES_CHOCOLAT = [
-  { id: 'blanc',        label: 'Chocolat blanc',                              theobromine: 0,    description: '~0 mg/g',      danger: null },
-  { id: 'lait',         label: 'Chocolat au lait',                            theobromine: 2.5,  description: '~2.5 mg/g',   danger: null },
-  { id: 'noir',         label: 'Chocolat noir mi-sucré (50-70%)',             theobromine: 5.3,  description: '~5.3 mg/g',   danger: null },
-  { id: 'noir_intense', label: 'Chocolat noir intense / à cuire',             theobromine: 14,   description: '~14 mg/g',    danger: 'attention' },
-  { id: 'cacao_inst',   label: 'Cacao instantané (Nesquik, chocolat chaud)', theobromine: 4.8,  description: '~4.8 mg/g',   danger: null },
-  { id: 'cacao',        label: 'Cacao pur non sucré (poudre à pâtisserie)',  theobromine: 26,   description: '~26 mg/g',    danger: 'critique' },
+  { id: 'blanc',        label: t('Chocolat blanc'),                              theobromine: 0,    description: '~0 mg/g',      danger: null },
+  { id: 'lait',         label: t('Chocolat au lait'),                            theobromine: 2.5,  description: '~2.5 mg/g',   danger: null },
+  { id: 'noir',         label: t('Chocolat noir mi-sucré (50-70%)'),             theobromine: 5.3,  description: '~5.3 mg/g',   danger: null },
+  { id: 'noir_intense', label: t('Chocolat noir intense / à cuire'),             theobromine: 14,   description: '~14 mg/g',    danger: 'attention' },
+  { id: 'cacao_inst',   label: t('Cacao instantané (Nesquik, chocolat chaud)'), theobromine: 4.8,  description: '~4.8 mg/g',   danger: null },
+  { id: 'cacao',        label: t('Cacao pur non sucré (poudre à pâtisserie)'),  theobromine: 26,   description: '~26 mg/g',    danger: 'critique' },
 ]
 
 const COULEUR_DANGER = {
@@ -20,9 +21,9 @@ const COULEUR_DANGER = {
 }
 
 const SEUILS = [
-  { label: 'Premiers symptômes',     min: 20,  max: 40,  couleur: '#D2CA5F' },
-  { label: 'Symptômes graves',       min: 40,  max: 80,  couleur: '#D7A35C' },
-  { label: 'Potentiellement mortel', min: 80,  max: null, couleur: '#702F3A' },
+  { label: t('Premiers symptômes'),     min: 20,  max: 40,  couleur: '#D2CA5F' },
+  { label: t('Symptômes graves'),       min: 40,  max: 80,  couleur: '#D7A35C' },
+  { label: t('Potentiellement mortel'), min: 80,  max: null, couleur: '#702F3A' },
 ]
 
 function getNiveau(doseKg) {
@@ -60,9 +61,9 @@ export default function ToxiciteChocolat() {
   }, [quantite, poidsKg, chocolat])
 
   const niveauConfig = {
-    attention: { couleur: '#7a6500', bg: '#fff9e0', border: '#D2CA5F', icone: '/icone-avertissement.svg', texte: 'Attention - Symptômes possibles', conseil: "La dose ingérée peut entraîner des symptômes légers (vomissements, diarrhée, agitation). Un suivi clinique est recommandé et une décontamination peut être envisagée si l'ingestion est récente." },
-    danger:    { couleur: '#7a4000', bg: '#fff3e0', border: '#D7A35C', icone: '/icone-urgence.svg',       texte: 'Danger - Symptômes graves probables', conseil: 'Dose associée à des symptômes graves (tachycardie, tremblements, convulsions). Une décontamination immédiate et une prise en charge symptomatique sont indiquées. Contacter le centre antipoison vétérinaire au besoin.' },
-    critique:  { couleur: '#702F3A', bg: '#ffeaea', border: '#702F3A', icone: '/icone-poison.svg',        texte: 'Dose supérieure à la dose létale minimale connue (80 mg/kg). Prise en charge d\'urgence requise. Si ingestion < 2h : induction des vomissements et charbon activé. Il n\'existe pas d\'antidote : traitement symptomatique uniquement.' },
+    attention: { couleur: '#7a6500', bg: '#fff9e0', border: '#D2CA5F', icone: '/icone-avertissement.svg', texte: t('Attention - Symptômes possibles'), conseil: t('La dose ingérée peut entraîner des symptômes légers (vomissements, diarrhée, agitation). Un suivi clinique est recommandé et une décontamination peut être envisagée si l\'ingestion est récente.') },
+    danger:    { couleur: '#7a4000', bg: '#fff3e0', border: '#D7A35C', icone: '/icone-urgence.svg',       texte: t('Danger - Symptômes graves probables'), conseil: t('Dose associée à des symptômes graves (tachycardie, tremblements, convulsions). Une décontamination immédiate et une prise en charge symptomatique sont indiquées. Contacter le centre antipoison vétérinaire au besoin.') },
+    critique:  { couleur: '#702F3A', bg: '#ffeaea', border: '#702F3A', icone: '/icone-poison.svg',        texte: t('Dose supérieure à la dose létale minimale connue (80 mg/kg). Prise en charge d\'urgence requise. Si ingestion < 2h : induction des vomissements et charbon activé. Il n\'existe pas d\'antidote : traitement symptomatique uniquement.') },
   }
 
   return (
@@ -72,12 +73,12 @@ export default function ToxiciteChocolat() {
         {/* ─── AVERTISSEMENT ──────────────────── */}
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
-          Les concentrations en théobromine sont des estimations moyennes, elles varient selon la marque et le pourcentage de cacao. En cas de doute sur la quantité ingérée, utiliser la valeur la plus élevée pour le type de chocolat concerné.
+          {t('Les concentrations en théobromine sont des estimations moyennes, elles varient selon la marque et le pourcentage de cacao. En cas de doute sur la quantité ingérée, utiliser la valeur la plus élevée pour le type de chocolat concerné.')}
         </div>
 
         {/* ─── POIDS ──────────────────────────── */}
         <div className="champ">
-          <label>Poids de l'animal</label>
+          <label>{t('Poids de l\'animal')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-poids.svg" alt="poids" />
@@ -110,7 +111,7 @@ export default function ToxiciteChocolat() {
 
         {/* ─── TYPE DE CHOCOLAT — DROPDOWN ────── */}
         <div className="champ">
-          <label>Type de chocolat</label>
+          <label>{t('Type de chocolat')}</label>
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setDropdownOuvert(o => !o)}
@@ -146,30 +147,30 @@ export default function ToxiciteChocolat() {
                 borderRadius: 12, overflow: 'hidden',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
               }}>
-                {TYPES_CHOCOLAT.map((t, i) => (
+                {TYPES_CHOCOLAT.map((typ, i) => (
                   <button
-                    key={t.id}
-                    onClick={() => { setTypeChocolat(t.id); setDropdownOuvert(false) }}
+                    key={typ.id}
+                    onClick={() => { setTypeChocolat(typ.id); setDropdownOuvert(false) }}
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: 10,
-                      padding: '11px 16px', background: typeChocolat === t.id ? 'var(--primary)' : 'transparent',
-                      color: typeChocolat === t.id ? '#fff' : 'var(--text-primary)',
+                      padding: '11px 16px', background: typeChocolat === typ.id ? 'var(--primary)' : 'transparent',
+                      color: typeChocolat === typ.id ? '#fff' : 'var(--text-primary)',
                       border: 'none', borderTop: i > 0 ? '1px solid var(--border)' : 'none',
                       cursor: 'pointer', textAlign: 'left', fontSize: 14,
                     }}
                   >
                     <span style={{
                       width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-                      background: t.danger
-                        ? COULEUR_DANGER[t.danger]
-                        : typeChocolat === t.id ? 'rgba(255,255,255,0.4)' : 'var(--border)',
+                      background: typ.danger
+                        ? COULEUR_DANGER[typ.danger]
+                        : typeChocolat === typ.id ? 'rgba(255,255,255,0.4)' : 'var(--border)',
                     }} />
-                    <span style={{ flex: 1 }}>{t.label}</span>
+                    <span style={{ flex: 1 }}>{typ.label}</span>
                     <span style={{
                       fontSize: 12, flexShrink: 0,
-                      color: typeChocolat === t.id ? 'rgba(255,255,255,0.7)' : 'var(--text-hint)',
+                      color: typeChocolat === typ.id ? 'rgba(255,255,255,0.7)' : 'var(--text-hint)',
                     }}>
-                      {t.description}
+                      {typ.description}
                     </span>
                   </button>
                 ))}
@@ -180,7 +181,7 @@ export default function ToxiciteChocolat() {
 
         {/* ─── QUANTITÉ INGÉRÉE ───────────────── */}
         <div className="champ">
-          <label>Quantité ingérée en gramme</label>
+          <label>{t('Quantité ingérée en gramme')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-chocolat.svg" alt="chocolat" />
@@ -200,13 +201,13 @@ export default function ToxiciteChocolat() {
         {resultat && (
           <>
             <div className="resultat-card">
-              <h2 style={{ marginBottom: 8 }}>Résultats</h2>
+              <h2 style={{ marginBottom: 8 }}>{t('Résultats')}</h2>
               <div className="resultat-ligne">
-                <span>Théobromine ingérée</span>
+                <span>{t('Théobromine ingérée')}</span>
                 <strong>{resultat.theobromine} mg</strong>
               </div>
               <div className="resultat-ligne" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                <span>Dose par kg de poids</span>
+                <span>{t('Dose par kg de poids')}</span>
                 <strong>{resultat.doseKg} mg/kg</strong>
               </div>
             </div>
@@ -230,9 +231,9 @@ export default function ToxiciteChocolat() {
                 <p className="choco-alerte-titre">
                   <img src="/icone-check.svg" className="choco-icone-check"
                     style={{ width: 18, height: 18, verticalAlign: 'middle', marginRight: 6 }} />
-                  Dose sous le seuil de toxicité
+                  {t('Dose sous le seuil de toxicité')}
                 </p>
-                <p className="choco-alerte-conseil">La dose calculée est en deçà du seuil clinique. Surveiller l'animal et réévaluer si la quantité réelle ingérée est incertaine.</p>
+                <p className="choco-alerte-conseil">{t('La dose calculée est en deçà du seuil clinique. Surveiller l\'animal et réévaluer si la quantité réelle ingérée est incertaine.')}</p>
               </div>
             )}
           </>
@@ -240,7 +241,7 @@ export default function ToxiciteChocolat() {
 
         {/* ─── TABLEAU DE RÉFÉRENCE ───────────── */}
         <div className="choco-tableau">
-          <p className="choco-tableau-titre">Seuils de toxicité (théobromine)</p>
+          <p className="choco-tableau-titre">{t('Seuils de toxicité (théobromine)')}</p>
           {SEUILS.map((s, i) => (
             <div key={i} className="choco-seuil">
               <span className="choco-seuil-dot" style={{ background: s.couleur }}></span>

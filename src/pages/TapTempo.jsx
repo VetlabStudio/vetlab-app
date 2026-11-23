@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { t } from '../lib/i18n'
 
 const RESET_DELAI = 3000 // ms sans tap avant de recommencer
 const MAX_TAPS = 8 // nombre d'intervalles utilisés pour la moyenne
@@ -43,12 +44,12 @@ export default function TapTempo() {
 
         <div className="calc-avertissement">
           <i className="ti ti-info-circle"></i>
-          Appuyez sur Tap au rythme des battements pour obtenir une estimation du nombre de battements par minute.
+          {t('Appuyez sur Tap au rythme des battements pour obtenir une estimation du nombre de battements par minute.')}
         </div>
 
         <div className="tempo-resultat">
           <span className="tempo-bpm">{bpm ?? '—'}</span>
-          <span className="tempo-bpm-label">battements / min</span>
+          <span className="tempo-bpm-label">{t('battements / min')}</span>
         </div>
 
         <button className="tempo-btn" onClick={tap}>
@@ -56,10 +57,10 @@ export default function TapTempo() {
           <span>Tap</span>
         </button>
 
-        <p className="tempo-compteur">{nbTaps > 0 ? `${nbTaps} tap${nbTaps > 1 ? 's' : ''}` : 'En attente du premier tap'}</p>
+        <p className="tempo-compteur">{nbTaps > 0 ? `${nbTaps} tap${nbTaps > 1 ? 's' : ''}` : t('En attente du premier tap')}</p>
 
         <button className="labo-btn-secondary" style={{ width: '100%' }} onClick={reinitialiser}>
-          <i className="ti ti-refresh"></i> Réinitialiser
+          <i className="ti ti-refresh"></i> {t('Réinitialiser')}
         </button>
 
       </div>

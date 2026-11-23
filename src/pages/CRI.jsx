@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import { t, enAnglais } from '../lib/i18n'
 
 const VOLUMES_SAC = [250, 500, 1000]
 
@@ -90,15 +91,15 @@ useEffect(() => {
           <div className="cri-provenance">
             <div>
               <i className="ti ti-arrow-down-circle"></i>
-              Poids et débit repris du calculateur de fluidothérapie.
+              {t('Poids et débit repris du calculateur de fluidothérapie.')}
             </div>
-            <button onClick={repartirDeZero}>Repartir à zéro</button>
+            <button onClick={repartirDeZero}>{t('Repartir à zéro')}</button>
           </div>
         )}
 
         {/* ─── POIDS ──────────────────────────── */}
         <div className="champ">
-          <label>Poids de l'animal</label>
+          <label>{t('Poids de l\'animal')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-poids.svg" alt="poids" />
@@ -131,10 +132,10 @@ useEffect(() => {
 
         {/* ─── DÉBIT ──────────────────────────── */}
         <div className="champ">
-          <label>Débit</label>
+          <label>{t('Débit')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
-              <img src="/icone-debit.svg" alt="débit" />
+              <img src="/icone-debit.svg" alt={t('débit')} />
             </div>
             <input
               type="text"
@@ -149,13 +150,13 @@ useEffect(() => {
             </select>
           </div>
           {debitMlH > 0 && uniteDebit === 'ml/kg/h' && (
-            <p className="range-hint">Débit : <strong>{debitMlH} ml/h</strong></p>
+            <p className="range-hint">{t('Débit :')} <strong>{debitMlH} ml/h</strong></p>
           )}
         </div>
 
         {/* ─── VOLUME SAC ─────────────────────── */}
         <div className="champ">
-          <label>Volume du sac de fluide</label>
+          <label>{t('Volume du sac de fluide')}</label>
           <div className="fluido-valeurs">
             {VOLUMES_SAC.map(v => (
               <button
@@ -172,7 +173,7 @@ useEffect(() => {
               className={`fluido-valeur-btn ${sacAutre ? 'actif' : ''}`}
               onClick={() => { setSacAutre(true); setVolumeSac('') }}
             >
-              Autre
+              {t('Autre')}
             </button>
           </div>
 
@@ -205,10 +206,10 @@ useEffect(() => {
 
         {/* ─── DOSE DE CHARGE ─────────────────── */}
         <div className="champ">
-          <label>Dose de charge (facultatif)</label>
+          <label>{t('Dose de charge (facultatif)')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
-              <img src="/icone-seringue.svg" alt="dose de charge" />
+              <img src="/icone-seringue.svg" alt={t('dose de charge')} />
             </div>
             <input
               type="text"
@@ -223,7 +224,7 @@ useEffect(() => {
 
         {/* ─── DOSAGE CRI ─────────────────────── */}
         <div className="champ">
-          <label>Dosage du CRI</label>
+          <label>{t('Dosage du CRI')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-dosage.svg" alt="dosage" />
@@ -237,14 +238,14 @@ useEffect(() => {
             />
             <select className="cri-select" value={uniteDosage} onChange={e => setUniteDosage(e.target.value)}>
               <option value="mg/kg/h">mg/kg/h</option>
-              <option value="mg/kg/jour">mg/kg/jour</option>
+              <option value="mg/kg/jour">{t('mg/kg/jour')}</option>
             </select>
           </div>
         </div>
 
         {/* ─── CONCENTRATION ──────────────────── */}
         <div className="champ">
-          <label>Concentration</label>
+          <label>{t('Concentration')}</label>
           <div className="champ-input">
             <div className="champ-icone-wrapper">
               <img src="/icone-seringue.svg" alt="concentration" />
@@ -264,23 +265,25 @@ useEffect(() => {
         {mlDansSac <= 0 && (dosageCRIVal > 0 || concentrationVal > 0) && !debitMlH && (
           <p className="range-hint" style={{ color: 'var(--accent-red)', fontWeight: 600 }}>
             <i className="ti ti-alert-circle" style={{ marginRight: 4 }}></i>
-            Le champ Débit est requis pour afficher les résultats.
+            {t('Le champ Débit est requis pour afficher les résultats.')}
           </p>
         )}
         {mlDansSac > 0 && (
           <div className="resultat-card">
             {mlDoseCharge > 0 && (
               <div className="resultat-ligne">
-                <span>Dose de charge</span>
+                <span>{t('Dose de charge')}</span>
                 <strong>{mlDoseCharge} ml</strong>
               </div>
             )}
             <div className="resultat-ligne">
-              <span>À ajouter dans le sac</span>
+              <span>{t('À ajouter dans le sac')}</span>
               <strong>{mlDansSac} ml</strong>
             </div>
             <div className="fluido-instruction">
-              Retirer <strong>{mlDansSac} ml</strong> de fluide du sac et ajouter <strong>{mlDansSac} ml</strong> de médication.
+              {enAnglais
+                ? <>Remove <strong>{mlDansSac} ml</strong> of fluid from the bag and add <strong>{mlDansSac} ml</strong> of medication.</>
+                : <>Retirer <strong>{mlDansSac} ml</strong> de fluide du sac et ajouter <strong>{mlDansSac} ml</strong> de médication.</>}
             </div>
           </div>
         )}
@@ -288,7 +291,7 @@ useEffect(() => {
         {/* ─── AVERTISSEMENT ──────────────────── */}
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
-          Valide toujours le dosage avec un vétérinaire responsable avant d'administrer. Ce calculateur est un outil d'aide, votre jugement clinique prime en tout temps.
+          {t('Valide toujours le dosage avec un vétérinaire responsable avant d\'administrer. Ce calculateur est un outil d\'aide, votre jugement clinique prime en tout temps.')}
         </div>
 
       </div>

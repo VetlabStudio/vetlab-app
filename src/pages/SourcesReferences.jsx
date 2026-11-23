@@ -1,6 +1,7 @@
 import PageInfo from '../components/PageInfo'
+import { t } from '../lib/i18n'
 
-const SECTIONS = [
+const SECTIONS_FR = [
   {
     titre: 'À propos du contenu',
     icone: 'ti-books',
@@ -80,6 +81,14 @@ const SECTIONS = [
     ],
   },
 ]
+
+// Textes affichés dans la langue de l'app (les titres d'ouvrages anglais restent tels quels).
+const SECTIONS = SECTIONS_FR.map(s => ({
+  ...s,
+  titre: t(s.titre),
+  paragraphes: s.paragraphes.map(p => t(p)),
+  liste: s.liste?.map(x => (typeof x === 'string' ? t(x) : { ...x, texte: t(x.texte) })),
+}))
 
 export default function SourcesReferences() {
   return <PageInfo sections={SECTIONS} />

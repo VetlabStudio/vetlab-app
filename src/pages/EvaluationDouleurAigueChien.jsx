@@ -1,75 +1,76 @@
 import { useState } from 'react'
+import { t } from '../lib/i18n'
 
 const ROWS = [
   {
     score: 0,
     image: '/douleur-chien-score-0.png',
     comportements: [
-      'Confortable au repos',
-      'De bonne humeur',
-      "N'est pas préoccupé par la plaie ou le site chirurgical",
-      'Intéressé ou curieux de son environnement',
+      t('Confortable au repos'),
+      t('De bonne humeur'),
+      t('N\'est pas préoccupé par la plaie ou le site chirurgical'),
+      t('Intéressé ou curieux de son environnement'),
     ],
     palpation: [
-      'Non douloureux à la palpation de la plaie, du site chirurgical ou ailleurs',
+      t('Non douloureux à la palpation de la plaie, du site chirurgical ou ailleurs'),
     ],
-    tension: { texte: 'Minimale', notes: [] },
+    tension: { texte: t('Minimale'), notes: [] },
   },
   {
     score: 1,
     image: '/douleur-chien-score-1.png',
     comportements: [
-      'Heureux à légèrement agité ou nerveux',
-      "Se laisse facilement distraire par l'environnement",
+      t('Heureux à légèrement agité ou nerveux'),
+      t('Se laisse facilement distraire par l\'environnement'),
     ],
     palpation: [
-      "Réagit à la palpation de la plaie, du site chirurgical ou d'une autre zone corporelle par un regard autour, un tressaillement ou un gémissement",
+      t('Réagit à la palpation de la plaie, du site chirurgical ou d\'une autre zone corporelle par un regard autour, un tressaillement ou un gémissement'),
     ],
-    tension: { texte: 'Légère', notes: [] },
+    tension: { texte: t('Légère'), notes: [] },
   },
   {
     score: 2,
     image: '/douleur-chien-score-2.png',
     comportements: [
-      'Semble inconfortable au repos',
-      'Peut gémir ou crier, peut lécher ou frotter la plaie si non surveillé',
-      'Oreilles tombantes, expression faciale inquiète (sourcils arqués, yeux fuyants)',
-      'Peu enclin à répondre lorsqu\'appelé',
-      "Pas enthousiaste à l'interaction, mais regarde ce qui se passe",
+      t('Semble inconfortable au repos'),
+      t('Peut gémir ou crier, peut lécher ou frotter la plaie si non surveillé'),
+      t('Oreilles tombantes, expression faciale inquiète (sourcils arqués, yeux fuyants)'),
+      t('Peu enclin à répondre lorsqu\'appelé'),
+      t('Pas enthousiaste à l\'interaction, mais regarde ce qui se passe'),
     ],
     palpation: [
-      'Tressaille, gémit, crie ou se retire lors de la palpation',
+      t('Tressaille, gémit, crie ou se retire lors de la palpation'),
     ],
-    tension: { texte: 'Légère à modérée', notes: ['Réévaluer le plan analgésique'] },
+    tension: { texte: t('Légère à modérée'), notes: [t('Réévaluer le plan analgésique')] },
   },
   {
     score: 3,
     image: '/douleur-chien-score-3.png',
     comportements: [
-      'Agité, pleure, grogne, mord ou mâche la plaie si non surveillé',
-      'Protège la plaie ou le site chirurgical (boiterie, déplacement du poids, changement de posture)',
-      'Peut refuser de bouger toute ou partie du corps',
+      t('Agité, pleure, grogne, mord ou mâche la plaie si non surveillé'),
+      t('Protège la plaie ou le site chirurgical (boiterie, déplacement du poids, changement de posture)'),
+      t('Peut refuser de bouger toute ou partie du corps'),
     ],
     palpation: [
-      'Peut être subtil (yeux qui bougent, fréquence respiratoire augmentée) si trop douloureux pour bouger ou stoïque',
-      "Peut être dramatique : cri aigu, grognement, tentative de mordre ou de s'éloigner",
+      t('Peut être subtil (yeux qui bougent, fréquence respiratoire augmentée) si trop douloureux pour bouger ou stoïque'),
+      t('Peut être dramatique : cri aigu, grognement, tentative de mordre ou de s\'éloigner'),
     ],
-    tension: { texte: 'Modérée', notes: ['Réévaluer le plan analgésique'] },
+    tension: { texte: t('Modérée'), notes: [t('Réévaluer le plan analgésique')] },
   },
   {
     score: 4,
     image: '/douleur-chien-score-4.png',
     comportements: [
-      'Grogne ou crie constamment sans surveillance',
-      'Peut mordre ou mâcher la plaie, mais peu enclin à bouger',
-      "Potentiellement non réactif à l'environnement",
-      'Difficile à distraire de la douleur',
+      t('Grogne ou crie constamment sans surveillance'),
+      t('Peut mordre ou mâcher la plaie, mais peu enclin à bouger'),
+      t('Potentiellement non réactif à l\'environnement'),
+      t('Difficile à distraire de la douleur'),
     ],
     palpation: [
-      'Crie à la palpation non douloureuse (possible allodynie, hyperalgésie)',
-      'Peut réagir agressivement à la palpation',
+      t('Crie à la palpation non douloureuse (possible allodynie, hyperalgésie)'),
+      t('Peut réagir agressivement à la palpation'),
     ],
-    tension: { texte: 'Modérée à sévère', notes: ['Peut être rigide pour éviter le mouvement douloureux', 'Réévaluer le plan analgésique'] },
+    tension: { texte: t('Modérée à sévère'), notes: [t('Peut être rigide pour éviter le mouvement douloureux'), t('Réévaluer le plan analgésique')] },
   },
 ]
 
@@ -80,24 +81,24 @@ function getInterpretation(score) {
     bg: 'rgba(37, 77, 86, 0.08)',
     bordure: 'rgba(37, 77, 86, 0.3)',
     icone: 'ti-circle-check',
-    titre: 'Animal confortable',
-    texte: 'Le niveau de douleur semble bien maîtrisé. Continuer la surveillance et réévaluer régulièrement.',
+    titre: t('Animal confortable'),
+    texte: t('Le niveau de douleur semble bien maîtrisé. Continuer la surveillance et réévaluer régulièrement.'),
   }
   if (score <= 3) return {
     couleur: 'var(--accent-gold)',
     bg: 'rgba(215, 163, 92, 0.1)',
     bordure: 'rgba(215, 163, 92, 0.4)',
     icone: 'ti-alert-triangle',
-    titre: 'Douleur légère à modérée',
-    texte: 'Réévaluer le plan analgésique et surveiller attentivement l\'évolution.',
+    titre: t('Douleur légère à modérée'),
+    texte: t('Réévaluer le plan analgésique et surveiller attentivement l\'évolution.'),
   }
   return {
     couleur: 'var(--accent-red)',
     bg: 'rgba(112, 47, 58, 0.08)',
     bordure: 'rgba(112, 47, 58, 0.3)',
     icone: 'ti-urgent',
-    titre: 'Douleur modérée à sévère',
-    texte: 'Une intervention analgésique rapide est nécessaire. Adapter le plan de gestion de la douleur en fonction de l\'état clinique.',
+    titre: t('Douleur modérée à sévère'),
+    texte: t('Une intervention analgésique rapide est nécessaire. Adapter le plan de gestion de la douleur en fonction de l\'état clinique.'),
   }
 }
 
@@ -129,7 +130,7 @@ export default function EvaluationDouleurAigueChien() {
       <div className="douleur-intro">
         <i className="ti ti-clipboard-heart douleur-intro-icone"></i>
         <p className="douleur-intro-texte">
-          Coche les éléments observés chez le chien. Le score retenu correspond à la rangée la plus élevée où au moins un élément est cochée.
+          {t('Coche les éléments observés chez le chien. Le score retenu correspond à la rangée la plus élevée où au moins un élément est cochée.')}
         </p>
       </div>
 
@@ -142,7 +143,7 @@ export default function EvaluationDouleurAigueChien() {
           </div>
 
           <div className="eda-colonne">
-            <h3 className="eda-colonne-titre">Observations comportementales</h3>
+            <h3 className="eda-colonne-titre">{t('Observations comportementales')}</h3>
             {row.comportements.map((texte, i) => {
               const selectionne = !!selections[`${row.score}-c-${i}`]
               return (
@@ -157,7 +158,7 @@ export default function EvaluationDouleurAigueChien() {
           </div>
 
           <div className="eda-colonne">
-            <h3 className="eda-colonne-titre">Réponse à la palpation</h3>
+            <h3 className="eda-colonne-titre">{t('Réponse à la palpation')}</h3>
             {row.palpation.map((texte, i) => {
               const selectionne = !!selections[`${row.score}-p-${i}`]
               return (
@@ -172,7 +173,7 @@ export default function EvaluationDouleurAigueChien() {
           </div>
 
           <div className="eda-colonne">
-            <h3 className="eda-colonne-titre">Tension musculaire</h3>
+            <h3 className="eda-colonne-titre">{t('Tension musculaire')}</h3>
             <p className="eda-tension-texte">{row.tension.texte}</p>
             {row.tension.notes.map((note, i) => (
               <p key={i} className="eda-tension-note">{note}</p>
@@ -184,7 +185,7 @@ export default function EvaluationDouleurAigueChien() {
       {/* ─── RÉSULTAT ───────────────────────────── */}
       <div className="douleur-resultat-section">
         <div className="douleur-score-total">
-          <span className="douleur-score-label">Score retenu</span>
+          <span className="douleur-score-label">{t('Score retenu')}</span>
           <span className="douleur-score-valeur">
             {scoreMax !== null ? scoreMax : '—'}
             <span className="douleur-score-max"> / 4</span>
@@ -207,19 +208,19 @@ export default function EvaluationDouleurAigueChien() {
 
         <button className="douleur-btn-reinit" onClick={reinitialiser}>
           <i className="ti ti-refresh"></i>
-          Réinitialiser
+          {t('Réinitialiser')}
         </button>
       </div>
 
       {/* ─── NOTE BAS ───────────────────────────── */}
       <div className="postop-note-bas">
         <i className="ti ti-info-circle"></i>
-        <span>Réévaluer régulièrement la douleur et ajuster le plan analgésique au besoin.</span>
+        <span>{t('Réévaluer régulièrement la douleur et ajuster le plan analgésique au besoin.')}</span>
       </div>
 
       <div className="postop-note-bas" style={{ marginTop: 8 }}>
         <i className="ti ti-book"></i>
-        <span>Basé sur la Colorado State University's Canine Acute Pain Scale.</span>
+        <span>{t('Basé sur la Colorado State University\'s Canine Acute Pain Scale.')}</span>
       </div>
 
     </div>

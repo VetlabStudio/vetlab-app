@@ -1,3 +1,4 @@
+import { t, enAnglais } from './i18n'
 /* Affichage des doses et calcul en comprimés, communs à la fiche
    médicament et au Calcul rapide. Les doses arrivent toujours en mg. */
 
@@ -17,8 +18,8 @@ export function formaterQuarts(quarts) {
   return reste ? `${entiers} ${FRACTIONS[reste]}` : String(entiers)
 }
 
-// En français, le pluriel commence à 2 : « 1 ½ comprimé », « 2 comprimés ».
-const comprimes = n => (n >= 2 ? 'comprimés' : 'comprimé')
+// En français, le pluriel commence à 2 : « 1 ½ comprimé », « 2 comprimés ». En anglais, dès 1 ½ : « 1 ½ tablets ».
+const comprimes = n => (n >= 2 || (enAnglais && n > 1) ? t('comprimés') : t('comprimé'))
 
 /* Nombre de comprimés pour une dose en mg, puis arrondi au quart de
    comprimé, la plus petite fraction qu'on coupe en pratique. L'écart
@@ -31,7 +32,7 @@ export function calculComprimes(doseMg, teneur, uniteTeneur) {
   const dose = enMcg ? `${arrondirMcg(doseMg * 1000)} mcg` : `${arrondirDose(doseMg)} mg`
   const exactTexte = arrondirDose(exact)
   const etapes = [{
-    titre: 'Comprimés = dose totale ÷ teneur du comprimé',
+    titre: t('Comprimés = dose totale ÷ teneur du comprimé'),
     calcul: `${dose} ÷ ${teneur} ${uniteTeneur} = ${exactTexte} ${comprimes(exact)}`,
   }]
 
@@ -42,7 +43,7 @@ export function calculComprimes(doseMg, teneur, uniteTeneur) {
   const doseDonneeMg = donnes * teneurMg
   const doseDonnee = enMcg ? `${arrondirMcg(doseDonneeMg * 1000)} mcg` : `${arrondirDose(doseDonneeMg)} mg`
   const aDonner = `${formaterQuarts(quarts)} ${comprimes(donnes)}`
-  etapes.push({ titre: 'Arrondi au quart de comprimé', calcul: `${aDonner} = ${doseDonnee}` })
+  etapes.push({ titre: t('Arrondi au quart de comprimé'), calcul: `${aDonner} = ${doseDonnee}` })
   return { comprimes: aDonner, exact: exactTexte, doseDonnee, ecart: (donnes - exact) / exact, etapes }
 }
 

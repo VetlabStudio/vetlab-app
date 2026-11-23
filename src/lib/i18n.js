@@ -54,6 +54,12 @@ export function tn(n, singulier, pluriel, vars) {
   return t(n > 1 || (enAnglais && n === 0) ? pluriel : singulier, { n, ...vars })
 }
 
+/* Séparateur décimal de la langue : « 2,5 » en français, « 2.5 » en anglais. */
+export function decimal(valeur) {
+  const texte = String(valeur)
+  return enAnglais ? texte : texte.replace('.', ',')
+}
+
 /* Montant en dollars : « 7,99 $ » en français, « $7.99 » en anglais.
    Les montants entiers restent sans décimales (« 59 $ », « $59 »). */
 export function prix(montant) {

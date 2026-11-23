@@ -1,14 +1,15 @@
+import { t } from '../lib/i18n'
 const CHIEN = [
   {
     id: 'csu',
     nom: 'CSU Canine Acute Pain Scale',
-    desc: 'Grille d\'évaluation aigue 0-4 - Colorado State University',
+    desc: t('Grille d\'évaluation aigue 0-4 - Colorado State University'),
     url: 'https://vetmedbiosci.colostate.edu/vth/wp-content/uploads/sites/7/2020/12/canine-pain-scale.pdf',
   },
   {
     id: 'hcpi',
     nom: 'Helsinki Chronic Pain Index',
-    desc: 'Questionnaire douleur chronique basé sur 11 comportements',
+    desc: t('Questionnaire douleur chronique basé sur 11 comportements'),
     url: 'https://www.fourleg.com/media/Helsinki%20Chronic%20Pain%20Index.pdf',
   },
 ]
@@ -17,25 +18,25 @@ const CHAT = [
   {
     id: 'glasgow',
     nom: 'Glasgow CMPS-Feline',
-    desc: 'Composite Measure Pain Scale - WSAVA',
+    desc: t('Composite Measure Pain Scale - WSAVA'),
     url: 'https://wsava.org/wp-content/uploads/2020/01/Feline-CMPS-SF.pdf',
   },
   {
     id: 'fgs',
     nom: 'Feline Grimace Scale',
-    desc: 'Évaluation par expressions faciales',
+    desc: t('Évaluation par expressions faciales'),
     url: 'https://www.felinegrimacescale.com/',
   },
   {
     id: 'fmpi',
     nom: 'Feline Musculoskeletal Pain Index',
-    desc: 'Douleur musculosquelettique chronique - NC State',
+    desc: t('Douleur musculosquelettique chronique - NC State'),
     url: 'https://cvm.ncsu.edu/fmpi/',
   },
   {
     id: 'cmi',
     nom: 'Clinical Metrology Instruments',
-    desc: 'Outils cliniques validés - NC State TRiP',
+    desc: t('Outils cliniques validés - NC State TRiP'),
     url: 'https://cvm.ncsu.edu/translational-research-in-pain/clinical-metrology-instruments/',
   },
 ]
@@ -83,12 +84,12 @@ export default function EvaluationDouleurAigue() {
       <div className="douleur-intro">
         <i className="ti ti-clipboard-heart douleur-intro-icone"></i>
         <p className="douleur-intro-texte">
-          Accède aux ressources officielles d'évaluation de la douleur par espèce. Chaque lien ouvre l'outil ou le document original.
+          {t('Accède aux ressources officielles d\'évaluation de la douleur par espèce. Chaque lien ouvre l\'outil ou le document original.')}
         </p>
       </div>
 
-      <SectionEspece label="Chien" icone="/icone-chien.svg" outils={CHIEN} />
-      <SectionEspece label="Chat" icone="/icone-chat.svg" outils={CHAT} />
+      <SectionEspece label={t('Chien')} icone="/icone-chien.svg" outils={CHIEN} />
+      <SectionEspece label={t('Chat')} icone="/icone-chat.svg" outils={CHAT} />
     </div>
   )
 }

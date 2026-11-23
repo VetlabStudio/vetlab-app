@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { t, enAnglais } from '../lib/i18n'
 
 function arrondir(val, decimales = 3) {
   if (!val || isNaN(val) || !isFinite(val)) return null
@@ -9,22 +10,22 @@ function arrondir(val, decimales = 3) {
 const MODES = [
   {
     id: 'concentration',
-    label: 'Concentration',
-    description: 'Calculer une nouvelle concentration',
+    label: t('Concentration'),
+    description: t('Calculer une nouvelle concentration'),
     formule: 'C1V1 = <span style="color: var(--accent-gold)">C2</span>V2',
     icone: 'ti-test-pipe',
   },
   {
     id: 'diluant',
-    label: 'Diluant',
-    description: 'Calculer le volume de diluant à ajouter',
+    label: t('Diluant'),
+    description: t('Calculer le volume de diluant à ajouter'),
     formule: 'V2 - V1',
     icone: 'ti-droplet',
   },
   {
     id: 'volume',
-    label: 'Volume',
-    description: 'Calculer le volume de départ',
+    label: t('Volume'),
+    description: t('Calculer le volume de départ'),
     formule: 'C1<span style="color: var(--accent-gold)">V1</span> = C2V2',
     icone: 'ti-flask',
   },
@@ -104,7 +105,7 @@ export default function Dilution() {
         {mode === 'concentration' && (
           <>
             <div className="champ">
-              <label>Concentration initiale (C1)</label>
+              <label>{t('Concentration initiale (C1)')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -118,7 +119,7 @@ export default function Dilution() {
             </div>
 
             <div className="champ">
-              <label>Volume initial (V1)</label>
+              <label>{t('Volume initial (V1)')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-flask" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -129,7 +130,7 @@ export default function Dilution() {
             </div>
 
             <div className="champ">
-              <label>Volume final (V2)</label>
+              <label>{t('Volume final (V2)')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-flask" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -141,7 +142,7 @@ export default function Dilution() {
 
             <div className="dilution-resultat">
               <p className="dilution-resultat-valeur">
-                <strong>{resultatConcentration ?? '—'} {uniteC2}</strong> est la nouvelle concentration
+                <strong>{resultatConcentration ?? '—'} {uniteC2}</strong> {t('est la nouvelle concentration')}
               </p>
               <div className="radio-groupe" style={{ justifyContent: 'center', marginTop: 8 }}>
                 <button className={`radio-btn ${uniteC2 === 'mg/mL' ? 'active' : ''}`} onClick={() => setUniteC2('mg/mL')}>mg/mL</button>
@@ -149,7 +150,7 @@ export default function Dilution() {
               </div>
               {resultatConcentration && (
                 <p className="dilution-resultat-texte">
-                  {v1 || '0'} mL de la solution à {c1 || '0'} {uniteC1} + {arrondir((parseFloat(v2) || 0) - (parseFloat(v1) || 0))} mL de diluant = {v2 || '0'} mL à {resultatConcentration} {uniteC2}
+                  {t('{v1} mL de la solution à {c1} {u1} + {vd} mL de diluant = {v2} mL à {c2} {u2}', { v1: v1 || '0', c1: c1 || '0', u1: uniteC1, vd: arrondir((parseFloat(v2) || 0) - (parseFloat(v1) || 0)), v2: v2 || '0', c2: resultatConcentration, u2: uniteC2 })}
                 </p>
               )}
             </div>
@@ -160,7 +161,7 @@ export default function Dilution() {
         {mode === 'diluant' && (
           <>
             <div className="champ">
-              <label>Concentration initiale (C1)</label>
+              <label>{t('Concentration initiale (C1)')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -174,7 +175,7 @@ export default function Dilution() {
             </div>
 
             <div className="champ">
-              <label>Volume initial (V1)</label>
+              <label>{t('Volume initial (V1)')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-flask" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -185,7 +186,7 @@ export default function Dilution() {
             </div>
 
             <div className="champ">
-              <label>Concentration finale (C2)</label>
+              <label>{t('Concentration finale (C2)')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -200,11 +201,13 @@ export default function Dilution() {
 
             <div className="dilution-resultat">
               <p className="dilution-resultat-valeur">
-                Ajouter <strong>{resultatDiluant?.vDiluant ?? '—'} mL</strong> de diluant
+                {enAnglais
+                  ? <>Add <strong>{resultatDiluant?.vDiluant ?? '—'} mL</strong> of diluent</>
+                  : <>Ajouter <strong>{resultatDiluant?.vDiluant ?? '—'} mL</strong> de diluant</>}
               </p>
               {resultatDiluant && (
                 <p className="dilution-resultat-texte">
-                  {v1 || '0'} mL de la solution à {c1 || '0'} {uniteC1} + {resultatDiluant.vDiluant} mL de diluant = {resultatDiluant.v2Total} mL à {c2 || '0'} {uniteC2}
+                  {t('{v1} mL de la solution à {c1} {u1} + {vd} mL de diluant = {v2} mL à {c2} {u2}', { v1: v1 || '0', c1: c1 || '0', u1: uniteC1, vd: resultatDiluant.vDiluant, v2: resultatDiluant.v2Total, c2: c2 || '0', u2: uniteC2 })}
                 </p>
               )}
             </div>
@@ -215,7 +218,7 @@ export default function Dilution() {
         {mode === 'volume' && (
           <>
             <div className="champ">
-              <label>Concentration initiale (C1)</label>
+              <label>{t('Concentration initiale (C1)')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -229,7 +232,7 @@ export default function Dilution() {
             </div>
 
             <div className="champ">
-              <label>Concentration finale (C2)</label>
+              <label>{t('Concentration finale (C2)')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -243,7 +246,7 @@ export default function Dilution() {
             </div>
 
             <div className="champ">
-              <label>Volume final (V2)</label>
+              <label>{t('Volume final (V2)')}</label>
               <div className="champ-input">
                 <div className="champ-icone-wrapper">
                   <i className="ti ti-flask" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -255,11 +258,13 @@ export default function Dilution() {
 
             <div className="dilution-resultat">
               <p className="dilution-resultat-valeur">
-                Prendre <strong>{resultatVolume ?? '—'} mL</strong> de la solution à {c1 || '0'} {uniteC1}
+                {enAnglais
+                  ? <>Take <strong>{resultatVolume ?? '—'} mL</strong> of the {c1 || '0'} {uniteC1} solution</>
+                  : <>Prendre <strong>{resultatVolume ?? '—'} mL</strong> de la solution à {c1 || '0'} {uniteC1}</>}
               </p>
               {resultatVolume && (
                 <p className="dilution-resultat-texte">
-                  {resultatVolume} mL de la solution à {c1 || '0'} {uniteC1} + {arrondir((parseFloat(v2) || 0) - resultatVolume)} mL de diluant = {v2 || '0'} mL à {c2 || '0'} {uniteC2}
+                  {t('{v1} mL de la solution à {c1} {u1} + {vd} mL de diluant = {v2} mL à {c2} {u2}', { v1: resultatVolume, c1: c1 || '0', u1: uniteC1, vd: arrondir((parseFloat(v2) || 0) - resultatVolume), v2: v2 || '0', c2: c2 || '0', u2: uniteC2 })}
                 </p>
               )}
             </div>
@@ -269,7 +274,7 @@ export default function Dilution() {
         {/* ─── AVERTISSEMENT ──────────────────── */}
         <div className="calc-avertissement">
           <i className="ti ti-alert-circle"></i>
-          Validez toujours vos calculs avec le vétérinaire responsable avant de préparer une solution.
+          {t('Validez toujours vos calculs avec le vétérinaire responsable avant de préparer une solution.')}
         </div>
 
       </div>

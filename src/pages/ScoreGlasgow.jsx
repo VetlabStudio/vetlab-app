@@ -1,40 +1,41 @@
 import { useState } from 'react'
+import { t } from '../lib/i18n'
 
 const CATEGORIES = [
   {
     id: 'motrice',
-    titre: 'Activité motrice',
+    titre: t('Activité motrice'),
     options: [
-      { score: 6, texte: 'Démarche normale, réflexes spinaux normaux' },
-      { score: 5, texte: 'Hémiparésie, tétraparésie ou rigidité décérébrée', detail: 'Hémiparésie : faiblesse d\'un côté du corps; tétraparésie : 4 membres atteints; rigidité décérébrée : extension rigide de tous les membres (lésion grave du tronc cérébral)' },
-      { score: 4, texte: 'Décubitus, rigidité extenseur intermittente', detail: 'L\'animal est couché et présente des épisodes d\'extension involontaire des membres' },
-      { score: 3, texte: 'Décubitus, rigidité extenseur constante', detail: 'Extension rigide permanente des membres en position couchée' },
-      { score: 2, texte: 'Décubitus, rigidité extenseur constante avec opisthotonos', detail: 'Opisthotonos : hyperextension forcée de la tête et du cou vers l\'arrière, signe d\'atteinte grave du cervelet ou du tronc cérébral' },
-      { score: 1, texte: 'Décubitus, hypotonie musculaire, réflexes spinaux diminués ou absents', detail: 'Perte du tonus musculaire et des réflexes - atteinte des motoneurones inférieurs ou stade terminal' },
+      { score: 6, texte: t('Démarche normale, réflexes spinaux normaux') },
+      { score: 5, texte: t('Hémiparésie, tétraparésie ou rigidité décérébrée'), detail: t('Hémiparésie : faiblesse d\'un côté du corps; tétraparésie : 4 membres atteints; rigidité décérébrée : extension rigide de tous les membres (lésion grave du tronc cérébral)') },
+      { score: 4, texte: t('Décubitus, rigidité extenseur intermittente'), detail: t('L\'animal est couché et présente des épisodes d\'extension involontaire des membres') },
+      { score: 3, texte: t('Décubitus, rigidité extenseur constante'), detail: t('Extension rigide permanente des membres en position couchée') },
+      { score: 2, texte: t('Décubitus, rigidité extenseur constante avec opisthotonos'), detail: t('Opisthotonos : hyperextension forcée de la tête et du cou vers l\'arrière, signe d\'atteinte grave du cervelet ou du tronc cérébral') },
+      { score: 1, texte: t('Décubitus, hypotonie musculaire, réflexes spinaux diminués ou absents'), detail: t('Perte du tonus musculaire et des réflexes - atteinte des motoneurones inférieurs ou stade terminal') },
     ],
   },
   {
     id: 'tronc',
-    titre: 'Réflexes du tronc cérébral',
+    titre: t('Réflexes du tronc cérébral'),
     options: [
-      { score: 6, texte: 'RPL et réflexes oculo-céphaliques normaux', detail: 'RPL : réflexe photomoteur (contraction pupillaire en réponse à la lumière). Réflexe oculo-céphalique : les yeux bougent normalement lors des mouvements de la tête' },
-      { score: 5, texte: 'RPL lent et réflexes oculo-céphaliques normaux à diminués' },
-      { score: 4, texte: 'Myosis bilatéral non réactif avec réflexes oculo-céphaliques diminués', detail: 'Myosis : pupilles très contractées et non réactives à la lumière' },
-      { score: 3, texte: 'Pupilles en épingle à tête avec réflexes oculo-céphaliques diminués à absents', detail: 'Myosis extrême - souvent associé à une lésion pontine' },
-      { score: 2, texte: 'Mydriase unilatérale non réactive avec réflexes oculo-céphaliques diminués à absents', detail: 'Mydriase unilatérale : une seule pupille dilatée et fixe - peut indiquer une compression du nerf crânien III (nerf oculomoteur)' },
-      { score: 1, texte: 'Mydriase bilatérale non réactive avec réflexes oculo-céphaliques diminués à absents', detail: 'Les deux pupilles dilatées et fixes - atteinte diffuse du tronc cérébral, pronostic très sombre' },
+      { score: 6, texte: t('RPL et réflexes oculo-céphaliques normaux'), detail: t('RPL : réflexe photomoteur (contraction pupillaire en réponse à la lumière). Réflexe oculo-céphalique : les yeux bougent normalement lors des mouvements de la tête') },
+      { score: 5, texte: t('RPL lent et réflexes oculo-céphaliques normaux à diminués') },
+      { score: 4, texte: t('Myosis bilatéral non réactif avec réflexes oculo-céphaliques diminués'), detail: t('Myosis : pupilles très contractées et non réactives à la lumière') },
+      { score: 3, texte: t('Pupilles en épingle à tête avec réflexes oculo-céphaliques diminués à absents'), detail: t('Myosis extrême - souvent associé à une lésion pontine') },
+      { score: 2, texte: t('Mydriase unilatérale non réactive avec réflexes oculo-céphaliques diminués à absents'), detail: t('Mydriase unilatérale : une seule pupille dilatée et fixe - peut indiquer une compression du nerf crânien III (nerf oculomoteur)') },
+      { score: 1, texte: t('Mydriase bilatérale non réactive avec réflexes oculo-céphaliques diminués à absents'), detail: t('Les deux pupilles dilatées et fixes - atteinte diffuse du tronc cérébral, pronostic très sombre') },
     ],
   },
   {
     id: 'conscience',
-    titre: 'Niveau de conscience',
+    titre: t('Niveau de conscience'),
     options: [
-      { score: 6, texte: 'Périodes de vigilance occasionnelles, réactif à l\'environnement' },
-      { score: 5, texte: 'Dépression ou délirium, capable de répondre, mais réponse potentiellement inappropriée' },
-      { score: 4, texte: 'Semi-comateux, réactif aux stimuli visuels', detail: 'Réagit lorsqu\'on approche la main ou un objet devant ses yeux' },
-      { score: 3, texte: 'Semi-comateux, réactif aux stimuli auditifs', detail: 'Réagit aux sons forts mais plus aux stimuli visuels' },
-      { score: 2, texte: 'Semi-comateux, réactif uniquement aux stimuli nociceptifs répétés', detail: 'Nécessite une douleur répétée pour obtenir une réponse' },
-      { score: 1, texte: 'Comateux, non réactif aux stimuli nociceptifs répétés', detail: 'Absence totale de réponse à la douleur' },
+      { score: 6, texte: t('Périodes de vigilance occasionnelles, réactif à l\'environnement') },
+      { score: 5, texte: t('Dépression ou délirium, capable de répondre, mais réponse potentiellement inappropriée') },
+      { score: 4, texte: t('Semi-comateux, réactif aux stimuli visuels'), detail: t('Réagit lorsqu\'on approche la main ou un objet devant ses yeux') },
+      { score: 3, texte: t('Semi-comateux, réactif aux stimuli auditifs'), detail: t('Réagit aux sons forts mais plus aux stimuli visuels') },
+      { score: 2, texte: t('Semi-comateux, réactif uniquement aux stimuli nociceptifs répétés'), detail: t('Nécessite une douleur répétée pour obtenir une réponse') },
+      { score: 1, texte: t('Comateux, non réactif aux stimuli nociceptifs répétés'), detail: t('Absence totale de réponse à la douleur') },
     ],
   },
 ]
@@ -46,24 +47,24 @@ function getInterpretation(total) {
     bg: 'rgba(112, 47, 58, 0.08)',
     bordure: 'rgba(112, 47, 58, 0.3)',
     icone: 'ti-urgent',
-    titre: 'Pronostic grave',
-    texte: 'Score 3-8. Pronostic très sombre. Prise en charge intensive et immédiate nécessaire.',
+    titre: t('Pronostic grave'),
+    texte: t('Score 3-8. Pronostic très sombre. Prise en charge intensive et immédiate nécessaire.'),
   }
   if (total <= 14) return {
     couleur: 'var(--accent-gold)',
     bg: 'rgba(215, 163, 92, 0.1)',
     bordure: 'rgba(215, 163, 92, 0.4)',
     icone: 'ti-alert-triangle',
-    titre: 'Pronostic réservé',
-    texte: 'Score 9-14. Surveillance étroite et traitement intensif recommandés.',
+    titre: t('Pronostic réservé'),
+    texte: t('Score 9-14. Surveillance étroite et traitement intensif recommandés.'),
   }
   return {
     couleur: 'var(--primary)',
     bg: 'rgba(37, 77, 86, 0.08)',
     bordure: 'rgba(37, 77, 86, 0.3)',
     icone: 'ti-circle-check',
-    titre: 'Bon pronostic',
-    texte: 'Score 15-18. Pronostic favorable. Continuer la surveillance et la prise en charge.',
+    titre: t('Bon pronostic'),
+    texte: t('Score 15-18. Pronostic favorable. Continuer la surveillance et la prise en charge.'),
   }
 }
 
@@ -96,17 +97,17 @@ export default function ScoreGlasgow() {
           <div className="postop-section-icone" style={{ background: 'rgba(37,77,86,0.1)', color: 'var(--primary)' }}>
             <i className="ti ti-brain"></i>
           </div>
-          <h2 className="postop-section-titre">À propos du MCGS</h2>
+          <h2 className="postop-section-titre">{t('À propos du MCGS')}</h2>
         </div>
         <div style={{ padding: '8px 16px 12px', display: 'flex', flexDirection: 'column', gap: 10 }}>
           <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Le MCGS (Modified Glasgow Coma Scale) est un outil de surveillance neurologique utilisé pour évaluer les traumatismes crâniens et les lésions du système nerveux central. Il doit être utilisé en complément des paramètres vitaux : fréquence cardiaque, fréquence respiratoire et pression artérielle.
+            {t('Le MCGS (Modified Glasgow Coma Scale) est un outil de surveillance neurologique utilisé pour évaluer les traumatismes crâniens et les lésions du système nerveux central. Il doit être utilisé en complément des paramètres vitaux : fréquence cardiaque, fréquence respiratoire et pression artérielle.')}
           </p>
           <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Dans toute urgence, la perméabilité des voies respiratoires, la ventilation et la circulation doivent être évaluées en priorité. Une hypoxie ou une hypovolémie sévère aggraveront les altérations de l'état mental.
+            {t('Dans toute urgence, la perméabilité des voies respiratoires, la ventilation et la circulation doivent être évaluées en priorité. Une hypoxie ou une hypovolémie sévère aggraveront les altérations de l\'état mental.')}
           </p>
           <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            La pression artérielle moyenne (PAM) est particulièrement utile car elle reflète la perfusion cérébrale. Une hypotension associée à une bradycardie peut indiquer un réflexe de Cushing, signe d'une hypertension intracrânienne critique.
+            {t('La pression artérielle moyenne (PAM) est particulièrement utile car elle reflète la perfusion cérébrale. Une hypertension associée à une bradycardie peut indiquer un réflexe de Cushing, signe d\'une hypertension intracrânienne critique.')}
           </p>
         </div>
       </div>
@@ -115,7 +116,7 @@ export default function ScoreGlasgow() {
       <div className="douleur-intro">
         <i className="ti ti-list-check douleur-intro-icone"></i>
         <p className="douleur-intro-texte">
-          Sélectionner une observation par catégorie. Le score total (3-18) est calculé automatiquement.
+          {t('Sélectionner une observation par catégorie. Le score total (3-18) est calculé automatiquement.')}
         </p>
       </div>
 
@@ -165,7 +166,7 @@ export default function ScoreGlasgow() {
       {/* ─── RÉSULTAT ───────────────────────────── */}
       <div className="douleur-resultat-section">
         <div className="douleur-score-total">
-          <span className="douleur-score-label">Score MCGS</span>
+          <span className="douleur-score-label">{t('Score MCGS')}</span>
           <span className="douleur-score-valeur">
             {selectedCount === 0
               ? '—'
@@ -188,14 +189,14 @@ export default function ScoreGlasgow() {
 
         <button className="douleur-btn-reinit" onClick={reinitialiser}>
           <i className="ti ti-refresh"></i>
-          Réinitialiser
+          {t('Réinitialiser')}
         </button>
       </div>
 
       {/* ─── NOTE BAS ───────────────────────────── */}
       <div className="postop-note-bas">
         <i className="ti ti-info-circle"></i>
-        <span>MCGS : Modified Glasgow Coma Scale. Source : Aldridge et O'Dwyer (2013), Chiang et al. (2024).</span>
+        <span>{t('MCGS : Modified Glasgow Coma Scale. Source : Aldridge et O\'Dwyer (2013), Chiang et al. (2024).')}</span>
       </div>
 
     </div>

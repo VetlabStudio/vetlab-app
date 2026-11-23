@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { t } from '../lib/i18n'
 
 /* ════════════════════════════════════════════════════════════
    RÉANIMATION CARDIORESPIRATOIRE
@@ -38,22 +39,22 @@ const VASOPRESSEURS = ['epinephrine', 'vasopressine']
 const PRODUITS = [
   {
     id: 'epinephrine',
-    nom: 'Épinéphrine',
+    nom: t('Épinéphrine'),
     groupe: 'principal',
     doseMin: 0.01, doseMax: null, unite: 'mg/kg',
     concentration: 1, uniteConc: 'mg/mL',
     voie: 'IV/IO',
-    frequence: 'aux 3 à 5 min, un cycle sur deux',
+    frequence: t('aux 3 à 5 min, un cycle sur deux'),
     especes: ['chien', 'chat'],
   },
   {
     id: 'vasopressine',
-    nom: 'Vasopressine',
+    nom: t('Vasopressine'),
     groupe: 'principal',
     doseMin: 0.8, doseMax: null, unite: 'U/kg',
     concentration: 20, uniteConc: 'U/mL',
     voie: 'IV/IO',
-    frequence: 'aux 3 à 5 min, un cycle sur deux',
+    frequence: t('aux 3 à 5 min, un cycle sur deux'),
     especes: ['chien', 'chat'],
   },
   {
@@ -63,17 +64,17 @@ const PRODUITS = [
     doseMin: 0.04, doseMax: 0.054, unite: 'mg/kg',
     concentration: 0.54, uniteConc: 'mg/mL',
     voie: 'IV/IO',
-    note: 'Dose unique, le plus tôt possible, seulement si un tonus vagal élevé est soupçonné. Ne pas répéter.',
+    note: t('Dose unique, le plus tôt possible, seulement si un tonus vagal élevé est soupçonné. Ne pas répéter.'),
     especes: ['chien', 'chat'],
   },
   {
     id: 'lidocaine',
-    nom: 'Lidocaïne',
+    nom: t('Lidocaïne'),
     groupe: 'antiarythmique',
     doseMin: 2, doseMax: null, unite: 'mg/kg',
     concentration: 20, uniteConc: 'mg/mL',
-    voie: 'IV lent sur 2 à 4 min',
-    note: 'FV ou TV réfractaire.',
+    voie: t('IV lent sur 2 à 4 min'),
+    note: t('FV ou TV réfractaire.'),
     especes: ['chien'],
   },
   {
@@ -82,8 +83,8 @@ const PRODUITS = [
     groupe: 'antiarythmique',
     doseMin: 5, doseMax: null, unite: 'mg/kg',
     concentration: 50, uniteConc: 'mg/mL',
-    voie: 'IV lent sur 2 à 4 min',
-    note: 'Antiarythmique de remplacement chez le chat.',
+    voie: t('IV lent sur 2 à 4 min'),
+    note: t('Antiarythmique de remplacement chez le chat.'),
     especes: ['chien', 'chat'],
   },
   {
@@ -92,8 +93,8 @@ const PRODUITS = [
     groupe: 'antiarythmique',
     doseMin: 0.5, doseMax: null, unite: 'mg/kg',
     concentration: 10, uniteConc: 'mg/mL',
-    voie: 'IV lent sur 3 à 5 min',
-    note: 'Suivi d’une CRI de 50 µg/kg/min.',
+    voie: t('IV lent sur 3 à 5 min'),
+    note: t('Suivi d’une CRI de 50 µg/kg/min.'),
     especes: ['chien', 'chat'],
   },
   {
@@ -103,52 +104,52 @@ const PRODUITS = [
     doseMin: 0.04, doseMax: null, unite: 'mg/kg',
     concentration: 0.4, uniteConc: 'mg/mL',
     voie: 'IV/IO',
-    note: 'Renversement des opioïdes.',
+    note: t('Renversement des opioïdes.'),
     especes: ['chien', 'chat'],
   },
   {
     id: 'atipamezole',
-    nom: 'Atipamézole',
+    nom: t('Atipamézole'),
     groupe: 'antagoniste',
     doseMin: 100, doseMax: null, unite: 'mcg/kg',
     concentration: 5, uniteConc: 'mg/mL',
-    voie: 'IV lent',
-    note: 'Renversement des agonistes alpha-2.',
+    voie: t('IV lent'),
+    note: t('Renversement des agonistes alpha-2.'),
     especes: ['chien', 'chat'],
   },
   {
     id: 'flumazenil',
-    nom: 'Flumazénil',
+    nom: t('Flumazénil'),
     groupe: 'antagoniste',
     doseMin: 0.01, doseMax: null, unite: 'mg/kg',
     concentration: 0.1, uniteConc: 'mg/mL',
     voie: 'IV/IO',
-    note: 'Renversement des benzodiazépines.',
+    note: t('Renversement des benzodiazépines.'),
     especes: ['chien', 'chat'],
   },
   {
     id: 'bicarbonate',
-    nom: 'Bicarbonate de sodium',
+    nom: t('Bicarbonate de sodium'),
     groupe: 'tampon',
     doseMin: 1, doseMax: null, unite: 'mEq/kg',
     concentration: null, uniteConc: 'mEq/mL',
     voie: 'IV/IO',
-    note: 'Hors algorithme RECOVER. Réservé à l’acidose métabolique documentée lors d’une réanimation prolongée.',
+    note: t('Hors algorithme RECOVER. Réservé à l’acidose métabolique documentée lors d’une réanimation prolongée.'),
     especes: ['chien', 'chat'],
   },
 ]
 
 const GROUPES = [
-  { id: 'antiarythmique', label: 'Antiarythmiques' },
-  { id: 'antagoniste',    label: 'Antagonistes / renversement' },
-  { id: 'tampon',         label: 'Thérapie tampon' },
+  { id: 'antiarythmique', label: t('Antiarythmiques') },
+  { id: 'antagoniste',    label: t('Antagonistes / renversement') },
+  { id: 'tampon',         label: t('Thérapie tampon') },
 ]
 
 const DEFIBRILLATEURS = [
-  { id: 'biph_ext', label: 'Biphasique externe',   court: 'Biph. ext.',   min: 2,   max: 4 },
-  { id: 'biph_int', label: 'Biphasique interne',   court: 'Biph. int.',   min: 0.2, max: 0.4 },
-  { id: 'mono_ext', label: 'Monophasique externe', court: 'Monoph. ext.', min: 4,   max: 6 },
-  { id: 'mono_int', label: 'Monophasique interne', court: 'Monoph. int.', min: 0.5, max: 1 },
+  { id: 'biph_ext', label: t('Biphasique externe'),   court: t('Biph. ext.'),   min: 2,   max: 4 },
+  { id: 'biph_int', label: t('Biphasique interne'),   court: t('Biph. int.'),   min: 0.2, max: 0.4 },
+  { id: 'mono_ext', label: t('Monophasique externe'), court: t('Monoph. ext.'), min: 4,   max: 6 },
+  { id: 'mono_int', label: t('Monophasique interne'), court: t('Monoph. int.'), min: 0.5, max: 1 },
 ]
 
 const CLE_DEFIB = 'adjuvet.rcr.defibrillateur'
@@ -501,7 +502,7 @@ export default function RCR() {
 
         <div className="rcr-dose-bas">
           {p.voie}
-          {p.concentration ? ` · solution ${p.concentration} ${p.uniteConc}` : ''}
+          {p.concentration ? ` · ${t('solution')} ${p.concentration} ${p.uniteConc}` : ''}
           {p.frequence ? ` · ${p.frequence}` : ''}
         </div>
 
@@ -510,8 +511,8 @@ export default function RCR() {
         {estVasopresseur && actif && (
           <span className={`rcr-dose-tag ${doseDueMaintenant ? 'due' : ''}`}>
             {doseDueMaintenant
-              ? `Dose due à ce cycle (${cycleActuel})`
-              : `Prochaine dose au cycle ${prochainCycleDose}`}
+              ? t('Dose due à ce cycle ({n})', { n: cycleActuel })
+              : t('Prochaine dose au cycle {n}', { n: prochainCycleDose })}
           </span>
         )}
       </div>
@@ -524,7 +525,7 @@ export default function RCR() {
       {/* ─── STATUS, PARTAGÉ PAR LES DEUX ONGLETS ─── */}
       <div className={`rcr-status ${actif ? 'actif' : tempsTotal > 0 ? 'pause' : ''}`}>
         <span className="rcr-status-texte">
-          {actif ? 'CODE EN COURS' : tempsTotal > 0 ? 'EN PAUSE' : 'PRÊT'}
+          {actif ? t('CODE EN COURS') : tempsTotal > 0 ? t('EN PAUSE') : t('PRÊT')}
         </span>
         <span className="rcr-temps-total">{formaterTemps(tempsTotal)}</span>
       </div>
@@ -538,7 +539,7 @@ export default function RCR() {
           className={onglet === 'chrono' ? 'actif' : ''}
           onClick={() => setOnglet('chrono')}
         >
-          Chrono
+          {t('Chrono')}
         </button>
         <button
           type="button"
@@ -547,8 +548,8 @@ export default function RCR() {
           className={onglet === 'doses' ? 'actif' : ''}
           onClick={() => setOnglet('doses')}
         >
-          Doses
-          {!poidsKg && <span className="rcr-onglet-point" aria-label="poids à saisir"></span>}
+          {t('Doses')}
+          {!poidsKg && <span className="rcr-onglet-point" aria-label={t('poids à saisir')}></span>}
         </button>
       </div>
 
@@ -571,13 +572,13 @@ export default function RCR() {
                   style={{ transition: 'stroke-dashoffset 0.05s linear' }}
                 />
                 <text x="100" y="86" textAnchor="middle" fontSize="13" fill="var(--text-secondary)" fontFamily="Montserrat">
-                  Vérif. pouls dans
+                  {t('Vérif. pouls dans')}
                 </text>
                 <text x="100" y="114" textAnchor="middle" fontSize="28" fontWeight="700" fill="var(--text-primary)" fontFamily="Montserrat">
                   {secondesRestantes}s
                 </text>
                 <text x="100" y="136" textAnchor="middle" fontSize="12" fill="var(--text-hint)" fontFamily="Montserrat">
-                  Cycle {cycleActuel}
+                  {t('Cycle {n}', { n: cycleActuel })}
                 </text>
               </svg>
             </div>
@@ -589,21 +590,21 @@ export default function RCR() {
                   style={{ height: `${progressionVentilation * 100}%` }}
                 />
               </div>
-              <span className="rcr-ventil-label">Ventilation</span>
+              <span className="rcr-ventil-label">{t('Ventilation')}</span>
             </div>
           </div>
 
           <div className="rcr-infos">
             <div className="rcr-info-item">
-              <span className="rcr-info-label">Compressions</span>
+              <span className="rcr-info-label">{t('Compressions')}</span>
               <span className="rcr-info-valeur">{BPM} BPM</span>
             </div>
             <div className="rcr-info-item">
-              <span className="rcr-info-label">Ventilation</span>
+              <span className="rcr-info-label">{t('Ventilation')}</span>
               <span className="rcr-info-valeur">1 / 6 sec</span>
             </div>
             <div className="rcr-info-item">
-              <span className="rcr-info-label">Cycles complétés</span>
+              <span className="rcr-info-label">{t('Cycles complétés')}</span>
               <span className="rcr-info-valeur">{cycles}</span>
             </div>
           </div>
@@ -612,7 +613,7 @@ export default function RCR() {
             className={`rcr-btn-principal ${actif ? 'stop' : 'start'}`}
             onClick={handleBouton}
           >
-            {actif ? 'PAUSE' : tempsTotal > 0 ? 'REPRENDRE' : 'DÉMARRER LE CODE'}
+            {actif ? 'PAUSE' : tempsTotal > 0 ? 'REPRENDRE' : t('DÉMARRER LE CODE')}
           </button>
 
           <div className="rcr-groupe">
@@ -623,7 +624,7 @@ export default function RCR() {
               aria-expanded={rappelsOuverts}
             >
               <i className="ti ti-list-check rcr-groupe-icone"></i>
-              <span className="rcr-groupe-label">Rappels techniques</span>
+              <span className="rcr-groupe-label">{t('Rappels techniques')}</span>
               <i className={`ti ti-chevron-${rappelsOuverts ? 'up' : 'down'}`}></i>
             </button>
 
@@ -631,19 +632,19 @@ export default function RCR() {
               <div className="rcr-rappels rcr-rappels--replie">
                 <div className="rcr-rappel">
                   <i className="ti ti-heart-rate-monitor"></i>
-                  <span>Compressions : animal en décubitus latéral sur surface rigide. Mains placées derrière la pointe du coude, sur la partie la plus large du thorax. Bras tendus, comprimer 1/3 de l'épaisseur thoracique, relâchement complet entre chaque compression.</span>
+                  <span>{t('Compressions : animal en décubitus latéral sur surface rigide. Mains placées derrière la pointe du coude, sur la partie la plus large du thorax. Bras tendus, comprimer 1/3 de l\'épaisseur thoracique, relâchement complet entre chaque compression.')}</span>
                 </div>
                 <div className="rcr-rappel">
                   <i className="ti ti-wind"></i>
-                  <span>Ventilation : 1 insufflation toutes les 6 secondes, se fier à la barre de progression.</span>
+                  <span>{t('Ventilation : 1 insufflation toutes les 6 secondes, se fier à la barre de progression.')}</span>
                 </div>
                 <div className="rcr-rappel">
                   <i className="ti ti-refresh"></i>
-                  <span>Changer de compresseur à chaque cycle de 2 minutes. La pause entre deux cycles ne doit pas dépasser 10 secondes.</span>
+                  <span>{t('Changer de compresseur à chaque cycle de 2 minutes. La pause entre deux cycles ne doit pas dépasser 10 secondes.')}</span>
                 </div>
                 <div className="rcr-rappel">
                   <i className="ti ti-bolt"></i>
-                  <span>Après un choc, reprendre les compressions pour un cycle complet de 2 minutes sans réévaluer le rythme.</span>
+                  <span>{t('Après un choc, reprendre les compressions pour un cycle complet de 2 minutes sans réévaluer le rythme.')}</span>
                 </div>
               </div>
             )}
@@ -657,8 +658,8 @@ export default function RCR() {
           <div className="champ" style={{ width: '100%' }}>
             <div className="espece-toggle">
               <span className={`espece-label ${espece === 'chien' ? 'active' : ''}`}>
-                <img src="/icone-chien.svg" alt="Chien" className="espece-icone" />
-                Chien
+                <img src="/icone-chien.svg" alt={t('Chien')} className="espece-icone" />
+                {t('Chien')}
               </span>
               <div
                 className={`toggle-slider ${espece === 'chat' ? 'droite' : ''}`}
@@ -667,14 +668,14 @@ export default function RCR() {
                 <div className="toggle-thumb"></div>
               </div>
               <span className={`espece-label ${espece === 'chat' ? 'active' : ''}`}>
-                <img src="/icone-chat.svg" alt="Chat" className="espece-icone" />
-                Chat
+                <img src="/icone-chat.svg" alt={t('Chat')} className="espece-icone" />
+                {t('Chat')}
               </span>
             </div>
           </div>
 
           <div className="champ" style={{ width: '100%' }}>
-            <label>Poids de l'animal</label>
+            <label>{t('Poids de l\'animal')}</label>
             <div className="champ-input">
               <div className="champ-icone-wrapper">
                 <img src="/icone-poids.svg" alt="poids" />
@@ -695,7 +696,7 @@ export default function RCR() {
 
           <div className="rcr-doses-bloc">
             {produitsVisibles.filter(p => p.groupe === 'principal' && VASOPRESSEURS.includes(p.id)).map(carteDose)}
-            <p className="rcr-doses-ou">ou l'un ou l'autre, pas les deux</p>
+            <p className="rcr-doses-ou">{t('ou l\'un ou l\'autre, pas les deux')}</p>
             {produitsVisibles.filter(p => p.groupe === 'principal' && !VASOPRESSEURS.includes(p.id)).map(carteDose)}
           </div>
 
@@ -720,7 +721,7 @@ export default function RCR() {
                     {g.id === 'antiarythmique' && lidocaineMasquee && (
                       <div className="rcr-contre-indication">
                         <i className="ti ti-alert-triangle"></i>
-                        La lidocaïne est contre-indiquée chez le chat. L'amiodarone est l'antiarythmique de remplacement.
+                        {t('La lidocaïne est contre-indiquée chez le chat. L\'amiodarone est l\'antiarythmique de remplacement.')}
                       </div>
                     )}
                     {produits.map(carteDose)}
@@ -731,7 +732,7 @@ export default function RCR() {
           })}
 
           <div className="rcr-defib">
-            <span className="rcr-defib-cle">Défibrillation</span>
+            <span className="rcr-defib-cle">{t('Défibrillation')}</span>
 
             <div className="rcr-defib-chips">
               {DEFIBRILLATEURS.map(d => (
@@ -763,29 +764,29 @@ export default function RCR() {
               <div className="rcr-rythme">
                 <i className="ti ti-bolt"></i>
                 <div>
-                  <span className="rcr-rythme-titre">Rythmes choquables</span>
-                  <span className="rcr-rythme-detail">FV, activité électrique désorganisée</span>
-                  <span className="rcr-rythme-detail">TV sans pouls, complexes réguliers &gt; 200/min</span>
+                  <span className="rcr-rythme-titre">{t('Rythmes choquables')}</span>
+                  <span className="rcr-rythme-detail">{t('FV, activité électrique désorganisée')}</span>
+                  <span className="rcr-rythme-detail">{t('TV sans pouls, complexes réguliers > 200/min')}</span>
                 </div>
               </div>
               <div className="rcr-rythme">
                 <i className="ti ti-bolt-off"></i>
                 <div>
-                  <span className="rcr-rythme-titre">Rythmes non choquables</span>
-                  <span className="rcr-rythme-detail">Asystolie, aucune activité électrique</span>
-                  <span className="rcr-rythme-detail">AESP, complexes organisés &lt; 200/min</span>
+                  <span className="rcr-rythme-titre">{t('Rythmes non choquables')}</span>
+                  <span className="rcr-rythme-detail">{t('Asystolie, aucune activité électrique')}</span>
+                  <span className="rcr-rythme-detail">{t('AESP, complexes organisés < 200/min')}</span>
                 </div>
               </div>
             </div>
 
             <p className="rcr-defib-note">
-              La défibrillation ne s'applique qu'aux rythmes choquables. Pour un rythme non choquable, compressions et vasopresseur.
+              {t('La défibrillation ne s\'applique qu\'aux rythmes choquables. Pour un rythme non choquable, compressions et vasopresseur.')}
             </p>
           </div>
 
           <div className="calc-avertissement">
             <i className="ti ti-alert-circle"></i>
-            Doses et paramètres basés sur les lignes directrices RECOVER 2024 de l'ACVECC. Les concentrations affichées sont indicatives : vérifier l'étiquette de la fiole. Valider avec le vétérinaire responsable.
+            {t('Doses et paramètres basés sur les lignes directrices RECOVER 2024 de l\'ACVECC. Les concentrations affichées sont indicatives : vérifier l\'étiquette de la fiole. Valider avec le vétérinaire responsable.')}
           </div>
         </>
       )}
@@ -796,30 +797,30 @@ export default function RCR() {
           <div className="popup-card">
             {!confirmerFin ? (
               <>
-                <div className="popup-header"><span>Code en pause</span></div>
+                <div className="popup-header"><span>{t('Code en pause')}</span></div>
                 <p className="rcr-modal-texte">
-                  Temps écoulé : <strong>{formaterTemps(tempsTotal)}</strong><br />
-                  Cycles complétés : <strong>{cycles}</strong>
+                  {t('Temps écoulé :')} <strong>{formaterTemps(tempsTotal)}</strong><br />
+                  {t('Cycles complétés :')} <strong>{cycles}</strong>
                 </p>
                 <button className="rcr-btn-principal start" onClick={reprendreCode} style={{ marginBottom: 10 }}>
-                  Reprendre le code
+                  {t('Reprendre le code')}
                 </button>
                 <button className="rcr-btn-terminer" onClick={() => setConfirmerFin(true)}>
-                  Terminer et réinitialiser
+                  {t('Terminer et réinitialiser')}
                 </button>
               </>
             ) : (
               <>
-                <div className="popup-header"><span>Terminer le code ?</span></div>
+                <div className="popup-header"><span>{t('Terminer le code ?')}</span></div>
                 <p className="rcr-modal-texte">
-                  Le chronomètre et le compte des cycles seront remis à zéro.
-                  Note le temps écoulé avant de continuer : <strong>{formaterTemps(tempsTotal)}</strong>, <strong>{cycles}</strong> cycles.
+                  {t('Le chronomètre et le compte des cycles seront remis à zéro.')}
+                  {' '}{t('Note le temps écoulé avant de continuer :')} <strong>{formaterTemps(tempsTotal)}</strong>, <strong>{cycles}</strong> {t('cycles.')}
                 </p>
                 <button className="rcr-btn-terminer" onClick={terminerCode} style={{ marginBottom: 10 }}>
-                  Oui, terminer
+                  {t('Oui, terminer')}
                 </button>
                 <button className="rcr-btn-principal start" onClick={() => setConfirmerFin(false)}>
-                  Revenir
+                  {t('Revenir')}
                 </button>
               </>
             )}
@@ -831,25 +832,24 @@ export default function RCR() {
       {enVerification && (
         <div className="popup-overlay">
           <div className="popup-card rcr-pulse-card">
-            <p className="rcr-pulse-titre">VÉRIFICATION DU POULS</p>
+            <p className="rcr-pulse-titre">{t('VÉRIFICATION DU POULS')}</p>
             <p className="rcr-pulse-sous-titre">
-              Cycle {cycles} complété · {formaterTemps(tempsTotal)}
+              {t('Cycle {n} complété', { n: cycles })} · {formaterTemps(tempsTotal)}
             </p>
 
             <div className={`rcr-verif-compte ${depassement ? 'depassement' : ''}`}>
               <span className="rcr-verif-chiffre">{secondesVerif}s</span>
               <span className="rcr-verif-limite">
-                {depassement ? 'Limite de 10 s dépassée' : 'sur 10 s maximum'}
+                {depassement ? t('Limite de 10 s dépassée') : t('sur 10 s maximum')}
               </span>
             </div>
 
             <p className="rcr-modal-texte">
-              Vérifier le pouls fémoral. Changer de compresseur. Réévaluer le rythme cardiaque.
-              Le métronome est en pause.
+              {t('Vérifier le pouls fémoral. Changer de compresseur. Réévaluer le rythme cardiaque. Le métronome est en pause.')}
             </p>
 
             <button className="rcr-btn-principal start" onClick={reprendreApresVerification}>
-              Reprendre les compressions
+              {t('Reprendre les compressions')}
             </button>
           </div>
         </div>

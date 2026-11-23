@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { t, enAnglais } from '../lib/i18n'
 
 function arrondir(v) {
   return Math.round(v * 10) / 10
@@ -23,7 +24,7 @@ export default function Dextrose() {
   const erreur = useMemo(() => {
     const c1 = parseFloat(concDepart)
     const c2 = parseFloat(concFinale)
-    if (c1 && c2 && c2 >= c1) return 'La concentration finale doit être inférieure à la concentration de départ.'
+    if (c1 && c2 && c2 >= c1) return t('La concentration finale doit être inférieure à la concentration de départ.')
     return null
   }, [concDepart, concFinale])
 
@@ -32,12 +33,12 @@ export default function Dextrose() {
       <div className="postop-intro">
         <i className="ti ti-droplet postop-intro-icone"></i>
         <p className="postop-intro-texte">
-          Calcule le volume de solution de dextrose à ajouter dans un sac de fluides pour obtenir la concentration souhaitée.
+          {t('Calcule le volume de solution de dextrose à ajouter dans un sac de fluides pour obtenir la concentration souhaitée.')}
         </p>
       </div>
 
       <div className="champ">
-        <label>Concentration de départ</label>
+        <label>{t('Concentration de départ')}</label>
         <div className="champ-input">
           <div className="champ-icone-wrapper">
             <i className="ti ti-test-pipe" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -51,11 +52,11 @@ export default function Dextrose() {
           />
           <span className="unite-fixe">%</span>
         </div>
-        <p className="champ-aide">Concentration de votre solution de dextrose (ex : D50 = 50 %)</p>
+        <p className="champ-aide">{t('Concentration de votre solution de dextrose (ex : D50 = 50 %)')}</p>
       </div>
 
       <div className="champ">
-        <label>Concentration finale souhaitée</label>
+        <label>{t('Concentration finale souhaitée')}</label>
         <div className="champ-input">
           <div className="champ-icone-wrapper">
             <i className="ti ti-target" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -69,11 +70,11 @@ export default function Dextrose() {
           />
           <span className="unite-fixe">%</span>
         </div>
-        <p className="champ-aide">Concentration désirée dans le sac (ex : D2.5 = 2.5 %)</p>
+        <p className="champ-aide">{t('Concentration désirée dans le sac (ex : D2.5 = 2.5 %)')}</p>
       </div>
 
       <div className="champ">
-        <label>Volume du sac de fluides</label>
+        <label>{t('Volume du sac de fluides')}</label>
         <div className="champ-input">
           <div className="champ-icone-wrapper">
             <i className="ti ti-flask" style={{ fontSize: 18, color: 'var(--primary)' }}></i>
@@ -98,12 +99,18 @@ export default function Dextrose() {
       {resultat && (
         <div className="dilution-resultat" style={{ marginTop: 16 }}>
           <p className="dilution-resultat-valeur">
-            <strong>{resultat.v1} mL</strong> de solution à {resultat.c1} %
+            {enAnglais
+              ? <><strong>{resultat.v1} mL</strong> of {resultat.c1}% solution</>
+              : <><strong>{resultat.v1} mL</strong> de solution à {resultat.c1} %</>}
           </p>
           <p className="dilution-resultat-texte" style={{ marginTop: 12, lineHeight: 1.7 }}>
-            Retirer <strong>{resultat.v1} mL</strong> du sac de <strong>{resultat.v2} mL</strong>,
-            puis ajouter <strong>{resultat.v1} mL</strong> de la solution de dextrose à <strong>{resultat.c1} %</strong>.
-            Bien mélanger. La solution obtenue est à <strong>{resultat.c2} %</strong>.
+            {enAnglais
+              ? <>Remove <strong>{resultat.v1} mL</strong> from the <strong>{resultat.v2} mL</strong> bag,
+                then add <strong>{resultat.v1} mL</strong> of the <strong>{resultat.c1}%</strong> dextrose solution.
+                Mix well. The resulting solution is <strong>{resultat.c2}%</strong>.</>
+              : <>Retirer <strong>{resultat.v1} mL</strong> du sac de <strong>{resultat.v2} mL</strong>,
+                puis ajouter <strong>{resultat.v1} mL</strong> de la solution de dextrose à <strong>{resultat.c1} %</strong>.
+                Bien mélanger. La solution obtenue est à <strong>{resultat.c2} %</strong>.</>}
           </p>
         </div>
       )}
@@ -115,7 +122,7 @@ export default function Dextrose() {
       )}
 
       <p className="calc-disclaimer">
-        Validez toujours vos calculs avec le vétérinaire responsable avant de préparer une solution.
+        {t('Validez toujours vos calculs avec le vétérinaire responsable avant de préparer une solution.')}
       </p>
     </div>
   )
