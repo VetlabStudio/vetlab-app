@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { compterSignalementsEnAttente } from '../lib/signalementsAttente'
+import { tn } from '../lib/i18n'
 
 export default function Notifications() {
   const navigate = useNavigate()
   const [notifs, setNotifs] = useState([])
   const [loading, setLoading] = useState(true)
+  // Administration : signalements d'erreurs encore à traiter.
+  const [signalementsAttente, setSignalementsAttente] = useState(0)
 
   useEffect(() => {
     async function charger() {
@@ -17,6 +21,7 @@ export default function Notifications() {
         .order('created_at', { ascending: false })
         .limit(50)
       setNotifs(data || [])
+      setSignalementsAttente(await compterSignalementsEnAttente(user))
       setLoading(false)
       // Marquer toutes comme lues
       await supabase.from('notifications').update({ lu: true }).eq('user_id', user.id).eq('lu', false)
@@ -46,12 +51,37 @@ export default function Notifications() {
 
   return (
     <div className="notifs-page">
+      {signalementsAttente > 0 && (
+        <div className="notif-item non-lue">
+          <div
+            className="notif-item-contenu"
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate('/admin/signalements')}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/admin/signalements') } }}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="notif-item-icone" style={{ background: 'rgba(192, 57, 43, 0.12)', color: 'var(--accent-red)' }}>
+              <i className="ti ti-flag" aria-hidden="true"></i>
+            </div>
+            <div className="notif-item-texte">
+              <p className="notif-item-message" style={{ fontWeight: 600 }}>
+                {tn(signalementsAttente, '{n} signalement d\'erreur en attente', '{n} signalements d\'erreurs en attente')}
+              </p>
+              <p className="notif-item-date">Panneau admin, à traiter</p>
+            </div>
+          </div>
+          <i className="ti ti-chevron-right" aria-hidden="true" style={{ color: 'var(--text-hint)', padding: '14px 16px' }}></i>
+        </div>
+      )}
       {notifs.length === 0 ? (
+        signalementsAttente > 0 ? null : (
         <div className="notifs-vide">
           <i className="ti ti-bell notifs-vide-icone"></i>
           <p className="notifs-vide-titre">Aucune notification</p>
           <p className="notifs-vide-sous">Vous êtes à jour!</p>
         </div>
+        )
       ) : (
         <>
           <div className="notifs-toolbar">

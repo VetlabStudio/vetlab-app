@@ -6,12 +6,16 @@ import PopupPro from '../components/PopupPro'
 import ModalInstallation from '../components/ModalInstallation'
 import { useProfil } from '../context/ProfilContext'
 import { t, tn } from '../lib/i18n'
+import { compterSignalementsEnAttente } from '../lib/signalementsAttente'
 
 /* Équipe : cloche toujours affichée, tenue à jour en direct. Autres
    forfaits : elle n'apparaît que s'il y a du non lu à l'ouverture de
-   l'accueil (ex. un signalement d'erreur traité). */
+   l'accueil (ex. un signalement d'erreur traité). Administration : elle
+   apparaît aussi tant qu'au moins un signalement attend d'être traité
+   (une seule pastille, peu importe le nombre de signalements). */
 function ClocheMiniAccueil() {
   const [count, setCount] = useState(0)
+  const [signalementsAttente, setSignalementsAttente] = useState(0)
   const { estEquipe } = useProfil()
   const navigate = useNavigate()
 
@@ -27,6 +31,8 @@ function ClocheMiniAccueil() {
         .eq('user_id', user.id)
         .eq('lu', false)
       if (active) setCount((data || []).length)
+      const attente = await compterSignalementsEnAttente(user)
+      if (active) setSignalementsAttente(attente)
     }
     charger()
     if (!estEquipe) return () => { active = false }
@@ -44,11 +50,12 @@ function ClocheMiniAccueil() {
     return () => { active = false; if (channel) supabase.removeChannel(channel) }
   }, [estEquipe])
 
-  if (!estEquipe && count === 0) return null
+  const total = count + (signalementsAttente > 0 ? 1 : 0)
+  if (!estEquipe && total === 0) return null
 
   return (
     <button
-      aria-label={count > 0 ? tn(count, 'Notifications, {n} non lue', 'Notifications, {n} non lues') : t('Notifications')}
+      aria-label={total > 0 ? tn(total, 'Notifications, {n} non lue', 'Notifications, {n} non lues') : t('Notifications')}
       onClick={() => navigate('/notifications')}
       style={{
         background: 'var(--primary)', border: 'none', cursor: 'pointer',
@@ -58,13 +65,13 @@ function ClocheMiniAccueil() {
       }}
     >
       <i className="ti ti-bell" aria-hidden="true"></i>
-      {count > 0 && (
+      {total > 0 && (
         <span style={{
           position: 'absolute', top: 2, right: 2, background: 'var(--accent-red)',
           color: '#fff', borderRadius: '50%', width: 14, height: 14,
           fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          {count > 9 ? '9+' : count}
+          {total > 9 ? '9+' : total}
         </span>
       )}
     </button>
