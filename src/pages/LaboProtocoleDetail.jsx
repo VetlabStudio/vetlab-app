@@ -6,7 +6,7 @@ import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 import SignalerErreur from '../components/SignalerErreur'
-import { t, enAnglais } from '../lib/i18n'
+import { t, enAnglais, enLangue } from '../lib/i18n'
 
 export default function LaboProtocoleDetail() {
   const navigate = useNavigate()
@@ -51,8 +51,9 @@ export default function LaboProtocoleDetail() {
           setMateriel([''])
         }
       } else {
-        const { data: proto } = await supabase
+        const { data: protoBrut } = await supabase
           .from('labo_protocoles').select('*').eq('id', protocoleId).single()
+        const proto = enLangue(protoBrut, ['titre', 'description'])
 
         const { data: etapesBase } = await supabase
           .from('labo_etapes').select('*').eq('protocole_id', protocoleId).order('ordre')
@@ -63,7 +64,8 @@ export default function LaboProtocoleDetail() {
           .eq('user_id', user.id)
           .eq('protocole_id', protocoleId)
 
-        const etapesFusionnees = (etapesBase || []).map(e => {
+        const etapesFusionnees = (etapesBase || []).map(base => {
+          const e = enLangue(base, ['titre', 'description'])
           const mod = (userMods || []).find(m => m.etape_id === e.id)
           return {
             ...e,
@@ -300,7 +302,7 @@ async function supprimerProtocole() {
           ) : (
             <ul className="labo-materiel-affichage">
               {materielAffiche.map((item, i) => (
-                <li key={i}>{t(item)}</li>
+                <li key={i}>{item}</li>
               ))}
             </ul>
           )}
@@ -358,15 +360,15 @@ async function supprimerProtocole() {
             <div className="postop-section-icone" style={{ background: '#254D5618', color: '#254D56' }}>
               <i className="ti ti-list-check"></i>
             </div>
-            <h2 className="postop-section-titre">{t(protocole.titre)}</h2>
+            <h2 className="postop-section-titre">{protocole.titre}</h2>
           </div>
           <ol className="postop-liste">
             {etapesVisibles.map((etape, index) => (
               <li key={etape.id} className="postop-liste-item">
                 <span className="postop-num">{index + 1}</span>
                 <span className="postop-texte">
-                  <strong>{t(etape.titre)}</strong>
-                  {etape.description && <><br />{t(etape.description)}</>}
+                  <strong>{etape.titre}</strong>
+                  {etape.description && <><br />{etape.description}</>}
                 </span>
               </li>
             ))}
@@ -449,7 +451,7 @@ async function supprimerProtocole() {
                 et.id === etape.id ? { ...et, visible: e.target.checked } : et
               ))}
             />
-            <span className="labo-reorganiser-titre">{index + 1}. {t(etape.titre)}</span>
+            <span className="labo-reorganiser-titre">{index + 1}. {etape.titre}</span>
             <i className="ti ti-grip-vertical" style={{ color: 'var(--text-hint)', fontSize: 18, cursor: 'grab' }}></i>
           </div>
         ))}
@@ -472,7 +474,7 @@ async function supprimerProtocole() {
         <i className="ti ti-trash" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
         <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
           {enAnglais
-            ? <>Delete <strong>{t(protocole.titre)}</strong>? This action cannot be undone.</>
+            ? <>Delete <strong>{protocole.titre}</strong>? This action cannot be undone.</>
             : <>Supprimer <strong>{protocole.titre}</strong> ? Cette action est irréversible.</>}
         </p>
       </div>

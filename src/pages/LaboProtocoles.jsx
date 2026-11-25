@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
-import { t } from '../lib/i18n'
+import { t, enLangue } from '../lib/i18n'
 
 export default function LaboProtocoles() {
   const navigate = useNavigate()
@@ -42,9 +42,9 @@ export default function LaboProtocoles() {
       }
 
       if (!actif) return
-      if (cat?.nom) setTitreCustom(cat.nom)
+      if (cat?.nom) setTitreCustom(enLangue(cat, ['nom']).nom)
       setProtocoles([
-        ...(protos || []).map(p => ({ ...p, type: 'base' })),
+        ...(protos || []).map(p => ({ ...enLangue(p, ['titre']), type: 'base' })),
         ...(protosPersonnel || []).map(p => ({ ...p, type: 'user', badge: 'personnel' })),
         ...protosEquipe.map(p => ({ ...p, type: 'user', badge: 'equipe' })),
       ])
@@ -76,7 +76,7 @@ export default function LaboProtocoles() {
             onClick={() => navigate(`/labo/protocole/${p.id}?type=${p.type}`)}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
           >
-            <span style={{ textAlign: 'left' }}>{t(p.titre)}</span>
+            <span style={{ textAlign: 'left' }}>{p.titre}</span>
             {p.badge === 'equipe' && (
               <span style={{
                 fontSize: 10, fontWeight: 700, flexShrink: 0,

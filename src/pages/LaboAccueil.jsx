@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { t } from '../lib/i18n'
+import { t, enLangue } from '../lib/i18n'
 
 export default function LaboAccueil() {
   const navigate = useNavigate()
@@ -14,7 +14,7 @@ export default function LaboAccueil() {
         .from('labo_categories')
         .select('*')
         .order('ordre')
-      setCategories(data || [])
+      setCategories((data || []).map(c => enLangue(c, ['nom'])))
       setLoading(false)
     }
     chargerCategories()
@@ -32,7 +32,7 @@ export default function LaboAccueil() {
             onClick={() => navigate(`/labo/${cat.id}`)}
             style={{ borderBottom: idx < categories.length - 1 ? '1px solid var(--border)' : 'none' }}
           >
-            <span className="menu-page-item-label">{t(cat.nom)}</span>
+            <span className="menu-page-item-label">{cat.nom}</span>
             <i className="ti ti-chevron-right menu-page-item-chevron"></i>
           </button>
         ))}

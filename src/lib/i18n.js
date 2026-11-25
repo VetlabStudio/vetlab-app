@@ -74,6 +74,16 @@ export function chiffres(texte) {
   return texte.replace(/(\d),(\d)/g, '$1.$2').replace(/\bUI\b/g, 'U')
 }
 
+/* Ligne venant de la base avec des colonnes anglaises (titre_en,
+   description_en...) : en anglais, remplace chaque champ par sa version
+   anglaise quand elle existe ; sinon garde le français. */
+export function enLangue(ligne, champs) {
+  if (!enAnglais || !ligne) return ligne
+  const copie = { ...ligne }
+  for (const c of champs) if (ligne[c + '_en']) copie[c] = ligne[c + '_en']
+  return copie
+}
+
 export function changerLangue(id) {
   if (id === langue) return
   try { localStorage.setItem(CLE, id) } catch { /* stockage indisponible */ }

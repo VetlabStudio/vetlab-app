@@ -23,6 +23,9 @@ export default function AdminLaboProtocoles() {
   const [showFormProto, setShowFormProto] = useState(false)
   const [protoEnEdition, setProtoEnEdition] = useState(null)
   const [titreProto, setTitreProto] = useState('')
+  // Version anglaise (colonnes *_en), affichée quand l'app est en anglais.
+  const [titreProtoEn, setTitreProtoEn] = useState('')
+  const [materielEn, setMaterielEn] = useState('')
   const [etapes, setEtapes] = useState([])
   const [materiel, setMateriel] = useState([''])
   const [showReorganiser, setShowReorganiser] = useState(false)
@@ -62,6 +65,8 @@ export default function AdminLaboProtocoles() {
   function ouvrirFormulaire(proto = null) {
     setProtoEnEdition(proto)
     setTitreProto(proto?.titre || '')
+    setTitreProtoEn(proto?.titre_en || '')
+    setMaterielEn(proto?.description_en || '')
     setMateriel(proto?.description ? proto.description.split('\n').filter(m => m.trim()) : [''])
     if (proto) {
       chargerEtapes(proto.id)
@@ -75,17 +80,21 @@ export default function AdminLaboProtocoles() {
     if (!titreProto.trim()) return
 
     let protocoleId = protoEnEdition?.id
+    const materielEnTexte = materielEn.split('\n').filter(m => m.trim()).join('\n')
+    const anglais = { titre_en: titreProtoEn.trim() || null, description_en: materielEnTexte || null }
 
     if (protoEnEdition) {
       await supabase.from('labo_protocoles').update({
         titre: titreProto.trim(),
         description: materiel.filter(m => m.trim()).join('\n'),
+        ...anglais,
       }).eq('id', protocoleId)
     } else {
       const { data } = await supabase.from('labo_protocoles').insert({
         categorie_id: categorieSelectee.id,
         titre: titreProto.trim(),
         description: materiel.filter(m => m.trim()).join('\n'),
+        ...anglais,
         ordre: protocoles.length,
       }).select().single()
       protocoleId = data?.id
@@ -99,6 +108,8 @@ export default function AdminLaboProtocoles() {
             ordre: etape.ordre,
             titre: etape.titre,
             description: etape.description,
+            titre_en: etape.titre_en?.trim() || null,
+            description_en: etape.description_en?.trim() || null,
             visible: true,
           })
         } else {
@@ -106,6 +117,8 @@ export default function AdminLaboProtocoles() {
             ordre: etape.ordre,
             titre: etape.titre,
             description: etape.description,
+            titre_en: etape.titre_en?.trim() || null,
+            description_en: etape.description_en?.trim() || null,
             visible: etape.visible,
           }).eq('id', etape.id)
         }
@@ -163,6 +176,18 @@ export default function AdminLaboProtocoles() {
           </div>
         </div>
 
+        <div className="champ">
+          <label>Titre (anglais)</label>
+          <div className="champ-input">
+            <input
+              type="text"
+              value={titreProtoEn}
+              onChange={e => setTitreProtoEn(e.target.value)}
+              placeholder="Protocol title"
+            />
+          </div>
+        </div>
+
         {/* Matériel */}
         <div className="champ">
           <label>Liste de matériel</label>
@@ -191,6 +216,18 @@ export default function AdminLaboProtocoles() {
           <button className="labo-btn-ajouter-etape" onClick={() => setMateriel(prev => [...prev, ''])}>
             <i className="ti ti-plus"></i> Ajouter un item
           </button>
+        </div>
+
+        <div className="champ">
+          <label>Liste de matériel (anglais, un item par ligne)</label>
+          <textarea
+            className="labo-etape-desc-input"
+            value={materielEn}
+            onChange={e => setMaterielEn(e.target.value)}
+            placeholder={'Centrifuge\nPasteur pipette'}
+            rows={4}
+            style={{ width: '100%', margin: 0 }}
+          />
         </div>
 
         {/* Étapes */}
@@ -225,6 +262,30 @@ export default function AdminLaboProtocoles() {
                   className="labo-etape-desc-input"
                   value={etape.description || ''}
                   onChange={e => setEtapes(prev => prev.map(et => et.id === etape.id ? { ...et, description: e.target.value } : et))}
+                  placeholder="Description..."
+                  rows={3}
+                  style={{ width: '100%', margin: 0 }}
+                />
+              </div>
+
+              <div className="champ" style={{ padding: '0 14px' }}>
+                <label>Titre (anglais)</label>
+                <div className="champ-input">
+                  <input
+                    type="text"
+                    value={etape.titre_en || ''}
+                    onChange={e => setEtapes(prev => prev.map(et => et.id === etape.id ? { ...et, titre_en: e.target.value } : et))}
+                    placeholder="Step title"
+                  />
+                </div>
+              </div>
+
+              <div className="champ" style={{ padding: '0 14px 14px' }}>
+                <label>Description (anglais)</label>
+                <textarea
+                  className="labo-etape-desc-input"
+                  value={etape.description_en || ''}
+                  onChange={e => setEtapes(prev => prev.map(et => et.id === etape.id ? { ...et, description_en: e.target.value } : et))}
                   placeholder="Description..."
                   rows={3}
                   style={{ width: '100%', margin: 0 }}

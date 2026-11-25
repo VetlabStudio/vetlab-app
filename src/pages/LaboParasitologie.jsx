@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
 import BadgePro from '../components/BadgePro'
 import PopupPro from '../components/PopupPro'
-import { t } from '../lib/i18n'
+import { t, enLangue } from '../lib/i18n'
 
 const CATEGORIE_ID = '2e0222f2-5733-4d01-bc99-8c380bec5abe'
 
@@ -32,7 +32,7 @@ export default function LaboParasitologie() {
 
       const protosBaseIds = (protosUser || []).map(p => p.protocole_base_id).filter(Boolean)
       setProtocoles([
-        ...(protos || []).filter(p => !protosBaseIds.includes(p.id)).map(p => ({ ...p, type: 'base' })),
+        ...(protos || []).filter(p => !protosBaseIds.includes(p.id)).map(p => ({ ...enLangue(p, ['titre']), type: 'base' })),
         ...(protosUser || []).map(p => ({ ...p, type: 'user' })),
       ])
       setLoading(false)
@@ -58,7 +58,7 @@ export default function LaboParasitologie() {
               className="labo-protocole-btn"
               onClick={() => navigate(`/labo/protocole/${p.id}?type=${p.type}`)}
             >
-              <span style={{ flex: 1 }}>{t(p.titre)}</span>
+              <span style={{ flex: 1 }}>{p.titre}</span>
               <i className="ti ti-chevron-right" style={{ fontSize: 14, color: 'var(--text-hint)', flexShrink: 0 }}></i>
             </button>
           ))
