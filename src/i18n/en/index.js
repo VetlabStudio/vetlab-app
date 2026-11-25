@@ -6,5 +6,6 @@ import compte from './compte'
 import sources from './sources'
 import outils from './outils'
 import labo from './labo'
+import chirurgie from './chirurgie'
 
-export default { ...commun, ...navigation, ...compte, ...sources, ...outils, ...labo }
+export default { ...commun, ...navigation, ...compte, ...sources, ...outils, ...labo, ...chirurgie }

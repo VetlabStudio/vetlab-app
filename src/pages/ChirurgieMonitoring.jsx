@@ -9,26 +9,27 @@ import {
   COULEUR_PRIMAIRE, COULEUR_ROUGE, creerDocument, bandeauPatient, sectionGrille,
   titreSection, tableau, dureeEntre, finaliser, ouvrir,
 } from '../lib/pdfadjuvet'
+import { t, tn, enAnglais, locale, chiffres } from '../lib/i18n'
 
 const ESPECES = [
-  { id: 'chien',        label: 'Chien',              icone: '/icone-chien.svg' },
-  { id: 'chat',         label: 'Chat',               icone: '/icone-chat.svg' },
-  { id: 'cheval',       label: 'Cheval',             icone: '/icone-cheval.png' },
-  { id: 'vache',        label: 'Vache',              icone: '/icone-vache.png' },
-  { id: 'mouton',       label: 'Mouton',             icone: '/icone-mouton.png' },
-  { id: 'lama',         label: 'Lama',               icone: '/icone-lama.png' },
-  { id: 'lapin',        label: 'Lapin',              icone: '/icone-lapin.png' },
-  { id: 'furet',        label: 'Furet',              icone: '/icone-furet.png' },
-  { id: 'oiseau',       label: 'Oiseau',             icone: '/icone-oiseau.png' },
-  { id: 'serpent',      label: 'Serpent',            icone: '/icone-serpent.png' },
-  { id: 'lezard',       label: 'Lézard',             icone: '/icone-lezard.png' },
-  { id: 'tortue',       label: 'Tortue',             icone: '/icone-tortue.png' },
-  { id: 'poisson',      label: 'Poisson',            icone: '/icone-poisson.png' },
-  { id: 'amphibien',    label: 'Amphibien',          icone: '/icone-grenouille.png' },
-  { id: 'rongeur',      label: 'Rongeur',            icone: '/icone-rongeurs.png' },
-  { id: 'chinchilla',   label: 'Chinchilla',         icone: '/icone-chinchilla.png' },
-  { id: 'cobaye',       label: "Cochon d'Inde",      icone: '/icone-cobaye.png' },
-  { id: 'herisson',     label: 'Hérisson',           icone: '/icone-herisson.png' },
+  { id: 'chien',        label: t('Chien'),              icone: '/icone-chien.svg' },
+  { id: 'chat',         label: t('Chat'),               icone: '/icone-chat.svg' },
+  { id: 'cheval',       label: t('Cheval'),             icone: '/icone-cheval.png' },
+  { id: 'vache',        label: t('Vache'),              icone: '/icone-vache.png' },
+  { id: 'mouton',       label: t('Mouton'),             icone: '/icone-mouton.png' },
+  { id: 'lama',         label: t('Lama'),               icone: '/icone-lama.png' },
+  { id: 'lapin',        label: t('Lapin'),              icone: '/icone-lapin.png' },
+  { id: 'furet',        label: t('Furet'),              icone: '/icone-furet.png' },
+  { id: 'oiseau',       label: t('Oiseau'),             icone: '/icone-oiseau.png' },
+  { id: 'serpent',      label: t('Serpent'),            icone: '/icone-serpent.png' },
+  { id: 'lezard',       label: t('Lézard'),             icone: '/icone-lezard.png' },
+  { id: 'tortue',       label: t('Tortue'),             icone: '/icone-tortue.png' },
+  { id: 'poisson',      label: t('Poisson'),            icone: '/icone-poisson.png' },
+  { id: 'amphibien',    label: t('Amphibien'),          icone: '/icone-grenouille.png' },
+  { id: 'rongeur',      label: t('Rongeur'),            icone: '/icone-rongeurs.png' },
+  { id: 'chinchilla',   label: t('Chinchilla'),         icone: '/icone-chinchilla.png' },
+  { id: 'cobaye',       label: t('Cochon d\'Inde'),      icone: '/icone-cobaye.png' },
+  { id: 'herisson',     label: t('Hérisson'),           icone: '/icone-herisson.png' },
 ]
 
 const MUQUEUSES_OPTIONS = ['Roses', 'Pâles', 'Congestives', 'Cyanotiques']
@@ -40,17 +41,17 @@ const INTERVALLE_MESURE_MIN = 5
 const COLONNES_SUIVI_PDF = 9
 
 const MESURE_PARAMS = [
-  { key: 'fc', label: 'FC (bpm)', court: 'FC', unite: 'bpm' },
-  { key: 'fr', label: 'FR (rpm)', court: 'FR', unite: 'rpm' },
-  { key: 'temp', label: 'Température (°C)', court: 'Temp', unite: '°C' },
-  { key: 'spo2', label: 'SpO₂ (%)', court: 'SpO₂', unite: '%' },
+  { key: 'fc', label: t('FC (bpm)'), court: t('FC'), unite: 'bpm' },
+  { key: 'fr', label: t('FR (rpm)'), court: t('FR'), unite: 'rpm' },
+  { key: 'temp', label: t('Température (°C)'), court: t('Temp'), unite: '°C' },
+  { key: 'spo2', label: t('SpO₂ (%)'), court: t('SpO₂'), unite: '%' },
   { key: 'co2', label: 'ETCO₂ (mmHg)', court: 'ETCO₂', unite: 'mmHg' },
-  { key: 'syst', label: 'PA systolique', court: 'PAS', unite: 'mmHg' },
-  { key: 'diast', label: 'PA diastolique', court: 'PAD', unite: 'mmHg' },
-  { key: 'map', label: 'PAM (mmHg)', court: 'PAM', unite: 'mmHg' },
-  { key: 'isoSevo', label: 'Iso/Sevo (%)', court: 'Iso/Sevo', unite: '%' },
+  { key: 'syst', label: t('PA systolique'), court: t('PAS'), unite: 'mmHg' },
+  { key: 'diast', label: t('PA diastolique'), court: t('PAD'), unite: 'mmHg' },
+  { key: 'map', label: t('PAM (mmHg)'), court: t('PAM'), unite: 'mmHg' },
+  { key: 'isoSevo', label: t('Iso/Sevo (%)'), court: t('Iso/Sevo'), unite: '%' },
   { key: 'o2', label: 'O₂ (L/min)', court: 'O₂', unite: 'L/min' },
-  { key: 'fluideIv', label: 'Fluide IV (mL/h)', court: 'Fluide', unite: 'mL/h' },
+  { key: 'fluideIv', label: t('Fluide IV (mL/h)'), court: t('Fluide'), unite: 'mL/h' },
 ]
 
 const CLES_ESSENTIELLES = ['fc', 'fr', 'temp', 'spo2', 'co2']
@@ -150,22 +151,22 @@ function ballonSuggere(poidsKg) {
 /* Débits d'O₂ recommandés, en mL/kg/min, avec un plancher
    pratique de 0,5 L/min dans les deux cas */
 const DEBITS_O2 = {
-  cercle: { min: 20, max: 40, libelle: 'cercle' },
-  nonReinspiratoire: { min: 200, max: 300, libelle: 'circuit non réinspiratoire' },
+  cercle: { min: 20, max: 40, libelle: t('cercle') },
+  nonReinspiratoire: { min: 200, max: 300, libelle: t('circuit non réinspiratoire') },
 }
 const O2_PLANCHER_LMIN = 0.5
 
 const VERIFICATIONS = [
-  { champ: 'checkMachineQuotidien', label: 'Contrôle quotidien de la machine' },
-  { champ: 'checkO2Pret', label: "O₂ prêt à l'emploi" },
-  { champ: 'checkEtancheite', label: "Test d'étanchéité" },
-  { champ: 'checkChauxSodee', label: 'Chaux sodée en bon état', siCercle: true },
-  { champ: 'checkValvesUni', label: 'Valves unidirectionnelles fonctionnelles', siCercle: true },
-  { champ: 'checkValveAPL', label: 'Valve APL ouverte', critique: true },
-  { champ: 'checkMoniteur', label: 'Moniteur de surveillance' },
-  { champ: 'checkRechauffement', label: 'Dispositif de réchauffement' },
-  { champ: 'checkIntubation', label: 'Matériel pour intubation' },
-  { champ: 'checkUrgence', label: "Équipement d'urgence prêt" },
+  { champ: 'checkMachineQuotidien', label: t('Contrôle quotidien de la machine') },
+  { champ: 'checkO2Pret', label: t('O₂ prêt à l\'emploi') },
+  { champ: 'checkEtancheite', label: t('Test d\'étanchéité') },
+  { champ: 'checkChauxSodee', label: t('Chaux sodée en bon état'), siCercle: true },
+  { champ: 'checkValvesUni', label: t('Valves unidirectionnelles fonctionnelles'), siCercle: true },
+  { champ: 'checkValveAPL', label: t('Valve APL ouverte'), critique: true },
+  { champ: 'checkMoniteur', label: t('Moniteur de surveillance') },
+  { champ: 'checkRechauffement', label: t('Dispositif de réchauffement') },
+  { champ: 'checkIntubation', label: t('Matériel pour intubation') },
+  { champ: 'checkUrgence', label: t('Équipement d\'urgence prêt') },
 ]
 
 function etatInitial() {
@@ -377,8 +378,8 @@ export default function ChirurgieMonitoring() {
   const premierRendu = useRef(true)
 
   useEffect(() => {
-    if (vue === 'setup') setTitreCustom(currentId ? 'Modifier le monitoring' : "Démarrer l'anesthésie")
-    else if (vue === 'monitoring') setTitreCustom('Monitoring en cours')
+    if (vue === 'setup') setTitreCustom(currentId ? t('Modifier le monitoring') : t('Démarrer l\'anesthésie'))
+    else if (vue === 'monitoring') setTitreCustom(t('Monitoring en cours'))
     else setTitreCustom('')
     return () => setTitreCustom('')
   }, [vue, currentId, setTitreCustom])
@@ -396,8 +397,8 @@ export default function ChirurgieMonitoring() {
 
   /* ─── Horloge du monitoring ──────────────────────────── */
   useEffect(() => {
-    const t = setInterval(() => setTick(n => n + 1), 20000)
-    return () => clearInterval(t)
+    const horloge = setInterval(() => setTick(n => n + 1), 20000)
+    return () => clearInterval(horloge)
   }, [])
 
   /* ─── Défilement après ouverture d'une section ───────── */
@@ -416,14 +417,14 @@ export default function ChirurgieMonitoring() {
   useEffect(() => {
     if (!currentId || !(vue === 'setup' || vue === 'monitoring')) return
     if (premierRendu.current) { premierRendu.current = false; return }
-    const t = setTimeout(() => {
+    const minuterie = setTimeout(() => {
       supabase
         .from('monitorings_anesthesiques')
-        .update({ animal_nom: form.animalNom || 'Sans nom', donnees: form, updated_at: new Date().toISOString() })
+        .update({ animal_nom: form.animalNom || t('Sans nom'), donnees: form, updated_at: new Date().toISOString() })
         .eq('id', currentId)
         .then(() => setVersionHistorique(v => v + 1))
     }, 800)
-    return () => clearTimeout(t)
+    return () => clearTimeout(minuterie)
   }, [form, currentId, vue])
 
   /* Médicaments de base + médicaments personnalisés de l'équipe
@@ -518,7 +519,7 @@ export default function ChirurgieMonitoring() {
         await supabase.from('monitorings_anesthesiques').delete().eq('id', item.id)
       }
     }
-    const payload = { user_id: user.id, animal_nom: 'Sans nom', resume: '', donnees: nouveauForm }
+    const payload = { user_id: user.id, animal_nom: t('Sans nom'), resume: '', donnees: nouveauForm }
     if (estEquipe && teamId) payload.equipe_id = teamId
     const { data } = await supabase
       .from('monitorings_anesthesiques')
@@ -546,7 +547,7 @@ export default function ChirurgieMonitoring() {
       if (!groupes.has(cle)) groupes.set(cle, [])
       groupes.get(cle).push(m)
     })
-    return Array.from(groupes.entries()).sort((a, b) => a[0].localeCompare(b[0], 'fr'))
+    return Array.from(groupes.entries()).sort((a, b) => a[0].localeCompare(b[0], locale))
   }, [medicamentsFiltres])
 
   function ouvrirSheetMed() {
@@ -616,15 +617,15 @@ export default function ChirurgieMonitoring() {
     if (!estNonReinspiratoire && !String(form.circuit).startsWith('Réinspiratoire')) return null
     const bas = Math.max(O2_PLANCHER_LMIN, (poidsKg * ref.min) / 1000)
     const haut = Math.max(O2_PLANCHER_LMIN, (poidsKg * ref.max) / 1000)
-    const fmt = n => (Math.round(n * 10) / 10).toString().replace('.', ',')
-    return `Pour un ${ref.libelle} : environ ${fmt(bas)} à ${fmt(haut)} L/min (${ref.min} à ${ref.max} mL/kg/min, minimum 0,5 L/min).`
+    const fmt = n => chiffres((Math.round(n * 10) / 10).toString().replace('.', ','))
+    return t('Pour un {circuit} : environ {bas} à {haut} L/min ({min} à {max} mL/kg/min, minimum {plancher} L/min).', { circuit: ref.libelle, bas: fmt(bas), haut: fmt(haut), min: ref.min, max: ref.max, plancher: chiffres('0,5') })
   }, [poidsKg, form.circuit, estNonReinspiratoire])
 
   const manquantsRequis = useMemo(() => {
     const liste = []
-    if (!form.animalNom.trim()) liste.push({ section: 'identification', label: "Nom de l'animal" })
-    if (!form.espece) liste.push({ section: 'identification', label: 'Espèce' })
-    if (!form.poids) liste.push({ section: 'identification', label: 'Poids, nécessaire au calcul des volumes' })
+    if (!form.animalNom.trim()) liste.push({ section: 'identification', label: t('Nom de l\'animal') })
+    if (!form.espece) liste.push({ section: 'identification', label: t('Espèce') })
+    if (!form.poids) liste.push({ section: 'identification', label: t('Poids, nécessaire au calcul des volumes') })
     return liste
   }, [form.animalNom, form.espece, form.poids])
 
@@ -683,9 +684,9 @@ export default function ChirurgieMonitoring() {
         return [form.animalNom.trim(), esp, form.poids ? `${form.poids} ${form.poidsUnite}` : null].filter(Boolean).join(' · ')
       }
       case 'procedure':
-        return [form.procedure, form.veterinaire].filter(Boolean).join(' · ')
+        return [form.procedure && t(form.procedure), form.veterinaire].filter(Boolean).join(' · ')
       case 'asa':
-        return form.asa ? `ASA ${form.asa}` : 'Non renseigné'
+        return form.asa ? `ASA ${form.asa}` : t('Non renseigné')
       case 'preop':
         return [
           form.temperature ? `${form.temperature} °C` : null,
@@ -693,17 +694,17 @@ export default function ChirurgieMonitoring() {
           form.fr ? `${form.fr} rpm` : null,
         ].filter(Boolean).join(' · ')
       case 'acces':
-        return [form.accesCalibre, form.soluteType, form.debit ? `${form.debit} ${form.debitUnite || 'mL/kg/h'}` : null].filter(Boolean).join(' · ')
+        return [form.accesCalibre, form.soluteType && chiffres(t(form.soluteType)), form.debit ? `${form.debit} ${form.debitUnite || 'mL/kg/h'}` : null].filter(Boolean).join(' · ')
       case 'materiel':
-        return [form.agentInhale, form.tubeET ? `Tube ${form.tubeET}` : null, form.o2Lmin ? `O₂ ${form.o2Lmin} L/min` : null].filter(Boolean).join(' · ')
+        return [form.agentInhale && t(form.agentInhale), form.tubeET ? `${t('Tube')} ${chiffres(form.tubeET)}` : null, form.o2Lmin ? `O₂ ${form.o2Lmin} L/min` : null].filter(Boolean).join(' · ')
       case 'securite': {
         const faits = verificationsActives.filter(v => form[v.champ]).length
-        const apl = form.checkValveAPL ? '' : ', valve APL à vérifier'
-        return `${faits} sur ${verificationsActives.length}${apl}`
+        const apl = form.checkValveAPL ? '' : t(', valve APL à vérifier')
+        return t('{faits} sur {total}', { faits, total: verificationsActives.length }) + apl
       }
       case 'medications': {
         const n = form.medications.length
-        return n === 0 ? 'Aucun médicament préparé' : `${n} médicament${n > 1 ? 's' : ''} préparé${n > 1 ? 's' : ''}`
+        return n === 0 ? t('Aucun médicament préparé') : tn(n, '{n} médicament préparé', '{n} médicaments préparés')
       }
       default:
         return ''
@@ -763,7 +764,7 @@ export default function ChirurgieMonitoring() {
     const autre = estAutre(champ, options)
     return (
       <div className="form-groupe">
-        <label className="form-label">{label}</label>
+        <label className="form-label">{t(label)}</label>
         <div className="examen-valeurs">
           {options.map(opt => {
             const actif = !autre && form[champ] === opt
@@ -774,10 +775,10 @@ export default function ChirurgieMonitoring() {
                 type="button"
                 className={`examen-valeur-btn ${actif ? 'actif' : ''}`}
                 onClick={() => choisirOption(champ, opt)}
-                aria-label={couleur ? `${opt} (${couleur.nom})` : undefined}
+                aria-label={couleur ? `${opt} (${t(couleur.nom)})` : undefined}
                 style={couleur ? { display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 4 } : undefined}
               >
-                {opt}
+                {/[a-zà-ÿ]{2}/i.test(opt) ? chiffres(t(opt)) : chiffres(opt)}
                 {couleur && (
                   <span
                     aria-hidden="true"
@@ -792,7 +793,7 @@ export default function ChirurgieMonitoring() {
             className={`examen-valeur-btn ${autre ? 'actif' : ''}`}
             onClick={() => activerAutre(champ, !autre)}
           >
-            Autre
+            {t('Autre')}
           </button>
         </div>
         {autre && (
@@ -801,7 +802,7 @@ export default function ChirurgieMonitoring() {
             className="form-input"
             value={form[champ] || ''}
             onChange={e => modifierChamp(champ, e.target.value)}
-            placeholder={placeholder || 'Préciser...'}
+            placeholder={placeholder || t('Préciser...')}
           />
         )}
         {aide && <p className="examen-aide">{aide}</p>}
@@ -846,7 +847,7 @@ export default function ChirurgieMonitoring() {
                     <button
                       type="button"
                       className="monitoring-suggestion-retirer"
-                      aria-label={`Retirer ${n} des suggestions`}
+                      aria-label={t('Retirer {nom} des suggestions', { nom: n })}
                       onClick={() => setNomsRecents(retirerNomRecent(champ, n))}
                     >
                       ✕
@@ -956,88 +957,95 @@ export default function ChirurgieMonitoring() {
     const pKg = getPoidsKg(form)
     const especeLabel = ESPECES.find(e => e.id === form.espece)?.label
     const lignes = []
-    lignes.push('MONITORING ANESTHÉSIQUE')
-    lignes.push(`Animal : ${form.animalNom || '—'}`)
-    lignes.push(`Propriétaire : ${form.proprietaireNom || '—'}`)
-    lignes.push(`Consentement signé : ${form.consentementSigne ? 'Oui' : 'Non'}`)
-    lignes.push(`Espèce : ${especeLabel || '—'}`)
-    lignes.push(`Race : ${form.race?.trim() || '—'}`)
-    lignes.push(`Sexe : ${form.sexe === 'femelle' ? 'Femelle' : form.sexe === 'male' ? 'Mâle' : '—'}${form.sexe && form.sterilise ? ' (stérilisé(e))' : ''}`)
-    lignes.push(`Poids : ${form.poids ? form.poids + ' ' + form.poidsUnite : '—'}`)
+    // « Libellé : valeur » en français, « Label: value » en anglais.
+    const ligne = (prefixe, libelle, valeur) => lignes.push(`${prefixe}${t(libelle)}${enAnglais ? ':' : ' :'} ${valeur}`)
+    const titre = (libelle) => lignes.push(`${t(libelle)}${enAnglais ? ':' : ' :'}`)
+    const ouiNon = (v) => (v ? t('Oui') : t('Non'))
+    lignes.push(t('MONITORING ANESTHÉSIQUE'))
+    ligne('', 'Animal', form.animalNom || '—')
+    ligne('', 'Propriétaire', form.proprietaireNom || '—')
+    ligne('', 'Consentement signé', ouiNon(form.consentementSigne))
+    ligne('', 'Espèce', especeLabel || '—')
+    ligne('', 'Race', form.race?.trim() || '—')
+    ligne('', 'Sexe', `${form.sexe === 'femelle' ? t('Femelle') : form.sexe === 'male' ? t('Mâle') : '—'}${form.sexe && form.sterilise ? t(' (stérilisé(e))') : ''}`)
+    ligne('', 'Poids', form.poids ? form.poids + ' ' + form.poidsUnite : '—')
     lignes.push('')
-    lignes.push('Procédure :')
-    lignes.push(`- Type : ${form.procedure || '—'}`)
-    lignes.push(`- Vétérinaire : ${form.veterinaire || '—'}`)
-    lignes.push(`- Technicien.ne : ${form.technicien || '—'}`)
+    titre('Procédure')
+    ligne('- ', 'Type', form.procedure ? t(form.procedure) : '—')
+    ligne('- ', 'Vétérinaire', form.veterinaire || '—')
+    ligne('- ', 'Technicien.ne', form.technicien || '—')
     lignes.push('')
-    lignes.push(`Risque anesthésique (ASA) : ${form.asa || '—'}`)
-    lignes.push(`- Antécédents / Problèmes présents : ${form.antecedents?.trim() || '—'}`)
-    lignes.push(`- Problèmes à anticiper : ${form.problemesAnticipes?.trim() || '—'}`)
+    ligne('', 'Risque anesthésique (ASA)', form.asa || '—')
+    ligne('- ', 'Antécédents / Problèmes présents', form.antecedents?.trim() || '—')
+    ligne('- ', 'Problèmes à anticiper', form.problemesAnticipes?.trim() || '—')
     lignes.push('')
-    lignes.push('Évaluation pré-anesthésique :')
-    lignes.push(`- Température : ${form.temperature ? form.temperature + ' °C' : '—'}`)
-    lignes.push(`- FC : ${form.fc ? form.fc + ' bpm' : '—'}`)
-    lignes.push(`- FR : ${form.fr ? form.fr + ' rpm' : '—'}`)
-    lignes.push(`- TRC : ${form.trc ? form.trc + ' sec' : '—'}`)
-    lignes.push(`- Muqueuses : ${form.muqueuses.length ? form.muqueuses.join(', ') : '—'}`)
-    lignes.push(`- Particularités : ${form.particularites?.trim() || '—'}`)
+    titre('Évaluation pré-anesthésique')
+    ligne('- ', 'Température', form.temperature ? form.temperature + ' °C' : '—')
+    ligne('- ', 'FC', form.fc ? form.fc + ' bpm' : '—')
+    ligne('- ', 'FR', form.fr ? form.fr + ' rpm' : '—')
+    ligne('- ', 'TRC', form.trc ? form.trc + ' sec' : '—')
+    ligne('- ', 'Muqueuses', form.muqueuses.length ? form.muqueuses.map(m => t(m)).join(', ') : '—')
+    ligne('- ', 'Particularités', form.particularites?.trim() || '—')
     lignes.push('')
-    lignes.push('Accès veineux et fluides IV :')
-    lignes.push(`- Cathéter : ${form.accesCalibre || '—'}${form.accesSite ? ' (' + form.accesSite + ')' : ''}`)
-    lignes.push(`- Soluté : ${form.soluteType || '—'}`)
-    lignes.push(`- Débit : ${debitTexte || '—'}${debitMlH != null && debitUnite === 'mL/kg/h' ? ` (environ ${Math.round(debitMlH)} mL/h)` : ''}`)
-    lignes.push(`- Volume total prévu : ${form.volumeTotal ? form.volumeTotal + ' mL' : '—'}`)
+    titre('Accès veineux et fluides IV')
+    ligne('- ', 'Cathéter', `${form.accesCalibre || '—'}${form.accesSite ? ' (' + t(form.accesSite) + ')' : ''}`)
+    ligne('- ', 'Soluté', form.soluteType ? chiffres(t(form.soluteType)) : '—')
+    ligne('- ', 'Débit', `${debitTexte || '—'}${debitMlH != null && debitUnite === 'mL/kg/h' ? ` (${t('environ {n} mL/h', { n: Math.round(debitMlH) })})` : ''}`)
+    ligne('- ', 'Volume total prévu', form.volumeTotal ? form.volumeTotal + ' mL' : '—')
     lignes.push('')
-    lignes.push('Maintien anesthésique :')
-    lignes.push(`- Agent inhalé : ${form.agentInhale || '—'}`)
-    lignes.push(`- Circuit : ${form.circuit || '—'}`)
-    lignes.push(`- Tube endotrachéal : ${form.tubeET || '—'}`)
-    lignes.push(`- Ballonnet : ${form.ballonnet || '—'}`)
-    lignes.push(`- Ballon réservoir : ${form.ballonReservoir || '—'}`)
-    lignes.push(`- O₂ : ${form.o2Lmin ? form.o2Lmin + ' L/min' : '—'}`)
+    titre('Maintien anesthésique')
+    ligne('- ', 'Agent inhalé', form.agentInhale ? t(form.agentInhale) : '—')
+    ligne('- ', 'Circuit', form.circuit ? t(form.circuit) : '—')
+    ligne('- ', 'Tube endotrachéal', form.tubeET ? chiffres(form.tubeET) : '—')
+    ligne('- ', 'Ballonnet', form.ballonnet ? t(form.ballonnet) : '—')
+    ligne('- ', 'Ballon réservoir', form.ballonReservoir ? chiffres(form.ballonReservoir) : '—')
+    ligne('- ', 'O₂', form.o2Lmin ? form.o2Lmin + ' L/min' : '—')
     lignes.push('')
-    lignes.push('Vérifications de sécurité :')
+    titre('Vérifications de sécurité')
     verificationsActives.forEach(v => {
-      lignes.push(`- ${v.label} : ${form[v.champ] ? 'Oui' : 'Non'}`)
+      lignes.push(`- ${v.label}${enAnglais ? ':' : ' :'} ${ouiNon(form[v.champ])}`)
     })
     lignes.push('')
-    lignes.push('Médicaments administrés :')
+    titre('Médicaments administrés')
     const medsAdministres = form.medications.filter(m => m.administre)
     if (medsAdministres.length) {
+      const sep = enAnglais ? ':' : ' :'
       medsAdministres.forEach(m => {
         const { doseMg, volume } = doseEtVolume(pKg, m.doseMgKg, m.concentration)
-        lignes.push(`  - ${m.nom} | Concentration : ${m.concentration || '—'} mg/mL | Dose : ${m.doseMgKg || '—'} mg/kg${doseMg != null ? ` (${doseMg.toFixed(2)} mg)` : ''} | Volume : ${volume != null ? volume.toFixed(2) + ' mL' : '—'} | Voie : ${m.voie || '—'} | Heure : ${m.heureAdministration || '—'}`)
+        lignes.push(`  - ${m.nom} | ${t('Concentration')}${sep} ${m.concentration || '—'} mg/mL | ${t('Dose')}${sep} ${m.doseMgKg || '—'} mg/kg${doseMg != null ? ` (${doseMg.toFixed(2)} mg)` : ''} | ${t('Volume')}${sep} ${volume != null ? volume.toFixed(2) + ' mL' : '—'} | ${t('Voie')}${sep} ${m.voie ? t(m.voie) : '—'} | ${t('Heure')}${sep} ${m.heureAdministration || '—'}`)
       })
     } else {
       lignes.push('  —')
     }
     lignes.push('')
-    lignes.push(`Heure de début de l'anesthésie : ${form.heureDebut || '—'}`)
+    ligne('', "Heure de début de l'anesthésie", form.heureDebut || '—')
     if (form.mesures.length) {
       lignes.push('')
-      lignes.push('Suivi des paramètres :')
-      const tousParams = [...MESURE_PARAMS, { key: 'lubrifiantOculaire', label: 'Lubrifiant oculaire' }]
-      const largeurLabel = Math.max(...tousParams.map(p => p.label.length), 'Heure'.length) + 1
+      titre('Suivi des paramètres')
+      const libHeure = t('Heure')
+      const libLubrifiant = t('Lubrifiant oculaire')
+      const tousParams = [...MESURE_PARAMS, { key: 'lubrifiantOculaire', label: libLubrifiant }]
+      const largeurLabel = Math.max(...tousParams.map(p => p.label.length), libHeure.length) + 1
       const largeurCol = Math.max(...form.mesures.map(m => m.heure.length), 5) + 2
       const colonne = (texte) => String(texte).padEnd(largeurCol)
-      lignes.push('Heure'.padEnd(largeurLabel) + form.mesures.map(m => colonne(m.heure)).join(''))
+      lignes.push(libHeure.padEnd(largeurLabel) + form.mesures.map(m => colonne(m.heure)).join(''))
       MESURE_PARAMS.forEach(p => {
         lignes.push(p.label.padEnd(largeurLabel) + form.mesures.map(m => colonne(m[p.key] || '—')).join(''))
       })
-      lignes.push('Lubrifiant oculaire'.padEnd(largeurLabel) + form.mesures.map(m => colonne(m.lubrifiantOculaire ? 'Oui' : 'Non')).join(''))
+      lignes.push(libLubrifiant.padEnd(largeurLabel) + form.mesures.map(m => colonne(ouiNon(m.lubrifiantOculaire))).join(''))
     }
     lignes.push('')
-    lignes.push(`Heure de fin de l'anesthésie : ${form.heureFin || '—'}`)
-    lignes.push(`Notes de fin : ${form.notesFin?.trim() || '—'}`)
+    ligne('', "Heure de fin de l'anesthésie", form.heureFin || '—')
+    ligne('', 'Notes de fin', form.notesFin?.trim() || '—')
     lignes.push('')
-    lignes.push('Récupération :')
-    lignes.push(`- Extubation : ${form.extubationHeure || '—'}${form.extubationEtat ? ' (' + form.extubationEtat + ')' : ''}`)
-    lignes.push(`- Température : ${form.postTemp || '—'}`)
-    lignes.push(`- FC : ${form.postFc || '—'}`)
-    lignes.push(`- FR : ${form.postFr || '—'}`)
-    lignes.push(`- TRC : ${form.postTrc || '—'}`)
-    lignes.push(`- Douleur : ${form.postDouleur || '—'}`)
-    lignes.push(`- Commentaires : ${form.postCommentaires?.trim() || '—'}`)
+    titre('Récupération')
+    ligne('- ', 'Extubation', `${form.extubationHeure || '—'}${form.extubationEtat ? ' (' + form.extubationEtat + ')' : ''}`)
+    ligne('- ', 'Température', form.postTemp || '—')
+    ligne('- ', 'FC', form.postFc || '—')
+    ligne('- ', 'FR', form.postFr || '—')
+    ligne('- ', 'TRC', form.postTrc || '—')
+    ligne('- ', 'Douleur', form.postDouleur || '—')
+    ligne('- ', 'Commentaires', form.postCommentaires?.trim() || '—')
     return lignes.join('\n')
   }
 
@@ -1047,87 +1055,87 @@ export default function ChirurgieMonitoring() {
     const dp = { ...etatInitial(), ...(donnees || form) }
     const pKg = getPoidsKg(dp)
     const especeLabel = ESPECES.find(e => e.id === dp.espece)?.label
-    const dateDoc = dateTexte || new Date().toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
+    const dateDoc = dateTexte || new Date().toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
 
     const ctx = await creerDocument({
-      titre: 'Monitoring anesthésique',
-      sousTitre: 'Feuille de surveillance',
+      titre: t('Monitoring anesthésique'),
+      sousTitre: t('Feuille de surveillance'),
       date: dateDoc,
       clinique: nomClinique,
       logoClinique,
     })
 
     const poidsTexte = dp.poids
-      ? (dp.poidsUnite === 'lb' && pKg ? `${dp.poids} lb (${pKg.toFixed(1).replace('.', ',')} kg)` : `${dp.poids} ${dp.poidsUnite}`)
+      ? (dp.poidsUnite === 'lb' && pKg ? `${dp.poids} lb (${chiffres(pKg.toFixed(1).replace('.', ','))} kg)` : `${dp.poids} ${dp.poidsUnite}`)
       : null
-    const sexeTexte = dp.sexe === 'femelle' ? 'Femelle' : dp.sexe === 'male' ? 'Mâle' : null
+    const sexeTexte = dp.sexe === 'femelle' ? t('Femelle') : dp.sexe === 'male' ? t('Mâle') : null
     bandeauPatient(
       ctx,
-      dp.animalNom || 'Animal',
-      [especeLabel, sexeTexte, poidsTexte, dp.procedure, dp.asa ? `ASA ${dp.asa}` : null].filter(Boolean).join(' · ')
+      dp.animalNom || t('Animal'),
+      [especeLabel, sexeTexte, poidsTexte, dp.procedure && t(dp.procedure), dp.asa ? `ASA ${dp.asa}` : null].filter(Boolean).join(' · ')
     )
 
-    sectionGrille(ctx, 'Patient et procédure', [
-      ['Propriétaire', dp.proprietaireNom],
-      ['Consentement', dp.consentementSigne ? 'Signé' : 'Non signé'],
-      ['Race', dp.race],
-      ['Stérilisé(e)', dp.sterilise ? 'Oui' : 'Non'],
-      ['Vétérinaire', dp.veterinaire],
-      ['Technicien.ne', dp.technicien],
-      ['Antécédents', dp.antecedents],
-      ['À anticiper', dp.problemesAnticipes],
+    sectionGrille(ctx, t('Patient et procédure'), [
+      [t('Propriétaire'), dp.proprietaireNom],
+      [t('Consentement'), dp.consentementSigne ? t('Signé') : t('Non signé')],
+      [t('Race'), dp.race],
+      [t('Stérilisé(e)'), dp.sterilise ? t('Oui') : t('Non')],
+      [t('Vétérinaire'), dp.veterinaire],
+      [t('Technicien.ne'), dp.technicien],
+      [t('Antécédents'), dp.antecedents],
+      [t('À anticiper'), dp.problemesAnticipes],
     ])
 
-    sectionGrille(ctx, 'Évaluation pré-anesthésique', [
-      ['Température', dp.temperature ? `${dp.temperature} °C` : null],
-      ['TRC', dp.trc ? `${dp.trc} s` : null],
-      ['Fréq. cardiaque', dp.fc ? `${dp.fc} bpm` : null],
-      ['Fréq. respiratoire', dp.fr ? `${dp.fr} rpm` : null],
-      ['Muqueuses', (dp.muqueuses || []).join(', ')],
-      ['Particularités', dp.particularites],
+    sectionGrille(ctx, t('Évaluation pré-anesthésique'), [
+      [t('Température'), dp.temperature ? `${dp.temperature} °C` : null],
+      [t('TRC'), dp.trc ? `${dp.trc} s` : null],
+      [t('Fréq. cardiaque'), dp.fc ? `${dp.fc} bpm` : null],
+      [t('Fréq. respiratoire'), dp.fr ? `${dp.fr} rpm` : null],
+      [t('Muqueuses'), (dp.muqueuses || []).map(m => t(m)).join(', ')],
+      [t('Particularités'), dp.particularites],
     ])
 
     const uniteDebitPdf = dp.debitUnite || 'mL/kg/h'
     const valeurDebitPdf = parseFloat(String(dp.debit || '').replace(',', '.'))
     const debitConverti = isFinite(valeurDebitPdf) && uniteDebitPdf === 'mL/kg/h' && pKg
-      ? ` (environ ${Math.round(valeurDebitPdf * pKg)} mL/h)`
+      ? ` (${t('environ {n} mL/h', { n: Math.round(valeurDebitPdf * pKg) })})`
       : ''
-    sectionGrille(ctx, 'Accès veineux et fluides', [
-      ['Cathéter', dp.accesCalibre],
-      ['Site', dp.accesSite],
-      ['Soluté', dp.soluteType],
-      ['Débit', dp.debit ? `${dp.debit} ${uniteDebitPdf}${debitConverti}` : null],
-      ['Volume prévu', dp.volumeTotal ? `${dp.volumeTotal} mL` : null],
+    sectionGrille(ctx, t('Accès veineux et fluides'), [
+      [t('Cathéter'), dp.accesCalibre],
+      [t('Site'), dp.accesSite && t(dp.accesSite)],
+      [t('Soluté'), dp.soluteType && chiffres(t(dp.soluteType))],
+      [t('Débit'), dp.debit ? `${dp.debit} ${uniteDebitPdf}${debitConverti}` : null],
+      [t('Volume prévu'), dp.volumeTotal ? `${dp.volumeTotal} mL` : null],
     ])
 
     const nonReinsPdf = String(dp.circuit || '').startsWith('Non réinspiratoire')
     const verifsPdf = VERIFICATIONS.filter(v => !v.siCercle || !nonReinsPdf)
     const manquantesPdf = verifsPdf.filter(v => !dp[v.champ])
     const celluleVerifs = manquantesPdf.length === 0
-      ? `${verifsPdf.length} sur ${verifsPdf.length} complétées`
+      ? t('{n} sur {n} complétées', { n: verifsPdf.length })
       : {
-          content: `${verifsPdf.length - manquantesPdf.length} sur ${verifsPdf.length} · non cochées : ${manquantesPdf.map(v => v.label.toLowerCase()).join(', ')}`,
+          content: t('{faits} sur {total} · non cochées : {liste}', { faits: verifsPdf.length - manquantesPdf.length, total: verifsPdf.length, liste: manquantesPdf.map(v => v.label.toLowerCase()).join(', ') }),
           styles: { textColor: COULEUR_ROUGE, fontStyle: 'bold' },
         }
-    sectionGrille(ctx, 'Matériel et maintien', [
-      ['Agent inhalé', dp.agentInhale],
-      ['Circuit', dp.circuit],
-      ['Tube endotrachéal', dp.tubeET ? `${dp.tubeET} mm${dp.ballonnet ? `, ballonnet ${dp.ballonnet.toLowerCase()}` : ''}` : null],
-      ['Ballon réservoir', dp.ballonReservoir],
+    sectionGrille(ctx, t('Matériel et maintien'), [
+      [t('Agent inhalé'), dp.agentInhale && t(dp.agentInhale)],
+      [t('Circuit'), dp.circuit && t(dp.circuit)],
+      [t('Tube endotrachéal'), dp.tubeET ? `${chiffres(dp.tubeET)} mm${dp.ballonnet ? `, ${t('ballonnet')} ${t(dp.ballonnet).toLowerCase()}` : ''}` : null],
+      [t('Ballon réservoir'), dp.ballonReservoir && chiffres(dp.ballonReservoir)],
       ['O2', dp.o2Lmin ? `${dp.o2Lmin} L/min` : null],
-      ['Vérifications', celluleVerifs],
+      [t('Vérifications'), celluleVerifs],
     ])
 
     const medsAdministresPdf = (dp.medications || []).filter(m => m.administre)
     if (medsAdministresPdf.length) {
       titreSection(
         ctx,
-        'Médicaments administrés',
-        `${medsAdministresPdf.length} au total`,
+        t('Médicaments administrés'),
+        t('{n} au total', { n: medsAdministresPdf.length }),
         Math.min(medsAdministresPdf.length, 5) * 5.5 + 8
       )
       tableau(ctx, {
-        head: ['Médicament', 'Conc.', 'Dose', 'Dose totale', 'Volume', 'Voie', 'Heure'],
+        head: [t('Médicament'), t('Conc.'), t('Dose'), t('Dose totale'), t('Volume'), t('Voie'), t('Heure')],
         body: medsAdministresPdf.map(m => {
           const { doseMg, volume } = doseEtVolume(pKg, m.doseMgKg, m.concentration)
           return [
@@ -1136,7 +1144,7 @@ export default function ChirurgieMonitoring() {
             m.doseMgKg ? `${m.doseMgKg} mg/kg` : '—',
             doseMg != null ? `${doseMg.toFixed(2)} mg` : '—',
             volume != null ? `${volume.toFixed(2)} mL` : '—',
-            m.voie || '—',
+            m.voie ? t(m.voie) : '—',
             m.heureAdministration || '—',
           ]
         }),
@@ -1151,15 +1159,15 @@ export default function ChirurgieMonitoring() {
         const chunk = mesuresPdf.slice(i, i + COLONNES_SUIVI_PDF)
         titreSection(
           ctx,
-          'Suivi des paramètres',
-          nbBlocs > 1 ? `bloc ${bloc} de ${nbBlocs} · ${chunk[0].heure} à ${chunk[chunk.length - 1].heure}` : null,
+          t('Suivi des paramètres'),
+          nbBlocs > 1 ? t('bloc {bloc} de {nb} · {debut} à {fin}', { bloc, nb: nbBlocs, debut: chunk[0].heure, fin: chunk[chunk.length - 1].heure }) : null,
           (MESURE_PARAMS.length + 2) * 5.2
         )
         tableau(ctx, {
-          head: ['Paramètre', ...chunk.map(m => m.heure)],
+          head: [t('Paramètre'), ...chunk.map(m => m.heure)],
           body: [
             ...MESURE_PARAMS.map(p => [p.label, ...chunk.map(m => m[p.key] || '—')]),
-            ['Lubrifiant oculaire', ...chunk.map(m => m.lubrifiantOculaire ? 'Oui' : '—')],
+            [t('Lubrifiant oculaire'), ...chunk.map(m => m.lubrifiantOculaire ? t('Oui') : '—')],
           ],
           columnStyles: {
             0: { cellWidth: 32, fontStyle: 'bold', textColor: COULEUR_PRIMAIRE },
@@ -1171,21 +1179,21 @@ export default function ChirurgieMonitoring() {
     }
 
     const dureeTotale = dureeEntre(dp.heureDebut, dp.heureFin)
-    sectionGrille(ctx, 'Horaires et récupération', [
-      ['Début', dp.heureDebut],
-      ['Fin', dp.heureFin],
-      ['Durée totale', dureeTotale != null ? formaterDuree(dureeTotale) : null],
-      ['Extubation', [dp.extubationHeure, dp.extubationEtat].filter(Boolean).join(', ')],
-      ['Température', dp.postTemp],
-      ['Fréq. cardiaque', dp.postFc],
-      ['Fréq. respiratoire', dp.postFr],
-      ['TRC', dp.postTrc],
-      ['Douleur', dp.postDouleur],
-      ['Notes de fin', dp.notesFin],
-      ['Commentaires', dp.postCommentaires],
+    sectionGrille(ctx, t('Horaires et récupération'), [
+      [t('Début'), dp.heureDebut],
+      [t('Fin'), dp.heureFin],
+      [t('Durée totale'), dureeTotale != null ? formaterDuree(dureeTotale) : null],
+      [t('Extubation'), [dp.extubationHeure, dp.extubationEtat].filter(Boolean).join(', ')],
+      [t('Température'), dp.postTemp],
+      [t('Fréq. cardiaque'), dp.postFc],
+      [t('Fréq. respiratoire'), dp.postFr],
+      [t('TRC'), dp.postTrc],
+      [t('Douleur'), dp.postDouleur],
+      [t('Notes de fin'), dp.notesFin],
+      [t('Commentaires'), dp.postCommentaires],
     ])
 
-    finaliser(ctx, { sujet: `${dp.animalNom || 'Animal'} · ${dateDoc}` })
+    finaliser(ctx, { sujet: `${dp.animalNom || t('Animal')} · ${dateDoc}` })
     ouvrir(ctx)
   }
 
@@ -1206,7 +1214,7 @@ export default function ChirurgieMonitoring() {
       const modifs = [...(currentRec?.historique_modifs || []), entreeModif]
       await supabase
         .from('monitorings_anesthesiques')
-        .update({ animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form, updated_at: maintenant, historique_modifs: modifs })
+        .update({ animal_nom: form.animalNom || t('Sans nom'), resume: texte, donnees: form, updated_at: maintenant, historique_modifs: modifs })
         .eq('id', currentId)
     } else {
       if (historique.length >= MAX_HISTORIQUE) {
@@ -1217,7 +1225,7 @@ export default function ChirurgieMonitoring() {
           await supabase.from('monitorings_anesthesiques').delete().eq('id', item.id)
         }
       }
-      const payload = { user_id: user.id, animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form, historique_modifs: [entreeModif] }
+      const payload = { user_id: user.id, animal_nom: form.animalNom || t('Sans nom'), resume: texte, donnees: form, historique_modifs: [entreeModif] }
       if (estEquipe && teamId) payload.equipe_id = teamId
       const { data } = await supabase.from('monitorings_anesthesiques').insert(payload).select().single()
       if (data) setCurrentId(data.id)
@@ -1258,7 +1266,7 @@ export default function ChirurgieMonitoring() {
   }
 
   function formaterDate(d) {
-    return new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    return new Date(d).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
 
   function cleJour(d) {
@@ -1268,7 +1276,7 @@ export default function ChirurgieMonitoring() {
 
   function formaterJour(cle) {
     const [a, m, j] = cle.split('-').map(Number)
-    return new Date(a, m - 1, j).toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+    return new Date(a, m - 1, j).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
   }
 
   /* Un dossier sans résumé n'est pas terminé : il est en cours
@@ -1322,12 +1330,12 @@ export default function ChirurgieMonitoring() {
         <div className="postop-intro">
           <i className="ti ti-activity postop-intro-icone"></i>
           <p className="postop-intro-texte">
-            Outil de suivi des paramètres vitaux durant une anesthésie. Démarrez une nouvelle anesthésie ou consultez votre historique.
+            {t('Outil de suivi des paramètres vitaux durant une anesthésie. Démarrez une nouvelle anesthésie ou consultez votre historique.')}
           </p>
         </div>
 
         <button className="labo-btn-primary" style={{ width: '100%', margin: '0 0 16px' }} onClick={commencerNouveau}>
-          <i className="ti ti-plus"></i> Démarrer l'anesthésie
+          <i className="ti ti-plus"></i> {t('Démarrer l\'anesthésie')}
         </button>
 
         {actifs.length > 0 && (
@@ -1341,7 +1349,7 @@ export default function ChirurgieMonitoring() {
               const minutes = demarre ? minutesDepuis(item.donnees.heureDebut) : null
               const details = [
                 ESPECES.find(e => e.id === item.donnees?.espece)?.label,
-                item.donnees?.procedure,
+                item.donnees?.procedure && t(item.donnees.procedure),
               ].filter(Boolean).join(' · ')
               return (
                 <div key={item.id} style={{ position: 'relative' }}>
@@ -1349,18 +1357,18 @@ export default function ChirurgieMonitoring() {
                   <div className="monitoring-actif-haut">
                     <span className="monitoring-actif-nom">{item.animal_nom}</span>
                     <span className={`monitoring-actif-badge ${demarre ? '' : 'preparation'}`}>
-                      {demarre ? 'En cours' : 'En préparation'}
+                      {demarre ? t('En cours') : t('En préparation')}
                     </span>
                   </div>
                   {details && <span className="monitoring-actif-details">{details}</span>}
                   <div className="monitoring-actif-bas">
                     <span>
                       {demarre
-                        ? `Début ${item.donnees.heureDebut} · ${formaterDuree(minutes)} d'anesthésie`
-                        : `Créé le ${formaterDate(item.created_at)}`}
+                        ? t('Début {heure} · {duree} d\'anesthésie', { heure: item.donnees.heureDebut, duree: formaterDuree(minutes) })
+                        : t('Créé le {date}', { date: formaterDate(item.created_at) })}
                     </span>
                     <span className="monitoring-actif-action">
-                      {demarre ? 'Reprendre' : 'Continuer'} <i className="ti ti-arrow-right"></i>
+                      {demarre ? t('Reprendre') : t('Continuer')} <i className="ti ti-arrow-right"></i>
                     </span>
                   </div>
                 </button>
@@ -1368,7 +1376,7 @@ export default function ChirurgieMonitoring() {
                 <button
                   type="button"
                   className="examen-historique-supprimer"
-                  aria-label={`Supprimer le monitoring de ${item.animal_nom}`}
+                  aria-label={t('Supprimer le monitoring de {nom}', { nom: item.animal_nom })}
                   onClick={() => setShowConfirmSupprimer(item)}
                   style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}
                 >
@@ -1385,11 +1393,11 @@ export default function ChirurgieMonitoring() {
             <div className="postop-section-icone" style={{ background: 'rgba(37,77,86,0.1)', color: 'var(--primary)' }}>
               <i className="ti ti-history"></i>
             </div>
-            <h2 className="postop-section-titre">Historique ({termines.length})</h2>
+            <h2 className="postop-section-titre">{t('Historique ({n})', { n: termines.length })}</h2>
           </div>
           {termines.length === 0 ? (
             <p style={{ fontSize: 14, color: 'var(--text-hint)', padding: '16px 16px 16px' }}>
-              Aucun monitoring terminé pour le moment.
+              {t('Aucun monitoring terminé pour le moment.')}
             </p>
           ) : (
             <>
@@ -1401,7 +1409,7 @@ export default function ChirurgieMonitoring() {
                     className="recherche-input"
                     value={rechercheHistorique}
                     onChange={e => setRechercheHistorique(e.target.value)}
-                    placeholder="Rechercher par nom, espèce ou date..."
+                    placeholder={t('Rechercher par nom, espèce ou date...')}
                   />
                   {rechercheHistorique && (
                     <button className="recherche-clear" onClick={() => setRechercheHistorique('')}>✕</button>
@@ -1412,7 +1420,7 @@ export default function ChirurgieMonitoring() {
               {rechercheHistorique.trim() ? (
                 <div className="examen-historique-liste" style={{ padding: '0 16px 16px' }}>
                   {historiqueFiltre.length === 0 ? (
-                    <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucun résultat.</p>
+                    <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>{t('Aucun résultat.')}</p>
                   ) : historiqueFiltre.map(item => (
                     <div key={item.id} className="examen-historique-item" onClick={() => consulter(item)}>
                       <div className="examen-historique-info">
@@ -1480,20 +1488,20 @@ export default function ChirurgieMonitoring() {
               ) : (
                 <div style={{ padding: '20px 0', textAlign: 'center' }}>
                   <i className="ti ti-heartbeat" style={{ fontSize: 36, color: 'var(--text-hint)', display: 'block', marginBottom: 10 }}></i>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>Monitoring en cours</p>
-                  <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 16 }}>Aucun résumé généré, le monitoring n'a pas encore été finalisé.</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>{t('Monitoring en cours')}</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 16 }}>{t('Aucun résumé généré, le monitoring n\'a pas encore été finalisé.')}</p>
                   {itemConsulte.donnees && (
                     <div style={{ textAlign: 'left', background: 'var(--bg-secondary)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                      {itemConsulte.donnees.espece && <div><strong>Espèce :</strong> {ESPECES.find(e => e.id === itemConsulte.donnees.espece)?.label || itemConsulte.donnees.espece}</div>}
-                      {itemConsulte.donnees.race && <div><strong>Race :</strong> {itemConsulte.donnees.race}</div>}
-                      {itemConsulte.donnees.poids && <div><strong>Poids :</strong> {itemConsulte.donnees.poids} {itemConsulte.donnees.poidsUnite || 'kg'}</div>}
-                      {itemConsulte.donnees.procedure && <div><strong>Procédure :</strong> {itemConsulte.donnees.procedure}</div>}
+                      {itemConsulte.donnees.espece && <div><strong>{t('Espèce :')}</strong> {ESPECES.find(e => e.id === itemConsulte.donnees.espece)?.label || itemConsulte.donnees.espece}</div>}
+                      {itemConsulte.donnees.race && <div><strong>{t('Race :')}</strong> {itemConsulte.donnees.race}</div>}
+                      {itemConsulte.donnees.poids && <div><strong>{t('Poids :')}</strong> {itemConsulte.donnees.poids} {itemConsulte.donnees.poidsUnite || 'kg'}</div>}
+                      {itemConsulte.donnees.procedure && <div><strong>{t('Procédure :')}</strong> {itemConsulte.donnees.procedure}</div>}
                     </div>
                   )}
                 </div>
               )}
               <button className="labo-btn-primary" style={{ width: '100%', marginTop: 12 }} onClick={() => modifier(itemConsulte)}>
-                Modifier
+                {t('Modifier')}
               </button>
               {itemConsulte.historique_modifs?.length > 0 && (
                 <div style={{ marginTop: 10, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
@@ -1502,7 +1510,7 @@ export default function ChirurgieMonitoring() {
                     style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: 'var(--bg-secondary)', border: 'none', cursor: 'pointer' }}
                   >
                     <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1 }}>
-                      Historique des modifications ({itemConsulte.historique_modifs.length})
+                      {t('Historique des modifications ({n})', { n: itemConsulte.historique_modifs.length })}
                     </span>
                     <i className={`ti ti-chevron-${showModifs ? 'up' : 'down'}`} style={{ fontSize: 14, color: 'var(--text-hint)' }}></i>
                   </button>
@@ -1510,7 +1518,7 @@ export default function ChirurgieMonitoring() {
                     <div style={{ padding: '8px 12px 10px', background: 'var(--bg-card)', maxHeight: 220, overflowY: 'auto' }}>
                       {[...itemConsulte.historique_modifs].reverse().map((m, i) => (
                         <p key={i} style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
-                          <strong>{m.nom}</strong> · {new Date(m.timestamp).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })} à {new Date(m.timestamp).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })}
+                          <strong>{m.nom}</strong> · {t('{date} à {heure}', { date: new Date(m.timestamp).toLocaleDateString(locale, { day: 'numeric', month: 'long' }), heure: new Date(m.timestamp).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) })}
                         </p>
                       ))}
                     </div>
@@ -1519,13 +1527,13 @@ export default function ChirurgieMonitoring() {
               )}
               <div className="popup-actions-centrees" style={{ marginTop: 8 }}>
                 <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => copierResume(itemConsulte.resume)}>
-                  {copie ? 'Copié !' : 'Copier'}
+                  {copie ? t('Copié !') : t('Copier')}
                 </button>
-                <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => genererPDF(itemConsulte.donnees, new Date(itemConsulte.created_at).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }))}>
+                <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => genererPDF(itemConsulte.donnees, new Date(itemConsulte.created_at).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))}>
                   <i className="ti ti-file-download"></i> PDF
                 </button>
                 <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => setShowConfirmSupprimer(itemConsulte)}>
-                  Supprimer
+                  {t('Supprimer')}
                 </button>
               </div>
             </div>
@@ -1537,23 +1545,23 @@ export default function ChirurgieMonitoring() {
           <div className="popup-overlay" onClick={() => setShowConfirmSupprimer(null)}>
             <div className="popup-card" onClick={e => e.stopPropagation()}>
               <div className="popup-header">
-                <span>Supprimer ce monitoring</span>
+                <span>{t('Supprimer ce monitoring')}</span>
                 <button className="popup-close" onClick={() => setShowConfirmSupprimer(null)}>✕</button>
               </div>
               <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
                 <i className="ti ti-alert-triangle" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
                 <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                   {showConfirmSupprimer.resume
-                    ? <>Avez-vous bien noté ces informations dans le dossier de <strong>{showConfirmSupprimer.animal_nom}</strong> avant de supprimer ?</>
-                    : <>Ce monitoring n'est pas terminé : toutes les données saisies pour <strong>{showConfirmSupprimer.animal_nom}</strong> seront effacées. Cette action est irréversible.</>}
+                    ? <>{t('Avez-vous bien noté ces informations dans le dossier de')} <strong>{showConfirmSupprimer.animal_nom}</strong> {t('avant de supprimer ?')}</>
+                    : <>{t('Ce monitoring n\'est pas terminé : toutes les données saisies pour')} <strong>{showConfirmSupprimer.animal_nom}</strong> {t('seront effacées. Cette action est irréversible.')}</>}
                 </p>
               </div>
               <div className="popup-actions-centrees">
                 <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setShowConfirmSupprimer(null)}>
-                  Annuler
+                  {t('Annuler')}
                 </button>
                 <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => supprimerHistorique(showConfirmSupprimer.id)}>
-                  Supprimer
+                  {t('Supprimer')}
                 </button>
               </div>
             </div>
@@ -1570,12 +1578,12 @@ export default function ChirurgieMonitoring() {
         {!form.poids && (
           <p className="examen-plage hors">
             <i className="ti ti-alert-triangle"></i>
-            Indiquez le poids de l'animal pour calculer les volumes automatiquement.
+            {t('Indiquez le poids de l\'animal pour calculer les volumes automatiquement.')}
           </p>
         )}
 
         <button className="monitoring-ajouter-med" onClick={ouvrirSheetMed}>
-          <i className="ti ti-plus"></i> Ajouter un médicament
+          <i className="ti ti-plus"></i> {t('Ajouter un médicament')}
         </button>
 
         {sheetMed && (
@@ -1584,7 +1592,7 @@ export default function ChirurgieMonitoring() {
               <div className="fluido-sheet-poignee"></div>
 
               <div className="popup-header">
-                <span>Ajouter un médicament</span>
+                <span>{t('Ajouter un médicament')}</span>
                 <button className="popup-close" onClick={() => setSheetMed(false)}>✕</button>
               </div>
 
@@ -1593,7 +1601,7 @@ export default function ChirurgieMonitoring() {
                 <input
                   type="text"
                   className="recherche-input"
-                  placeholder="Rechercher un médicament..."
+                  placeholder={t('Rechercher un médicament...')}
                   value={rechercheMed}
                   onChange={e => setRechercheMed(e.target.value)}
                 />
@@ -1606,7 +1614,7 @@ export default function ChirurgieMonitoring() {
 
               <div className="monitoring-med-liste">
                 {medicamentsFiltres.length === 0 ? (
-                  <p className="examen-aide" style={{ padding: '16px 4px' }}>Aucun médicament ne correspond.</p>
+                  <p className="examen-aide" style={{ padding: '16px 4px' }}>{t('Aucun médicament ne correspond.')}</p>
                 ) : medicamentsGroupes.map(([categorie, meds]) => (
                   <div key={categorie}>
                     <p className="monitoring-categorie">{categorie}</p>
@@ -1618,7 +1626,7 @@ export default function ChirurgieMonitoring() {
                       >
                         <span className="monitoring-med-item-nom">
                           {med.nom}
-                          {med.personnalise && <span className="monitoring-med-item-badge">Perso</span>}
+                          {med.personnalise && <span className="monitoring-med-item-badge">{t('Perso')}</span>}
                         </span>
                         <span className="monitoring-med-item-details">
                           <span>{(med.especes || []).map(e => ESPECES_CONFIG[e]?.label).filter(Boolean).join(' / ')}</span>
@@ -1664,30 +1672,30 @@ export default function ChirurgieMonitoring() {
               {ouvert && (
                 <>
                   <div className="monitoring-med-card-row">
-                    <label className="form-label">Catégorie</label>
+                    <label className="form-label">{t('Catégorie')}</label>
                     <select className="form-input" value={m.categorie} onChange={e => modifierMedication(m.id, 'categorie', e.target.value)}>
-                      {CATEGORIES_MED.map(c => <option key={c} value={c}>{c}</option>)}
+                      {CATEGORIES_MED.map(c => <option key={c} value={c}>{t(c)}</option>)}
                     </select>
                   </div>
                   <div className="monitoring-med-card-row">
-                    <label className="form-label">Concentration (mg/mL)</label>
+                    <label className="form-label">{t('Concentration (mg/mL)')}</label>
                     <input type="text" inputMode="decimal" className="form-input" value={m.concentration} onChange={e => modifierMedication(m.id, 'concentration', e.target.value.replace(',', '.'))} />
                   </div>
                   <div className="monitoring-med-card-row">
-                    <label className="form-label">Dose (mg/kg)</label>
+                    <label className="form-label">{t('Dose (mg/kg)')}</label>
                     <input type="text" inputMode="decimal" className="form-input" value={m.doseMgKg} onChange={e => modifierMedication(m.id, 'doseMgKg', e.target.value.replace(',', '.'))} />
                   </div>
                   <div className="monitoring-med-card-row">
-                    <label className="form-label">Dose totale</label>
+                    <label className="form-label">{t('Dose totale')}</label>
                     <div className="form-input" style={{ background: 'var(--bg)', color: 'var(--text-secondary)' }}>{doseMg != null ? doseMg.toFixed(2) + ' mg' : '—'}</div>
                   </div>
                   <div className="monitoring-med-card-row">
-                    <label className="form-label">Volume à administrer</label>
+                    <label className="form-label">{t('Volume à administrer')}</label>
                     <div className="form-input" style={{ background: 'var(--bg)', color: 'var(--primary)', fontWeight: 700, fontSize: 15 }}>{volume != null ? volume.toFixed(2) + ' mL' : '—'}</div>
                   </div>
                   <div className="monitoring-med-card-row">
-                    <label className="form-label">Voie</label>
-                    <input type="text" className="form-input" value={m.voie} onChange={e => modifierMedication(m.id, 'voie', e.target.value)} placeholder="IV, IM, SC..." />
+                    <label className="form-label">{t('Voie')}</label>
+                    <input type="text" className="form-input" value={m.voie} onChange={e => modifierMedication(m.id, 'voie', e.target.value)} placeholder={t('IV, IM, SC...')} />
                   </div>
                 </>
               )}
@@ -1705,7 +1713,7 @@ export default function ChirurgieMonitoring() {
 
         <div className="examen-topbar">
           <button className="examen-retour" onClick={() => setVue('liste')}>
-            <i className="ti ti-arrow-left"></i> Historique
+            <i className="ti ti-arrow-left"></i> {t('Historique')}
           </button>
         </div>
 
@@ -1714,7 +1722,7 @@ export default function ChirurgieMonitoring() {
           {/* ═══ IDENTIFICATION ═══ */}
           <SectionAccordeon
             ancre="section-identification"
-            titre="Identification"
+            titre={t('Identification')}
             icone="ti-paw"
             resume={resumeSection('identification')}
             etat={etatSection('identification')}
@@ -1722,18 +1730,18 @@ export default function ChirurgieMonitoring() {
             onToggle={() => ouvrirSection('identification')}
           >
             <div className="form-groupe">
-              <label className="form-label">Nom de l'animal</label>
-              <input type="text" className="form-input" value={form.animalNom} onChange={e => modifierChamp('animalNom', e.target.value)} placeholder="Ex. : Charlie" />
+              <label className="form-label">{t('Nom de l\'animal')}</label>
+              <input type="text" className="form-input" value={form.animalNom} onChange={e => modifierChamp('animalNom', e.target.value)} placeholder={t('Ex. : Charlie')} />
             </div>
 
             <div className="form-groupe">
-              <label className="form-label">Espèce</label>
+              <label className="form-label">{t('Espèce')}</label>
               <div className="examen-especes-rapides">
                 <button type="button" className={`examen-espece-btn ${form.espece === 'chien' ? 'actif' : ''}`} onClick={() => modifierChamp('espece', 'chien')}>
-                  <img src="/icone-chien.svg" alt="" /> Chien
+                  <img src="/icone-chien.svg" alt="" /> {t('Chien')}
                 </button>
                 <button type="button" className={`examen-espece-btn ${form.espece === 'chat' ? 'actif' : ''}`} onClick={() => modifierChamp('espece', 'chat')}>
-                  <img src="/icone-chat.svg" alt="" /> Chat
+                  <img src="/icone-chat.svg" alt="" /> {t('Chat')}
                 </button>
                 <button
                   type="button"
@@ -1745,80 +1753,80 @@ export default function ChirurgieMonitoring() {
                         <img src={ESPECES.find(e => e.id === form.espece)?.icone} alt="" />
                         {ESPECES.find(e => e.id === form.espece)?.label}
                       </>
-                    : 'Autre espèce'}
+                    : t('Autre espèce')}
                 </button>
               </div>
             </div>
 
             <div className="form-groupe">
-              <label className="form-label">Poids</label>
+              <label className="form-label">{t('Poids')}</label>
               <div style={{ display: 'flex', gap: 8 }}>
-                <input type="text" inputMode="decimal" className="form-input" style={{ flex: 1 }} value={form.poids} onChange={e => modifierChamp('poids', e.target.value.replace(',', '.'))} placeholder="Ex. : 12.5" />
+                <input type="text" inputMode="decimal" className="form-input" style={{ flex: 1 }} value={form.poids} onChange={e => modifierChamp('poids', e.target.value.replace(',', '.'))} placeholder={t('Ex. : 12.5')} />
                 <div className="toggle-groupe" style={{ flexShrink: 0 }}>
                   <button type="button" className={`toggle-btn ${form.poidsUnite === 'kg' ? 'actif' : ''}`} onClick={() => modifierChamp('poidsUnite', 'kg')}>kg</button>
                   <button type="button" className={`toggle-btn ${form.poidsUnite === 'lb' ? 'actif' : ''}`} onClick={() => modifierChamp('poidsUnite', 'lb')}>lb</button>
                 </div>
               </div>
               {poidsKg != null && form.poidsUnite === 'lb' && (
-                <p className="examen-aide">Soit {poidsKg.toFixed(2)} kg, utilisé pour les calculs.</p>
+                <p className="examen-aide">{t('Soit {kg} kg, utilisé pour les calculs.', { kg: chiffres(poidsKg.toFixed(2).replace('.', ',')) })}</p>
               )}
             </div>
 
             <div className="form-groupe">
-              <label className="form-label">Race</label>
-              <input type="text" className="form-input" value={form.race || ''} onChange={e => modifierChamp('race', e.target.value)} placeholder="Ex. : Labrador, Persan..." />
+              <label className="form-label">{t('Race')}</label>
+              <input type="text" className="form-input" value={form.race || ''} onChange={e => modifierChamp('race', e.target.value)} placeholder={t('Ex. : Labrador, Persan...')} />
             </div>
 
             <div className="form-groupe">
-              <label className="form-label">Sexe</label>
+              <label className="form-label">{t('Sexe')}</label>
               <div className="toggle-groupe">
-                <button type="button" className={`toggle-btn ${form.sexe === 'femelle' ? 'actif' : ''}`} onClick={() => modifierChamp('sexe', form.sexe === 'femelle' ? '' : 'femelle')}>Femelle</button>
-                <button type="button" className={`toggle-btn ${form.sexe === 'male' ? 'actif' : ''}`} onClick={() => modifierChamp('sexe', form.sexe === 'male' ? '' : 'male')}>Mâle</button>
+                <button type="button" className={`toggle-btn ${form.sexe === 'femelle' ? 'actif' : ''}`} onClick={() => modifierChamp('sexe', form.sexe === 'femelle' ? '' : 'femelle')}>{t('Femelle')}</button>
+                <button type="button" className={`toggle-btn ${form.sexe === 'male' ? 'actif' : ''}`} onClick={() => modifierChamp('sexe', form.sexe === 'male' ? '' : 'male')}>{t('Mâle')}</button>
               </div>
               <label className="voie-item" style={{ marginTop: 8 }}>
-                <span>Stérilisé(e)</span>
+                <span>{t('Stérilisé(e)')}</span>
                 <input type="checkbox" checked={form.sterilise} onChange={e => modifierChamp('sterilise', e.target.checked)} />
               </label>
             </div>
 
             <div className="form-groupe">
-              <label className="form-label">Nom du propriétaire</label>
-              <input type="text" className="form-input" value={form.proprietaireNom || ''} onChange={e => modifierChamp('proprietaireNom', e.target.value)} placeholder="Ex. : Marie Tremblay" />
+              <label className="form-label">{t('Nom du propriétaire')}</label>
+              <input type="text" className="form-input" value={form.proprietaireNom || ''} onChange={e => modifierChamp('proprietaireNom', e.target.value)} placeholder={t('Ex. : Marie Tremblay')} />
             </div>
 
             <label className="voie-item">
-              <span>Consentement du propriétaire signé</span>
+              <span>{t('Consentement du propriétaire signé')}</span>
               <input type="checkbox" checked={form.consentementSigne || false} onChange={e => modifierChamp('consentementSigne', e.target.checked)} />
             </label>
 
             <button className="examen-suivant" onClick={() => ouvrirSection('procedure')}>
-              Suivant : procédure <i className="ti ti-arrow-right"></i>
+              {t('Suivant : procédure')} <i className="ti ti-arrow-right"></i>
             </button>
           </SectionAccordeon>
 
           {/* ═══ PROCÉDURE ═══ */}
           <SectionAccordeon
             ancre="section-procedure"
-            titre="Procédure"
+            titre={t('Procédure')}
             icone="ti-scissors"
             resume={resumeSection('procedure')}
             etat={etatSection('procedure')}
             ouvert={sectionOuverte === 'procedure'}
             onToggle={() => ouvrirSection('procedure')}
           >
-            {champChoix('procedure', 'Type de procédure', PROCEDURES, { placeholder: 'Ex. : Énucléation' })}
-            {champNom('veterinaire', 'Nom du vétérinaire', 'Ex. : Dr. Dupont')}
-            {champNom('technicien', 'Nom du / de la technicien.ne', 'Ex. : Sophie Martin')}
+            {champChoix('procedure', 'Type de procédure', PROCEDURES, { placeholder: t('Ex. : Énucléation') })}
+            {champNom('veterinaire', t('Nom du vétérinaire'), t('Ex. : Dr. Dupont'))}
+            {champNom('technicien', t('Nom du / de la technicien.ne'), t('Ex. : Sophie Martin'))}
 
             <button className="examen-suivant" onClick={() => ouvrirSection('asa')}>
-              Suivant : risque ASA <i className="ti ti-arrow-right"></i>
+              {t('Suivant : risque ASA')} <i className="ti ti-arrow-right"></i>
             </button>
           </SectionAccordeon>
 
           {/* ═══ ASA ═══ */}
           <SectionAccordeon
             ancre="section-asa"
-            titre="Risque anesthésique"
+            titre={t('Risque anesthésique')}
             icone="ti-alert-circle"
             resume={resumeSection('asa')}
             etat={etatSection('asa')}
@@ -1826,7 +1834,7 @@ export default function ChirurgieMonitoring() {
             onToggle={() => ouvrirSection('asa')}
           >
             <div className="form-groupe">
-              <label className="form-label">Cote ASA</label>
+              <label className="form-label">{t('Cote ASA')}</label>
               <div className="examen-valeurs">
                 {ASA_OPTIONS.map(opt => (
                   <button key={opt} type="button" className={`examen-valeur-btn ${form.asa === opt ? 'actif' : ''}`} onClick={() => modifierChamp('asa', form.asa === opt ? '' : opt)}>{opt}</button>
@@ -1834,23 +1842,23 @@ export default function ChirurgieMonitoring() {
               </div>
             </div>
             <div className="form-groupe">
-              <label className="form-label">Antécédents / Problèmes présents</label>
-              <textarea className="form-textarea" rows={2} value={form.antecedents || ''} onChange={e => modifierChamp('antecedents', e.target.value)} placeholder="Ex. : Souffle cardiaque grade II, obésité..." />
+              <label className="form-label">{t('Antécédents / Problèmes présents')}</label>
+              <textarea className="form-textarea" rows={2} value={form.antecedents || ''} onChange={e => modifierChamp('antecedents', e.target.value)} placeholder={t('Ex. : Souffle cardiaque grade II, obésité...')} />
             </div>
             <div className="form-groupe">
-              <label className="form-label">Problèmes à anticiper</label>
-              <textarea className="form-textarea" rows={2} value={form.problemesAnticipes || ''} onChange={e => modifierChamp('problemesAnticipes', e.target.value)} placeholder="Ex. : Risque de régurgitation, instabilité hémodynamique..." />
+              <label className="form-label">{t('Problèmes à anticiper')}</label>
+              <textarea className="form-textarea" rows={2} value={form.problemesAnticipes || ''} onChange={e => modifierChamp('problemesAnticipes', e.target.value)} placeholder={t('Ex. : Risque de régurgitation, instabilité hémodynamique...')} />
             </div>
 
             <button className="examen-suivant" onClick={() => ouvrirSection('preop')}>
-              Suivant : évaluation pré-anesthésique <i className="ti ti-arrow-right"></i>
+              {t('Suivant : évaluation pré-anesthésique')} <i className="ti ti-arrow-right"></i>
             </button>
           </SectionAccordeon>
 
           {/* ═══ ÉVALUATION PRÉ-ANESTHÉSIQUE ═══ */}
           <SectionAccordeon
             ancre="section-preop"
-            titre="Évaluation pré-anesthésique"
+            titre={t('Évaluation pré-anesthésique')}
             icone="ti-heartbeat"
             resume={resumeSection('preop')}
             etat={etatSection('preop')}
@@ -1858,9 +1866,9 @@ export default function ChirurgieMonitoring() {
             onToggle={() => ouvrirSection('preop')}
           >
             {[
-              { champ: 'temperature', label: 'Température', unite: '°C', placeholder: 'Ex. : 38.5' },
-              { champ: 'fc', label: 'Fréquence cardiaque', unite: 'bpm', placeholder: 'Ex. : 100' },
-              { champ: 'fr', label: 'Fréquence respiratoire', unite: 'rpm', placeholder: 'Ex. : 24' },
+              { champ: 'temperature', label: t('Température'), unite: '°C', placeholder: t('Ex. : 38.5') },
+              { champ: 'fc', label: t('Fréquence cardiaque'), unite: 'bpm', placeholder: t('Ex. : 100') },
+              { champ: 'fr', label: t('Fréquence respiratoire'), unite: 'rpm', placeholder: t('Ex. : 24') },
             ].map(({ champ, label, unite, placeholder }) => {
               const info = infoPlage(champ)
               return (
@@ -1877,8 +1885,8 @@ export default function ChirurgieMonitoring() {
                   {info && (
                     <p className={`examen-plage ${info.horsPlage ? 'hors' : ''}`}>
                       {info.horsPlage && <i className="ti ti-info-circle"></i>}
-                      Plage {form.espece} : {String(info.plage[0]).replace('.', ',')} à {String(info.plage[1]).replace('.', ',')} {unite}
-                      {info.horsPlage ? ', valeur hors plage' : ''}
+                      {t('Plage {espece} : {min} à {max} {unite}', { espece: String(ESPECES.find(e => e.id === form.espece)?.label || form.espece).toLowerCase(), min: chiffres(String(info.plage[0]).replace('.', ',')), max: chiffres(String(info.plage[1]).replace('.', ',')), unite })}
+                      {info.horsPlage ? t(', valeur hors plage') : ''}
                     </p>
                   )}
                 </div>
@@ -1887,44 +1895,44 @@ export default function ChirurgieMonitoring() {
 
             <div className="form-groupe">
               <label className="form-label">TRC (sec)</label>
-              <input type="text" inputMode="decimal" className="form-input" value={form.trc} onChange={e => modifierChamp('trc', e.target.value)} placeholder="Ex. : 1-2" />
+              <input type="text" inputMode="decimal" className="form-input" value={form.trc} onChange={e => modifierChamp('trc', e.target.value)} placeholder={t('Ex. : 1-2')} />
             </div>
 
             <div className="form-groupe">
-              <label className="form-label">Couleur des muqueuses</label>
+              <label className="form-label">{t('Couleur des muqueuses')}</label>
               <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
                 {MUQUEUSES_OPTIONS.map(opt => (
-                  <button key={opt} type="button" className={`toggle-btn ${form.muqueuses.includes(opt) ? 'actif' : ''}`} onClick={() => toggleMuqueuse(opt)}>{opt}</button>
+                  <button key={opt} type="button" className={`toggle-btn ${form.muqueuses.includes(opt) ? 'actif' : ''}`} onClick={() => toggleMuqueuse(opt)}>{t(opt)}</button>
                 ))}
               </div>
             </div>
 
             <div className="form-groupe">
-              <label className="form-label">Particularités</label>
-              <textarea className="form-textarea" rows={2} value={form.particularites} onChange={e => modifierChamp('particularites', e.target.value)} placeholder="Allergies, conditions particulières..." />
+              <label className="form-label">{t('Particularités')}</label>
+              <textarea className="form-textarea" rows={2} value={form.particularites} onChange={e => modifierChamp('particularites', e.target.value)} placeholder={t('Allergies, conditions particulières...')} />
             </div>
 
             <button className="examen-suivant" onClick={() => ouvrirSection('acces')}>
-              Suivant : accès veineux <i className="ti ti-arrow-right"></i>
+              {t('Suivant : accès veineux')} <i className="ti ti-arrow-right"></i>
             </button>
           </SectionAccordeon>
 
           {/* ═══ ACCÈS VEINEUX ═══ */}
           <SectionAccordeon
             ancre="section-acces"
-            titre="Accès veineux et fluides"
+            titre={t('Accès veineux et fluides')}
             icone="ti-droplet"
             resume={resumeSection('acces')}
             etat={etatSection('acces')}
             ouvert={sectionOuverte === 'acces'}
             onToggle={() => ouvrirSection('acces')}
           >
-            {champChoix('accesCalibre', 'Calibre du cathéter', CALIBRES, { placeholder: 'Ex. : 16G', couleurs: COULEURS_CALIBRES })}
-            {champChoix('accesSite', 'Site', SITES_CATHETER, { placeholder: 'Préciser le site' })}
-            {champChoix('soluteType', 'Type de soluté', SOLUTES, { placeholder: 'Préciser le soluté' })}
+            {champChoix('accesCalibre', 'Calibre du cathéter', CALIBRES, { placeholder: t('Ex. : 16G'), couleurs: COULEURS_CALIBRES })}
+            {champChoix('accesSite', 'Site', SITES_CATHETER, { placeholder: t('Préciser le site') })}
+            {champChoix('soluteType', 'Type de soluté', SOLUTES, { placeholder: t('Préciser le soluté') })}
 
             <div className="form-groupe">
-              <label className="form-label">Débit</label>
+              <label className="form-label">{t('Débit')}</label>
               <div className="examen-valeurs">
                 {DEBITS_RAPIDES.map(d => (
                   <button
@@ -1943,7 +1951,7 @@ export default function ChirurgieMonitoring() {
                   inputMode="decimal"
                   value={form.debit}
                   onChange={e => modifierChamp('debit', e.target.value.replace(',', '.'))}
-                  placeholder="Ex. : 5"
+                  placeholder={t('Ex. : 5')}
                 />
                 <select className="cri-select" value={debitUnite} onChange={e => modifierChamp('debitUnite', e.target.value)}>
                   <option value="mL/kg/h">mL/kg/h</option>
@@ -1951,68 +1959,68 @@ export default function ChirurgieMonitoring() {
                 </select>
               </div>
               {debitMlH != null && debitUnite === 'mL/kg/h' && (
-                <p className="examen-aide">Soit environ {Math.round(debitMlH)} mL/h pour ce patient.</p>
+                <p className="examen-aide">{t('Soit environ {n} mL/h pour ce patient.', { n: Math.round(debitMlH) })}</p>
               )}
               {debitUnite === 'mL/kg/h' && !poidsKg && (
-                <p className="examen-aide">Indiquez le poids pour voir la conversion en mL/h.</p>
+                <p className="examen-aide">{t('Indiquez le poids pour voir la conversion en mL/h.')}</p>
               )}
               <p className="examen-aide">
-                Repère AAHA 2024 : 5 mL/kg/h chez le chien, 3 à 5 mL/kg/h chez le chat, si la fonction cardiaque et rénale est normale.
+                {t('Repère AAHA 2024 : 5 mL/kg/h chez le chien, 3 à 5 mL/kg/h chez le chat, si la fonction cardiaque et rénale est normale.')}
               </p>
             </div>
 
             <div className="form-groupe">
-              <label className="form-label">Volume total prévu</label>
+              <label className="form-label">{t('Volume total prévu')}</label>
               <div className="champ-input">
                 <input
                   type="text"
                   inputMode="decimal"
                   value={form.volumeTotal}
                   onChange={e => modifierChamp('volumeTotal', e.target.value.replace(',', '.'))}
-                  placeholder="Ex. : 250"
+                  placeholder={t('Ex. : 250')}
                 />
                 <span className="unite-fixe">mL</span>
               </div>
             </div>
 
             <button className="examen-suivant" onClick={() => ouvrirSection('materiel')}>
-              Suivant : matériel et maintien <i className="ti ti-arrow-right"></i>
+              {t('Suivant : matériel et maintien')} <i className="ti ti-arrow-right"></i>
             </button>
           </SectionAccordeon>
 
           {/* ═══ MATÉRIEL ET MAINTIEN ═══ */}
           <SectionAccordeon
             ancre="section-materiel"
-            titre="Matériel et maintien"
+            titre={t('Matériel et maintien')}
             icone="ti-lungs"
             resume={resumeSection('materiel')}
             etat={etatSection('materiel')}
             ouvert={sectionOuverte === 'materiel'}
             onToggle={() => ouvrirSection('materiel')}
           >
-            {champChoix('agentInhale', 'Agent inhalé', AGENTS_INHALES, { placeholder: 'Préciser l\'agent' })}
+            {champChoix('agentInhale', 'Agent inhalé', AGENTS_INHALES, { placeholder: t('Préciser l\'agent') })}
 
             {champChoix('circuit', 'Circuit', CIRCUITS, {
-              placeholder: 'Préciser le circuit',
+              placeholder: t('Préciser le circuit'),
               aide: poidsKg && poidsKg <= 7
-                ? 'Sous 7 kg, un circuit non réinspiratoire est généralement recommandé.'
+                ? t('Sous 7 kg, un circuit non réinspiratoire est généralement recommandé.')
                 : null,
             })}
 
-            {champChoix('tubeET', 'Tube endotrachéal (mm)', TUBES_ET, { placeholder: 'Ex. : 12' })}
+            {champChoix('tubeET', 'Tube endotrachéal (mm)', TUBES_ET, { placeholder: t('Ex. : 12') })}
 
             <div className="form-groupe">
-              <label className="form-label">Ballonnet</label>
+              <label className="form-label">{t('Ballonnet')}</label>
               <div className="toggle-groupe">
-                <button type="button" className={`toggle-btn ${form.ballonnet === 'Oui' ? 'actif' : ''}`} onClick={() => modifierChamp('ballonnet', form.ballonnet === 'Oui' ? '' : 'Oui')}>Oui</button>
-                <button type="button" className={`toggle-btn ${form.ballonnet === 'Non' ? 'actif' : ''}`} onClick={() => modifierChamp('ballonnet', form.ballonnet === 'Non' ? '' : 'Non')}>Non</button>
+                <button type="button" className={`toggle-btn ${form.ballonnet === 'Oui' ? 'actif' : ''}`} onClick={() => modifierChamp('ballonnet', form.ballonnet === 'Oui' ? '' : 'Oui')}>{t('Oui')}</button>
+                <button type="button" className={`toggle-btn ${form.ballonnet === 'Non' ? 'actif' : ''}`} onClick={() => modifierChamp('ballonnet', form.ballonnet === 'Non' ? '' : 'Non')}>{t('Non')}</button>
               </div>
             </div>
 
             {champChoix('ballonReservoir', 'Ballon réservoir', BALLONS.map(b => b.label), {
-              placeholder: 'Préciser la taille',
+              placeholder: t('Préciser la taille'),
               aide: ballonSuggere(poidsKg)
-                ? `Suggestion : ${ballonSuggere(poidsKg).label}, à partir du poids × 60 mL.`
+                ? t('Suggestion : {taille}, à partir du poids × 60 mL.', { taille: chiffres(ballonSuggere(poidsKg).label) })
                 : null,
             })}
             <div className="form-groupe">
@@ -2023,25 +2031,25 @@ export default function ChirurgieMonitoring() {
                   inputMode="decimal"
                   value={form.o2Lmin}
                   onChange={e => modifierChamp('o2Lmin', e.target.value.replace(',', '.'))}
-                  placeholder="Ex. : 1"
+                  placeholder={t('Ex. : 1')}
                 />
                 <span className="unite-fixe">L/min</span>
               </div>
               {suggestionO2 && <p className="examen-aide">{suggestionO2}</p>}
               {!suggestionO2 && !poidsKg && (
-                <p className="examen-aide">Indiquez le poids et le circuit pour voir le débit recommandé.</p>
+                <p className="examen-aide">{t('Indiquez le poids et le circuit pour voir le débit recommandé.')}</p>
               )}
             </div>
 
             <button className="examen-suivant" onClick={() => ouvrirSection('securite')}>
-              Suivant : vérifications <i className="ti ti-arrow-right"></i>
+              {t('Suivant : vérifications')} <i className="ti ti-arrow-right"></i>
             </button>
           </SectionAccordeon>
 
           {/* ═══ VÉRIFICATIONS DE SÉCURITÉ ═══ */}
           <SectionAccordeon
             ancre="section-securite"
-            titre="Vérifications de sécurité"
+            titre={t('Vérifications de sécurité')}
             icone="ti-shield-check"
             resume={resumeSection('securite')}
             etat={etatSection('securite')}
@@ -2050,7 +2058,7 @@ export default function ChirurgieMonitoring() {
           >
             {estNonReinspiratoire && (
               <p className="examen-aide">
-                Circuit non réinspiratoire : pas de chaux sodée ni de valves unidirectionnelles à vérifier.
+                {t('Circuit non réinspiratoire : pas de chaux sodée ni de valves unidirectionnelles à vérifier.')}
               </p>
             )}
 
@@ -2072,14 +2080,14 @@ export default function ChirurgieMonitoring() {
             </div>
 
             <button className="examen-suivant" onClick={() => ouvrirSection('medications')}>
-              Suivant : médications <i className="ti ti-arrow-right"></i>
+              {t('Suivant : médications')} <i className="ti ti-arrow-right"></i>
             </button>
           </SectionAccordeon>
 
           {/* ═══ MÉDICATIONS ═══ */}
           <SectionAccordeon
             ancre="section-medications"
-            titre="Médications"
+            titre={t('Médications')}
             icone="ti-pill"
             resume={resumeSection('medications')}
             etat={etatSection('medications')}
@@ -2097,10 +2105,10 @@ export default function ChirurgieMonitoring() {
             <div className="examen-barre-jauge">
               <div className="examen-barre-remplissage" style={{ width: `${Math.round((elements.faits / elements.total) * 100)}%` }}></div>
             </div>
-            <span className="examen-barre-texte">{elements.faits} sur {elements.total}</span>
+            <span className="examen-barre-texte">{t('{faits} sur {total}', { faits: elements.faits, total: elements.total })}</span>
           </div>
           <button className="examen-barre-btn complet" onClick={demarrerAnesthesie}>
-            <i className="ti ti-player-play"></i> {form.heureDebut ? 'Continuer' : 'Commencer'}
+            <i className="ti ti-player-play"></i> {form.heureDebut ? t('Continuer') : t('Commencer')}
           </button>
         </div>
 
@@ -2109,7 +2117,7 @@ export default function ChirurgieMonitoring() {
           <div className="popup-overlay" onClick={() => setPopupEspece(false)}>
             <div className="popup-card" onClick={e => e.stopPropagation()}>
               <div className="popup-header">
-                <span>Choisir une espèce</span>
+                <span>{t('Choisir une espèce')}</span>
                 <button className="popup-close" onClick={() => setPopupEspece(false)}>✕</button>
               </div>
               <div className="popup-especes">
@@ -2121,7 +2129,7 @@ export default function ChirurgieMonitoring() {
                   </label>
                 ))}
               </div>
-              <button className="btn-sauvegarder" onClick={() => setPopupEspece(false)}>Confirmer</button>
+              <button className="btn-sauvegarder" onClick={() => setPopupEspece(false)}>{t('Confirmer')}</button>
             </div>
           </div>
         )}
@@ -2131,11 +2139,11 @@ export default function ChirurgieMonitoring() {
           <div className="popup-overlay" onClick={() => setShowManquants(false)}>
             <div className="popup-card" onClick={e => e.stopPropagation()}>
               <div className="popup-header">
-                <span>Informations requises</span>
+                <span>{t('Informations requises')}</span>
                 <button className="popup-close" onClick={() => setShowManquants(false)}>✕</button>
               </div>
               <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>
-                Ces éléments sont nécessaires avant de démarrer le monitoring.
+                {t('Ces éléments sont nécessaires avant de démarrer le monitoring.')}
               </p>
               <div className="examen-manquants">
                 {manquantsRequis.map((m, i) => (
@@ -2154,24 +2162,24 @@ export default function ChirurgieMonitoring() {
           <div className="popup-overlay" onClick={() => setShowAlertValveAPL(false)}>
             <div className="popup-card" onClick={e => e.stopPropagation()}>
               <div className="popup-header">
-                <span style={{ color: '#702F3A' }}><i className="ti ti-alert-triangle" style={{ marginRight: 6 }} />Attention, valve APL</span>
+                <span style={{ color: '#702F3A' }}><i className="ti ti-alert-triangle" style={{ marginRight: 6 }} />{t('Attention, valve APL')}</span>
                 <button className="popup-close" onClick={() => setShowAlertValveAPL(false)}>✕</button>
               </div>
               <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
                 <i className="ti ti-alert-triangle" style={{ fontSize: 44, color: '#702F3A', marginBottom: 12, display: 'block' }}></i>
                 <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
-                  La valve APL n'est pas cochée comme ouverte.
+                  {t('La valve APL n\'est pas cochée comme ouverte.')}
                 </p>
                 <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  Assurez-vous que la valve d'échappement (APL) est bien ouverte avant de commencer le monitoring. Une valve fermée peut causer un barotraumatisme.
+                  {t('Assurez-vous que la valve d\'échappement (APL) est bien ouverte avant de commencer le monitoring. Une valve fermée peut causer un barotraumatisme.')}
                 </p>
               </div>
               <div className="popup-actions-centrees">
                 <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => { modifierChamp('checkValveAPL', true); setShowAlertValveAPL(false) }}>
-                  Confirmer et ouvrir
+                  {t('Confirmer et ouvrir')}
                 </button>
                 <button className="labo-btn-primary" style={{ flex: 1 }} onClick={() => { setShowAlertValveAPL(false); setForm(prev => ({ ...prev, heureDebut: prev.heureDebut || heureActuelle() })); setVue('monitoring') }}>
-                  Continuer quand même
+                  {t('Continuer quand même')}
                 </button>
               </div>
             </div>
@@ -2193,7 +2201,7 @@ export default function ChirurgieMonitoring() {
 
       <div className="examen-topbar">
         <button className="examen-retour" onClick={() => setVue('setup')}>
-          <i className="ti ti-arrow-left"></i> Informations
+          <i className="ti ti-arrow-left"></i> {t('Informations')}
         </button>
       </div>
 
@@ -2206,14 +2214,14 @@ export default function ChirurgieMonitoring() {
           </span>
         </div>
         <button className="monitoring-entete-heure" onClick={() => setEditHeureDebut(v => !v)}>
-          <span>Début {form.heureDebut || '—'}</span>
+          <span>{t('Début {heure}', { heure: form.heureDebut || '—' })}</span>
           <i className="ti ti-pencil"></i>
         </button>
       </div>
 
       {editHeureDebut && (
         <div className="form-groupe" style={{ marginBottom: 12 }}>
-          <label className="form-label">Heure de début</label>
+          <label className="form-label">{t('Heure de début')}</label>
           <input type="time" className="form-input" value={form.heureDebut} onChange={e => modifierChamp('heureDebut', e.target.value)} />
         </div>
       )}
@@ -2222,10 +2230,10 @@ export default function ChirurgieMonitoring() {
       <div className="monitoring-derniere">
         <div className="monitoring-derniere-entete">
           <span className="monitoring-derniere-titre">
-            {derniereMesure ? `Dernière mesure · ${derniereMesure.heure}` : 'Aucune mesure'}
+            {derniereMesure ? t('Dernière mesure · {heure}', { heure: derniereMesure.heure }) : t('Aucune mesure')}
           </span>
           {derniereMesure && (
-            <button className="fluido-lien" onClick={() => ouvrirEditionMesure(form.mesures.length - 1)}>Modifier</button>
+            <button className="fluido-lien" onClick={() => ouvrirEditionMesure(form.mesures.length - 1)}>{t('Modifier')}</button>
           )}
         </div>
         {derniereMesure ? (
@@ -2237,11 +2245,11 @@ export default function ChirurgieMonitoring() {
               </div>
             ))}
             {!MESURE_PARAMS.some(p => String(derniereMesure[p.key] || '').trim()) && (
-              <p className="examen-aide">Aucune valeur saisie pour cette mesure.</p>
+              <p className="examen-aide">{t('Aucune valeur saisie pour cette mesure.')}</p>
             )}
           </div>
         ) : (
-          <p className="examen-aide">Ajoutez une première mesure pour démarrer le suivi.</p>
+          <p className="examen-aide">{t('Ajoutez une première mesure pour démarrer le suivi.')}</p>
         )}
       </div>
 
@@ -2252,8 +2260,8 @@ export default function ChirurgieMonitoring() {
             <button className="examen-section-header" onClick={() => setMedsReplies(v => !v)}>
               <span className="examen-section-pastille partiel"><i className="ti ti-pill"></i></span>
               <span className="examen-section-textes">
-                <span className="examen-section-titre">Médications préparées</span>
-                <span className="examen-section-resume">{medsAdministresCount} administré{medsAdministresCount > 1 ? 's' : ''} sur {form.medications.length}</span>
+                <span className="examen-section-titre">{t('Médications préparées')}</span>
+                <span className="examen-section-resume">{tn(medsAdministresCount, '{n} administré sur {total}', '{n} administrés sur {total}', { total: form.medications.length })}</span>
               </span>
               <i className={`ti ti-chevron-${medsReplies ? 'down' : 'up'} examen-section-chevron`}></i>
             </button>
@@ -2264,7 +2272,7 @@ export default function ChirurgieMonitoring() {
                   if (!meds.length) return null
                   return (
                     <div key={cat}>
-                      <p className="monitoring-categorie">{cat}</p>
+                      <p className="monitoring-categorie">{t(cat)}</p>
                       {meds.map(m => {
                         const { doseMg, volume } = doseEtVolume(poidsKg, m.doseMgKg, m.concentration)
                         return (
@@ -2272,8 +2280,8 @@ export default function ChirurgieMonitoring() {
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                               <span className="monitoring-med-resume-nom">{m.nom}</span>
                               <div className="toggle-groupe" style={{ flexShrink: 0 }}>
-                                <button type="button" className={`toggle-btn ${m.administre ? 'actif' : ''}`} onClick={() => toggleAdministreMedication(m.id, true)}>Oui</button>
-                                <button type="button" className={`toggle-btn ${!m.administre ? 'actif' : ''}`} onClick={() => toggleAdministreMedication(m.id, false)}>Non</button>
+                                <button type="button" className={`toggle-btn ${m.administre ? 'actif' : ''}`} onClick={() => toggleAdministreMedication(m.id, true)}>{t('Oui')}</button>
+                                <button type="button" className={`toggle-btn ${!m.administre ? 'actif' : ''}`} onClick={() => toggleAdministreMedication(m.id, false)}>{t('Non')}</button>
                               </div>
                             </div>
                             <span className="monitoring-med-resume-detail">
@@ -2285,7 +2293,7 @@ export default function ChirurgieMonitoring() {
                             </span>
                             {m.administre && (
                               <div className="form-groupe" style={{ marginTop: 6 }}>
-                                <label className="form-label">Administré à</label>
+                                <label className="form-label">{t('Administré à')}</label>
                                 <input type="time" className="form-input" value={m.heureAdministration || heureActuelle()} onChange={e => modifierMedication(m.id, 'heureAdministration', e.target.value)} />
                               </div>
                             )}
@@ -2307,17 +2315,17 @@ export default function ChirurgieMonitoring() {
           <div className="postop-section-icone" style={{ background: 'rgba(37,77,86,0.1)', color: 'var(--primary)' }}>
             <i className="ti ti-table"></i>
           </div>
-          <h2 className="postop-section-titre">Suivi des paramètres ({form.mesures.length})</h2>
+          <h2 className="postop-section-titre">{t('Suivi des paramètres ({n})', { n: form.mesures.length })}</h2>
         </div>
         <div style={{ padding: '16px' }}>
           {aucuneMesure ? (
-            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucune mesure ajoutée pour le moment.</p>
+            <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>{t('Aucune mesure ajoutée pour le moment.')}</p>
           ) : (
             <div className="monitoring-table-wrap monitoring-table-wrap--fige">
               <table className="monitoring-table monitoring-table--suivi monitoring-table--fige">
                 <thead>
                   <tr>
-                    <th>Paramètre</th>
+                    <th>{t('Paramètre')}</th>
                     {form.mesures.map((m, j) => (
                       <th key={j}>
                         {m.heure}
@@ -2336,8 +2344,8 @@ export default function ChirurgieMonitoring() {
                     </tr>
                   ))}
                   <tr>
-                    <td>Lubrifiant oculaire</td>
-                    {form.mesures.map((m, j) => <td key={j}>{m.lubrifiantOculaire ? 'Oui' : 'Non'}</td>)}
+                    <td>{t('Lubrifiant oculaire')}</td>
+                    {form.mesures.map((m, j) => <td key={j}>{m.lubrifiantOculaire ? t('Oui') : t('Non')}</td>)}
                   </tr>
                 </tbody>
               </table>
@@ -2348,7 +2356,7 @@ export default function ChirurgieMonitoring() {
 
       <div className="labo-actions" style={{ padding: '0 0 16px' }}>
         <button className="btn-supprimer-medicament" style={{ width: '100%' }} onClick={ouvrirPopupFin}>
-          <i className="ti ti-player-stop"></i> Terminer l'anesthésie
+          <i className="ti ti-player-stop"></i> {t('Terminer l\'anesthésie')}
         </button>
       </div>
 
@@ -2357,18 +2365,18 @@ export default function ChirurgieMonitoring() {
         <div className="monitoring-chrono">
           <span className="monitoring-chrono-duree">
             <i className="ti ti-clock"></i>
-            Sous anesthésie depuis <strong>{formaterDuree(minutesAnesthesie)}</strong>
+            {t('Sous anesthésie depuis')} <strong>{formaterDuree(minutesAnesthesie)}</strong>
           </span>
           <span className={`monitoring-chrono-mesure ${mesureEnRetard || aucuneMesure ? 'retard' : ''}`}>
             {aucuneMesure
-              ? 'Aucune mesure prise'
+              ? t('Aucune mesure prise')
               : minutesDerniereMesure === 0
-                ? "Dernière mesure à l'instant"
-                : `Dernière mesure il y a ${minutesDerniereMesure} min`}
+                ? t('Dernière mesure à l\'instant')
+                : t('Dernière mesure il y a {n} min', { n: minutesDerniereMesure })}
           </span>
         </div>
         <button className="examen-barre-btn complet" onClick={ouvrirPopupMesure}>
-          <i className="ti ti-plus"></i> Mesure
+          <i className="ti ti-plus"></i> {t('Mesure')}
         </button>
       </div>
 
@@ -2377,13 +2385,13 @@ export default function ChirurgieMonitoring() {
         <div className="popup-overlay" onClick={() => { setPopupMesure(null); setEditMesureIndex(null) }}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>{editMesureIndex !== null ? 'Modifier la mesure' : 'Nouvelle mesure'}</span>
+              <span>{editMesureIndex !== null ? t('Modifier la mesure') : t('Nouvelle mesure')}</span>
               <button className="popup-close" onClick={() => { setPopupMesure(null); setEditMesureIndex(null) }}>✕</button>
             </div>
 
             <div className="form-scroll" style={{ gap: 12 }}>
               <div className="form-groupe">
-                <label className="form-label">Heure</label>
+                <label className="form-label">{t('Heure')}</label>
                 <input type="time" className="form-input" value={popupMesure.heure} onChange={e => setPopupMesure(prev => ({ ...prev, heure: e.target.value }))} />
               </div>
 
@@ -2414,7 +2422,7 @@ export default function ChirurgieMonitoring() {
               })}
 
               <button className="monitoring-complementaires" onClick={() => setComplementairesOuverts(v => !v)}>
-                <span>Paramètres complémentaires</span>
+                <span>{t('Paramètres complémentaires')}</span>
                 <i className={`ti ti-chevron-${complementairesOuverts ? 'up' : 'down'}`}></i>
               </button>
 
@@ -2445,7 +2453,7 @@ export default function ChirurgieMonitoring() {
               })}
 
               <label className="voie-item">
-                <span>Lubrifiant oculaire</span>
+                <span>{t('Lubrifiant oculaire')}</span>
                 <input type="checkbox" checked={popupMesure.lubrifiantOculaire || false} onChange={e => setPopupMesure(prev => ({ ...prev, lubrifiantOculaire: e.target.checked }))} />
               </label>
             </div>
@@ -2453,11 +2461,11 @@ export default function ChirurgieMonitoring() {
             <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
               {editMesureIndex !== null && (
                 <button className="btn-supprimer-medicament" style={{ flex: 1, marginTop: 0 }} onClick={() => supprimerMesure(editMesureIndex)}>
-                  Supprimer
+                  {t('Supprimer')}
                 </button>
               )}
               <button className="labo-btn-primary" style={{ flex: 1 }} onClick={ajouterMesure}>
-                {editMesureIndex !== null ? 'Enregistrer' : 'Ajouter'}
+                {editMesureIndex !== null ? t('Enregistrer') : t('Ajouter')}
               </button>
             </div>
           </div>
@@ -2469,53 +2477,53 @@ export default function ChirurgieMonitoring() {
         <div className="popup-overlay" onClick={() => setPopupFin(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Terminer l'anesthésie</span>
+              <span>{t('Terminer l\'anesthésie')}</span>
               <button className="popup-close" onClick={() => setPopupFin(false)}>✕</button>
             </div>
             <div className="form-scroll" style={{ gap: 12 }}>
               <div className="form-groupe">
-                <label className="form-label">Heure de fin</label>
+                <label className="form-label">{t('Heure de fin')}</label>
                 <input type="time" className="form-input" value={form.heureFin} onChange={e => modifierChamp('heureFin', e.target.value)} />
               </div>
               <div className="form-groupe">
-                <label className="form-label">Notes</label>
-                <textarea className="form-textarea" rows={3} value={form.notesFin} onChange={e => modifierChamp('notesFin', e.target.value)} placeholder="Observations sur la fin de l'anesthésie..." />
+                <label className="form-label">{t('Notes')}</label>
+                <textarea className="form-textarea" rows={3} value={form.notesFin} onChange={e => modifierChamp('notesFin', e.target.value)} placeholder={t('Observations sur la fin de l\'anesthésie...')} />
               </div>
               <div className="form-groupe">
-                <label className="form-label">Heure d'extubation</label>
+                <label className="form-label">{t('Heure d\'extubation')}</label>
                 <input type="time" className="form-input" value={form.extubationHeure} onChange={e => modifierChamp('extubationHeure', e.target.value)} />
               </div>
               <div className="form-groupe">
-                <label className="form-label">État à l'extubation</label>
-                <input type="text" className="form-input" value={form.extubationEtat} onChange={e => modifierChamp('extubationEtat', e.target.value)} placeholder="Ex. : Réflexe de déglutition présent" />
+                <label className="form-label">{t('État à l\'extubation')}</label>
+                <input type="text" className="form-input" value={form.extubationEtat} onChange={e => modifierChamp('extubationEtat', e.target.value)} placeholder={t('Ex. : Réflexe de déglutition présent')} />
               </div>
               <div className="form-groupe">
-                <label className="form-label">Température (récupération)</label>
+                <label className="form-label">{t('Température (récupération)')}</label>
                 <input type="text" inputMode="decimal" className="form-input" value={form.postTemp} onChange={e => modifierChamp('postTemp', e.target.value)} placeholder="°C" />
               </div>
               <div className="form-groupe">
-                <label className="form-label">FC (récupération)</label>
+                <label className="form-label">{t('FC (récupération)')}</label>
                 <input type="text" inputMode="numeric" className="form-input" value={form.postFc} onChange={e => modifierChamp('postFc', e.target.value)} placeholder="bpm" />
               </div>
               <div className="form-groupe">
-                <label className="form-label">FR (récupération)</label>
+                <label className="form-label">{t('FR (récupération)')}</label>
                 <input type="text" inputMode="numeric" className="form-input" value={form.postFr} onChange={e => modifierChamp('postFr', e.target.value)} placeholder="rpm" />
               </div>
               <div className="form-groupe">
-                <label className="form-label">TRC (récupération)</label>
+                <label className="form-label">{t('TRC (récupération)')}</label>
                 <input type="text" inputMode="decimal" className="form-input" value={form.postTrc} onChange={e => modifierChamp('postTrc', e.target.value)} placeholder="sec" />
               </div>
               <div className="form-groupe">
-                <label className="form-label">Douleur</label>
-                <input type="text" className="form-input" value={form.postDouleur} onChange={e => modifierChamp('postDouleur', e.target.value)} placeholder="Évaluation de la douleur" />
+                <label className="form-label">{t('Douleur')}</label>
+                <input type="text" className="form-input" value={form.postDouleur} onChange={e => modifierChamp('postDouleur', e.target.value)} placeholder={t('Évaluation de la douleur')} />
               </div>
               <div className="form-groupe">
-                <label className="form-label">Autres commentaires</label>
+                <label className="form-label">{t('Autres commentaires')}</label>
                 <textarea className="form-textarea" rows={2} value={form.postCommentaires} onChange={e => modifierChamp('postCommentaires', e.target.value)} />
               </div>
             </div>
             <button className="labo-btn-primary" style={{ width: '100%', marginTop: 12 }} onClick={terminerAnesthesie}>
-              Terminé
+              {t('Terminé')}
             </button>
           </div>
         </div>
@@ -2526,7 +2534,7 @@ export default function ChirurgieMonitoring() {
         <div className="popup-overlay" onClick={fermerResume}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Rapport de monitoring</span>
+              <span>{t('Rapport de monitoring')}</span>
               <button className="popup-close" onClick={fermerResume}>✕</button>
             </div>
             <textarea
@@ -2537,13 +2545,13 @@ export default function ChirurgieMonitoring() {
             />
             <div className="popup-actions-centrees" style={{ marginTop: 12 }}>
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => copierResume(showResume)}>
-                {copie ? 'Copié !' : 'Copier'}
+                {copie ? t('Copié !') : t('Copier')}
               </button>
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => genererPDF(form)}>
                 <i className="ti ti-file-download"></i> PDF
               </button>
               <button className="labo-btn-primary" style={{ flex: 1 }} onClick={fermerResume}>
-                Terminer
+                {t('Terminer')}
               </button>
             </div>
           </div>

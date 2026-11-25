@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import BadgePro from '../components/BadgePro'
 import PopupPro from '../components/PopupPro'
 import { useProfil } from '../context/ProfilContext'
+import { t } from '../lib/i18n'
 
 const CHIRURGIE = [
-  { id: 'instruments', label: 'Instruments de chirurgie', route: '/chirurgie/instruments', pro: true },
-  { id: 'tubes', label: 'Tubes endotrachéaux', route: '/chirurgie/tubes', pro: true },
-  { id: 'capnographie', label: 'Interprétation de la capnographie', route: '/chirurgie/capnographie', pro: true },
-  { id: 'post-op', label: 'Soins post-opératoires', route: '/chirurgie/post-op', pro: true },
-  { id: 'douleur', label: 'Évaluation de la douleur post-opératoire', route: '/chirurgie/douleur' },
+  { id: 'instruments', label: t('Instruments de chirurgie'), route: '/chirurgie/instruments', pro: true },
+  { id: 'tubes', label: t('Tubes endotrachéaux'), route: '/chirurgie/tubes', pro: true },
+  { id: 'capnographie', label: t('Interprétation de la capnographie'), route: '/chirurgie/capnographie', pro: true },
+  { id: 'post-op', label: t('Soins post-opératoires'), route: '/chirurgie/post-op', pro: true },
+  { id: 'douleur', label: t('Évaluation de la douleur post-opératoire'), route: '/chirurgie/douleur' },
 ]
 
 export default function ChirurgieListe() {

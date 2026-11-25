@@ -1,85 +1,86 @@
 import { useState } from 'react'
+import { t } from '../lib/i18n'
 
 const SECTIONS = [
   {
     id: 'surveillance',
     icone: 'ti-activity',
     couleur: '#254D56',
-    titre: 'Surveillance immédiate (0-2 h post-chirurgie)',
+    titre: t('Surveillance immédiate (0-2 h post-chirurgie)'),
     items: [
-      'Température, fréquence cardiaque et respiratoire toutes les 15-30 minutes jusqu\'à stabilisation.',
-      'Vérifier les muqueuses, temps de remplissage capillaire (TRC) et perfusion périphérique.',
-      'Surveiller le niveau de conscience : retour progressif à l\'éveil, réponse aux stimuli, coordination motrice.',
-      'Évaluer la douleur à l\'aide d\'une échelle validée (ex. : Glasgow ou Colorado).',
+      t('Température, fréquence cardiaque et respiratoire toutes les 15-30 minutes jusqu\'à stabilisation.'),
+      t('Vérifier les muqueuses, temps de remplissage capillaire (TRC) et perfusion périphérique.'),
+      t('Surveiller le niveau de conscience : retour progressif à l\'éveil, réponse aux stimuli, coordination motrice.'),
+      t('Évaluer la douleur à l\'aide d\'une échelle validée (ex. : Glasgow ou Colorado).'),
     ],
   },
   {
     id: 'douleur',
     icone: 'ti-pill',
     couleur: '#702F3A',
-    titre: 'Contrôle de la douleur',
+    titre: t('Contrôle de la douleur'),
     items: [
-      'Administrer les analgésiques prescrits selon le protocole (AINS, opioïdes, agents adjuvants).',
-      'Adapter la médication au comportement de l\'animal et à la nature de l\'intervention.',
-      'Prévoir un suivi de la douleur sur 24 à 48 h.',
+      t('Administrer les analgésiques prescrits selon le protocole (AINS, opioïdes, agents adjuvants).'),
+      t('Adapter la médication au comportement de l\'animal et à la nature de l\'intervention.'),
+      t('Prévoir un suivi de la douleur sur 24 à 48 h.'),
     ],
   },
   {
     id: 'site',
     icone: 'ti-bandage',
     couleur: '#D7A35C',
-    titre: 'Surveillance du site chirurgical',
+    titre: t('Surveillance du site chirurgical'),
     items: [
-      'Vérifier l\'apparence de la plaie : rougeur, oedème, saignement ou écoulement anormal.',
-      'Empêcher l\'animal de lécher ou gratter la plaie (collerette ou habit post-op).',
-      'Nettoyer selon les recommandations du vétérinaire si nécessaire.',
-      'Noter tout changement local : chaleur, douleur, déhiscence.',
+      t('Vérifier l\'apparence de la plaie : rougeur, oedème, saignement ou écoulement anormal.'),
+      t('Empêcher l\'animal de lécher ou gratter la plaie (collerette ou habit post-op).'),
+      t('Nettoyer selon les recommandations du vétérinaire si nécessaire.'),
+      t('Noter tout changement local : chaleur, douleur, déhiscence.'),
     ],
   },
   {
     id: 'nutrition',
     icone: 'ti-droplet',
     couleur: '#86CAB7',
-    titre: 'Nutrition et hydratation',
+    titre: t('Nutrition et hydratation'),
     items: [
-      'Offrir de l\'eau dès que l\'animal est pleinement éveillé (si non contre-indiqué).',
-      'Offrir une petite portion de nourriture facilement digestible 6-8 h après l\'intervention.',
-      'Surveiller les vomissements, diarrhée ou anorexie.',
-      'S\'assurer que l\'animal urine dans les 12-24 heures suivant la chirurgie.',
+      t('Offrir de l\'eau dès que l\'animal est pleinement éveillé (si non contre-indiqué).'),
+      t('Offrir une petite portion de nourriture facilement digestible 6-8 h après l\'intervention.'),
+      t('Surveiller les vomissements, diarrhée ou anorexie.'),
+      t('S\'assurer que l\'animal urine dans les 12-24 heures suivant la chirurgie.'),
     ],
   },
   {
     id: 'repos',
     icone: 'ti-moon',
     couleur: '#254D56',
-    titre: 'Repos et restriction d\'activité',
+    titre: t('Repos et restriction d\'activité'),
     items: [
-      'Limiter l\'activité physique pour 7 à 14 jours, selon la chirurgie.',
-      'Maintenir l\'animal en cage ou en pièce restreinte, sans sauts ni jeux vigoureux.',
-      'Utiliser une laisse courte lors des sorties hygiéniques.',
+      t('Limiter l\'activité physique pour 7 à 14 jours, selon la chirurgie.'),
+      t('Maintenir l\'animal en cage ou en pièce restreinte, sans sauts ni jeux vigoureux.'),
+      t('Utiliser une laisse courte lors des sorties hygiéniques.'),
     ],
   },
   {
     id: 'communication',
     icone: 'ti-phone-call',
     couleur: '#538073',
-    titre: 'Communication avec les propriétaires',
+    titre: t('Communication avec les propriétaires'),
     items: [
-      'Fournir des instructions écrites claires (médication, signes à surveiller, soins de la plaie).',
-      'Planifier un rendez-vous de suivi pour retirer les points (généralement après 10-14 jours) ou évaluer la cicatrisation.',
-      'Informer sur les signes d\'alerte : abattement persistant, fièvre, écoulement, halètement anormal, douleur marquée.',
+      t('Fournir des instructions écrites claires (médication, signes à surveiller, soins de la plaie).'),
+      t('Planifier un rendez-vous de suivi pour retirer les points (généralement après 10-14 jours) ou évaluer la cicatrisation.'),
+      t('Informer sur les signes d\'alerte : abattement persistant, fièvre, écoulement, halètement anormal, douleur marquée.'),
     ],
   },
 ]
 
 const SIGNES_ALERTE = [
-  'Abattement persistant ou détérioration de l\'état général',
-  'Fièvre (> 39,5 °C)',
-  'Écoulement, saignement ou odeur anormale à la plaie',
-  'Vomissements répétés ou anorexie prolongée',
-  'Difficulté respiratoire ou halètement anormal',
-  'Absence d\'urination dans les 24 heures post-op',
-  'Douleur intense malgré la médication',
+  t('Abattement persistant ou détérioration de l\'état général'),
+  t('Fièvre (> 39,5 °C)'),
+  t('Écoulement, saignement ou odeur anormale à la plaie'),
+  t('Vomissements répétés ou anorexie prolongée'),
+  t('Difficulté respiratoire ou halètement anormal'),
+  t('Absence d\'urination dans les 24 heures post-op'),
+  t('Douleur intense malgré la médication'),
 ]
 
 export default function ChirurgiePostOp() {
@@ -93,7 +94,7 @@ export default function ChirurgiePostOp() {
       <div className="postop-intro">
         <i className="ti ti-heart-rate-monitor postop-intro-icone"></i>
         <p className="postop-intro-texte">
-          Protocole de soins à appliquer après toute intervention chirurgicale. Adapter selon les instructions du vétérinaire responsable.
+          {t('Protocole de soins à appliquer après toute intervention chirurgicale. Adapter selon les instructions du vétérinaire responsable.')}
         </p>
       </div>
 
@@ -134,7 +135,7 @@ export default function ChirurgiePostOp() {
       <div className="postop-alerte-section">
         <div className="postop-alerte-header">
           <i className="ti ti-alert-triangle"></i>
-          <span>Signes d'alerte à signaler immédiatement</span>
+          <span>{t('Signes d\'alerte à signaler immédiatement')}</span>
         </div>
         <ul className="postop-alerte-liste">
           {SIGNES_ALERTE.map((signe, i) => (
@@ -149,7 +150,7 @@ export default function ChirurgiePostOp() {
       {/* ─── NOTE BAS ───────────────────────────── */}
       <div className="postop-note-bas">
         <i className="ti ti-info-circle"></i>
-        <span>Ce guide est un outil de référence. Toujours se fier aux directives spécifiques du vétérinaire traitant.</span>
+        <span>{t('Ce guide est un outil de référence. Toujours se fier aux directives spécifiques du vétérinaire traitant.')}</span>
       </div>
 
     </div>

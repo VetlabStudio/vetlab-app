@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import { t } from './i18n'
 
 /* ═══════════════════════════════════════════════════════════
    GABARIT PDF ADJUVET
@@ -399,8 +400,8 @@ export function finaliser(ctx, { sujet } = {}) {
     doc.setFont(police, 'normal')
     doc.setFontSize(7)
     doc.setTextColor(...COULEUR_LABEL)
-    doc.text("Ce PDF a été généré avec l'aide de l'application Adjuvet par Vetlab Studio, adjuvet.app", xPied, yPied + 5)
-    doc.text("Document d'aide au travail clinique. Le jugement du vétérinaire responsable prime en tout temps.", xPied, yPied + 8.5)
+    doc.text(t("Ce PDF a été généré avec l'aide de l'application Adjuvet par Vetlab Studio, adjuvet.app"), xPied, yPied + 5)
+    doc.text(t("Document d'aide au travail clinique. Le jugement du vétérinaire responsable prime en tout temps."), xPied, yPied + 8.5)
     doc.text(`${p} / ${nbPages}`, largeurPage - MARGE, yPied + 5, { align: 'right' })
   }
 }

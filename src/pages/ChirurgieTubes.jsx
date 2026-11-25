@@ -1,3 +1,4 @@
+import { t, chiffres } from '../lib/i18n'
 const CHIEN = [
   { poids: '2', tube: '5' },
   { poids: '3', tube: '5,5' },
@@ -32,14 +33,14 @@ export default function ChirurgieTubes() {
           <div className="labo-ref-header tubes-grid">
             <span className="tubes-header-espece">
               <img src="/icone-chien.svg" alt="chien" className="tubes-header-icone" />
-              Chien - Poids (kg)
+              {t('Chien - Poids (kg)')}
             </span>
-            <span className="tubes-header-val">Grosseur de tube (mm)</span>
+            <span className="tubes-header-val">{t('Grosseur de tube (mm)')}</span>
           </div>
           {CHIEN.map((row, i) => (
             <div key={i} className="labo-ref-ligne tubes-grid">
-              <span>{row.poids}</span>
-              <span className="tubes-val">{row.tube}</span>
+              <span>{chiffres(row.poids)}</span>
+              <span className="tubes-val">{chiffres(row.tube)}</span>
             </div>
           ))}
         </div>
@@ -51,21 +52,21 @@ export default function ChirurgieTubes() {
           <div className="labo-ref-header labo-ref-header--chat tubes-grid">
             <span className="tubes-header-espece">
               <img src="/icone-chat.svg" alt="chat" className="tubes-header-icone" />
-              Chat - Poids (kg)
+              {t('Chat - Poids (kg)')}
             </span>
-            <span className="tubes-header-val">Grosseur de tube (mm)</span>
+            <span className="tubes-header-val">{t('Grosseur de tube (mm)')}</span>
           </div>
           {CHAT.map((row, i) => (
             <div key={i} className="labo-ref-ligne tubes-grid">
-              <span>{row.poids}</span>
-              <span className="tubes-val">{row.tube}</span>
+              <span>{chiffres(row.poids)}</span>
+              <span className="tubes-val">{chiffres(row.tube)}</span>
             </div>
           ))}
         </div>
       </div>
 
       <p className="labo-ref-note tubes-note">
-        Ces valeurs sont des guides approximatifs. Toujours vérifier avec le vétérinaire responsable et avoir des tubes de taille supérieure et inférieure disponibles.
+        {t('Ces valeurs sont des guides approximatifs. Toujours vérifier avec le vétérinaire responsable et avoir des tubes de taille supérieure et inférieure disponibles.')}
       </p>
 
     </div>

@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import BadgePro from '../components/BadgePro'
+import { t } from '../lib/i18n'
 
 const REFERENCES = [
-  { id: 'electrodes', label: 'Positionnement des électrodes', icone: 'ti-plug', route: '/chirurgie/ecg/electrodes', pro: true },
-  { id: 'anomalies', label: 'Anomalies courantes', icone: 'ti-alert-triangle', route: '/chirurgie/ecg/anomalies', pro: true },
+  { id: 'electrodes', label: t('Positionnement des électrodes'), icone: 'ti-plug', route: '/chirurgie/ecg/electrodes', pro: true },
+  { id: 'anomalies', label: t('Anomalies courantes'), icone: 'ti-alert-triangle', route: '/chirurgie/ecg/anomalies', pro: true },
 ]
 
 export default function ChirurgieECG() {
@@ -12,7 +13,7 @@ export default function ChirurgieECG() {
   return (
     <div className="drogues-page">
 
-      <div className="labo-section-titre">Électrocardiographie (ECG)</div>
+      <div className="labo-section-titre">{t('Électrocardiographie (ECG)')}</div>
 
       <div className="labo-protocoles-grid">
         {REFERENCES.map(r => (
