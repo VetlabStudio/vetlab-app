@@ -199,7 +199,7 @@ useEffect(() => {
 
           {dureeSac > 0 && (
             <p className="range-hint" style={{ color: 'var(--accent-red)', fontWeight: 600 }}>
-              Durée du sac de fluide : {dureeSac} hrs
+              {t('Durée du sac de fluide : {d} hrs', { d: dureeSac })}
             </p>
           )}
         </div>

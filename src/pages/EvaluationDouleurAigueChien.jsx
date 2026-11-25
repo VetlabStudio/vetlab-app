@@ -199,7 +199,7 @@ export default function EvaluationDouleurAigueChien() {
               <span>{interpretation.titre}</span>
             </div>
             <p className="douleur-interpretation-texte">
-              Tension musculaire : {rowResultat.tension.texte}
+              {t('Tension musculaire : {x}', { x: rowResultat.tension.texte })}
               {rowResultat.tension.notes.length > 0 && ' — ' + rowResultat.tension.notes.join(' • ')}
             </p>
             <p className="douleur-interpretation-texte">{interpretation.texte}</p>

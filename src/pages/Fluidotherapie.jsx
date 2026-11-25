@@ -51,13 +51,13 @@ function rangeeDeshydratation(valeur) {
 const FORMULES = {
   chien: [
     { id: 'resting', court: 'RER',      label: t('132 × (Poids en kg)⁰·⁷⁵ ÷ 24 = ml/h'), calc: p => 132 * Math.pow(p, 0.75) / 24 },
-    { id: 'simple',  court: t('Simple'),   label: t('60 ml/kg/jour (2,5 ml/kg/h)'),          calc: p => (60 * p) / 24 },
-    { id: 'linear',  court: t('Linéaire'), label: t('(30 × Poids en kg + 70) ÷ 24 = ml/h'),  calc: p => (30 * p + 70) / 24 },
+    { id: 'simple',  court: 'Simple',   label: t('60 ml/kg/jour (2,5 ml/kg/h)'),          calc: p => (60 * p) / 24 },
+    { id: 'linear',  court: 'Linéaire', label: t('(30 × Poids en kg + 70) ÷ 24 = ml/h'),  calc: p => (30 * p + 70) / 24 },
   ],
   chat: [
     { id: 'resting', court: 'RER',      label: t('80 × (Poids en kg)⁰·⁷⁵ ÷ 24 = ml/h'),  calc: p => 80 * Math.pow(p, 0.75) / 24 },
-    { id: 'simple',  court: t('Simple'),   label: t('40 ml/kg/jour (1,67 ml/kg/h)'),         calc: p => (40 * p) / 24 },
-    { id: 'linear',  court: t('Linéaire'), label: t('(30 × Poids en kg + 70) ÷ 24 = ml/h'),  calc: p => (30 * p + 70) / 24 },
+    { id: 'simple',  court: 'Simple',   label: t('40 ml/kg/jour (1,67 ml/kg/h)'),         calc: p => (40 * p) / 24 },
+    { id: 'linear',  court: 'Linéaire', label: t('(30 × Poids en kg + 70) ÷ 24 = ml/h'),  calc: p => (30 * p + 70) / 24 },
   ],
 }
 
@@ -389,7 +389,7 @@ export default function Fluidotherapie() {
                 <p className="fluido-erreur">{t('Poids invalide, entrez une valeur supérieure à 0.')}</p>
               )}
               {unitePoids === 'lb' && poidsKg > 0 && (
-                <p className="range-hint">Soit {fmt(poidsKg, 2)} kg</p>
+                <p className="range-hint">{t('Soit {kg} kg', { kg: fmt(poidsKg, 2) })}</p>
               )}
             </div>
 
@@ -620,7 +620,7 @@ export default function Fluidotherapie() {
                 </p>
                 {facteurManuel !== null && facteurManuel !== facteurAuto && (
                   <button className="fluido-lien" onClick={() => setFacteurManuel(null)}>
-                    Rétablir le facteur recommandé ({facteurAuto} gtt/ml)
+                    {t('Rétablir le facteur recommandé ({f} gtt/ml)', { f: facteurAuto })}
                   </button>
                 )}
               </div>
@@ -687,7 +687,7 @@ export default function Fluidotherapie() {
       {debitHoraire > 0 && (
         <button className="fluido-barre" onClick={() => setDetailOuvert(true)}>
           <span className="fluido-barre-valeur">{fmt(debitHoraire)} ml/h</span>
-          {aRemplacer && <span className="fluido-barre-detail">pendant {duree} h</span>}
+          {aRemplacer && <span className="fluido-barre-detail">{t('pendant {d} h', { d: duree })}</span>}
           {/* Le mot dit qu'un appui ouvre le détail du calcul ; la flèche seule passait inaperçue. */}
           <span className="fluido-barre-ouvrir">
             {t('Détails')}
@@ -744,7 +744,7 @@ export default function Fluidotherapie() {
 
             <div className="resultat-card">
               <div className="resultat-ligne">
-                <span>Gouttes ({facteurGtts} gtt/ml)</span>
+                <span>{t('Gouttes ({f} gtt/ml)', { f: facteurGtts })}</span>
                 <strong>{fmt(gttsParMin)} gtt/min</strong>
               </div>
               <div className="resultat-ligne">

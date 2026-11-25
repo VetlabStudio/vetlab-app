@@ -754,8 +754,8 @@ export default function RCR() {
               <span className="rcr-defib-unite">J</span>
             </p>
             <p className="rcr-defib-detail">
-              {defib.label} · {defib.min} à {defib.max} J/kg
-              {poidsKg ? ` · premier choc ${formaterNombre(defib.min * poidsKg)} J` : ''}
+              {defib.label} · {t('{min} à {max} J/kg', { min: defib.min, max: defib.max })}
+              {poidsKg ? ` · ${t('premier choc {j} J', { j: formaterNombre(defib.min * poidsKg) })}` : ''}
             </p>
 
             <div className="rcr-defib-sep"></div>

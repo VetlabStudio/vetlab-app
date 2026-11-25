@@ -333,7 +333,7 @@ export default function BesoinEnergetique() {
               <button
                 className={`radio-btn ${uniteNourriture === 'tasse' ? 'active' : ''}`}
                 onClick={() => { setUniteNourriture('tasse'); setKcalNourriture('') }}
-              >kcal/tasse</button>
+              >{t('kcal/tasse')}</button>
             </div>
           </div>
         </div>
