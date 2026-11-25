@@ -1,3 +1,5 @@
+import { t } from '../lib/i18n'
+// Valeurs enregistrées en français ; affichées avec t(region).
 export const regions = [
   'Thorax',
   'Abdomen',
@@ -23,7 +25,7 @@ export const regions = [
 ]
 
 export const qualiteOptions = [
-  { value: 'bon', label: 'Bon résultat' },
-  { value: 'acceptable', label: 'Acceptable' },
-  { value: 'a_ajuster', label: 'À ajuster' },
+  { value: 'bon', label: t('Bon résultat') },
+  { value: 'acceptable', label: t('Acceptable') },
+  { value: 'a_ajuster', label: t('À ajuster') },
 ]

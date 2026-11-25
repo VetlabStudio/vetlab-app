@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
+import { t } from '../lib/i18n'
 
 export default function LaboNouveauProtocole() {
   const navigate = useNavigate()
@@ -97,20 +98,20 @@ export default function LaboNouveauProtocole() {
 
         {/* ─── TITRE ──────────────────────────── */}
         <div className="champ">
-          <label>Titre du protocole</label>
+          <label>{t('Titre du protocole')}</label>
           <div className="champ-input">
             <input
               type="text"
               value={titre}
               onChange={e => setTitre(e.target.value)}
-              placeholder="Ex: Coprologie par flottation"
+              placeholder={t('Ex: Coprologie par flottation')}
             />
           </div>
         </div>
 
         {/* ─── MATÉRIEL ───────────────────────── */}
 <div className="champ">
-  <label>Liste de matériel</label>
+  <label>{t('Liste de matériel')}</label>
   <div className="labo-materiel-liste">
     {materiel.map((item, index) => (
       <div key={index} className="labo-materiel-item">
@@ -134,7 +135,7 @@ export default function LaboNouveauProtocole() {
     ))}
   </div>
   <button className="labo-btn-ajouter-etape" onClick={ajouterMateriel}>
-    <i className="ti ti-plus"></i> Ajouter un item
+    <i className="ti ti-plus"></i> {t('Ajouter un item')}
   </button>
 </div>
 
@@ -145,7 +146,7 @@ export default function LaboNouveauProtocole() {
 
               {/* Header */}
               <div className="labo-nouveau-etape-header">
-                <span className="labo-nouveau-etape-num">Étape {index + 1}</span>
+                <span className="labo-nouveau-etape-num">{t('Étape {n}', { n: index + 1 })}</span>
                 {etapes.length > 1 && (
                   <button className="labo-btn-supprimer" onClick={() => supprimerEtape(etape.id)}>
                     <i className="ti ti-trash"></i>
@@ -155,25 +156,25 @@ export default function LaboNouveauProtocole() {
 
               {/* Titre étape */}
               <div className="champ" style={{ padding: '0 14px' }}>
-                <label>Titre</label>
+                <label>{t('Titre')}</label>
                 <div className="champ-input">
                   <input
                     type="text"
                     value={etape.titre}
                     onChange={e => modifierEtape(etape.id, 'titre', e.target.value)}
-                    placeholder="Titre de l'étape"
+                    placeholder={t('Titre de l\'étape')}
                   />
                 </div>
               </div>
 
               {/* Description étape */}
               <div className="champ" style={{ padding: '0 14px 14px' }}>
-                <label>Description</label>
+                <label>{t('Description')}</label>
                 <textarea
                   className="labo-etape-desc-input"
                   value={etape.description}
                   onChange={e => modifierEtape(etape.id, 'description', e.target.value)}
-                  placeholder="Description de l'étape..."
+                  placeholder={t('Description de l\'étape...')}
                   rows={3}
                   style={{ width: '100%', margin: 0 }}
                 />
@@ -185,7 +186,7 @@ export default function LaboNouveauProtocole() {
 
         {/* Bouton ajouter étape */}
         <button className="labo-btn-ajouter-etape" onClick={ajouterEtape}>
-          <i className="ti ti-plus"></i> Ajouter une étape
+          <i className="ti ti-plus"></i> {t('Ajouter une étape')}
         </button>
 
         {/* Bouton sauvegarder */}
@@ -195,7 +196,7 @@ export default function LaboNouveauProtocole() {
           disabled={sauvegarde || !titre.trim()}
           style={{ width: '100%', padding: '14px' }}
         >
-          {sauvegarde ? 'Sauvegarde...' : 'Créer le protocole'}
+          {sauvegarde ? 'Sauvegarde...' : t('Créer le protocole')}
         </button>
 
       </div>

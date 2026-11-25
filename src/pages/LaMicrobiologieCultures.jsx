@@ -1,83 +1,84 @@
 import { useState } from 'react'
+import { t } from '../lib/i18n'
 
 const RESULTATS = [
-  { resultat: 'Croissance absente', interpretation: 'Absence de bactéries cultivables. Peut indiquer une infection virale, fongique, ou un prélèvement sous antibiotiques.', couleur: 'var(--primary)' },
-  { resultat: 'Croissance légère (moins de 10³ UFC/mL)', interpretation: 'Souvent considéré comme contaminant pour les urines. Peut être significatif pour des prélèvements stériles (LCR, sang).', couleur: 'var(--accent-gold)' },
-  { resultat: 'Croissance modérée (10³ à 10⁵ UFC/mL)', interpretation: 'Significatif pour les urines selon les signes cliniques. À corréler avec la cytologie.', couleur: 'var(--accent-gold)' },
-  { resultat: 'Croissance abondante (plus de 10⁵ UFC/mL)', interpretation: 'Significatif : infection bactérienne confirmée pour les urines par cystocentèse.', couleur: 'var(--accent-red)' },
+  { resultat: t('Croissance absente'), interpretation: t('Absence de bactéries cultivables. Peut indiquer une infection virale, fongique, ou un prélèvement sous antibiotiques.'), couleur: 'var(--primary)' },
+  { resultat: t('Croissance légère (moins de 10³ UFC/mL)'), interpretation: t('Souvent considéré comme contaminant pour les urines. Peut être significatif pour des prélèvements stériles (LCR, sang).'), couleur: 'var(--accent-gold)' },
+  { resultat: t('Croissance modérée (10³ à 10⁵ UFC/mL)'), interpretation: t('Significatif pour les urines selon les signes cliniques. À corréler avec la cytologie.'), couleur: 'var(--accent-gold)' },
+  { resultat: t('Croissance abondante (plus de 10⁵ UFC/mL)'), interpretation: t('Significatif : infection bactérienne confirmée pour les urines par cystocentèse.'), couleur: 'var(--accent-red)' },
 ]
 
 const MILIEUX = [
   {
-    milieu: 'Gélose au sang (Blood agar)',
-    objectif: 'Milieu enrichi non sélectif utilisé pour isoler des bactéries exigeantes. Inoculation en stries ou piqûres.',
+    milieu: t('Gélose au sang (Blood agar)'),
+    objectif: t('Milieu enrichi non sélectif utilisé pour isoler des bactéries exigeantes. Inoculation en stries ou piqûres.'),
     reactions: [
-      'Bêta-hémolyse (claire) : Streptococcus pyogenes, E. coli',
-      'Alpha-hémolyse (verdâtre) : Streptococcus pneumoniae',
-      'Gamma-hémolyse (aucune) : Enterococcus faecalis',
+      t('Bêta-hémolyse (claire) : Streptococcus pyogenes, E. coli'),
+      t('Alpha-hémolyse (verdâtre) : Streptococcus pneumoniae'),
+      t('Gamma-hémolyse (aucune) : Enterococcus faecalis'),
     ],
   },
   {
-    milieu: 'Gélose MacConkey',
-    objectif: 'Milieu sélectif pour les entérobactéries (Gram négatif). Inoculation en stries.',
+    milieu: t('Gélose MacConkey'),
+    objectif: t('Milieu sélectif pour les entérobactéries (Gram négatif). Inoculation en stries.'),
     reactions: [
-      'Colonies roses : lactose positif (ex. E. coli)',
-      'Colonies incolores : lactose négatif (ex. Salmonella spp.)',
+      t('Colonies roses : lactose positif (ex. E. coli)'),
+      t('Colonies incolores : lactose négatif (ex. Salmonella spp.)'),
     ],
   },
   {
-    milieu: 'Bouillon au sélénite et bouillon tétrathionate',
-    objectif: 'Milieux d\'enrichissement pour isoler Salmonella spp. à partir de matières fécales ou autres échantillons contaminés. Inoculation directe, incubation 18 à 24 h.',
+    milieu: t('Bouillon au sélénite et bouillon tétrathionate'),
+    objectif: t('Milieux d\'enrichissement pour isoler Salmonella spp. à partir de matières fécales ou autres échantillons contaminés. Inoculation directe, incubation 18 à 24 h.'),
     reactions: [
-      'Pas de changement visuel notable; ensemencement subséquent sur gélose sélective (ex. XLD, SS agar)',
-      'Inhibe E. coli, favorise la croissance de Salmonella',
+      t('Pas de changement visuel notable; ensemencement subséquent sur gélose sélective (ex. XLD, SS agar)'),
+      t('Inhibe E. coli, favorise la croissance de Salmonella'),
     ],
   },
   {
-    milieu: 'Gélose TSI (Triple sucre-fer) en tube incliné',
-    objectif: 'Milieu différentiel pour identifier les entérobactéries fermentatives. Inoculation en piqûre et surface inclinée.',
+    milieu: t('Gélose TSI (Triple sucre-fer) en tube incliné'),
+    objectif: t('Milieu différentiel pour identifier les entérobactéries fermentatives. Inoculation en piqûre et surface inclinée.'),
     reactions: [
-      'Jaune/jaune (acid/acid) : glucose positif, lactose ou saccharose positif (ex. E. coli)',
-      'Rouge/jaune (alk/acid) : glucose positif seulement (ex. Salmonella)',
-      'Gaz (fissures) ou H2S (noir) : H2S positif (ex. Proteus)',
+      t('Jaune/jaune (acid/acid) : glucose positif, lactose ou saccharose positif (ex. E. coli)'),
+      t('Rouge/jaune (alk/acid) : glucose positif seulement (ex. Salmonella)'),
+      t('Gaz (fissures) ou H2S (noir) : H2S positif (ex. Proteus)'),
     ],
   },
   {
-    milieu: 'Milieu de motilité',
-    objectif: 'Permet de tester la motilité bactérienne. Inoculation en piqûre droite au centre.',
+    milieu: t('Milieu de motilité'),
+    objectif: t('Permet de tester la motilité bactérienne. Inoculation en piqûre droite au centre.'),
     reactions: [
-      'Diffusion de la culture hors de la ligne de piqûre : bactérie mobile (ex. Proteus spp.)',
-      'Croissance seulement sur la ligne : non mobile (ex. Klebsiella)',
+      t('Diffusion de la culture hors de la ligne de piqûre : bactérie mobile (ex. Proteus spp.)'),
+      t('Croissance seulement sur la ligne : non mobile (ex. Klebsiella)'),
     ],
   },
   {
-    milieu: 'Milieu indole (ex. tryptophane ou SIM)',
-    objectif: 'Détecte la production d\'indole à partir du tryptophane. Inoculation par piqûre, attendre 24 à 48 h, puis ajout de réactif de Kovacs.',
+    milieu: t('Milieu indole (ex. tryptophane ou SIM)'),
+    objectif: t('Détecte la production d\'indole à partir du tryptophane. Inoculation par piqûre, attendre 24 à 48 h, puis ajout de réactif de Kovacs.'),
     reactions: [
-      'Anneau rouge en surface : indole positif (ex. E. coli)',
-      'Aucun changement : indole négatif (ex. Klebsiella spp.)',
+      t('Anneau rouge en surface : indole positif (ex. E. coli)'),
+      t('Aucun changement : indole négatif (ex. Klebsiella spp.)'),
     ],
   },
   {
-    milieu: 'Sabouraud',
-    objectif: 'Dédié aux champignons et levures. Utilisé pour la dermatophytose et les infections fongiques.',
+    milieu: t('Sabouraud'),
+    objectif: t('Dédié aux champignons et levures. Utilisé pour la dermatophytose et les infections fongiques.'),
     reactions: [
-      'Croissance de colonies blanchâtres à colorées selon l\'espèce fongique',
+      t('Croissance de colonies blanchâtres à colorées selon l\'espèce fongique'),
     ],
   },
   {
-    milieu: 'Gélose chocolat',
-    objectif: 'Enrichi pour les bactéries fastidieuses (Haemophilus, Pasteurella). Utile pour les prélèvements respiratoires.',
+    milieu: t('Gélose chocolat'),
+    objectif: t('Enrichi pour les bactéries fastidieuses (Haemophilus, Pasteurella). Utile pour les prélèvements respiratoires.'),
     reactions: [
-      'Croissance de bactéries incapables de pousser sur gélose sang standard',
+      t('Croissance de bactéries incapables de pousser sur gélose sang standard'),
     ],
   },
   {
-    milieu: 'CLED (urines)',
-    objectif: 'Milieu différentiel pour les urines; permet de quantifier et différencier les bactéries urinaires.',
+    milieu: t('CLED (urines)'),
+    objectif: t('Milieu différentiel pour les urines; permet de quantifier et différencier les bactéries urinaires.'),
     reactions: [
-      'Colonies jaunes : fermenteurs de lactose',
-      'Colonies bleutées : non fermenteurs',
+      t('Colonies jaunes : fermenteurs de lactose'),
+      t('Colonies bleutées : non fermenteurs'),
     ],
   },
 ]
@@ -90,7 +91,7 @@ export default function LaMicrobiologieCultures() {
 
       {/* ─── RÉSULTATS ──────────────────────── */}
       <div className="labo-ref-section">
-        <h2 className="labo-ref-titre">Interprétation des résultats de culture</h2>
+        <h2 className="labo-ref-titre">{t('Interprétation des résultats de culture')}</h2>
         <div className="labo-etape-card">
           {RESULTATS.map((r, i) => (
             <div key={i} style={{ padding: '12px 14px', borderBottom: i < RESULTATS.length - 1 ? '1px solid var(--border)' : 'none' }}>
@@ -103,7 +104,7 @@ export default function LaMicrobiologieCultures() {
 
       {/* ─── MILIEUX ────────────────────────── */}
       <div className="labo-ref-section">
-        <h2 className="labo-ref-titre">Milieux de culture et interprétation</h2>
+        <h2 className="labo-ref-titre">{t('Milieux de culture et interprétation')}</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {MILIEUX.map((m, i) => {
             const estOuvert = ouvert === i
@@ -138,12 +139,12 @@ export default function LaMicrobiologieCultures() {
 
       {/* ─── HÉMOLYSE ───────────────────────── */}
       <div className="labo-ref-section">
-        <h2 className="labo-ref-titre">Hémolyse sur gélose sang</h2>
+        <h2 className="labo-ref-titre">{t('Hémolyse sur gélose sang')}</h2>
         <div className="labo-etape-card">
           {[
-            { type: 'Hémolyse bêta (complète)', description: 'Zone claire autour des colonies, lyse totale des hématies. Ex. Streptococcus bêta-hémolytique, Staphylococcus aureus.', couleur: 'var(--accent-red)' },
-            { type: 'Hémolyse alpha (partielle)', description: 'Halo verdâtre autour des colonies, oxydation partielle. Ex. Streptococcus viridans, Enterococcus.', couleur: 'var(--accent-gold)' },
-            { type: 'Hémolyse gamma (absence)', description: 'Pas de halo, pas de lyse des hématies. Ex. Staphylococcus epidermidis.', couleur: 'var(--primary)' },
+            { type: t('Hémolyse bêta (complète)'), description: t('Zone claire autour des colonies, lyse totale des hématies. Ex. Streptococcus bêta-hémolytique, Staphylococcus aureus.'), couleur: 'var(--accent-red)' },
+            { type: t('Hémolyse alpha (partielle)'), description: t('Halo verdâtre autour des colonies, oxydation partielle. Ex. Streptococcus viridans, Enterococcus.'), couleur: 'var(--accent-gold)' },
+            { type: t('Hémolyse gamma (absence)'), description: t('Pas de halo, pas de lyse des hématies. Ex. Staphylococcus epidermidis.'), couleur: 'var(--primary)' },
           ].map((h, i) => (
             <div key={i} style={{ padding: '10px 14px', borderBottom: i < 2 ? '1px solid var(--border)' : 'none', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
               <span style={{ width: 12, height: 12, borderRadius: '50%', background: h.couleur, flexShrink: 0, marginTop: 3 }}></span>

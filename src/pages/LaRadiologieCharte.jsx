@@ -4,6 +4,7 @@ import useCharteRadio from '../hooks/useCharteRadio'
 import { qualiteOptions } from '../data/charteRadioOptions'
 import { ESPECES_CONFIG } from '../data/especes'
 import { useProfil } from '../context/ProfilContext'
+import { t, enAnglais } from '../lib/i18n'
 
 const QUALITE_LABEL = Object.fromEntries(qualiteOptions.map(q => [q.value, q.label]))
 
@@ -45,34 +46,32 @@ export default function LaRadiologieCharte() {
         <div className="postop-intro">
           <i className="ti ti-notebook postop-intro-icone"></i>
           <p className="postop-intro-texte">
-            Votre aide-mémoire de réglages. Après un bon cliché, notez le kV, le mAs et la distance utilisés, avec l'espèce, la région et l'épaisseur mesurée.
-            La prochaine fois, pour un animal semblable, vous repartez de ces valeurs au lieu de chercher.
-            Chaque appareil est différent : une charte faite sur le vôtre est plus fiable qu'un tableau général.
-            {estEquipe && teamId && ' Vos entrées sont partagées avec votre clinique.'}
+            {t('Votre aide-mémoire de réglages. Après un bon cliché, notez le kV, le mAs et la distance utilisés, avec l\'espèce, la région et l\'épaisseur mesurée. La prochaine fois, pour un animal semblable, vous repartez de ces valeurs au lieu de chercher. Chaque appareil est différent : une charte faite sur le vôtre est plus fiable qu\'un tableau général.')}
+            {estEquipe && teamId && ' ' + t('Vos entrées sont partagées avec votre clinique.')}
           </p>
         </div>
       </div>
 
       <div className="admin-filtres">
         <select className="admin-select" value={rechercheEspece} onChange={e => setRechercheEspece(e.target.value)}>
-          <option value="toutes">Toutes les espèces</option>
+          <option value="toutes">{t('Toutes les espèces')}</option>
           {especesPresentes.map(id => <option key={id} value={id}>{ESPECES_CONFIG[id]?.label || id}</option>)}
         </select>
         <select className="admin-select" value={rechercheRegion} onChange={e => setRechercheRegion(e.target.value)}>
-          <option value="toutes">Toutes les régions</option>
-          {regionsPresentes.map(r => <option key={r} value={r}>{r}</option>)}
+          <option value="toutes">{t('Toutes les régions')}</option>
+          {regionsPresentes.map(r => <option key={r} value={r}>{t(r)}</option>)}
         </select>
       </div>
 
       {loading ? (
-        <div className="admin-loading">Chargement...</div>
+        <div className="admin-loading">{t('Chargement...')}</div>
       ) : (
         <div className="admin-liste">
           {entreesFiltrees.length === 0 ? (
             <div className="admin-vide">
               {entrees.length === 0
-                ? 'Aucune entrée pour l\'instant. Après votre prochain bon cliché, appuyez sur + pour noter ses réglages.'
-                : 'Aucune entrée ne correspond à ce filtre.'}
+                ? t('Aucune entrée pour l\'instant. Après votre prochain bon cliché, appuyez sur + pour noter ses réglages.')
+                : t('Aucune entrée ne correspond à ce filtre.')}
             </div>
           ) : (
             entreesFiltrees.map(e => (
@@ -80,7 +79,7 @@ export default function LaRadiologieCharte() {
 
                 <div className="charte-item-haut">
                   <div className="charte-item-titre">
-                    <span className="charte-item-region">{e.region}</span>
+                    <span className="charte-item-region">{t(e.region)}</span>
                     <span className="charte-item-espece">{ESPECES_CONFIG[e.espece]?.label || e.espece}</span>
                   </div>
                   {e.qualite && (
@@ -99,7 +98,7 @@ export default function LaRadiologieCharte() {
                   </div>
                   <div className="charte-valeur">
                     <span className="charte-valeur-num">{e.dff}</span>
-                    <span className="charte-valeur-unit">cm DFF</span>
+                    <span className="charte-valeur-unit">{t('cm DFF')}</span>
                   </div>
                 </div>
 
@@ -113,7 +112,7 @@ export default function LaRadiologieCharte() {
                     )}
                     {e.grille && (
                       <span className="charte-detail-item">
-                        <i className="ti ti-grid-dots"></i>Grille antidiffusante
+                        <i className="ti ti-grid-dots"></i>{t('Grille antidiffusante')}
                       </span>
                     )}
                   </div>
@@ -123,7 +122,7 @@ export default function LaRadiologieCharte() {
 
                 <div className="charte-item-bas">
                   {e.ajoutee_par && (
-                    <span className="charte-item-ajouteur">Ajouté par {e.ajoutee_par}</span>
+                    <span className="charte-item-ajouteur">{t('Ajouté par {nom}', { nom: e.ajoutee_par })}</span>
                   )}
                   {peutModifier(e) && (
                     <div className="admin-item-actions">
@@ -145,21 +144,23 @@ export default function LaRadiologieCharte() {
         <div className="popup-overlay" onClick={() => setASupprimer(null)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Supprimer l'entrée</span>
+              <span>{t('Supprimer l\'entrée')}</span>
               <button className="popup-close" onClick={() => setASupprimer(null)}>✕</button>
             </div>
             <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
               <i className="ti ti-trash" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
               <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                Supprimer l'entrée « {aSupprimer.region} / {aSupprimer.espece} » ? Cette action est irréversible.
+                {enAnglais
+                  ? <>Delete the entry "{t(aSupprimer.region)} / {aSupprimer.espece}"? This action cannot be undone.</>
+                  : <>Supprimer l'entrée « {aSupprimer.region} / {aSupprimer.espece} » ? Cette action est irréversible.</>}
               </p>
             </div>
             <div className="popup-actions-centrees">
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setASupprimer(null)}>
-                Annuler
+                {t('Annuler')}
               </button>
               <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={supprimer}>
-                Supprimer
+                {t('Supprimer')}
               </button>
             </div>
           </div>

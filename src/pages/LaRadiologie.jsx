@@ -4,14 +4,15 @@ import { supabase } from '../lib/supabase'
 import BadgePro from '../components/BadgePro'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
+import { t } from '../lib/i18n'
 
 const CATEGORIE_ID = 'af3ffd7b-ac2f-4e43-adf0-7108bf79099c'
 
 const REFERENCES = [
   // Gratuite : c'est de la sécurité au travail, pas une fonction Pro.
-  { id: 'radioprotection', label: 'Radioprotection', icone: 'ti-shield-check', route: '/labo/radiologie/radioprotection', pro: false },
-  { id: 'notions-base', label: 'Notions de base : mA, kVp et distance', icone: 'ti-radioactive', route: '/labo/radiologie/notions-base', pro: true },
-  { id: 'charte', label: 'Charte radiographique personnalisée', icone: 'ti-notebook', route: '/labo/radiologie/charte', pro: true },
+  { id: 'radioprotection', label: t('Radioprotection'), icone: 'ti-shield-check', route: '/labo/radiologie/radioprotection', pro: false },
+  { id: 'notions-base', label: t('Notions de base : mA, kVp et distance'), icone: 'ti-radioactive', route: '/labo/radiologie/notions-base', pro: true },
+  { id: 'charte', label: t('Charte radiographique personnalisée'), icone: 'ti-notebook', route: '/labo/radiologie/charte', pro: true },
 ]
 
 export default function LaRadiologie() {
@@ -42,13 +43,13 @@ export default function LaRadiologie() {
   return (
     <div className="drogues-page">
 
-      <div className="labo-section-titre">Protocoles</div>
+      <div className="labo-section-titre">{t('Protocoles')}</div>
       <div className="labo-protocoles-grid">
-        {loading ? <div className="admin-loading">Chargement...</div>
-          : protocoles.length === 0 ? <p className="admin-vide">Aucun protocole dans cette catégorie.</p>
+        {loading ? <div className="admin-loading">{t('Chargement...')}</div>
+          : protocoles.length === 0 ? <p className="admin-vide">{t('Aucun protocole dans cette catégorie.')}</p>
           : protocoles.map(p => (
             <button key={p.id} className="labo-protocole-btn" onClick={() => navigate(`/labo/protocole/${p.id}?type=${p.type}`)}>
-              <span style={{ flex: 1 }}>{p.titre}</span>
+              <span style={{ flex: 1 }}>{t(p.titre)}</span>
               <i className="ti ti-chevron-right" style={{ fontSize: 14, color: 'var(--text-hint)', flexShrink: 0 }}></i>
             </button>
           ))}
@@ -57,11 +58,11 @@ export default function LaRadiologie() {
       {/* Un membre de la clinique consulte les protocoles sans en ajouter. */}
       {!lectureSeule && (
         <button className="labo-btn-ajouter" onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
-          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} Ajouter un protocole
+          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} {t('Ajouter un protocole')}
         </button>
       )}
 
-      <div className="labo-section-titre" style={{ marginTop: 8 }}>Références & Interprétation</div>
+      <div className="labo-section-titre" style={{ marginTop: 8 }}>{t('Références & Interprétation')}</div>
       <div className="labo-protocoles-grid">
         {REFERENCES.map(r => (
           <button

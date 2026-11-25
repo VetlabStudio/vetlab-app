@@ -1,54 +1,55 @@
 import { useState } from 'react'
+import { t, tn, chiffres } from '../lib/i18n'
 
 const SECTIONS = [
   {
-    titre: 'Densité urinaire',
-    colonnes: ['Paramètre', 'Chien', 'Chat'],
+    titre: t('Densité urinaire'),
+    colonnes: [t('Paramètre'), t('Chien'), t('Chat')],
     lignes: [
-      { param: 'Plage physiologique possible', chien: '1,001–1,075', chat: '1,001–1,085' },
-      { param: 'Valeurs usuelles courantes', chien: '1,020–1,040', chat: '1,035–1,060' },
-      { param: 'Rein fonctionnel (animal hydraté)', chien: '≥ 1,025–1,035', chat: '≥ 1,040–1,055' },
-      { param: 'Isosthénurie (signe d\'alerte)', chien: '1,007–1,015', chat: '1,007–1,015', alerte: true },
-      { param: 'Hyposthénurie', chien: '< 1,007', chat: '< 1,007', alerte: true },
+      { param: t('Plage physiologique possible'), chien: '1,001–1,075', chat: '1,001–1,085' },
+      { param: t('Valeurs usuelles courantes'), chien: '1,020–1,040', chat: '1,035–1,060' },
+      { param: t('Rein fonctionnel (animal hydraté)'), chien: '≥ 1,025–1,035', chat: '≥ 1,040–1,055' },
+      { param: t('Isosthénurie (signe d\'alerte)'), chien: '1,007–1,015', chat: '1,007–1,015', alerte: true },
+      { param: t('Hyposthénurie'), chien: '< 1,007', chat: '< 1,007', alerte: true },
     ],
     renderLigne: (row, i) => (
       <div key={i} className={`labo-ref-ligne${row.alerte ? ' alerte' : ''}`}>
         <span>{row.param}</span>
-        <span>{row.chien}</span>
-        <span>{row.chat}</span>
+        <span>{chiffres(row.chien)}</span>
+        <span>{chiffres(row.chat)}</span>
       </div>
     ),
   },
   {
-    titre: 'Paramètres de la bandelette',
-    colonnes: ['Paramètre', 'Valeur normale', 'Seuil d\'alerte'],
+    titre: t('Paramètres de la bandelette'),
+    colonnes: [t('Paramètre'), t('Valeur normale'), t('Seuil d\'alerte')],
     lignes: [
-      { param: 'pH', normal: '5,0–7,5', alerte_val: '< 5 ou > 7,5' },
-      { param: 'Protéines', normal: 'Négatif à trace', alerte_val: '> 1+ avec culot inactif' },
-      { param: 'Glucose', normal: 'Négatif', alerte_val: 'Toute détection = anormale' },
-      { param: 'Corps cétoniques', normal: 'Négatif', alerte_val: 'Toute détection = anormale' },
-      { param: 'Bilirubine', normal: 'Négatif', alerte_val: 'Trace acceptable chien mâle dense seulement' },
-      { param: 'Sang / Hémoglobine', normal: 'Négatif', alerte_val: 'Toute détection - confirmer au culot' },
+      { param: 'pH', normal: '5,0–7,5', alerte_val: t('< 5 ou > 7,5') },
+      { param: t('Protéines'), normal: t('Négatif à trace'), alerte_val: t('> 1+ avec culot inactif') },
+      { param: t('Glucose'), normal: t('Négatif'), alerte_val: t('Toute détection = anormale') },
+      { param: t('Corps cétoniques'), normal: t('Négatif'), alerte_val: t('Toute détection = anormale') },
+      { param: t('Bilirubine'), normal: t('Négatif'), alerte_val: t('Trace acceptable chien mâle dense seulement') },
+      { param: t('Sang / Hémoglobine'), normal: t('Négatif'), alerte_val: t('Toute détection - confirmer au culot') },
     ],
     renderLigne: (row, i) => (
       <div key={i} className="labo-ref-ligne">
         <span>{row.param}</span>
-        <span className="labo-ref-normal">{row.normal}</span>
-        <span className="labo-ref-alerte-val">{row.alerte_val}</span>
+        <span className="labo-ref-normal">{chiffres(row.normal)}</span>
+        <span className="labo-ref-alerte-val">{chiffres(row.alerte_val)}</span>
       </div>
     ),
   },
   {
-    titre: 'Sédiment urinaire - seuils',
-    note: 'Champ ×400 sauf indication',
-    colonnes: ['Élément', 'Normal', 'Anormal'],
+    titre: t('Sédiment urinaire - seuils'),
+    note: t('Champ ×400 sauf indication'),
+    colonnes: [t('Élément'), t('Normal'), t('Anormal')],
     lignes: [
-      { element: 'Hématies', normal: '0–5', anormal: '> 5' },
-      { element: 'Leucocytes', normal: '0–5', anormal: '> 5' },
-      { element: 'Bactéries (cystocentèse)', normal: 'Absentes', anormal: 'Toute présence' },
-      { element: 'Cylindres hyalins (×100)', normal: '0–2 / champ', anormal: '> 2' },
-      { element: 'Cylindres granuleux / cellulaires', normal: 'Absents', anormal: 'Toute présence' },
-      { element: 'Cellules épithéliales non squameuses', normal: 'Rares', anormal: 'Agrégats ou abondance' },
+      { element: t('Hématies'), normal: '0–5', anormal: '> 5' },
+      { element: t('Leucocytes'), normal: '0–5', anormal: '> 5' },
+      { element: t('Bactéries (cystocentèse)'), normal: t('Absentes'), anormal: t('Toute présence') },
+      { element: t('Cylindres hyalins (×100)'), normal: t('0–2 / champ'), anormal: '> 2' },
+      { element: t('Cylindres granuleux / cellulaires'), normal: t('Absents'), anormal: t('Toute présence') },
+      { element: t('Cellules épithéliales non squameuses'), normal: t('Rares'), anormal: t('Agrégats ou abondance') },
     ],
     renderLigne: (row, i) => (
       <div key={i} className="labo-ref-ligne">
@@ -76,7 +77,7 @@ export default function LaboUrologieValeurs() {
               >
                 <span className="labo-ref-titre">{section.titre}</span>
                 <span style={{ fontSize: 12, color: 'var(--text-hint)', marginRight: 4 }}>
-                  {section.lignes.length} paramètres
+                  {tn(section.lignes.length, '{n} paramètre', '{n} paramètres')}
                 </span>
                 <i className={`ti ti-chevron-down labo-tube-chevron${estOuvert ? ' ouvert' : ''}`}></i>
               </button>

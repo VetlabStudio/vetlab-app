@@ -6,6 +6,7 @@ import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 import SignalerErreur from '../components/SignalerErreur'
+import { t, enAnglais } from '../lib/i18n'
 
 export default function LaboProtocoleDetail() {
   const navigate = useNavigate()
@@ -186,7 +187,7 @@ export default function LaboProtocoleDetail() {
   function ajouterEtape() {
     setEtapes(prev => [...prev, {
       id: `new-${Date.now()}`,
-      titre: `Étape ${prev.length + 1}`,
+      titre: t('Étape {n}', { n: prev.length + 1 }),
       description: '',
       visible: true,
       ordre: prev.length,
@@ -205,8 +206,8 @@ async function supprimerProtocole() {
     setEtapes(prev => prev.filter(e => e.id !== etapeId))
   }
 
-  if (loading) return <div className="admin-loading">Chargement...</div>
-  if (!protocole) return <div className="admin-vide">Protocole introuvable</div>
+  if (loading) return <div className="admin-loading">{t('Chargement...')}</div>
+  if (!protocole) return <div className="admin-vide">{t('Protocole introuvable')}</div>
 
   const etapesVisibles = modeEdit ? etapes : etapes.filter(e => e.visible !== false)
   const materielAffiche = materiel.filter(m => m.trim())
@@ -219,13 +220,13 @@ async function supprimerProtocole() {
         {modeEdit ? (
           <>
             <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); recharger() }}>
-              Annuler
+              {t('Annuler')}
             </button>
             <button className="labo-btn-reorganiser" onClick={() => setShowReorganiser(true)}>
-              Réorganiser
+              {t('Réorganiser')}
             </button>
             <button className="labo-btn-primary" onClick={sauvegarderModifications}>
-              Enregistrer
+              {t('Enregistrer')}
             </button>
           </>
         ) : (
@@ -239,8 +240,8 @@ async function supprimerProtocole() {
   }
 }}>
   {type === 'base'
-    ? <>{!estPro && <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i>}Personnaliser ce protocole</>
-    : 'Modifier le protocole'}
+    ? <>{!estPro && <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i>}{t('Personnaliser ce protocole')}</>
+    : t('Modifier le protocole')}
 </button>
           )
         )}
@@ -249,13 +250,13 @@ async function supprimerProtocole() {
       {/* ─── TITRE ──────────────────────────── */}
 {modeEdit && (
   <div className="champ">
-    <label>Titre du protocole</label>
+    <label>{t('Titre du protocole')}</label>
     <div className="champ-input">
       <input
         type="text"
         value={protocole?.titre || ''}
         onChange={e => setProtocole(prev => ({ ...prev, titre: e.target.value }))}
-        placeholder="Titre du protocole"
+        placeholder={t('Titre du protocole')}
       />
     </div>
   </div>
@@ -264,7 +265,7 @@ async function supprimerProtocole() {
       {/* ─── MATÉRIEL ───────────────────────── */}
       {(modeEdit || materielAffiche.length > 0) && (
         <div className="labo-etape-card" style={{ padding: 14 }}>
-          <h3 className="labo-etape-titre" style={{ margin: '0 0 12px 0' }}>Liste de matériel</h3>
+          <h3 className="labo-etape-titre" style={{ margin: '0 0 12px 0' }}>{t('Liste de matériel')}</h3>
           {modeEdit ? (
             <>
               <div className="labo-materiel-liste">
@@ -293,13 +294,13 @@ async function supprimerProtocole() {
                 ))}
               </div>
               <button className="labo-btn-ajouter-etape" style={{ marginTop: 8 }} onClick={() => setMateriel(prev => [...prev, ''])}>
-                <i className="ti ti-plus"></i> Ajouter un item
+                <i className="ti ti-plus"></i> {t('Ajouter un item')}
               </button>
             </>
           ) : (
             <ul className="labo-materiel-affichage">
               {materielAffiche.map((item, i) => (
-                <li key={i}>{item}</li>
+                <li key={i}>{t(item)}</li>
               ))}
             </ul>
           )}
@@ -328,7 +329,7 @@ async function supprimerProtocole() {
               onChange={e => setEtapes(prev => prev.map(et =>
                 et.id === etape.id ? { ...et, description: e.target.value } : et
               ))}
-              placeholder="Description de l'étape..."
+              placeholder={t('Description de l\'étape...')}
               rows={3}
             />
 
@@ -342,7 +343,7 @@ async function supprimerProtocole() {
                     et.id === etape.id ? { ...et, visible: e.target.checked } : et
                   ))}
                 />
-                Visible
+                {t('Visible')}
               </label>
               <button className="labo-btn-supprimer" onClick={() => supprimerEtape(etape.id)}>
   <i className="ti ti-trash"></i>
@@ -357,15 +358,15 @@ async function supprimerProtocole() {
             <div className="postop-section-icone" style={{ background: '#254D5618', color: '#254D56' }}>
               <i className="ti ti-list-check"></i>
             </div>
-            <h2 className="postop-section-titre">{protocole.titre}</h2>
+            <h2 className="postop-section-titre">{t(protocole.titre)}</h2>
           </div>
           <ol className="postop-liste">
             {etapesVisibles.map((etape, index) => (
               <li key={etape.id} className="postop-liste-item">
                 <span className="postop-num">{index + 1}</span>
                 <span className="postop-texte">
-                  <strong>{etape.titre}</strong>
-                  {etape.description && <><br />{etape.description}</>}
+                  <strong>{t(etape.titre)}</strong>
+                  {etape.description && <><br />{t(etape.description)}</>}
                 </span>
               </li>
             ))}
@@ -376,7 +377,7 @@ async function supprimerProtocole() {
       {modeEdit && (
       <div className="labo-etapes">
         <button className="labo-btn-ajouter-etape" onClick={ajouterEtape}>
-          <i className="ti ti-plus"></i> Ajouter une étape
+          <i className="ti ti-plus"></i> {t('Ajouter une étape')}
         </button>
       </div>
       )}
@@ -385,24 +386,24 @@ async function supprimerProtocole() {
   <div className="labo-actions-bas" style={{ flexDirection: 'column', gap: 8 }}>
     <div style={{ display: 'flex', gap: 8 }}>
       <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); recharger() }}>
-        Annuler
+        {t('Annuler')}
       </button>
       <button className="labo-btn-primary" onClick={sauvegarderModifications}>
-        Enregistrer
+        {t('Enregistrer')}
       </button>
     </div>
     <button className="btn-supprimer-medicament" onClick={() => setShowConfirmSupprimer(true)}>
-      Supprimer ce protocole
+      {t('Supprimer ce protocole')}
     </button>
   </div>
 )}
 {modeEdit && type === 'base' && (
   <div className="labo-actions">
     <button className="labo-btn-secondary" onClick={() => { setModeEdit(false); recharger() }}>
-      Annuler
+      {t('Annuler')}
     </button>
     <button className="labo-btn-primary" onClick={sauvegarderModifications}>
-      Enregistrer
+      {t('Enregistrer')}
     </button>
   </div>
 )}
@@ -416,11 +417,11 @@ async function supprimerProtocole() {
   <div className="popup-overlay">
     <div className="popup-card">
       <div className="popup-header">
-        <span>Réorganiser les étapes</span>
+        <span>{t('Réorganiser les étapes')}</span>
         <button className="popup-close" onClick={() => setShowReorganiser(false)}>✕</button>
       </div>
       <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 12 }}>
-        Glisser pour réorganiser — cocher/décocher pour afficher/masquer
+        {t('Glisser pour réorganiser — cocher/décocher pour afficher/masquer')}
       </p>
       <div className="labo-reorganiser-liste">
         {etapes.map((etape, index) => (
@@ -448,13 +449,13 @@ async function supprimerProtocole() {
                 et.id === etape.id ? { ...et, visible: e.target.checked } : et
               ))}
             />
-            <span className="labo-reorganiser-titre">{index + 1}. {etape.titre}</span>
+            <span className="labo-reorganiser-titre">{index + 1}. {t(etape.titre)}</span>
             <i className="ti ti-grip-vertical" style={{ color: 'var(--text-hint)', fontSize: 18, cursor: 'grab' }}></i>
           </div>
         ))}
       </div>
       <button className="labo-btn-primary" style={{ marginTop: 16, width: '100%' }} onClick={() => setShowReorganiser(false)}>
-        Confirmer
+        {t('Confirmer')}
       </button>
     </div>
   </div>
@@ -464,21 +465,23 @@ async function supprimerProtocole() {
   <div className="popup-overlay" onClick={() => setShowConfirmSupprimer(false)}>
     <div className="popup-card" onClick={e => e.stopPropagation()}>
       <div className="popup-header">
-        <span>Supprimer le protocole</span>
+        <span>{t('Supprimer le protocole')}</span>
         <button className="popup-close" onClick={() => setShowConfirmSupprimer(false)}>✕</button>
       </div>
       <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
         <i className="ti ti-trash" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
         <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-          Supprimer <strong>{protocole.titre}</strong> ? Cette action est irréversible.
+          {enAnglais
+            ? <>Delete <strong>{t(protocole.titre)}</strong>? This action cannot be undone.</>
+            : <>Supprimer <strong>{protocole.titre}</strong> ? Cette action est irréversible.</>}
         </p>
       </div>
       <div className="popup-actions-centrees">
         <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setShowConfirmSupprimer(false)}>
-          Annuler
+          {t('Annuler')}
         </button>
         <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={supprimerProtocole}>
-          Supprimer
+          {t('Supprimer')}
         </button>
       </div>
     </div>

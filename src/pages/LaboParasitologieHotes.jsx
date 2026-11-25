@@ -1,47 +1,48 @@
 import { useState } from 'react'
+import { t, tn, enAnglais } from '../lib/i18n'
 
 const PARASITES = [
   {
-    categorie: 'Nématodes (vers ronds)',
+    categorie: t('Nématodes (vers ronds)'),
     items: [
-      { parasite: 'Toxocara canis',            chien: 'oui',  chat: 'non',        transmission: 'Ingestion œufs, transplacentaire, lait',            localisation: 'Intestin grêle' },
-      { parasite: 'Toxocara cati',             chien: 'non',  chat: 'oui',        transmission: 'Ingestion œufs, lait',                              localisation: 'Intestin grêle' },
-      { parasite: 'Toxascaris leonina',        chien: 'oui',  chat: 'oui',        transmission: 'Ingestion œufs / hôte paraténique',                 localisation: 'Intestin grêle' },
-      { parasite: 'Ancylostoma caninum',       chien: 'oui',  chat: 'partiel',    transmission: 'Peau, ingestion, lait',                             localisation: 'Intestin grêle' },
-      { parasite: 'Uncinaria stenocephala',    chien: 'oui',  chat: 'partiel',    transmission: 'Peau, ingestion',                                   localisation: 'Intestin grêle' },
-      { parasite: 'Trichuris vulpis',          chien: 'oui',  chat: 'non',        transmission: 'Ingestion œufs embryonnés',                         localisation: 'Cæcum / côlon' },
-      { parasite: 'Strongyloides stercoralis', chien: 'oui',  chat: 'non',        transmission: 'Peau, ingestion, lait',                             localisation: 'Intestin grêle' },
-      { parasite: 'Dirofilaria immitis',       chien: 'oui',  chat: 'oui',        transmission: 'Moustique (vecteur)',                                localisation: 'Artère pulmonaire / cœur droit' },
+      { parasite: t('Toxocara canis'),            chien: 'oui',  chat: 'non',        transmission: t('Ingestion œufs, transplacentaire, lait'),            localisation: t('Intestin grêle') },
+      { parasite: t('Toxocara cati'),             chien: 'non',  chat: 'oui',        transmission: t('Ingestion œufs, lait'),                              localisation: t('Intestin grêle') },
+      { parasite: t('Toxascaris leonina'),        chien: 'oui',  chat: 'oui',        transmission: t('Ingestion œufs / hôte paraténique'),                 localisation: t('Intestin grêle') },
+      { parasite: t('Ancylostoma caninum'),       chien: 'oui',  chat: 'partiel',    transmission: t('Peau, ingestion, lait'),                             localisation: t('Intestin grêle') },
+      { parasite: t('Uncinaria stenocephala'),    chien: 'oui',  chat: 'partiel',    transmission: t('Peau, ingestion'),                                   localisation: t('Intestin grêle') },
+      { parasite: t('Trichuris vulpis'),          chien: 'oui',  chat: 'non',        transmission: t('Ingestion œufs embryonnés'),                         localisation: t('Cæcum / côlon') },
+      { parasite: t('Strongyloides stercoralis'), chien: 'oui',  chat: 'non',        transmission: t('Peau, ingestion, lait'),                             localisation: t('Intestin grêle') },
+      { parasite: t('Dirofilaria immitis'),       chien: 'oui',  chat: 'oui',        transmission: t('Moustique (vecteur)'),                                localisation: t('Artère pulmonaire / cœur droit') },
     ],
   },
   {
-    categorie: 'Cestodes (vers plats)',
+    categorie: t('Cestodes (vers plats)'),
     items: [
-      { parasite: 'Dipylidium caninum',          chien: 'oui', chat: 'oui', transmission: 'Ingestion puce infestée (Ctenocephalides)',       localisation: 'Intestin grêle' },
-      { parasite: 'Taenia pisiformis',           chien: 'oui', chat: 'non', transmission: 'Ingestion lapin / lièvre (hôte intermédiaire)',   localisation: 'Intestin grêle' },
-      { parasite: 'Taenia taeniaeformis',        chien: 'non', chat: 'oui', transmission: 'Ingestion rongeur (hôte intermédiaire)',          localisation: 'Intestin grêle' },
-      { parasite: 'Echinococcus granulosus',     chien: 'oui', chat: 'non', transmission: 'Ingestion viscères de ruminants',                localisation: 'Intestin grêle' },
-      { parasite: 'Echinococcus multilocularis', chien: 'oui', chat: 'oui', transmission: 'Ingestion rongeur (hôte intermédiaire)',          localisation: 'Intestin grêle' },
+      { parasite: t('Dipylidium caninum'),          chien: 'oui', chat: 'oui', transmission: t('Ingestion puce infestée (Ctenocephalides)'),       localisation: t('Intestin grêle') },
+      { parasite: t('Taenia pisiformis'),           chien: 'oui', chat: 'non', transmission: t('Ingestion lapin / lièvre (hôte intermédiaire)'),   localisation: t('Intestin grêle') },
+      { parasite: t('Taenia taeniaeformis'),        chien: 'non', chat: 'oui', transmission: t('Ingestion rongeur (hôte intermédiaire)'),          localisation: t('Intestin grêle') },
+      { parasite: t('Echinococcus granulosus'),     chien: 'oui', chat: 'non', transmission: t('Ingestion viscères de ruminants'),                localisation: t('Intestin grêle') },
+      { parasite: t('Echinococcus multilocularis'), chien: 'oui', chat: 'oui', transmission: t('Ingestion rongeur (hôte intermédiaire)'),          localisation: t('Intestin grêle') },
     ],
   },
   {
-    categorie: 'Protozoaires',
+    categorie: t('Protozoaires'),
     items: [
-      { parasite: 'Giardia duodenalis',   chien: 'oui',     chat: 'oui',      transmission: 'Ingestion kystes (eau, fèces)',            localisation: 'Intestin grêle' },
-      { parasite: 'Cryptosporidium spp.', chien: 'oui',     chat: 'oui',      transmission: 'Fécal-oral (oocystes)',                    localisation: 'Intestin grêle / gros intestin' },
-      { parasite: 'Isospora canis',       chien: 'oui',     chat: 'non',      transmission: 'Ingestion oocystes sporulés',             localisation: 'Intestin grêle' },
-      { parasite: 'Isospora felis',       chien: 'non',     chat: 'oui',      transmission: 'Ingestion oocystes sporulés',             localisation: 'Intestin grêle' },
-      { parasite: 'Toxoplasma gondii',    chien: 'partiel', chat: 'definitif', transmission: 'Ingestion oocystes / kystes tissulaires', localisation: 'Tissus / intestin (chat)' },
+      { parasite: t('Giardia duodenalis'),   chien: 'oui',     chat: 'oui',      transmission: t('Ingestion kystes (eau, fèces)'),            localisation: t('Intestin grêle') },
+      { parasite: t('Cryptosporidium spp.'), chien: 'oui',     chat: 'oui',      transmission: t('Fécal-oral (oocystes)'),                    localisation: t('Intestin grêle / gros intestin') },
+      { parasite: t('Isospora canis'),       chien: 'oui',     chat: 'non',      transmission: t('Ingestion oocystes sporulés'),             localisation: t('Intestin grêle') },
+      { parasite: t('Isospora felis'),       chien: 'non',     chat: 'oui',      transmission: t('Ingestion oocystes sporulés'),             localisation: t('Intestin grêle') },
+      { parasite: t('Toxoplasma gondii'),    chien: 'partiel', chat: 'definitif', transmission: t('Ingestion oocystes / kystes tissulaires'), localisation: t('Tissus / intestin (chat)') },
     ],
   },
   {
-    categorie: 'Ectoparasites',
+    categorie: t('Ectoparasites'),
     items: [
-      { parasite: 'Demodex canis',                 chien: 'oui', chat: 'non', transmission: 'Contact mère-chiot (post-natal)', localisation: 'Follicules pileux / peau' },
-      { parasite: 'Sarcoptes scabiei',             chien: 'oui', chat: 'non', transmission: 'Contact direct',                  localisation: 'Peau (croûtes)' },
-      { parasite: 'Notoedres cati',                chien: 'non', chat: 'oui', transmission: 'Contact direct',                  localisation: 'Peau (tête / oreilles)' },
-      { parasite: 'Cheyletiella spp.',             chien: 'oui', chat: 'oui', transmission: 'Contact direct',                  localisation: 'Surface cutanée' },
-      { parasite: 'Ctenocephalides felis / canis', chien: 'oui', chat: 'oui', transmission: 'Environnement infesté',           localisation: 'Surface cutanée' },
+      { parasite: t('Demodex canis'),                 chien: 'oui', chat: 'non', transmission: t('Contact mère-chiot (post-natal)'), localisation: t('Follicules pileux / peau') },
+      { parasite: t('Sarcoptes scabiei'),             chien: 'oui', chat: 'non', transmission: t('Contact direct'),                  localisation: t('Peau (croûtes)') },
+      { parasite: t('Notoedres cati'),                chien: 'non', chat: 'oui', transmission: t('Contact direct'),                  localisation: t('Peau (tête / oreilles)') },
+      { parasite: t('Cheyletiella spp.'),             chien: 'oui', chat: 'oui', transmission: t('Contact direct'),                  localisation: t('Surface cutanée') },
+      { parasite: t('Ctenocephalides felis / canis'), chien: 'oui', chat: 'oui', transmission: t('Environnement infesté'),           localisation: t('Surface cutanée') },
     ],
   },
 ]
@@ -51,7 +52,7 @@ function Badge({ statut, espece }) {
     oui:      { background: 'rgba(39,174,96,0.12)',  color: '#1a7a40',  label: '✓' },
     non:      { background: 'var(--bg)',              color: 'var(--text-hint)', label: '—' },
     partiel:  { background: 'rgba(243,156,18,0.12)', color: '#8f5d07',  label: '(✓)' },
-    definitif:{ background: 'rgba(39,174,96,0.12)',  color: '#1a7a40',  label: 'hôte déf.' },
+    definitif:{ background: 'rgba(39,174,96,0.12)',  color: '#1a7a40',  label: t('hôte déf.') },
   }
   const s = styles[statut] || styles.non
   return (
@@ -91,7 +92,7 @@ export default function LaboParasitologieHotes() {
               >
                 <span className="labo-tube-nom">{groupe.categorie}</span>
                 <span style={{ fontSize: 12, color: 'var(--text-hint)', marginRight: 4 }}>
-                  {groupe.items.length} parasites
+                  {tn(groupe.items.length, '{n} parasite', '{n} parasites')}
                 </span>
                 <i className={`ti ti-chevron-down labo-tube-chevron${catOuverte ? ' ouvert' : ''}`}></i>
               </button>
@@ -114,8 +115,8 @@ export default function LaboParasitologieHotes() {
                           <span style={{ fontStyle: 'italic', fontSize: 13, color: 'var(--text-primary)', flex: 1 }}>
                             {item.parasite}
                           </span>
-                          <Badge statut={item.chien} espece="Chien" />
-                          <Badge statut={item.chat} espece="Chat" />
+                          <Badge statut={item.chien} espece={t('Chien')} />
+                          <Badge statut={item.chat} espece={t('Chat')} />
                           <i className={`ti ti-chevron-down labo-tube-chevron${ouvert ? ' ouvert' : ''}`}
                             style={{ fontSize: 14, marginLeft: 4 }}></i>
                         </button>
@@ -128,14 +129,14 @@ export default function LaboParasitologieHotes() {
                             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                               <i className="ti ti-arrow-right" style={{ fontSize: 13, color: 'var(--primary)', marginTop: 2, flexShrink: 0 }}></i>
                               <div>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-hint)', display: 'block', marginBottom: 2 }}>Transmission</span>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-hint)', display: 'block', marginBottom: 2 }}>{t('Transmission')}</span>
                                 <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{item.transmission}</span>
                               </div>
                             </div>
                             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                               <i className="ti ti-map-pin" style={{ fontSize: 13, color: 'var(--primary)', marginTop: 2, flexShrink: 0 }}></i>
                               <div>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-hint)', display: 'block', marginBottom: 2 }}>Localisation</span>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-hint)', display: 'block', marginBottom: 2 }}>{t('Localisation')}</span>
                                 <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{item.localisation}</span>
                               </div>
                             </div>
@@ -153,7 +154,9 @@ export default function LaboParasitologieHotes() {
 
       <p className="labo-ref-note" style={{ marginTop: 12 }}>
         <i className="ti ti-info-circle"></i>
-        ✓ hôte habituel &nbsp;·&nbsp; (✓) occasionnel / accidentel &nbsp;·&nbsp; hôte déf. = hôte définitif &nbsp;·&nbsp; — non concerné
+        {enAnglais
+          ? <>✓ usual host &nbsp;·&nbsp; (✓) occasional / accidental &nbsp;·&nbsp; def. host = definitive host &nbsp;·&nbsp; — not affected</>
+          : <>✓ hôte habituel &nbsp;·&nbsp; (✓) occasionnel / accidentel &nbsp;·&nbsp; hôte déf. = hôte définitif &nbsp;·&nbsp; — non concerné</>}
       </p>
     </div>
   )

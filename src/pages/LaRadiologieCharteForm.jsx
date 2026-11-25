@@ -5,6 +5,7 @@ import useCharteRadio from '../hooks/useCharteRadio'
 import { traduireErreur } from '../lib/messagesErreur'
 import { regions, qualiteOptions } from '../data/charteRadioOptions'
 import { ESPECES_CONFIG } from '../data/especes'
+import { t } from '../lib/i18n'
 
 const FORM_VIDE = {
   espece: '',
@@ -36,7 +37,7 @@ export default function LaRadiologieCharteForm() {
   const [popupEspece, setPopupEspece] = useState(false)
 
   useEffect(() => {
-    setTitreCustom(modeEdition ? 'Modifier une entrée' : 'Nouvelle entrée')
+    setTitreCustom(modeEdition ? t('Modifier une entrée') : t('Nouvelle entrée'))
     // L'affichage démarre déjà en chargement en mode édition.
     async function chargerEntree() {
       const { data } = await obtenirEntree(id)
@@ -66,11 +67,11 @@ export default function LaRadiologieCharteForm() {
 
   async function sauvegarder() {
     setErreur('')
-    if (!form.espece) return setErreur('L\'espèce est requise.')
-    if (!form.region) return setErreur('La région anatomique est requise.')
-    if (!form.kv) return setErreur('Le kV est requis.')
-    if (!form.mas) return setErreur('Le mAs est requis.')
-    if (!form.dff) return setErreur('Le DFF est requis.')
+    if (!form.espece) return setErreur(t('L\'espèce est requise.'))
+    if (!form.region) return setErreur(t('La région anatomique est requise.'))
+    if (!form.kv) return setErreur(t('Le kV est requis.'))
+    if (!form.mas) return setErreur(t('Le mAs est requis.'))
+    if (!form.dff) return setErreur(t('Le DFF est requis.'))
 
     setSauvegarde(true)
     const payload = {
@@ -98,7 +99,7 @@ export default function LaRadiologieCharteForm() {
 
   const especeAutreActive = form.espece && !ESPECES_RAPIDES.includes(form.espece)
 
-  if (loading) return <div className="admin-loading">Chargement...</div>
+  if (loading) return <div className="admin-loading">{t('Chargement...')}</div>
 
   return (
     <div className="admin-page">
@@ -106,7 +107,7 @@ export default function LaRadiologieCharteForm() {
 
         {/* ─── ESPÈCE ─────────────────────────── */}
         <div className="form-groupe">
-          <label className="form-label">Espèce</label>
+          <label className="form-label">{t('Espèce')}</label>
           <div style={{ display: 'flex', gap: 8 }}>
             {ESPECES_RAPIDES.map(esp => {
               const config = ESPECES_CONFIG[esp]
@@ -149,7 +150,7 @@ export default function LaRadiologieCharteForm() {
                 <i className="ti ti-dots" style={{ fontSize: 24, color: 'var(--text-hint)', lineHeight: '28px' }}></i>
               )}
               <span style={{ fontSize: 12, fontWeight: 600, color: especeAutreActive ? 'var(--primary)' : 'var(--text-secondary)' }}>
-                {especeAutreActive ? ESPECES_CONFIG[form.espece]?.label : 'Autre'}
+                {especeAutreActive ? ESPECES_CONFIG[form.espece]?.label : t('Autre')}
               </span>
             </button>
           </div>
@@ -157,21 +158,21 @@ export default function LaRadiologieCharteForm() {
 
         {/* ─── RÉGION ─────────────────────────── */}
         <div className="form-groupe">
-          <label className="form-label">Région anatomique</label>
+          <label className="form-label">{t('Région anatomique')}</label>
           <select className="form-input form-select" value={form.region} onChange={e => handleChange('region', e.target.value)}>
-            <option value="">Sélectionner...</option>
-            {regions.map(r => <option key={r} value={r}>{r}</option>)}
+            <option value="">{t('Sélectionner...')}</option>
+            {regions.map(r => <option key={r} value={r}>{t(r)}</option>)}
           </select>
         </div>
 
         {/* ─── ÉPAISSEUR ──────────────────────── */}
         <div className="form-groupe">
-          <label className="form-label">Épaisseur (cm)</label>
+          <label className="form-label">{t('Épaisseur (cm)')}</label>
           <div className="input-min-max">
             <input className="form-input" placeholder="Min" type="text" inputMode="decimal" value={form.epaisseur_min} onChange={e => handleChange('epaisseur_min', e.target.value)} />
             <input className="form-input" placeholder="Max" type="text" inputMode="decimal" value={form.epaisseur_max} onChange={e => handleChange('epaisseur_max', e.target.value)} />
           </div>
-          <p className="form-aide">Mesurée au point le plus épais de la région, avec un compas d'épaisseur. C'est elle qui vous permet de retrouver le bon réglage pour un animal de taille semblable.</p>
+          <p className="form-aide">{t('Mesurée au point le plus épais de la région, avec un compas d\'épaisseur. C\'est elle qui vous permet de retrouver le bon réglage pour un animal de taille semblable.')}</p>
         </div>
 
         {/* ─── kV + mAs CÔTE À CÔTE ───────────── */}
@@ -186,20 +187,20 @@ export default function LaRadiologieCharteForm() {
               <input className="form-input" type="text" inputMode="decimal" value={form.mas} onChange={e => handleChange('mas', e.target.value)} />
             </div>
           </div>
-          <p className="form-aide">Tels qu'affichés sur la console de l'appareil pour ce cliché.</p>
+          <p className="form-aide">{t('Tels qu\'affichés sur la console de l\'appareil pour ce cliché.')}</p>
         </div>
 
         {/* ─── DFF ────────────────────────────── */}
         <div className="form-groupe">
-          <label className="form-label">DFF (cm)</label>
+          <label className="form-label">{t('DFF (cm)')}</label>
           <input className="form-input" type="text" inputMode="decimal" value={form.dff} onChange={e => handleChange('dff', e.target.value)} />
-          <p className="form-aide">Distance foyer-film : du tube à rayons X jusqu'à la plaque. Souvent 100 cm.</p>
+          <p className="form-aide">{t('Distance foyer-film : du tube à rayons X jusqu\'à la plaque. Souvent 100 cm.')}</p>
         </div>
 
         {/* ─── GRILLE ─────────────────────────── */}
         <div className="form-groupe">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span className="form-label" style={{ margin: 0 }}>Grille antidiffusante</span>
+            <span className="form-label" style={{ margin: 0 }}>{t('Grille antidiffusante')}</span>
             <button
               type="button"
               onClick={() => handleChange('grille', !form.grille)}
@@ -216,14 +217,14 @@ export default function LaRadiologieCharteForm() {
               }} />
             </button>
           </div>
-          <p className="form-aide">Activez-la si le cliché a été pris avec la grille.</p>
+          <p className="form-aide">{t('Activez-la si le cliché a été pris avec la grille.')}</p>
         </div>
 
         {/* ─── QUALITÉ ────────────────────────── */}
         <div className="form-groupe">
-          <label className="form-label">Qualité du résultat</label>
+          <label className="form-label">{t('Qualité du résultat')}</label>
           <div style={{ display: 'flex', gap: 8 }}>
-            {[{ value: '', label: 'Non précisé' }, ...qualiteOptions].map(q => (
+            {[{ value: '', label: t('Non précisé') }, ...qualiteOptions].map(q => (
               <button
                 key={q.value}
                 type="button"
@@ -240,19 +241,19 @@ export default function LaRadiologieCharteForm() {
               </button>
             ))}
           </div>
-          <p className="form-aide">Un réglage « À ajuster » garde la trace d'un essai à corriger, pour ne pas le refaire.</p>
+          <p className="form-aide">{t('Un réglage « À ajuster » garde la trace d\'un essai à corriger, pour ne pas le refaire.')}</p>
         </div>
 
         {/* ─── NOTES ──────────────────────────── */}
         <div className="form-groupe">
-          <label className="form-label">Notes</label>
+          <label className="form-label">{t('Notes')}</label>
           <textarea className="form-textarea" value={form.notes} onChange={e => handleChange('notes', e.target.value)} rows={3} />
         </div>
 
         {erreur && <div className="form-erreur">{erreur}</div>}
 
         <button className="btn-sauvegarder" onClick={sauvegarder} disabled={sauvegarde}>
-          {sauvegarde ? 'Sauvegarde...' : 'Enregistrer'}
+          {sauvegarde ? 'Sauvegarde...' : t('Enregistrer')}
         </button>
 
       </div>
@@ -262,7 +263,7 @@ export default function LaRadiologieCharteForm() {
         <div className="popup-overlay" onClick={() => setPopupEspece(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Choisir une espèce</span>
+              <span>{t('Choisir une espèce')}</span>
               <button className="popup-close" onClick={() => setPopupEspece(false)}>✕</button>
             </div>
             <div className="popup-especes">

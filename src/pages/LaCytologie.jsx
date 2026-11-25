@@ -4,12 +4,13 @@ import { supabase } from '../lib/supabase'
 import BadgePro from '../components/BadgePro'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
+import { t } from '../lib/i18n'
 
 const CATEGORIE_ID = '173fb58a-988c-4202-8b14-bfcd15c4a16f'
 
 const REFERENCES = [
-  { id: 'prelevement', label: 'Guide de prélèvement', svg: '/lame-microscope.svg', route: '/labo/cytologie/prelevement', pro: true },
-  { id: 'cellules', label: 'Types cellulaires', svg: '/icone-microscope.svg', route: '/labo/cytologie/cellules' },
+  { id: 'prelevement', label: t('Guide de prélèvement'), svg: '/lame-microscope.svg', route: '/labo/cytologie/prelevement', pro: true },
+  { id: 'cellules', label: t('Types cellulaires'), svg: '/icone-microscope.svg', route: '/labo/cytologie/cellules' },
 ]
 
 const SVG_MASK_STYLE = (src) => ({
@@ -59,13 +60,13 @@ export default function LaCytologie() {
     <div className="drogues-page">
 
       {/* ─── PROTOCOLES ─────────────────────── */}
-      <div className="labo-section-titre">Procédures d'analyse</div>
+      <div className="labo-section-titre">{t('Procédures d\'analyse')}</div>
 
       <div className="labo-protocoles-grid">
         {loading ? (
-          <div className="admin-loading">Chargement...</div>
+          <div className="admin-loading">{t('Chargement...')}</div>
         ) : protocoles.length === 0 ? (
-          <p className="admin-vide">Aucun protocole dans cette catégorie.</p>
+          <p className="admin-vide">{t('Aucun protocole dans cette catégorie.')}</p>
         ) : (
           protocoles.map(p => (
             <button
@@ -73,7 +74,7 @@ export default function LaCytologie() {
               className="labo-protocole-btn"
               onClick={() => navigate(`/labo/protocole/${p.id}?type=${p.type}`)}
             >
-              <span style={{ flex: 1 }}>{p.titre}</span>
+              <span style={{ flex: 1 }}>{t(p.titre)}</span>
               <i className="ti ti-chevron-right" style={{ fontSize: 14, color: 'var(--text-hint)', flexShrink: 0 }}></i>
             </button>
           ))
@@ -83,12 +84,12 @@ export default function LaCytologie() {
       {/* Un membre de la clinique consulte les protocoles sans en ajouter. */}
       {!lectureSeule && (
         <button className="labo-btn-ajouter" onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
-          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} Ajouter un protocole
+          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} {t('Ajouter un protocole')}
         </button>
       )}
 
       {/* ─── RÉFÉRENCES ─────────────────────── */}
-      <div className="labo-section-titre" style={{ marginTop: 8 }}>Références & Interprétation</div>
+      <div className="labo-section-titre" style={{ marginTop: 8 }}>{t('Références & Interprétation')}</div>
 
       <div className="labo-protocoles-grid">
         {REFERENCES.map(r => (

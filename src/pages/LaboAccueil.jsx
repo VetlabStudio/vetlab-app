@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { t } from '../lib/i18n'
 
 export default function LaboAccueil() {
   const navigate = useNavigate()
@@ -19,7 +20,7 @@ export default function LaboAccueil() {
     chargerCategories()
   }, [])
 
-  if (loading) return <div className="admin-loading">Chargement...</div>
+  if (loading) return <div className="admin-loading">{t('Chargement...')}</div>
 
   return (
     <div className="page-calculateurs">
@@ -31,7 +32,7 @@ export default function LaboAccueil() {
             onClick={() => navigate(`/labo/${cat.id}`)}
             style={{ borderBottom: idx < categories.length - 1 ? '1px solid var(--border)' : 'none' }}
           >
-            <span className="menu-page-item-label">{cat.nom}</span>
+            <span className="menu-page-item-label">{t(cat.nom)}</span>
             <i className="ti ti-chevron-right menu-page-item-chevron"></i>
           </button>
         ))}

@@ -67,6 +67,13 @@ export function prix(montant) {
   return enAnglais ? `$${texte}` : `${texte.replace('.', ',')} $`
 }
 
+/* Valeurs de référence écrites à la française (« 5,5–12,5 », « UI/L ») :
+   en anglais, virgule décimale → point et UI → U. */
+export function chiffres(texte) {
+  if (!enAnglais || typeof texte !== 'string') return texte
+  return texte.replace(/(\d),(\d)/g, '$1.$2').replace(/\bUI\b/g, 'U')
+}
+
 export function changerLangue(id) {
   if (id === langue) return
   try { localStorage.setItem(CLE, id) } catch { /* stockage indisponible */ }

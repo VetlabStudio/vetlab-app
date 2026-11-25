@@ -1,39 +1,40 @@
+import { t } from '../lib/i18n'
 const BASE_URL = 'https://jbvjruunwdrbrzipgezs.supabase.co/storage/v1/object/public/Illustrations/Colonie%20bacteries'
 
 const CATEGORIES = [
   {
     id: 'forme',
-    nom: 'Forme',
+    nom: t('Forme'),
     items: [
-      { label: 'Punctiforme', image: `${BASE_URL}/punctiforme.png` },
-      { label: 'Circulaire', image: `${BASE_URL}/circulaire.png` },
-      { label: 'Filamenteuse', image: `${BASE_URL}/filamenteuse-forme.png` },
-      { label: 'Irrégulière', image: `${BASE_URL}/irreguliere.png` },
-      { label: 'Rhizoïde', image: `${BASE_URL}/rhizoide.png` },
-      { label: 'Fusiforme', image: `${BASE_URL}/fusiforme.png` },
+      { label: t('Punctiforme'), image: `${BASE_URL}/punctiforme.png` },
+      { label: t('Circulaire'), image: `${BASE_URL}/circulaire.png` },
+      { label: t('Filamenteuse'), image: `${BASE_URL}/filamenteuse-forme.png` },
+      { label: t('Irrégulière'), image: `${BASE_URL}/irreguliere.png` },
+      { label: t('Rhizoïde'), image: `${BASE_URL}/rhizoide.png` },
+      { label: t('Fusiforme'), image: `${BASE_URL}/fusiforme.png` },
     ],
   },
   {
     id: 'relief',
-    nom: 'Relief',
+    nom: t('Relief'),
     items: [
-      { label: 'Plate', image: `${BASE_URL}/plate.png` },
-      { label: 'Bombée', image: `${BASE_URL}/bombee.png` },
-      { label: 'Convexe', image: `${BASE_URL}/convexe.png` },
-      { label: 'Pulvinée', image: `${BASE_URL}/pulvinee.png` },
-      { label: 'Ombonée', image: `${BASE_URL}/ombonee.png` },
+      { label: t('Plate'), image: `${BASE_URL}/plate.png` },
+      { label: t('Bombée'), image: `${BASE_URL}/bombee.png` },
+      { label: t('Convexe'), image: `${BASE_URL}/convexe.png` },
+      { label: t('Pulvinée'), image: `${BASE_URL}/pulvinee.png` },
+      { label: t('Ombonée'), image: `${BASE_URL}/ombonee.png` },
     ],
   },
   {
     id: 'contour',
-    nom: 'Contour',
+    nom: t('Contour'),
     items: [
-      { label: 'Entière', image: `${BASE_URL}/entiere.png` },
-      { label: 'Ondulée', image: `${BASE_URL}/ondulee.png` },
-      { label: 'Filamenteuse', image: `${BASE_URL}/filamenteuse.png` },
-      { label: 'Lobée', image: `${BASE_URL}/lobee.png` },
-      { label: 'Érodée', image: `${BASE_URL}/erodee.png` },
-      { label: 'Frisée', image: `${BASE_URL}/frisee.png` },
+      { label: t('Entière'), image: `${BASE_URL}/entiere.png` },
+      { label: t('Ondulée'), image: `${BASE_URL}/ondulee.png` },
+      { label: t('Filamenteuse'), image: `${BASE_URL}/filamenteuse.png` },
+      { label: t('Lobée'), image: `${BASE_URL}/lobee.png` },
+      { label: t('Érodée'), image: `${BASE_URL}/erodee.png` },
+      { label: t('Frisée'), image: `${BASE_URL}/frisee.png` },
     ],
   },
 ]

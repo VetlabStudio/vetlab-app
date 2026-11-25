@@ -4,12 +4,13 @@ import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
 import BadgePro from '../components/BadgePro'
 import PopupPro from '../components/PopupPro'
+import { t } from '../lib/i18n'
 
 const CATEGORIE_ID = '2e0222f2-5733-4d01-bc99-8c380bec5abe'
 
 const REFERENCES = [
-  { id: 'oeufs', label: 'Œufs de parasites', icone: 'ti-egg', route: '/labo/parasitologie/oeufs' },
-  { id: 'hotes', label: 'Hôtes & espèces affectées', icone: 'ti-paw', route: '/labo/parasitologie/hotes', pro: true },
+  { id: 'oeufs', label: t('Œufs de parasites'), icone: 'ti-egg', route: '/labo/parasitologie/oeufs' },
+  { id: 'hotes', label: t('Hôtes & espèces affectées'), icone: 'ti-paw', route: '/labo/parasitologie/hotes', pro: true },
 ]
 
 export default function LaboParasitologie() {
@@ -43,13 +44,13 @@ export default function LaboParasitologie() {
     <div className="drogues-page">
 
       {/* ─── PROTOCOLES ─────────────────────── */}
-      <div className="labo-section-titre">Procédures d'analyse</div>
+      <div className="labo-section-titre">{t('Procédures d\'analyse')}</div>
 
       <div className="labo-protocoles-grid">
         {loading ? (
-          <div className="admin-loading">Chargement...</div>
+          <div className="admin-loading">{t('Chargement...')}</div>
         ) : protocoles.length === 0 ? (
-          <p className="admin-vide">Aucun protocole dans cette catégorie.</p>
+          <p className="admin-vide">{t('Aucun protocole dans cette catégorie.')}</p>
         ) : (
           protocoles.map(p => (
             <button
@@ -57,7 +58,7 @@ export default function LaboParasitologie() {
               className="labo-protocole-btn"
               onClick={() => navigate(`/labo/protocole/${p.id}?type=${p.type}`)}
             >
-              <span style={{ flex: 1 }}>{p.titre}</span>
+              <span style={{ flex: 1 }}>{t(p.titre)}</span>
               <i className="ti ti-chevron-right" style={{ fontSize: 14, color: 'var(--text-hint)', flexShrink: 0 }}></i>
             </button>
           ))
@@ -67,12 +68,12 @@ export default function LaboParasitologie() {
       {/* Un membre de la clinique consulte les protocoles sans en ajouter. */}
       {!lectureSeule && (
         <button className="labo-btn-ajouter" onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
-          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} Ajouter un protocole
+          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} {t('Ajouter un protocole')}
         </button>
       )}
 
       {/* ─── RÉFÉRENCES ─────────────────────── */}
-      <div className="labo-section-titre" style={{ marginTop: 8 }}>Références & Identification</div>
+      <div className="labo-section-titre" style={{ marginTop: 8 }}>{t('Références & Identification')}</div>
 
       <div className="labo-protocoles-grid">
         {REFERENCES.map(r => (

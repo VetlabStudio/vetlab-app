@@ -1,96 +1,97 @@
 import { useState } from 'react'
+import { t, tn } from '../lib/i18n'
 
 const SYSTEMES = [
   {
-    nom: 'Voies respiratoires inférieures',
+    nom: t('Voies respiratoires inférieures'),
     items: [
-      { echantillon: 'Lavage transtrachéal', transport: 'Tube stérile, transport à 4 °C', notes: 'Échantillon semi-invasif, recueilli sous anesthésie.' },
-      { echantillon: 'Aspirat ou biopsie des poumons', transport: 'Contenant stérile', notes: 'Indiqué en pathologie profonde; attention aux contaminations.' },
+      { echantillon: t('Lavage transtrachéal'), transport: t('Tube stérile, transport à 4 °C'), notes: t('Échantillon semi-invasif, recueilli sous anesthésie.') },
+      { echantillon: t('Aspirat ou biopsie des poumons'), transport: t('Contenant stérile'), notes: t('Indiqué en pathologie profonde; attention aux contaminations.') },
     ],
   },
   {
-    nom: 'Voies respiratoires supérieures',
+    nom: t('Voies respiratoires supérieures'),
     items: [
-      { echantillon: 'Frottis nasopharyngien', transport: 'Écouvillon synthétique avec transport viral ou bactérien', notes: 'Manipulation douce pour ne pas irriter la muqueuse.' },
-      { echantillon: 'Lavage des sinus', transport: 'Tube stérile', notes: 'Effectué sous anesthésie; échantillon stérile recommandé.' },
-      { echantillon: 'Biopsie des voies respiratoires', transport: 'Contenant stérile ou formol selon analyse', notes: 'Pour culture ou histopathologie selon suspicion.' },
+      { echantillon: t('Frottis nasopharyngien'), transport: t('Écouvillon synthétique avec transport viral ou bactérien'), notes: t('Manipulation douce pour ne pas irriter la muqueuse.') },
+      { echantillon: t('Lavage des sinus'), transport: t('Tube stérile'), notes: t('Effectué sous anesthésie; échantillon stérile recommandé.') },
+      { echantillon: t('Biopsie des voies respiratoires'), transport: t('Contenant stérile ou formol selon analyse'), notes: t('Pour culture ou histopathologie selon suspicion.') },
     ],
   },
   {
-    nom: 'Voies urinaires',
+    nom: t('Voies urinaires'),
     items: [
-      { echantillon: 'Urine', transport: 'Contenant stérile; transport à 4 °C', notes: 'Cystocentèse préférée; analyser dans les 4 à 6 h.' },
+      { echantillon: t('Urine'), transport: t('Contenant stérile; transport à 4 °C'), notes: t('Cystocentèse préférée; analyser dans les 4 à 6 h.') },
     ],
   },
   {
-    nom: 'Appareil gastro-intestinal',
+    nom: t('Appareil gastro-intestinal'),
     items: [
-      { echantillon: 'Fèces', transport: 'Contenant stérile ou milieu Cary-Blair', notes: 'Ne pas congeler pour culture bactérienne; congélation possible pour virologie.' },
-      { echantillon: 'Frottis rectal', transport: 'Écouvillon en milieu de transport (Amies)', notes: 'Prélever en douceur; utile si émission fécale impossible.' },
+      { echantillon: t('Fèces'), transport: t('Contenant stérile ou milieu Cary-Blair'), notes: t('Ne pas congeler pour culture bactérienne; congélation possible pour virologie.') },
+      { echantillon: t('Frottis rectal'), transport: t('Écouvillon en milieu de transport (Amies)'), notes: t('Prélever en douceur; utile si émission fécale impossible.') },
     ],
   },
   {
-    nom: 'Appareils reproducteurs',
+    nom: t('Appareils reproducteurs'),
     items: [
-      { echantillon: 'Liquide prostatique', transport: 'Tube stérile, transport rapide à 4 °C', notes: 'Échantillon recueilli par massage prostatique transrectal ou urétral.' },
-      { echantillon: 'Sperme', transport: 'Tube stérile, transport rapide à 37 °C', notes: 'Analyser rapidement; éviter les chocs thermiques.' },
-      { echantillon: 'Utérus', transport: 'Biopsie ou écouvillon stérile', notes: 'Transport sur Amies ou Stuart; peut nécessiter anesthésie.' },
-      { echantillon: 'Vagin', transport: 'Écouvillon en milieu de transport', notes: 'Prélever dans la profondeur du vagin avec spéculum stérile.' },
-      { echantillon: 'Avortement', transport: 'Foetus entier, placenta et liquide amniotique', notes: 'Transport à 4 °C; idéalement complet pour diagnostic multiple.' },
+      { echantillon: t('Liquide prostatique'), transport: t('Tube stérile, transport rapide à 4 °C'), notes: t('Échantillon recueilli par massage prostatique transrectal ou urétral.') },
+      { echantillon: t('Sperme'), transport: t('Tube stérile, transport rapide à 37 °C'), notes: t('Analyser rapidement; éviter les chocs thermiques.') },
+      { echantillon: t('Utérus'), transport: t('Biopsie ou écouvillon stérile'), notes: t('Transport sur Amies ou Stuart; peut nécessiter anesthésie.') },
+      { echantillon: t('Vagin'), transport: t('Écouvillon en milieu de transport'), notes: t('Prélever dans la profondeur du vagin avec spéculum stérile.') },
+      { echantillon: t('Avortement'), transport: t('Foetus entier, placenta et liquide amniotique'), notes: t('Transport à 4 °C; idéalement complet pour diagnostic multiple.') },
     ],
   },
   {
-    nom: 'Oeil',
+    nom: t('Oeil'),
     items: [
-      { echantillon: 'Frottis conjonctival', transport: 'Écouvillon ou lame, transport rapide', notes: 'Utiliser écouvillon synthétique; éviter anesthésie si possible.' },
-      { echantillon: 'Grattage cornéen', transport: 'Lame ou écouvillon synthétique sec', notes: 'Sous anesthésie topique; éviter coton.' },
-      { echantillon: 'Liquide oculaire', transport: 'Tube stérile ou seringue scellée', notes: 'Petite quantité; manipuler rapidement.' },
+      { echantillon: t('Frottis conjonctival'), transport: t('Écouvillon ou lame, transport rapide'), notes: t('Utiliser écouvillon synthétique; éviter anesthésie si possible.') },
+      { echantillon: t('Grattage cornéen'), transport: t('Lame ou écouvillon synthétique sec'), notes: t('Sous anesthésie topique; éviter coton.') },
+      { echantillon: t('Liquide oculaire'), transport: t('Tube stérile ou seringue scellée'), notes: t('Petite quantité; manipuler rapidement.') },
     ],
   },
   {
-    nom: 'Os et articulations',
+    nom: t('Os et articulations'),
     items: [
-      { echantillon: 'Aspirat articulaire', transport: 'Tube stérile sans additif', notes: 'Transport rapide à température ambiante ou 4 °C; éviter anticoagulants.' },
-      { echantillon: 'Aspirat de moelle osseuse', transport: 'Tube EDTA ou stérile selon l\'analyse', notes: 'Prélever en conditions stériles; quantité minimale suffisante (0,5 ml).' },
-      { echantillon: 'Os', transport: 'Fragment dans contenant stérile', notes: 'Transport à 4 °C; éviter contamination en chirurgie.' },
+      { echantillon: t('Aspirat articulaire'), transport: t('Tube stérile sans additif'), notes: t('Transport rapide à température ambiante ou 4 °C; éviter anticoagulants.') },
+      { echantillon: t('Aspirat de moelle osseuse'), transport: t('Tube EDTA ou stérile selon l\'analyse'), notes: t('Prélever en conditions stériles; quantité minimale suffisante (0,5 ml).') },
+      { echantillon: 'Os', transport: t('Fragment dans contenant stérile'), notes: t('Transport à 4 °C; éviter contamination en chirurgie.') },
     ],
   },
   {
-    nom: 'Peau',
+    nom: t('Peau'),
     items: [
-      { echantillon: 'Frottis de peau', transport: 'Lame propre, air sec, étui rigide', notes: 'Fixer immédiatement si coloration prévue; utile en cytologie.' },
-      { echantillon: 'Écouvillonnage de peau', transport: 'Écouvillon stérile avec Amies ou Stuart', notes: 'Prélever en profondeur ou sous croûte si possible.' },
-      { echantillon: 'Biopsie de tissus', transport: 'Formol 10% ou contenant stérile selon l\'analyse', notes: 'Indiquer l\'objectif : histopatho ou culture.' },
-      { echantillon: 'Pellicules, poils et grattages', transport: 'Lame propre ou contenant sec', notes: 'Utiliser pour recherche fongique ou parasitaire.' },
+      { echantillon: t('Frottis de peau'), transport: t('Lame propre, air sec, étui rigide'), notes: t('Fixer immédiatement si coloration prévue; utile en cytologie.') },
+      { echantillon: t('Écouvillonnage de peau'), transport: t('Écouvillon stérile avec Amies ou Stuart'), notes: t('Prélever en profondeur ou sous croûte si possible.') },
+      { echantillon: t('Biopsie de tissus'), transport: t('Formol 10% ou contenant stérile selon l\'analyse'), notes: t('Indiquer l\'objectif : histopatho ou culture.') },
+      { echantillon: t('Pellicules, poils et grattages'), transport: t('Lame propre ou contenant sec'), notes: t('Utiliser pour recherche fongique ou parasitaire.') },
     ],
   },
   {
-    nom: 'Sang',
+    nom: t('Sang'),
     items: [
-      { echantillon: 'Sang entier', transport: 'Tube EDTA ou héparine; 3 ml minimum', notes: 'Ne pas congeler; conserver à 4 °C.' },
+      { echantillon: t('Sang entier'), transport: t('Tube EDTA ou héparine; 3 ml minimum'), notes: t('Ne pas congeler; conserver à 4 °C.') },
     ],
   },
   {
-    nom: 'Système nerveux central',
+    nom: t('Système nerveux central'),
     items: [
-      { echantillon: 'Liquide céphalorachidien', transport: 'Tube stérile; transport rapide à 4 °C', notes: 'Volume faible (0,5 à 1 ml); analyse rapide essentielle.' },
+      { echantillon: t('Liquide céphalorachidien'), transport: t('Tube stérile; transport rapide à 4 °C'), notes: t('Volume faible (0,5 à 1 ml); analyse rapide essentielle.') },
     ],
   },
   {
-    nom: 'Tissus de nécropsie',
+    nom: t('Tissus de nécropsie'),
     items: [
-      { echantillon: 'Lésions de nécropsie', transport: 'Contenant stérile ou formol selon objectif', notes: 'Prélever rapidement post-mortem; séparer les organes pour analyse ciblée.' },
+      { echantillon: t('Lésions de nécropsie'), transport: t('Contenant stérile ou formol selon objectif'), notes: t('Prélever rapidement post-mortem; séparer les organes pour analyse ciblée.') },
     ],
   },
 ]
 
 const BONNES_PRATIQUES = [
-  'Prélever avant tout traitement antibiotique si possible.',
-  'Identifier clairement le prélèvement : animal, propriétaire, site anatomique, méthode.',
-  'Respecter la chaîne de froid (4 °C) sauf pour les hémocultures.',
-  'Acheminer rapidement au laboratoire, idéalement en moins de 24 h.',
-  'Préciser les antibiotiques en cours dans la demande.',
-  'Éviter la contamination avec une technique aseptique rigoureuse.',
+  t('Prélever avant tout traitement antibiotique si possible.'),
+  t('Identifier clairement le prélèvement : animal, propriétaire, site anatomique, méthode.'),
+  t('Respecter la chaîne de froid (4 °C) sauf pour les hémocultures.'),
+  t('Acheminer rapidement au laboratoire, idéalement en moins de 24 h.'),
+  t('Préciser les antibiotiques en cours dans la demande.'),
+  t('Éviter la contamination avec une technique aseptique rigoureuse.'),
 ]
 
 export default function LaMicrobiologiePrelevement() {
@@ -110,7 +111,7 @@ export default function LaMicrobiologiePrelevement() {
               >
                 <span className="labo-tube-nom">{sys.nom}</span>
                 <span style={{ fontSize: 12, color: 'var(--text-hint)', marginRight: 4 }}>
-                  {sys.items.length} échantillon{sys.items.length > 1 ? 's' : ''}
+                  {tn(sys.items.length, '{n} échantillon', '{n} échantillons')}
                 </span>
                 <i className={`ti ti-chevron-down labo-tube-chevron${estOuvert ? ' ouvert' : ''}`}></i>
               </button>
@@ -144,7 +145,7 @@ export default function LaMicrobiologiePrelevement() {
       </div>
 
       <div className="labo-ref-section">
-        <h2 className="labo-ref-titre">Bonnes pratiques pré-analytiques</h2>
+        <h2 className="labo-ref-titre">{t('Bonnes pratiques pré-analytiques')}</h2>
         <div className="labo-etape-card">
           {BONNES_PRATIQUES.map((p, i) => (
             <div key={i} className="labo-materiel-item" style={{ borderBottom: i < BONNES_PRATIQUES.length - 1 ? '1px solid var(--border)' : 'none' }}>

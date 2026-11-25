@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
+import { t } from '../lib/i18n'
 
 export default function LaboProtocoles() {
   const navigate = useNavigate()
@@ -61,11 +62,11 @@ export default function LaboProtocoles() {
     ? (roleEquipe === 'admin' || roleEquipe === 'proprietaire')
     : estPro
 
-  if (loading) return <div className="admin-loading">Chargement...</div>
+  if (loading) return <div className="admin-loading">{t('Chargement...')}</div>
 
   return (
     <div className="drogues-page">
-      <div className="labo-section-titre">Procédures d'analyse</div>
+      <div className="labo-section-titre">{t('Procédures d\'analyse')}</div>
 
       <div className="labo-protocoles-grid">
         {protocoles.map(p => (
@@ -75,25 +76,25 @@ export default function LaboProtocoles() {
             onClick={() => navigate(`/labo/protocole/${p.id}?type=${p.type}`)}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
           >
-            <span style={{ textAlign: 'left' }}>{p.titre}</span>
+            <span style={{ textAlign: 'left' }}>{t(p.titre)}</span>
             {p.badge === 'equipe' && (
               <span style={{
                 fontSize: 10, fontWeight: 700, flexShrink: 0,
                 color: 'var(--primary)', background: 'rgba(37,77,86,0.1)',
                 padding: '2px 8px', borderRadius: 999,
-              }}>Équipe</span>
+              }}>{t('Équipe')}</span>
             )}
             {p.badge === 'personnel' && (
               <span style={{
                 fontSize: 10, fontWeight: 700, flexShrink: 0,
                 color: 'var(--text-hint)', background: 'var(--bg-secondary)',
                 padding: '2px 8px', borderRadius: 999,
-              }}>Personnel</span>
+              }}>{t('Personnel')}</span>
             )}
           </button>
         ))}
         {protocoles.length === 0 && (
-          <p className="admin-vide">Aucun protocole dans cette catégorie.</p>
+          <p className="admin-vide">{t('Aucun protocole dans cette catégorie.')}</p>
         )}
       </div>
 
@@ -105,7 +106,7 @@ export default function LaboProtocoles() {
             style={{ width: '100%' }}
             onClick={() => navigate(`/labo/nouveau?categorie=${categorieId}`)}
           >
-            <i className="ti ti-plus"></i> Ajouter un protocole
+            <i className="ti ti-plus"></i> {t('Ajouter un protocole')}
           </button>
         </div>
       )}
@@ -117,7 +118,7 @@ export default function LaboProtocoles() {
             style={{ width: '100%' }}
             onClick={() => setShowProMsg(true)}
           >
-            <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> Ajouter un protocole
+            <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> {t('Ajouter un protocole')}
           </button>
         </div>
       )}

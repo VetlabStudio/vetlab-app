@@ -1,69 +1,70 @@
 import FichesMicroorganismes from '../components/FichesMicroorganismes'
+import { t } from '../lib/i18n'
 
 const BACTERIES = [
   {
-    nom: 'Staphylococcus pseudintermedius',
+    nom: t('Staphylococcus pseudintermedius'),
     gram: '+',
-    morphologie: 'Coque en grappes',
-    infections: ['Pyodermite', 'Otite externe', 'Plaies', 'Infection post-chirurgicale'],
-    resistances: 'Résistance aux bêtalactamines fréquente (MRSP). Antibiogramme recommandé.',
-    notes: 'Bactérie la plus fréquente en dermatologie canine. Flore normale de la peau et des muqueuses.',
+    morphologie: t('Coque en grappes'),
+    infections: [t('Pyodermite'), t('Otite externe'), t('Plaies'), t('Infection post-chirurgicale')],
+    resistances: t('Résistance aux bêtalactamines fréquente (MRSP). Antibiogramme recommandé.'),
+    notes: t('Bactérie la plus fréquente en dermatologie canine. Flore normale de la peau et des muqueuses.'),
   },
   {
-    nom: 'Pseudomonas aeruginosa',
+    nom: t('Pseudomonas aeruginosa'),
     gram: '-',
-    morphologie: 'Bacille',
-    infections: ['Otite externe chronique', 'Plaies infectées', 'Pneumonie nosocomiale'],
-    resistances: 'Résistances multiples très fréquentes. Sensible souvent à la gentamicine (topique) et polymyxine B.',
-    notes: 'Fréquent dans les otites chroniques en association avec Staphylococcus. Odeur sucrée caractéristique, pigment verdâtre.',
+    morphologie: t('Bacille'),
+    infections: [t('Otite externe chronique'), t('Plaies infectées'), t('Pneumonie nosocomiale')],
+    resistances: t('Résistances multiples très fréquentes. Sensible souvent à la gentamicine (topique) et polymyxine B.'),
+    notes: t('Fréquent dans les otites chroniques en association avec Staphylococcus. Odeur sucrée caractéristique, pigment verdâtre.'),
   },
   {
-    nom: 'Escherichia coli',
+    nom: t('Escherichia coli'),
     gram: '-',
-    morphologie: 'Bacille',
-    infections: ['Infection urinaire', 'Entérite', 'Septicémie', 'Péritonite'],
-    resistances: 'BLSE (bêtalactamases à spectre étendu) en augmentation. Antibiogramme indispensable.',
-    notes: 'Principale cause d\'infection urinaire chez la chienne. Souvent sensible à l\'amoxicilline-clavulanate et fluoroquinolones.',
+    morphologie: t('Bacille'),
+    infections: [t('Infection urinaire'), t('Entérite'), t('Septicémie'), t('Péritonite')],
+    resistances: t('BLSE (bêtalactamases à spectre étendu) en augmentation. Antibiogramme indispensable.'),
+    notes: t('Principale cause d\'infection urinaire chez la chienne. Souvent sensible à l\'amoxicilline-clavulanate et fluoroquinolones.'),
   },
   {
-    nom: 'Streptococcus canis',
+    nom: t('Streptococcus canis'),
     gram: '+',
-    morphologie: 'Coque en chaînes',
-    infections: ['Septicémie néonatale', 'Pharyngite', 'Pneumonie', 'Lymphadénite'],
-    resistances: 'Généralement sensible aux pénicillines.',
-    notes: 'Pathogène opportuniste : peut causer des infections sévères chez les chiots et chats immunodéprimés.',
+    morphologie: t('Coque en chaînes'),
+    infections: [t('Septicémie néonatale'), t('Pharyngite'), t('Pneumonie'), t('Lymphadénite')],
+    resistances: t('Généralement sensible aux pénicillines.'),
+    notes: t('Pathogène opportuniste : peut causer des infections sévères chez les chiots et chats immunodéprimés.'),
   },
   {
-    nom: 'Pasteurella multocida',
+    nom: t('Pasteurella multocida'),
     gram: '-',
-    morphologie: 'Coccobacille',
-    infections: ['Abcès de morsure', 'Rhinite féline', 'Pneumonie', 'Septicémie'],
-    resistances: 'Généralement sensible aux pénicillines et tétracyclines.',
-    notes: 'Très fréquent dans les morsures de chat chez l\'humain. Flore normale de la cavité buccale des chats.',
+    morphologie: t('Coccobacille'),
+    infections: [t('Abcès de morsure'), t('Rhinite féline'), t('Pneumonie'), t('Septicémie')],
+    resistances: t('Généralement sensible aux pénicillines et tétracyclines.'),
+    notes: t('Très fréquent dans les morsures de chat chez l\'humain. Flore normale de la cavité buccale des chats.'),
   },
   {
-    nom: 'Proteus mirabilis',
+    nom: t('Proteus mirabilis'),
     gram: '-',
-    morphologie: 'Bacille',
-    infections: ['Infection urinaire', 'Otite externe', 'Pyodermite'],
-    resistances: 'Résistance naturelle à la nitrofurantoïne. Antibiogramme recommandé.',
-    notes: 'Souvent associé à Staphylococcus dans les otites. Odeur caractéristique dans les cultures.',
+    morphologie: t('Bacille'),
+    infections: [t('Infection urinaire'), t('Otite externe'), t('Pyodermite')],
+    resistances: t('Résistance naturelle à la nitrofurantoïne. Antibiogramme recommandé.'),
+    notes: t('Souvent associé à Staphylococcus dans les otites. Odeur caractéristique dans les cultures.'),
   },
   {
-    nom: 'Klebsiella pneumoniae',
+    nom: t('Klebsiella pneumoniae'),
     gram: '-',
-    morphologie: 'Bacille encapsulé',
-    infections: ['Infection urinaire', 'Pneumonie', 'Septicémie'],
-    resistances: 'Résistances multiples fréquentes dont BLSE. Antibiogramme indispensable.',
-    notes: 'Pathogène opportuniste important en milieu hospitalier vétérinaire.',
+    morphologie: t('Bacille encapsulé'),
+    infections: [t('Infection urinaire'), t('Pneumonie'), t('Septicémie')],
+    resistances: t('Résistances multiples fréquentes dont BLSE. Antibiogramme indispensable.'),
+    notes: t('Pathogène opportuniste important en milieu hospitalier vétérinaire.'),
   },
   {
-    nom: 'Clostridium spp.',
+    nom: t('Clostridium spp.'),
     gram: '+',
-    morphologie: 'Bacille sporulé anaérobie',
-    infections: ['Entérite hémorragique', 'Nécrose tissulaire', 'Tétanos (C. tetani)'],
-    resistances: 'Sensible à la pénicilline et métronidazole.',
-    notes: 'Anaérobie strict : prélèvement en milieu anaérobie obligatoire. Spores résistantes dans l\'environnement.',
+    morphologie: t('Bacille sporulé anaérobie'),
+    infections: [t('Entérite hémorragique'), t('Nécrose tissulaire'), t('Tétanos (C. tetani)')],
+    resistances: t('Sensible à la pénicilline et métronidazole.'),
+    notes: t('Anaérobie strict : prélèvement en milieu anaérobie obligatoire. Spores résistantes dans l\'environnement.'),
   },
 ]
 
@@ -74,8 +75,8 @@ const FICHES = BACTERIES.map(b => ({
     { texte: b.morphologie },
   ],
   sections: [
-    { titre: 'Infections associées', liste: b.infections },
-    { titre: 'Antibiotiques', texte: b.resistances },
+    { titre: t('Infections associées'), liste: b.infections },
+    { titre: t('Antibiotiques'), texte: b.resistances },
   ],
   note: b.notes,
 }))
@@ -83,7 +84,7 @@ const FICHES = BACTERIES.map(b => ({
 export default function LaMicrobiologieBacteries() {
   return (
     <FichesMicroorganismes
-      intro="Bactéries les plus fréquemment isolées en clinique vétérinaire pour chiens et chats."
+      intro={t('Bactéries les plus fréquemment isolées en clinique vétérinaire pour chiens et chats.')}
       fiches={FICHES}
     />
   )
