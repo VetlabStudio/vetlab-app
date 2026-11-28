@@ -103,7 +103,7 @@ export default function ChirurgieDouleur() {
       <div className="douleur-intro">
         <i className="ti ti-clipboard-heart douleur-intro-icone"></i>
         <p className="douleur-intro-texte">
-          {t('Évalue la douleur post-opératoire en sélectionnant une option par critère. Score total : 0 à 10.')}
+          {t('Évalue la douleur post-opératoire en sélectionnant une option par critère. Score total\u00A0: 0 à 10.')}
         </p>
       </div>
 

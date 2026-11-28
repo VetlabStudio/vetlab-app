@@ -431,7 +431,7 @@ export default {
   "Surveiller attentivement. Réévaluer le protocole analgésique selon l'état clinique de l'animal.": "Monitor closely. Reassess the analgesic protocol based on the patient's clinical status.",
   "Douleur significative": "Significant pain",
   "Une intervention analgésique rapide est nécessaire. Adapter le plan de gestion de la douleur en fonction du score et de l'état clinique.": "Prompt analgesic intervention is needed. Adjust the pain management plan to the score and clinical status.",
-  "Évalue la douleur post-opératoire en sélectionnant une option par critère. Score total : 0 à 10.": "Assess postoperative pain by selecting one option per criterion. Total score: 0 to 10.",
+    "Évalue la douleur post-opératoire en sélectionnant une option par critère. Score total\u00A0: 0 à 10.": "Assess postoperative pain by selecting one option per criterion. Total score: 0 to 10.",
   "Score total": "Total score",
   "Tous les critères remplis": "All criteria completed",
   "Complétez tous les critères pour obtenir l'interprétation complète.": "Complete all criteria to get the full interpretation.",

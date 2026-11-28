@@ -245,10 +245,10 @@ input {
 
 .accueil-v2 {
   background: #eef3f3 url('/background-accueil.jpg') top center / cover no-repeat;
-  padding: calc(20px + env(safe-area-inset-top, 0px)) 16px 0px;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 0px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
   position: relative;
   z-index: 1;
   overflow: hidden;
@@ -275,12 +275,12 @@ input {
   align-items: center;
   justify-content: space-between;
   background: transparent;
-  padding: 30px 0 10px;
+  padding: 8px 0 0;
 }
 
 .accueil-v2-avatar {
-  width: 68px;
-  height: 68px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
@@ -335,8 +335,8 @@ input {
   justify-content: right;
   gap: 10px;
   width: 100%;
-  padding: 16px 32px;
-  margin-bottom: 16px;
+  padding: 14px 28px;
+  margin-bottom: 0;
   border: none;
   border-radius: 99px;
   background: var(--primary);
@@ -11928,10 +11928,11 @@ summary:focus-visible {
   gap: 6px;
   min-width: 0;
   padding: 12px 6px 10px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  /* Tuile mauve pâle, sans bordure ni ombre */
+  background: var(--accent-light);
+  border: none;
+  border-radius: 16px;
+  box-shadow: none;
   font-family: inherit;
   font-size: 12px;
   font-weight: 600;
