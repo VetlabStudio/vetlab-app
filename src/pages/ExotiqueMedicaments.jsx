@@ -8,6 +8,7 @@ import { correspond } from '../lib/recherche'
 import { NOMS_EXOTIQUES, CATEGORIES_EXOTIQUES, slugCategorie } from '../lib/especesExotiques'
 import { useEspeceExotique } from '../lib/useEspeceExotique'
 import BadgePro from '../components/BadgePro'
+import { t, enAnglais } from '../lib/i18n'
 
 /* Supabase renvoie au plus 1 000 lignes par requête : on lit par pages. */
 const TAILLE_PAGE = 1000
@@ -27,7 +28,10 @@ async function toutLire(requete) {
    chien et du chat. Chaque catégorie ouvre sa liste (ExotiqueCategorie). */
 export default function ExotiqueMedicaments() {
   const navigate = useNavigate()
-  const { espece, connue, inconnue } = useEspeceExotique(e => `Médicaments ${NOMS_EXOTIQUES[e].du}`, '/medicaments')
+  const { espece, connue, inconnue } = useEspeceExotique(
+    e => t('Médicaments {du}', { du: enAnglais ? NOMS_EXOTIQUES[e].en : NOMS_EXOTIQUES[e].du }),
+    '/medicaments',
+  )
   const { estPro, estEquipe, teamId, lectureSeule } = useProfil()
   const [catalogue, setCatalogue] = useState(null)
   const [recherche, setRecherche] = useState('')
@@ -80,7 +84,7 @@ export default function ExotiqueMedicaments() {
           <input
             type="text"
             className="recherche-input"
-            placeholder="Rechercher un médicament..."
+            placeholder={t('Rechercher un médicament...')}
             value={recherche}
             onChange={e => { setRecherche(e.target.value); setDropdownOuvert(true) }}
             onFocus={() => setDropdownOuvert(true)}
@@ -102,10 +106,10 @@ export default function ExotiqueMedicaments() {
                 onClick={() => { navigate(`/drogues/fiche/${m.id}`); setRecherche(''); setDropdownOuvert(false) }}
               >
                 <span className="recherche-item-nom">{m.nom}</span>
-                {m.categorie && <span className="recherche-cat">{m.categorie}</span>}
+                {m.categorie && <span className="recherche-cat">{t(m.categorie)}</span>}
               </div>
             )) : (
-              <div className="recherche-item recherche-vide">Aucun résultat</div>
+              <div className="recherche-item recherche-vide">{t('Aucun résultat')}</div>
             )}
           </div>
         )}
@@ -115,9 +119,9 @@ export default function ExotiqueMedicaments() {
 
       {/* ─── CATÉGORIES DE L'ESPÈCE ────────────── */}
       {catalogue === null ? (
-        <div className="admin-vide">Chargement…</div>
+        <div className="admin-vide">{t('Chargement...')}</div>
       ) : categories.length === 0 ? (
-        <div className="admin-vide">Aucun médicament pour {NOMS_EXOTIQUES[espece].le} pour l'instant.</div>
+        <div className="admin-vide">{t("Aucun médicament pour {le} pour l'instant.", { le: enAnglais ? NOMS_EXOTIQUES[espece].en : NOMS_EXOTIQUES[espece].le })}</div>
       ) : (
         <div className="menu-page-section-liste">
           {categories.map((c, idx) => (
@@ -127,7 +131,7 @@ export default function ExotiqueMedicaments() {
               onClick={() => navigate(`/exotiques/${espece}/medicaments/${slugCategorie(c.nom)}`)}
               style={{ borderBottom: idx < categories.length - 1 ? '1px solid var(--border)' : 'none', color: c.nom === 'Urgence' ? 'var(--accent-red)' : undefined }}
             >
-              <span className="menu-page-item-label">{c.nom}</span>
+              <span className="menu-page-item-label">{t(c.nom)}</span>
               <span className="menu-page-item-compte">{c.nombre}</span>
               <i className="ti ti-chevron-right menu-page-item-chevron"></i>
             </button>
@@ -139,7 +143,7 @@ export default function ExotiqueMedicaments() {
       {!lectureSeule && (
         <button
           className="btn-fab"
-          aria-label={estPro ? 'Ajouter un médicament' : 'Ajouter un médicament (fonctionnalité Pro)'}
+          aria-label={estPro ? t('Ajouter un médicament') : t('Ajouter un médicament (fonctionnalité Pro)')}
           onClick={() => estPro ? navigate(`/drogues/ajouter?espece=${espece}`) : setShowProMsg(true)}
         >
           +

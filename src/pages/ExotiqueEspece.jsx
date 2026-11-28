@@ -6,6 +6,8 @@ import { ESPECES_CONFIG } from '../data/especes'
 import { VALEURS_EXOTIQUES } from '../data/valeursExotiques'
 import { NOMS_EXOTIQUES } from '../lib/especesExotiques'
 import { useEspeceExotique } from '../lib/useEspeceExotique'
+import BadgePro from '../components/BadgePro'
+import { t, enAnglais } from '../lib/i18n'
 
 // Version carrée et bleu marine du furet, assortie aux autres icônes.
 const ICONES = { furet: '/icone-furet.svg' }
@@ -22,19 +24,22 @@ export default function ExotiqueEspece() {
 
   const noms = NOMS_EXOTIQUES[espece]
   const valeurs = VALEURS_EXOTIQUES[espece]
+  // Phrases : « du lapin », « pour le lapin » en français ; « for rabbits » en anglais.
+  const du = enAnglais ? noms.en : noms.du
+  const le = enAnglais ? noms.en : noms.le
   const outils = [
     {
       id: 'medicaments',
-      titre: 'Médicaments',
-      detail: `Doses ${noms.du} et calcul du volume`,
+      titre: t('Médicaments'),
+      detail: t('Doses {du} et calcul du volume', { du }),
       icone: '/icone-pharmaco.svg',
       route: `/exotiques/${espece}/medicaments`,
     },
     valeurs && {
       id: 'valeurs',
-      titre: 'Valeurs de référence',
+      titre: t('Valeurs de référence'),
       detail: [...new Set(valeurs.flatMap(s => s.sections.map(x => x.titre)))]
-        .map((t, i) => (i ? t.toLowerCase() : t)).join(', '),
+        .map((titre, i) => (i ? t(titre).toLowerCase() : t(titre))).join(', '),
       icone: '/icone-laboratoire.svg',
       route: `/exotiques/${espece}/valeurs`,
     },
@@ -54,10 +59,10 @@ export default function ExotiqueEspece() {
           {noms.latin && <span className="exotique-espece-latin">{noms.latin}</span>}
           {noms.precision && <span className="exotique-espece-precision">{noms.precision}</span>}
         </span>
-        <button className="exotique-espece-changer" onClick={() => navigate('/exotiques')}>Changer</button>
+        <button className="exotique-espece-changer" onClick={() => navigate('/exotiques')}>{t('Changer')}</button>
       </div>
 
-      <nav className="exotique-outils" aria-label={`Outils pour ${noms.le}`}>
+      <nav className="exotique-outils" aria-label={t('Outils pour {le}', { le })}>
         {outils.map(o => (
           <button key={o.id} className="exotique-outil" onClick={() => navigate(o.route)}>
             <img src={o.icone} alt="" className="exotique-outil-icone" />
@@ -76,11 +81,12 @@ export default function ExotiqueEspece() {
             className="exotique-ajout-btn"
             onClick={() => (peutAjouter ? navigate(`/drogues/ajouter?espece=${espece}`) : setShowProMsg(true))}
           >
-            <i className={`ti ${peutAjouter ? 'ti-plus' : 'ti-lock'}`} aria-hidden="true"></i>
-            Ajouter un médicament pour {noms.le}
+            <i className="ti ti-plus" aria-hidden="true"></i>
+            {t('Ajouter un médicament pour {le}', { le })}
+            {!peutAjouter && !estEquipe && <BadgePro enLigne toujours />}
           </button>
           <p className="exotique-ajout-aide">
-            Il apparaîtra dans les médicaments {noms.du}. En favori, vous le retrouvez avec tous vos autres médicaments.
+            {t('Il apparaîtra dans les médicaments {du}. En favori, vous le retrouvez avec tous vos autres médicaments.', { du })}
           </p>
         </div>
       )}

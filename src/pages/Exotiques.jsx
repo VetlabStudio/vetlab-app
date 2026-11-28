@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { ESPECES_CONFIG } from '../data/especes'
 import { GROUPES_EXOTIQUES } from '../lib/especesExotiques'
+import { t } from '../lib/i18n'
 
 // Version carrée et bleu marine du furet, assortie aux autres icônes de la grille.
 const ICONES_GRILLE = { furet: '/icone-furet.svg' }
@@ -12,7 +13,7 @@ export default function Exotiques() {
   return (
     <div className="exotiques-page">
       <p className="exotiques-intro">
-        Choisissez l'espèce : les médicaments et les doses s'ajustent à elle.
+        {t("Choisissez l'espèce : les médicaments et les doses s'ajustent à elle.")}
       </p>
 
       {GROUPES_EXOTIQUES.map(groupe => (

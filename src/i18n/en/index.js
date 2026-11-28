@@ -9,5 +9,6 @@ import labo from './labo'
 import chirurgie from './chirurgie'
 import equipe from './equipe'
 import soins from './soins'
+import exotiques from './exotiques'
 
-export default { ...commun, ...navigation, ...compte, ...sources, ...outils, ...labo, ...chirurgie, ...equipe, ...soins }
+export default { ...commun, ...navigation, ...compte, ...sources, ...outils, ...labo, ...chirurgie, ...equipe, ...soins, ...exotiques }
