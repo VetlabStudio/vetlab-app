@@ -10,7 +10,7 @@ import { t, tn } from '../lib/i18n'
    son nom pour les lecteurs d'écran (aria-label) et en info-bulle. */
 const ACCUEIL      = { id: 'accueil',      label: t('Accueil'),          svg: '/icone-accueil-nav.svg', route: '/accueil' }
 const CALCULATEURS = { id: 'calculateurs', label: t('Calcul rapide'),    svg: '/icone-calc-nav.svg',    route: '/calculateurs' }
-const FAVORIS      = { id: 'favoris',      label: t('Médicaments favoris'), icone: 'ti-star',              route: '/drogues/mes-drogues' }
+const FAVORIS      = { id: 'favoris',      label: t('Médicaments favoris'), svg: '/icone-favoris-nav.svg', route: '/drogues/mes-drogues' }
 const NOTES        = { id: 'notes',        label: t('Notes'),            svg: '/icone-note-nav.svg',    route: '/notes' }
 const EQUIPE       = { id: 'equipe',       label: t('Équipe'),           svg: '/icone-equipe-nav.svg',  route: '/equipe' }
 
