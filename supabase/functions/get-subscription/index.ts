@@ -69,6 +69,8 @@ Deno.serve(async (req) => {
         // Date de fin si l'abonnement a été annulé et court jusqu'à la fin de la période.
         fin_programmee: sub.cancel_at || (sub.cancel_at_period_end ? sub.current_period_end : null),
         fin_essai: sub.status === 'trialing' ? sub.trial_end : null,
+        // 'month' ou 'year' : la page Abonnement affiche le prix payé.
+        intervalle: sub.items.data[0]?.price?.recurring?.interval || null,
       },
       ...essai,
     }), {

@@ -8921,7 +8921,7 @@ input[type="number"] {
 .abonnement-page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
   padding: 16px;
   padding-bottom: 32px;
 }
@@ -8929,7 +8929,7 @@ input[type="number"] {
 .abonnement-plan-actuel {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
-  padding: 14px 16px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -12524,13 +12524,13 @@ summary:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 42px;
-  padding: 6px 10px;
+  min-height: 38px;
+  padding: 4px 10px;
   border: none;
   border-radius: var(--radius-pill);
   background: transparent;
   font-family: var(--font);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-hint);
   cursor: pointer;
@@ -12557,7 +12557,7 @@ summary:focus-visible {
   display: grid;
   grid-template-columns: 100%;
   margin-inline: -16px;
-  padding: 20px 0 6px;
+  padding: 14px 0 4px;
   overflow-x: clip;
   touch-action: pan-y;
   outline: none;
@@ -12591,7 +12591,7 @@ summary:focus-visible {
   position: absolute;
   inset: 0;
   border: none;
-  border-radius: 28px;
+  border-radius: 24px;
   background: transparent;
   cursor: pointer;
 }
@@ -12600,10 +12600,10 @@ summary:focus-visible {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 26px 22px 22px;
+  gap: 8px;
+  padding: 20px 18px 16px;
   border: 2px solid transparent;
-  border-radius: 28px;
+  border-radius: 24px;
   background: white;
   box-shadow: 0 18px 40px -24px rgba(33, 48, 88, 0.35);
 }
@@ -12628,14 +12628,14 @@ summary:focus-visible {
 
 .abo-forfait-nom {
   margin: 0;
-  font-size: 24px;
+  font-size: 21px;
   font-weight: 800;
   color: var(--primary);
 }
 
 .abo-forfait-sous {
-  margin: -8px 0 0;
-  font-size: 14px;
+  margin: -6px 0 0;
+  font-size: 13px;
   color: var(--text-hint);
 }
 
@@ -12643,12 +12643,12 @@ summary:focus-visible {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px 8px;
-  margin: 4px 0 0;
+  gap: 2px 6px;
+  margin: 2px 0 0;
 }
 
 .abo-forfait-prix strong {
-  font-size: 42px;
+  font-size: 36px;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -12663,7 +12663,7 @@ summary:focus-visible {
 
 .abo-forfait-eco {
   margin: 0;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   line-height: 1.45;
   color: #1D6A54;
@@ -12672,8 +12672,8 @@ summary:focus-visible {
 .abo-liste {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin: 4px 0;
+  gap: 4px;
+  margin: 2px 0;
   padding: 0;
   list-style: none;
 }
@@ -12681,16 +12681,16 @@ summary:focus-visible {
 .abo-liste li {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  font-size: 14px;
-  line-height: 1.4;
+  gap: 8px;
+  font-size: 13.5px;
+  line-height: 1.35;
   color: var(--text-primary);
 }
 
 .abo-liste li .ti {
   flex-shrink: 0;
-  margin-top: 2px;
-  font-size: 16px;
+  margin-top: 1px;
+  font-size: 15px;
   color: #5E3A9E;
 }
 
@@ -12712,8 +12712,32 @@ summary:focus-visible {
 }
 
 .abo-forfait .abo-cta {
-  margin-top: 4px;
+  margin-top: 2px;
+  padding: 12px;
+  font-size: 14.5px;
   border-radius: var(--radius-pill);
+}
+
+/* Sous le prix : « Facturé 59 $ une fois par année. » */
+.abo-forfait-facture {
+  margin: -2px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-hint);
+}
+
+.abo-forfait-facture strong {
+  color: #1D6A54;
+}
+
+/* Textes sous le bouton, plus serrés dans les cartes */
+.abo-forfait .abo-prix-detail {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.abo-forfait .abo-rassurance {
+  font-size: 11px;
 }
 
 .abo-forfait .abo-cta--contour {
@@ -12749,9 +12773,9 @@ summary:focus-visible {
 .abo-sieges-boite {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 14px 16px;
-  border-radius: 18px;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 16px;
   background: var(--bg-secondary);
 }
 
@@ -12808,7 +12832,7 @@ summary:focus-visible {
 
 .abo-sieges-boite p {
   margin: 0;
-  font-size: 12.5px;
+  font-size: 12px;
   line-height: 1.45;
   color: var(--text-hint);
 }
@@ -12824,7 +12848,7 @@ summary:focus-visible {
 
 .abo-onglets button {
   position: relative;
-  padding: 8px 16px 10px;
+  padding: 4px 16px 8px;
   border: none;
   background: none;
   font-family: var(--font);
@@ -12860,4 +12884,152 @@ summary:focus-visible {
   .abo-bascule::before,
   .abo-onglets button::after,
   .abo-carte-place { transition: none; }
+}
+
+/* ─── ABONNÉ : FORFAIT ACTUEL ET PASSAGE À ÉQUIPE ──── */
+.abo-abonne {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 14px;
+}
+
+.abo-actuel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 20px 18px;
+  border: 2px solid #6E48B4;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 18px 40px -24px rgba(33, 48, 88, 0.35);
+}
+
+.abo-actuel-tete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.abo-actuel-icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--primary);
+  font-size: 22px;
+}
+
+.abo-actuel-icone.equipe {
+  background: var(--primary-light);
+}
+
+.abo-actuel-etat {
+  margin: 2px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-hint);
+}
+
+.abo-actuel-etat.essai { color: #1D6A54; font-weight: 600; }
+.abo-actuel-etat.avis { color: var(--accent-gold); font-weight: 600; }
+.abo-actuel-etat.alerte { color: var(--accent-red); font-weight: 700; }
+
+.abo-actuel .abo-cta {
+  margin-top: 2px;
+  padding: 12px;
+  font-size: 14.5px;
+  border-radius: var(--radius-pill);
+}
+
+.abo-actuel .abo-cta--contour {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.abo-actuel .abo-rassurance {
+  font-size: 11.5px;
+  text-align: center;
+}
+
+/* Invitation à passer à Équipe, sous la carte du forfait */
+.abo-migration {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(187, 230, 213, 0.55);
+}
+
+.abo-migration-icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.abo-migration-texte {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.abo-migration-texte p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.abo-migration-texte .abo-migration-titre {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.abo-migration-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 9px 12px 9px 16px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: white;
+  font-family: var(--font);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Fenêtre de passage à Équipe */
+.abo-fenetre-equipe {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.abo-fenetre-equipe .abo-forfait-prix {
+  margin: 0;
+}
+
+.abo-fenetre-equipe .abo-cta {
+  margin-top: 0;
+  border-radius: var(--radius-pill);
 }

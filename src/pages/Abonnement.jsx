@@ -145,6 +145,35 @@ const CARTES = [
   { id: 'equipe', nom: t('Équipe') },
 ]
 
+function ChoixSieges({ nombre, onChange }) {
+  return (
+    <div className="abo-sieges-boite">
+      <div className="abo-sieges-tete">
+        <label htmlFor="abo-sieges">{t('Nombre de sièges')}</label>
+        <div className="abo-sieges-pas">
+          <button type="button" onClick={() => onChange(Math.max(SIEGES_MIN, nombre - 1))} disabled={nombre <= SIEGES_MIN} aria-label={t('Retirer une personne')}>−</button>
+          <span>{nombre}</span>
+          <button type="button" onClick={() => onChange(Math.min(SIEGES_MAX, nombre + 1))} disabled={nombre >= SIEGES_MAX} aria-label={t('Ajouter une personne')}>+</button>
+        </div>
+      </div>
+      <input
+        id="abo-sieges"
+        type="range"
+        className="abo-sieges-curseur"
+        min={SIEGES_MIN}
+        max={SIEGES_CURSEUR_MAX}
+        value={Math.min(nombre, SIEGES_CURSEUR_MAX)}
+        onChange={e => onChange(Number(e.target.value))}
+      />
+      <p>
+        {t('{prix}/siège · {p6} dès 6 · {p11} dès 11', {
+          prix: prix(prixParSiege(nombre)), p6: prix(TIERS_EQUIPE[1].prix), p11: prix(TIERS_EQUIPE[2].prix),
+        })}
+      </p>
+    </div>
+  )
+}
+
 function ListeForfait({ items }) {
   return (
     <ul className="abo-liste">
@@ -263,7 +292,8 @@ export default function Abonnement() {
   const [subAffiche, setSubAffiche] = useState(null)
   if (subDetails !== subAffiche) {
     setSubAffiche(subDetails)
-    if (subDetails?.quantity) setNombreMembres(subDetails.quantity)
+    // Seulement pour une clinique : un Pro a 1 siège, et Équipe en demande au moins 2.
+    if (estEquipe && subDetails?.quantity) setNombreMembres(Math.max(SIEGES_MIN, subDetails.quantity))
   }
 
   useEffect(() => {
@@ -448,10 +478,33 @@ export default function Abonnement() {
 
   const estGratuit = !estPro && !estEquipe
   const nomForfait = estEquipe ? t('Équipe') : estPro ? 'Pro' : t('Gratuit')
-  const couleurForfait = estEquipe ? 'var(--primary)' : estPro ? 'var(--accent-gold)' : 'var(--text-hint)'
-  const bgForfait = estEquipe ? 'rgba(37,77,86,0.1)' : estPro ? 'rgba(215,163,92,0.15)' : 'var(--bg-secondary)'
+
+  /* ─── Abonné : état et prix du forfait actuel ─── */
+  let etatAbonnement = null
+  if (subDetails) {
+    etatAbonnement = subDetails.statut === 'past_due'
+      ? { ton: 'alerte', texte: t('Paiement en retard : mettez à jour votre carte') }
+      : subDetails.fin_programmee
+        ? { ton: 'avis', texte: t('Se termine le {date}', { date: formaterDate(subDetails.fin_programmee) }) }
+        : subDetails.fin_essai
+          ? { ton: 'essai', texte: t('Essai gratuit jusqu\'au {date}, puis premier paiement', { date: formaterDate(subDetails.fin_essai) }) }
+          : { ton: 'ok', texte: t('Renouvellement le {date}', { date: formaterDate(subDetails.current_period_end) }) }
+  } else if (estEquipe && !aSonAbonnement) {
+    etatAbonnement = { ton: 'ok', texte: t('Accès partagé pour toute la clinique') }
+  }
+
+  // Prix payé : Équipe selon les sièges ; Pro selon la période, si le serveur la donne.
+  let prixActuel = null
+  if (aSonAbonnement && estEquipe && subDetails?.quantity) {
+    prixActuel = { montant: prix(calculerPrixEquipe(subDetails.quantity)), unite: t('par année') }
+  } else if (aSonAbonnement && !estEquipe && subDetails?.intervalle === 'year') {
+    prixActuel = { montant: prix(PRIX_PRO_ANNUEL), unite: t('par année') }
+  } else if (aSonAbonnement && !estEquipe && subDetails?.intervalle === 'month') {
+    prixActuel = { montant: PRIX_PRO_MENSUEL, unite: t('par mois') }
+  }
 
   /* ─── Contenu des cartes ─── */
+  /* ─── Cartes du carrousel (comptes gratuits seulement) ─── */
   function carteGratuit() {
     return (
       <>
@@ -459,7 +512,7 @@ export default function Abonnement() {
         <p className="abo-forfait-sous">{t("Pour découvrir l'essentiel.")}</p>
         <p className="abo-forfait-prix"><strong>{prix(0)}</strong> <span>{t('pour toujours')}</span></p>
         <ListeForfait items={LISTE_GRATUIT} />
-        {estGratuit && <p className="abo-forfait-actuel">{t('Votre forfait')}</p>}
+        <p className="abo-forfait-actuel">{t('Votre forfait')}</p>
       </>
     )
   }
@@ -467,82 +520,46 @@ export default function Abonnement() {
   function cartePro() {
     return (
       <>
-        <span className="abo-forfait-ruban">{estPro && !estEquipe ? t('Votre forfait') : t('Recommandé')}</span>
+        <span className="abo-forfait-ruban">{t('Recommandé')}</span>
         <h2 className="abo-forfait-nom">Pro</h2>
         <p className="abo-forfait-sous">{t('Tout Adjuvet, pour vous.')}</p>
+        {/* Le prix par mois en gros ; en annuel, le montant facturé en dessous. */}
         <p className="abo-forfait-prix">
-          <strong>{periode === 'annuel' ? prix(PRIX_PRO_ANNUEL) : PRIX_PRO_MENSUEL}</strong>{' '}
-          <span>{periode === 'annuel' ? t('par année') : t('par mois')}</span>
+          <strong>{periode === 'annuel' ? PRIX_PRO_ANNUEL_PAR_MOIS : PRIX_PRO_MENSUEL}</strong>{' '}
+          <span>{t('par mois')}</span>
         </p>
-        <p className="abo-forfait-eco">
+        <p className="abo-forfait-facture">
           {periode === 'annuel'
-            ? t('Soit {prix} par mois. Vous économisez près de {economie}.', { prix: PRIX_PRO_ANNUEL_PAR_MOIS, economie: prix(ECONOMIE_ANNUELLE) })
+            ? <>{t('Facturé {prix} une fois par année.', { prix: prix(PRIX_PRO_ANNUEL) })} <strong>{t('Vous économisez près de {economie}.', { economie: prix(ECONOMIE_ANNUELLE) })}</strong></>
             : t('Sans engagement, annulable en tout temps.')}
         </p>
         <ListeForfait items={LISTE_PRO} />
-        {estGratuit && (
-          <>
-            <button
-              className="abonnement-btn-abonner abo-cta"
-              onClick={() => {
-                sessionStorage.setItem('checkout_plan', 'pro')
-                setPlanCheckout('pro')
-                ouvrirCheckout(periode === 'annuel' ? PRICE_ANNUAL : PRICE_MONTHLY)
-              }}
-              disabled={checkoutLoading}
-            >
-              {checkoutLoading
-                ? t('Chargement...')
-                : essai ? t('Essayer {n} jours gratuitement', { n: essai.jours }) : t('Passer à Pro')}
-            </button>
-            {/* Essai appliqué par create-checkout : le prix et la date du premier paiement sont dits clairement. */}
-            {essai && (
-              <p className="abo-prix-detail" style={{ margin: 0 }}>
-                {periode === 'annuel' ? t('Puis {prix} par année.', { prix: prix(PRIX_PRO_ANNUEL) }) : t('Puis {prix} par mois.', { prix: PRIX_PRO_MENSUEL })}{' '}
-                {t('Aucun prélèvement avant le')} <strong style={{ whiteSpace: 'nowrap' }}>{formaterDate(essai.fin)}</strong>.
-              </p>
-            )}
-            <Rassurance />
-          </>
+        <button
+          className="abonnement-btn-abonner abo-cta"
+          onClick={() => {
+            sessionStorage.setItem('checkout_plan', 'pro')
+            setPlanCheckout('pro')
+            ouvrirCheckout(periode === 'annuel' ? PRICE_ANNUAL : PRICE_MONTHLY)
+          }}
+          disabled={checkoutLoading}
+        >
+          {checkoutLoading
+            ? t('Chargement...')
+            : essai ? t('Essayer {n} jours gratuitement', { n: essai.jours }) : t('Passer à Pro')}
+        </button>
+        {/* Essai appliqué par create-checkout : le prix et la date du premier paiement sont dits clairement. */}
+        {essai && (
+          <p className="abo-prix-detail" style={{ margin: 0 }}>
+            {periode === 'annuel' ? t('Puis {prix} par année.', { prix: prix(PRIX_PRO_ANNUEL) }) : t('Puis {prix} par mois.', { prix: PRIX_PRO_MENSUEL })}{' '}
+            {t('Aucun prélèvement avant le')} <strong style={{ whiteSpace: 'nowrap' }}>{formaterDate(essai.fin)}</strong>.
+          </p>
         )}
-        {estEquipe && <p className="abo-forfait-actuel">{t('Inclus dans votre forfait Équipe')}</p>}
+        <Rassurance />
       </>
     )
   }
 
   function carteEquipe() {
-    if (estEquipe) {
-      return (
-        <>
-          <span className="abo-forfait-ruban">{t('Votre forfait')}</span>
-          <h2 className="abo-forfait-nom">{t('Équipe')}</h2>
-          <p className="abo-forfait-sous">{t('Accès partagé pour toute la clinique')}</p>
-          {subDetails?.quantity && (
-            <p className="abo-forfait-prix">
-              <strong>{prix(calculerPrixEquipe(subDetails.quantity))}</strong> <span>{t('par année')}</span>
-            </p>
-          )}
-          {subDetails?.quantity && (
-            <p className="abo-forfait-eco">{tn(subDetails.quantity, '{n} siège inclus', '{n} sièges inclus')}</p>
-          )}
-          <ListeForfait items={LISTE_EQUIPE} />
-          {roleEquipe === 'proprietaire' ? (
-            <button className="abonnement-btn-abonner abo-cta abo-cta--contour" onClick={() => setModalSieges(true)}>
-              <i className="ti ti-users-plus" aria-hidden="true"></i>
-              {t('Modifier les sièges')}
-            </button>
-          ) : (
-            <>
-              <p className="abo-prix-detail" style={{ margin: 0 }}>{t('Les sièges sont gérés par le propriétaire de la clinique.')}</p>
-              <button className="abo-lien-quitter" onClick={() => setModalQuitter(true)}>
-                {t("Quitter l'équipe")}
-              </button>
-            </>
-          )}
-        </>
-      )
-    }
-
     return (
       <>
         <h2 className="abo-forfait-nom">{t('Équipe')}</h2>
@@ -550,56 +567,20 @@ export default function Abonnement() {
         <p className="abo-forfait-prix">
           <strong>{prix(calculerPrixEquipe(nombreMembres))}</strong> <span>{t('par année')}</span>
         </p>
-
-        <div className="abo-sieges-boite">
-          <div className="abo-sieges-tete">
-            <label htmlFor="abo-sieges">{t('Nombre de sièges')}</label>
-            <div className="abo-sieges-pas">
-              <button type="button" onClick={() => setNombreMembres(n => Math.max(SIEGES_MIN, n - 1))} disabled={nombreMembres <= SIEGES_MIN} aria-label={t('Retirer une personne')}>−</button>
-              <span>{nombreMembres}</span>
-              <button type="button" onClick={() => setNombreMembres(n => Math.min(SIEGES_MAX, n + 1))} disabled={nombreMembres >= SIEGES_MAX} aria-label={t('Ajouter une personne')}>+</button>
-            </div>
-          </div>
-          <input
-            id="abo-sieges"
-            type="range"
-            className="abo-sieges-curseur"
-            min={SIEGES_MIN}
-            max={SIEGES_CURSEUR_MAX}
-            value={Math.min(nombreMembres, SIEGES_CURSEUR_MAX)}
-            onChange={e => setNombreMembres(Number(e.target.value))}
-          />
-          <p>
-            {t('{prix} par siège.', { prix: prix(prixParSiege(nombreMembres)) })}{' '}
-            {t('{p6} dès 6 sièges, {p11} dès 11.', { p6: prix(TIERS_EQUIPE[1].prix), p11: prix(TIERS_EQUIPE[2].prix) })}
-          </p>
-        </div>
-
+        <ChoixSieges nombre={nombreMembres} onChange={setNombreMembres} />
         <ListeForfait items={LISTE_EQUIPE} />
-
-        {estPro ? (
-          <>
-            <button className="abonnement-btn-abonner abo-cta abo-cta--contour" onClick={() => setModalUpgrade(true)}>
-              {t('Passer à Équipe')}
-            </button>
-            <p className="abo-rassurance">{t('Votre crédit Pro non utilisé est déduit automatiquement.')}</p>
-          </>
-        ) : (
-          <>
-            <button
-              className="abonnement-btn-abonner abo-cta abo-cta--contour"
-              onClick={() => {
-                sessionStorage.setItem('checkout_plan', 'equipe')
-                setPlanCheckout('equipe')
-                ouvrirCheckout(PRICE_EQUIPE, nombreMembres)
-              }}
-              disabled={checkoutLoading}
-            >
-              {checkoutLoading ? t('Chargement...') : t('Équiper ma clinique')}
-            </button>
-            <Rassurance />
-          </>
-        )}
+        <button
+          className="abonnement-btn-abonner abo-cta abo-cta--contour"
+          onClick={() => {
+            sessionStorage.setItem('checkout_plan', 'equipe')
+            setPlanCheckout('equipe')
+            ouvrirCheckout(PRICE_EQUIPE, nombreMembres)
+          }}
+          disabled={checkoutLoading}
+        >
+          {checkoutLoading ? t('Chargement...') : t('Équiper ma clinique')}
+        </button>
+        <Rassurance />
       </>
     )
   }
@@ -620,157 +601,180 @@ export default function Abonnement() {
       )}
       {erreur && <div className="form-erreur" style={{ marginBottom: 0 }}>{erreur}</div>}
 
-      {/* FORFAIT ACTUEL (seulement pour un forfait payant) */}
+      {/* ─── ABONNÉ : LE FORFAIT ACTUEL EN AVANT ───
+          Pas de carrousel : la carte du forfait, la gestion de
+          l'abonnement, et pour un Pro, le passage à Équipe en dessous. */}
       {!estGratuit && (
-        <div className="abonnement-plan-actuel">
-          <div className="abo-plan-ligne">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 36, height: 36, borderRadius: '50%', background: bgForfait,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-              }}>
-                <i className={`ti ${estEquipe ? 'ti-users' : 'ti-crown'}`} style={{ fontSize: 18, color: couleurForfait }}></i>
-              </div>
+        <div className="abo-abonne">
+          <div className="abo-actuel">
+            <span className="abo-forfait-ruban">{t('Votre forfait')}</span>
+            <div className="abo-actuel-tete">
+              <span className={`abo-actuel-icone${estEquipe ? ' equipe' : ''}`}>
+                <i className={`ti ${estEquipe ? 'ti-users' : 'ti-crown'}`} aria-hidden="true"></i>
+              </span>
               <div>
-                <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 2 }}>{t('Forfait actuel')}</p>
-                <p style={{ fontSize: 16, fontWeight: 700, color: couleurForfait, marginBottom: subDetails ? 3 : 0 }}>{nomForfait}</p>
-                {subDetails && (
-                  <p style={{ fontSize: 12, color: 'var(--text-hint)', lineHeight: 1.4 }}>
-                    {estEquipe && subDetails.quantity > 1 && (
-                      <span>{t('{n} sièges', { n: subDetails.quantity })} · </span>
-                    )}
-                    {subDetails.statut === 'past_due'
-                      ? t('Paiement en retard : mettez à jour votre carte')
-                      : subDetails.fin_programmee
-                        ? t('Se termine le {date}', { date: formaterDate(subDetails.fin_programmee) })
-                        : subDetails.fin_essai
-                          ? t('Essai gratuit jusqu\'au {date}, puis premier paiement', { date: formaterDate(subDetails.fin_essai) })
-                          : t('Renouvellement le {date}', { date: formaterDate(subDetails.current_period_end) })}
-                  </p>
-                )}
+                <h2 className="abo-forfait-nom">{nomForfait}</h2>
+                {etatAbonnement && <p className={`abo-actuel-etat ${etatAbonnement.ton}`}>{etatAbonnement.texte}</p>}
               </div>
             </div>
+
+            {prixActuel && (
+              <p className="abo-forfait-prix"><strong>{prixActuel.montant}</strong> <span>{prixActuel.unite}</span></p>
+            )}
+            {aSonAbonnement && estEquipe && subDetails?.quantity && (
+              <p className="abo-forfait-facture">
+                {tn(subDetails.quantity, '{n} siège inclus', '{n} sièges inclus')}
+                {nombreMembresActifs > 0 && ` · ${tn(nombreMembresActifs, '{n} membre actif', '{n} membres actifs')}`}
+              </p>
+            )}
+
+            <ListeForfait items={estEquipe ? LISTE_EQUIPE : LISTE_PRO} />
+
+            {aSonAbonnement ? (
+              <>
+                {estEquipe && (
+                  <button className="abonnement-btn-abonner abo-cta abo-cta--contour" onClick={() => setModalSieges(true)}>
+                    <i className="ti ti-users-plus" aria-hidden="true"></i>
+                    {t('Modifier les sièges')}
+                  </button>
+                )}
+                {/* Le désabonnement doit se trouver sans chercher. */}
+                <button className="abonnement-btn-abonner abo-cta" onClick={ouvrirPortail} disabled={checkoutLoading}>
+                  <i className="ti ti-receipt" aria-hidden="true"></i>
+                  {checkoutLoading ? t('Ouverture...') : t('Gérer la facturation / Se désabonner')}
+                </button>
+                <p className="abo-rassurance">{t('Factures, carte de paiement et désabonnement, dans le portail sécurisé de Stripe.')}</p>
+              </>
+            ) : (
+              <>
+                <p className="abo-forfait-facture">{t('Les sièges sont gérés par le propriétaire de la clinique.')}</p>
+                <button className="abo-lien-quitter" onClick={() => setModalQuitter(true)}>
+                  {t("Quitter l'équipe")}
+                </button>
+              </>
+            )}
           </div>
 
-          {/* Le désabonnement doit se trouver sans chercher : même
-             bouton pour le Pro et pour le propriétaire de la clinique. */}
-          {aSonAbonnement && (
-            <button className="profil-portal-btn" onClick={ouvrirPortail} disabled={checkoutLoading}
-              style={{ justifyContent: 'center' }}>
-              <i className="ti ti-receipt" aria-hidden="true"></i>
-              {checkoutLoading ? t('Ouverture...') : t('Gérer la facturation / Se désabonner')}
-            </button>
+          {/* Passage à Équipe : une invitation sous le forfait, qui ouvre la fenêtre de choix des sièges. */}
+          {estPro && !estEquipe && (
+            <div className="abo-migration">
+              <span className="abo-migration-icone"><i className="ti ti-users" aria-hidden="true"></i></span>
+              <div className="abo-migration-texte">
+                <p className="abo-migration-titre">{t('Toute votre clinique sur Adjuvet ?')}</p>
+                <p>{t('Avec le forfait Équipe, chaque membre a Pro et vous partagez babillard, tâches, protocoles et médicaments. De {min} à {max} par siège par année.', { min: prix(TIERS_EQUIPE[2].prix), max: prix(TIERS_EQUIPE[0].prix) })}</p>
+                <button className="abo-migration-btn" onClick={() => setModalUpgrade(true)}>
+                  {t('Découvrir le forfait Équipe')}
+                  <i className="ti ti-chevron-right" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
           )}
         </div>
       )}
 
-      {/* ─── MENSUEL / ANNUEL ─── */}
-      <div
-        className="abo-bascule"
-        role="group"
-        aria-label={t('Période de facturation')}
-        style={{ '--i': periode === 'annuel' ? 1 : 0 }}
-      >
-        <button type="button" className={periode === 'mensuel' ? 'actif' : ''} aria-pressed={periode === 'mensuel'} onClick={() => setPeriode('mensuel')}>
-          {t('Mensuel')}
-        </button>
-        <button type="button" className={periode === 'annuel' ? 'actif' : ''} aria-pressed={periode === 'annuel'} onClick={() => setPeriode('annuel')}>
-          {t('Annuel')}
-          <span className="abo-bascule-badge">{tn(MOIS_OFFERTS, '{n} mois offert', '{n} mois offerts')}</span>
-        </button>
-      </div>
-
-      {/* ─── ONGLETS DES FORFAITS ───
-          Les trois forfaits sont nommés au-dessus des cartes : on voit
-          qu'Équipe existe sans avoir à glisser. Synchronisés avec le carrousel. */}
-      <div className="abo-onglets" role="tablist" aria-label={t('Forfaits')}>
-        {CARTES.map((c, i) => (
-          <button
-            key={c.id}
-            type="button"
-            role="tab"
-            aria-selected={i === carte}
-            className={i === carte ? 'actif' : ''}
-            onClick={() => setCarte(i)}
-          >
-            {c.nom}
+      {estGratuit && (
+        <>
+        {/* ─── MENSUEL / ANNUEL ─── */}
+        <div
+          className="abo-bascule"
+          role="group"
+          aria-label={t('Période de facturation')}
+          style={{ '--i': periode === 'annuel' ? 1 : 0 }}
+        >
+          <button type="button" className={periode === 'mensuel' ? 'actif' : ''} aria-pressed={periode === 'mensuel'} onClick={() => setPeriode('mensuel')}>
+            {t('Mensuel')}
           </button>
-        ))}
-      </div>
+          <button type="button" className={periode === 'annuel' ? 'actif' : ''} aria-pressed={periode === 'annuel'} onClick={() => setPeriode('annuel')}>
+            {t('Annuel')}
+            <span className="abo-bascule-badge">{tn(MOIS_OFFERTS, '{n} mois offert', '{n} mois offerts')}</span>
+          </button>
+        </div>
 
-      {/* ─── CARROUSEL DES FORFAITS ───
-          Les cartes se superposent un peu : celle du centre est devant,
-          ses voisines dépassent sur les côtés. On glisse, on touche une
-          voisine ou un point pour changer de carte. */}
-      <div
-        className="abo-carrousel"
-        role="region"
-        aria-roledescription={t('carrousel')}
-        aria-label={t('Forfaits')}
-        tabIndex={0}
-        onPointerDown={debutGlisse}
-        onPointerUp={finGlisse}
-        onPointerCancel={() => { glisse.current = null }}
-        onKeyDown={toucheCarrousel}
-      >
-        {CARTES.map((c, i) => {
-          const decalage = i - carte
-          const actif = decalage === 0
-          const loin = Math.abs(decalage) > 1
-          return (
-            <div
+        {/* ─── ONGLETS DES FORFAITS ───
+            Les trois forfaits sont nommés au-dessus des cartes : on voit
+            qu'Équipe existe sans avoir à glisser. Synchronisés avec le carrousel. */}
+        <div className="abo-onglets" role="tablist" aria-label={t('Forfaits')}>
+          {CARTES.map((c, i) => (
+            <button
               key={c.id}
-              className={`abo-carte-place${actif ? ' actif' : ''}${loin ? ' loin' : ''}`}
-              style={{
-                // Les voisines reculent un peu : plus petites, plus basses, en retrait.
-                transform: `translateX(${decalage * 76}%) translateY(${actif ? 0 : 18}px) scale(${actif ? 1 : 0.88})`,
-                zIndex: 3 - Math.abs(decalage),
-              }}
+              type="button"
+              role="tab"
+              aria-selected={i === carte}
+              className={i === carte ? 'actif' : ''}
+              onClick={() => setCarte(i)}
             >
-              <div className={`abo-forfait abo-forfait--${c.id}`} inert={!actif}>
-                {contenuCarte[c.id]()}
+              {c.nom}
+            </button>
+          ))}
+        </div>
+
+        {/* ─── CARROUSEL DES FORFAITS ───
+            Les cartes se superposent un peu : celle du centre est devant,
+            ses voisines dépassent sur les côtés. On glisse, on touche une
+            voisine ou un point pour changer de carte. */}
+        <div
+          className="abo-carrousel"
+          role="region"
+          aria-roledescription={t('carrousel')}
+          aria-label={t('Forfaits')}
+          tabIndex={0}
+          onPointerDown={debutGlisse}
+          onPointerUp={finGlisse}
+          onPointerCancel={() => { glisse.current = null }}
+          onKeyDown={toucheCarrousel}
+        >
+          {CARTES.map((c, i) => {
+            const decalage = i - carte
+            const actif = decalage === 0
+            const loin = Math.abs(decalage) > 1
+            return (
+              <div
+                key={c.id}
+                className={`abo-carte-place${actif ? ' actif' : ''}${loin ? ' loin' : ''}`}
+                style={{
+                  // Les voisines reculent un peu : plus petites, plus basses, en retrait.
+                  transform: `translateX(${decalage * 76}%) translateY(${actif ? 0 : 18}px) scale(${actif ? 1 : 0.88})`,
+                  zIndex: 3 - Math.abs(decalage),
+                }}
+              >
+                <div className={`abo-forfait abo-forfait--${c.id}`} inert={!actif}>
+                  {contenuCarte[c.id]()}
+                </div>
+                {!actif && !loin && (
+                  <button
+                    type="button"
+                    className="abo-carte-voile"
+                    onClick={() => setCarte(i)}
+                    aria-label={t('Voir le forfait {nom}', { nom: c.nom })}
+                  />
+                )}
               </div>
-              {!actif && !loin && (
-                <button
-                  type="button"
-                  className="abo-carte-voile"
-                  onClick={() => setCarte(i)}
-                  aria-label={t('Voir le forfait {nom}', { nom: c.nom })}
-                />
-              )}
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+        </>
+      )}
 
       {/* ─── MODAL UPGRADE PRO → ÉQUIPE ─── */}
       {modalUpgrade && (
         <div className="popup-overlay" onClick={() => setModalUpgrade(false)}>
-          <div className="popup-card" onClick={e => e.stopPropagation()}>
+          <div className="popup-card abo-fenetre-equipe" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>{t('Mettre à niveau vers Équipe')}</span>
+              <span>{t('Passer au forfait Équipe')}</span>
               <button className="popup-close" onClick={() => setModalUpgrade(false)}>✕</button>
             </div>
-            <div style={{ padding: '12px 0 4px' }}>
-              <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
-                {t('Votre crédit Pro non utilisé sera automatiquement déduit du montant à payer. Vous ne perdez rien.')}
-              </p>
-              <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>{t('Nombre de membres')}</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                <button className="radio-btn" onClick={() => setNombreMembres(n => Math.max(2, n - 1))}
-                  style={{ width: 32, height: 32, borderRadius: 8 }}>−</button>
-                <span style={{ fontSize: 18, fontWeight: 700, minWidth: 30, textAlign: 'center' }}>{nombreMembres}</span>
-                <button className="radio-btn" onClick={() => setNombreMembres(n => n + 1)}
-                  style={{ width: 32, height: 32, borderRadius: 8 }}>+</button>
-              </div>
-              <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 16 }}>
-                {t('{prix} / année', { prix: prix(calculerPrixEquipe(nombreMembres)) })} · {t('{prix}/siège', { prix: prix(prixParSiege(nombreMembres)) })}
-              </p>
-              {erreur && <div className="form-erreur" style={{ marginBottom: 12 }}>{erreur}</div>}
-              <button className="btn-sauvegarder" onClick={() => upgraderAbonnement(false)} disabled={upgradeLoading}>
-                {upgradeLoading ? t('Mise à niveau en cours...') : t('Confirmer pour {prix} / année', { prix: prix(calculerPrixEquipe(nombreMembres)) })}
-              </button>
-            </div>
+            <p className="abo-forfait-prix">
+              <strong>{prix(calculerPrixEquipe(nombreMembres))}</strong> <span>{t('par année')}</span>
+            </p>
+            <ChoixSieges nombre={nombreMembres} onChange={setNombreMembres} />
+            <ListeForfait items={LISTE_EQUIPE} />
+            <p className="abo-forfait-facture">
+              {t('Votre crédit Pro non utilisé sera automatiquement déduit du montant à payer. Vous ne perdez rien.')}
+            </p>
+            {erreur && <div className="form-erreur" style={{ margin: 0 }}>{erreur}</div>}
+            <button className="abonnement-btn-abonner abo-cta" onClick={() => upgraderAbonnement(false)} disabled={upgradeLoading}>
+              {upgradeLoading ? t('Mise à niveau en cours...') : t('Confirmer pour {prix} / année', { prix: prix(calculerPrixEquipe(nombreMembres)) })}
+            </button>
           </div>
         </div>
       )}
