@@ -12298,7 +12298,8 @@ summary:focus-visible {
   margin-left: -4px;
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
   background: var(--primary);
-  animation: goutte-chute 1s cubic-bezier(0.5, 0, 1, 1) infinite;
+  /* L'animation est lancée par la page (Fluidotherapie.jsx) : délai variable, chute fixe. */
+  opacity: 0;
 }
 
 .chambre-gouttes .filet {
@@ -12312,15 +12313,8 @@ summary:focus-visible {
   background: var(--primary);
 }
 
-@keyframes goutte-chute {
-  0%   { transform: translateY(0) scale(0.4); opacity: 0; }
-  25%  { transform: translateY(0) scale(1); opacity: 1; }
-  88%  { transform: translateY(21px) scale(1); opacity: 1; }
-  100% { transform: translateY(24px) scale(1.4, 0.4); opacity: 0; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .chambre-gouttes .goutte { animation: none; opacity: 1; }
+  .chambre-gouttes .goutte { opacity: 1; }
 }
 
 /* ─── LISTE DE TÂCHES (équipe) ──────────────────── */

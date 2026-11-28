@@ -91,16 +91,84 @@ function ecrirePrefs(prefs) {
   }
 }
 
-/* Chambre compte-gouttes : une goutte tombe au rythme calculé.
-   Au-delà de 4 gouttes par seconde, une goutte isolée devient
-   illisible : on montre un filet continu. */
-function ChambreGouttes({ gttsParMin }) {
-  const periode = 60 / gttsParMin
+/* Chambre compte-gouttes, comme au chevet.
+   Une vraie goutte tombe toujours à la même vitesse : c'est le délai
+   entre deux gouttes qui change avec le débit. La goutte grossit à
+   l'embout, se détache, tombe en un temps fixe et touche la surface.
+   Le son (s'il est activé) joue au moment de l'impact.
+   Au-delà de 4 gouttes par seconde, on montre un filet continu. */
+const CHUTE_MS = 260   // temps de chute, le même à tous les débits
+const ECLAT_MS = 90    // l'éclaboussure à la surface
+
+function bipGoutte(ctx) {
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+  osc.type = 'square'
+  osc.frequency.value = 880
+  gain.gain.setValueAtTime(0.6, ctx.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08)
+  osc.start()
+  osc.stop(ctx.currentTime + 0.08)
+}
+
+function ChambreGouttes({ gttsParMin, sonActif }) {
+  const goutteRef = useRef(null)
+  const periode = 60000 / gttsParMin
+  const filet = periode < 250
+
+  useEffect(() => {
+    if (!(periode > 0) || !isFinite(periode)) return
+    // Débit rapide : la chute et l'éclaboussure se raccourcissent pour tenir dans le cycle.
+    const chute = Math.min(CHUTE_MS, periode * 0.5)
+    const eclat = Math.min(ECLAT_MS, periode * 0.2)
+    const impact = periode - eclat  // moment de l'impact dans le cycle (ms)
+
+    let animation = null
+    const goutte = goutteRef.current
+    const mouvementReduit = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (goutte && !filet && !mouvementReduit && goutte.animate) {
+      animation = goutte.animate([
+        // la goutte grossit à l'embout pendant presque tout le délai
+        { offset: 0, transform: 'translateY(0) scale(0.3)', opacity: 0, easing: 'ease-out' },
+        // détachée : chute accélérée par la gravité
+        { offset: (impact - chute) / periode, transform: 'translateY(0) scale(1)', opacity: 1, easing: 'cubic-bezier(0.55, 0, 1, 0.45)' },
+        // impact sur la surface du soluté
+        { offset: impact / periode, transform: 'translateY(21px) scale(1)', opacity: 1, easing: 'ease-out' },
+        { offset: 1, transform: 'translateY(24px) scale(1.4, 0.4)', opacity: 0 },
+      ], { duration: periode, iterations: Infinity })
+    }
+
+    /* Son : réglé sur l'horloge de l'animation à chaque goutte, pour
+       rester calé sur l'impact même après plusieurs minutes. */
+    let audio = null
+    let minuterie = null
+    if (sonActif) {
+      audio = new (window.AudioContext || window.webkitAudioContext)()
+      const debut = performance.now()
+      const suivant = () => {
+        const temps = animation?.currentTime ?? (performance.now() - debut)
+        let attente = impact - (temps % periode)
+        if (attente < 5) attente += periode
+        minuterie = setTimeout(() => {
+          bipGoutte(audio)
+          suivant()
+        }, attente)
+      }
+      suivant()
+    }
+
+    return () => {
+      animation?.cancel()
+      clearTimeout(minuterie)
+      audio?.close()
+    }
+  }, [periode, filet, sonActif])
+
   return (
     <span className="chambre-gouttes" aria-hidden="true">
-      {periode < 0.25
-        ? <i className="filet" />
-        : <i key={periode.toFixed(2)} className="goutte" style={{ animationDuration: `${periode.toFixed(2)}s` }} />}
+      {filet ? <i className="filet" /> : <i ref={goutteRef} className="goutte" />}
     </span>
   )
 }
@@ -230,27 +298,6 @@ export default function Fluidotherapie() {
   const gttsParMin = debitPourGtts > 0 && facteurGtts > 0 ? (debitPourGtts * facteurGtts) / 60 : 0
   const gttsPar15Sec = gttsParMin / 4
   const dureeSac = debitPourGtts > 0 ? volumeSac / debitPourGtts : 0
-
-  /* ─── SON MÉTRONOME ──────────────────────────────────── */
-  useEffect(() => {
-    if (!sonActif || gttsParMin <= 0) return
-    const ctx = new (window.AudioContext || window.webkitAudioContext)()
-    const bip = () => {
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
-      osc.connect(gain)
-      gain.connect(ctx.destination)
-      osc.type = 'square'
-      osc.frequency.value = 880
-      gain.gain.setValueAtTime(0.6, ctx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08)
-      osc.start()
-      osc.stop(ctx.currentTime + 0.08)
-    }
-    bip()
-    const id = setInterval(bip, (60 / gttsParMin) * 1000)
-    return () => { clearInterval(id); ctx.close() }
-  }, [sonActif, gttsParMin])
 
   const aDesDonnees = poids !== '' || deshyActive || pertesActive || debitSaisi !== ''
 
@@ -633,7 +680,7 @@ export default function Fluidotherapie() {
                     <span>{t('Rythme des gouttes')}</span>
                     {gttsParMin > 0 && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <ChambreGouttes gttsParMin={gttsParMin} />
+                        <ChambreGouttes gttsParMin={gttsParMin} sonActif={sonActif} />
                         <button
                           onClick={() => setSonActif(v => !v)}
                           style={{
