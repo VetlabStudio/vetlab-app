@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import IconesEspeces from '../components/IconesEspeces'
 import MenuDeroulant from '../components/MenuDeroulant'
 import { useProfil } from '../context/ProfilContext'
+import BadgePro from '../components/BadgePro'
 
 export default function MesDrogues() {
   const navigate = useNavigate()
@@ -105,7 +106,7 @@ export default function MesDrogues() {
           alignItems: 'center',
           gap: 12,
         }}>
-          <i className="ti ti-lock" style={{ fontSize: 22, color: 'var(--accent-gold)', flexShrink: 0 }}></i>
+          <BadgePro enLigne toujours />
           <div style={{ flex: 1 }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 2px 0' }}>Fonctionnalité Pro</p>
             <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.4 }}>

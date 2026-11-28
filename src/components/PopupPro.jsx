@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { t, enAnglais } from '../lib/i18n'
+import BadgePro from './BadgePro'
 
 export default function PopupPro({ onClose }) {
   const navigate = useNavigate()
@@ -17,7 +18,7 @@ export default function PopupPro({ onClose }) {
           <button className="popup-close" onClick={onClose}>✕</button>
         </div>
         <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
-          <i className="ti ti-lock" style={{ fontSize: 40, color: 'var(--accent-gold)', marginBottom: 12, display: 'block' }}></i>
+          <div style={{ marginBottom: 14 }}><BadgePro grand toujours /></div>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 4 }}>
             {enAnglais
               ? <>This feature is available <br /> with the <strong>Pro</strong> plan.</>

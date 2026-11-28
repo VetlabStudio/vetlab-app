@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { t } from '../lib/i18n'
+import SelecteurEspece from '../components/SelecteurEspece'
 
 /* ════════════════════════════════════════════════════════════
    RÉANIMATION CARDIORESPIRATOIRE
@@ -656,22 +657,7 @@ export default function RCR() {
       {onglet === 'doses' && (
         <>
           <div className="champ" style={{ width: '100%' }}>
-            <div className="espece-toggle">
-              <span className={`espece-label ${espece === 'chien' ? 'active' : ''}`}>
-                <img src="/icone-chien.svg" alt={t('Chien')} className="espece-icone" />
-                {t('Chien')}
-              </span>
-              <div
-                className={`toggle-slider ${espece === 'chat' ? 'droite' : ''}`}
-                onClick={() => setEspece(espece === 'chien' ? 'chat' : 'chien')}
-              >
-                <div className="toggle-thumb"></div>
-              </div>
-              <span className={`espece-label ${espece === 'chat' ? 'active' : ''}`}>
-                <img src="/icone-chat.svg" alt={t('Chat')} className="espece-icone" />
-                {t('Chat')}
-              </span>
-            </div>
+            <SelecteurEspece valeur={espece} onChange={setEspece} />
           </div>
 
           <div className="champ" style={{ width: '100%' }}>

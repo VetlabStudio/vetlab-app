@@ -1209,11 +1209,89 @@ input {
 }
 
 /* ─── RADIO BOUTONS kg/lb ────────────────────── */
+/* .radio-btn seul (ex. boutons + et − de l'abonnement) garde ce style. */
 
+/* Les choix groupés (kg | lb, °C | °F, mg/mL | %...) forment une
+   piste lavande ; le choix actif est une pastille marine. */
 .radio-groupe {
   display: flex;
-  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-light);
   flex-shrink: 0;
+}
+
+.radio-groupe .radio-btn {
+  background: transparent;
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  color: var(--text-hint);
+  transition: background 0.2s, color 0.2s;
+}
+
+.radio-groupe .radio-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* ─── CURSEUR À SEGMENTS (espèce) ─────────────── */
+
+.selecteur-segments {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-light);
+}
+
+.selecteur-segments::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / var(--n, 2));
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  transform: translateX(calc(100% * var(--i, 0)));
+  transition: transform 0.25s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.selecteur-segments[data-vide]::before {
+  opacity: 0;
+}
+
+.selecteur-segments .segment {
+  position: relative;
+  min-width: 0;
+  min-height: 42px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-hint);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s;
+}
+
+.selecteur-segments .segment.actif {
+  color: white;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selecteur-segments::before { transition: none; }
 }
 
 .radio-btn {
@@ -9918,15 +9996,6 @@ input[type="number"] {
   font-weight: 600;
 }
 
-.lien-favoris-pro {
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  background: rgba(148, 100, 31, 0.12);
-  color: var(--accent-gold);
-  font-size: 11px;
-  font-weight: 700;
-}
-
 .lien-favoris > .ti {
   color: var(--text-hint);
 }
@@ -12125,4 +12194,280 @@ summary:focus-visible {
   font-size: 0.9rem;
   line-height: 1.6;
   color: var(--text-primary);
+}
+
+/* ─── PASTILLE PRO ─────────────────────────────── */
+/* Remplace le cadenas : ce qui demande le forfait Pro porte
+   une petite pastille jaune « Pro ». */
+.badge-pro {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--yellow);
+  color: var(--primary);
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.badge-pro--ligne {
+  position: static;
+  vertical-align: middle;
+}
+
+.badge-pro--grand {
+  position: static;
+  padding: 6px 18px;
+  font-size: 18px;
+}
+
+.badge-pro--bouton {
+  top: -6px;
+  right: -10px;
+  box-shadow: 0 0 0 2px var(--bg);
+}
+
+/* ─── CHAMBRE COMPTE-GOUTTES (fluidothérapie) ────── */
+.chambre-gouttes {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 52px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 10px 10px 14px 14px;
+  border: 1.5px solid var(--border);
+  background: var(--accent-light);
+}
+
+/* embout du perfuseur */
+.chambre-gouttes::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 8px;
+  height: 5px;
+  margin-left: -4px;
+  border-radius: 0 0 3px 3px;
+  background: var(--primary);
+  opacity: 0.35;
+}
+
+/* soluté au fond de la chambre */
+.chambre-gouttes::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 13px;
+  background: var(--accent-mauve);
+  opacity: 0.6;
+}
+
+.chambre-gouttes .goutte {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  width: 8px;
+  height: 10px;
+  margin-left: -4px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: var(--primary);
+  animation: goutte-chute 1s cubic-bezier(0.5, 0, 1, 1) infinite;
+}
+
+.chambre-gouttes .filet {
+  position: absolute;
+  top: 5px;
+  bottom: 10px;
+  left: 50%;
+  width: 3px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--primary);
+}
+
+@keyframes goutte-chute {
+  0%   { transform: translateY(0) scale(0.4); opacity: 0; }
+  25%  { transform: translateY(0) scale(1); opacity: 1; }
+  88%  { transform: translateY(21px) scale(1); opacity: 1; }
+  100% { transform: translateY(24px) scale(1.4, 0.4); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chambre-gouttes .goutte { animation: none; opacity: 1; }
+}
+
+/* ─── LISTE DE TÂCHES (équipe) ──────────────────── */
+.taches-groupe-titre {
+  margin: 0 0 2px;
+  padding: 4px 2px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-hint);
+}
+
+/* Lignes séparées par un trait fin, sans cadre autour */
+.tache-ligne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 6px;
+}
+
+.tache-ligne + .tache-ligne {
+  border-top: 1px solid var(--border);
+}
+
+.tache-case {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid #D9CFF0;
+  border-radius: 7px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.tache-case.cochee {
+  background: #1D6A54;
+  border-color: #1D6A54;
+}
+
+.tache-case i {
+  font-size: 14px;
+}
+
+.tache-contenu {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.tache-titre {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.tache-ligne.faite .tache-titre {
+  text-decoration: line-through;
+  color: var(--text-hint);
+}
+
+.tache-details {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-hint);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tache-statut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.tache-echeance {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-hint);
+}
+
+.tache-echeance.rouge { color: var(--accent-red); }
+.tache-echeance.orange { color: #F57C00; }
+
+.pastille-membre {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.pastille-membre img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Notification d'activité de la clinique : « Marie-Ève, il y a 12 min » */
+.notif-item-auteur {
+  margin: 0 0 2px;
+  font-size: 12px;
+  color: var(--text-hint);
+}
+
+/* ─── INTERRUPTEUR (réglage oui / non) ──────────── */
+.interrupteur {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--accent-light);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.interrupteur span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 4px rgba(33, 48, 88, 0.25);
+  transition: transform 0.2s;
+}
+
+.interrupteur.actif {
+  background: var(--primary);
+}
+
+.interrupteur.actif span {
+  transform: translateX(20px);
+}
+
+.interrupteur:disabled {
+  opacity: 0.6;
 }

@@ -28,8 +28,8 @@ export default function SoinsGeneraux() {
             style={{ borderBottom: idx < SOINS_GENERAUX.length - 1 ? '1px solid var(--border)' : 'none', position: 'relative' }}
           >
             <span className="menu-page-item-label">{s.label}</span>
+            {s.pro && <BadgePro enLigne />}
             <i className="ti ti-chevron-right menu-page-item-chevron"></i>
-            {s.pro && <BadgePro />}
           </button>
         ))}
       </div>

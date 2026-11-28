@@ -129,8 +129,8 @@ export default function Pharmacologie() {
             style={{ borderBottom: idx < DROGUES.length - 1 ? '1px solid var(--border)' : 'none', position: 'relative', color: d.accent ? 'var(--accent-red)' : d.favori ? 'var(--primary-light)' : undefined }}
           >
             <span className="menu-page-item-label">{d.label}</span>
+            {d.pro && <BadgePro enLigne />}
             <i className="ti ti-chevron-right menu-page-item-chevron"></i>
-            {d.pro && <BadgePro />}
           </button>
         ))}
       </div>
@@ -143,11 +143,7 @@ export default function Pharmacologie() {
           onClick={() => estPro ? navigate('/drogues/ajouter') : setShowProMsg(true)}
         >
           +
-          {!estPro && (
-            <span aria-hidden="true" style={{ position: 'absolute', top: -3, right: -3, width: 22, height: 22, borderRadius: '50%', background: 'var(--primary)', color: '#fff', border: '2px solid var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <i className="ti ti-lock" style={{ fontSize: 12 }}></i>
-            </span>
-          )}
+          {!estPro && <BadgePro surBouton />}
         </button>
       )}
 

@@ -29,8 +29,8 @@ export default function ChirurgieListe() {
             style={{ borderBottom: idx < CHIRURGIE.length - 1 ? '1px solid var(--border)' : 'none', position: 'relative' }}
           >
             <span className="menu-page-item-label">{c.label}</span>
+            {c.pro && <BadgePro enLigne />}
             <i className="ti ti-chevron-right menu-page-item-chevron"></i>
-            {c.pro && <BadgePro />}
           </button>
         ))}
       </div>

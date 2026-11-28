@@ -157,7 +157,7 @@ export default function Accueil() {
         {/* BOUTON PRÉCONSULTATION */}
         <button className="accueil-v2-preconsult-btn" onClick={() => estPro ? navigate('/soins-generaux/examen-physique') : setShowProMsg(true)}>
           <span>{t('Démarrer un examen')}</span>
-          <BadgePro />
+          <BadgePro enLigne />
         </button>
 
         <h2 className="accueil-v2-titre-section">{t('Boîte à outils')}</h2>

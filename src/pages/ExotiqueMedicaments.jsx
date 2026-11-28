@@ -7,6 +7,7 @@ import LienFavoris from '../components/LienFavoris'
 import { correspond } from '../lib/recherche'
 import { NOMS_EXOTIQUES, CATEGORIES_EXOTIQUES, slugCategorie } from '../lib/especesExotiques'
 import { useEspeceExotique } from '../lib/useEspeceExotique'
+import BadgePro from '../components/BadgePro'
 
 /* Supabase renvoie au plus 1 000 lignes par requête : on lit par pages. */
 const TAILLE_PAGE = 1000
@@ -142,11 +143,7 @@ export default function ExotiqueMedicaments() {
           onClick={() => estPro ? navigate(`/drogues/ajouter?espece=${espece}`) : setShowProMsg(true)}
         >
           +
-          {!estPro && (
-            <span aria-hidden="true" style={{ position: 'absolute', top: -3, right: -3, width: 22, height: 22, borderRadius: '50%', background: 'var(--primary)', color: '#fff', border: '2px solid var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <i className="ti ti-lock" style={{ fontSize: 12 }}></i>
-            </span>
-          )}
+          {!estPro && <BadgePro surBouton />}
         </button>
       )}
 

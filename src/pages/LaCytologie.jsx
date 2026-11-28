@@ -84,7 +84,7 @@ export default function LaCytologie() {
       {/* Un membre de la clinique consulte les protocoles sans en ajouter. */}
       {!lectureSeule && (
         <button className="labo-btn-ajouter" onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
-          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} {t('Ajouter un protocole')}
+          <i className="ti ti-plus"></i> {t('Ajouter un protocole')} <BadgePro enLigne />
         </button>
       )}
 
@@ -101,7 +101,7 @@ export default function LaCytologie() {
           >
             <span style={SVG_MASK_STYLE(r.svg)}></span>
             <span style={{ flex: 1 }}>{r.label}</span>
-            {(r.id === 'cellules' || r.pro) && <BadgePro />}
+            {(r.id === 'cellules' || r.pro) && <BadgePro enLigne />}
           </button>
         ))}
       </div>

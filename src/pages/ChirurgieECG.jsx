@@ -25,7 +25,7 @@ export default function ChirurgieECG() {
           >
             <i className={`ti ${r.icone}`} style={{ fontSize: 20, color: 'var(--primary)', flexShrink: 0 }}></i>
             <span style={{ flex: 1 }}>{r.label}</span>
-            {r.pro && <BadgePro />}
+            {r.pro && <BadgePro enLigne />}
           </button>
         ))}
       </div>

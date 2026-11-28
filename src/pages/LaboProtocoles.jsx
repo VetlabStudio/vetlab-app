@@ -5,6 +5,7 @@ import { TitreContext } from '../context/NavigationContext'
 import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 import { t, enLangue } from '../lib/i18n'
+import BadgePro from '../components/BadgePro'
 
 export default function LaboProtocoles() {
   const navigate = useNavigate()
@@ -118,7 +119,7 @@ export default function LaboProtocoles() {
             style={{ width: '100%' }}
             onClick={() => setShowProMsg(true)}
           >
-            <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> {t('Ajouter un protocole')}
+            <i className="ti ti-plus"></i> {t('Ajouter un protocole')} <BadgePro enLigne toujours />
           </button>
         </div>
       )}

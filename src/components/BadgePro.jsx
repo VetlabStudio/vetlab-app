@@ -1,24 +1,17 @@
 import { useProfil } from '../context/ProfilContext'
 
-export default function BadgePro() {
+/* Pastille jaune « Pro » sur ce qui demande le forfait Pro.
+   Par défaut : dans le coin d'une tuile (position absolue).
+   enLigne : dans le texte d'un bouton.
+   surBouton : sur le coin du bouton rond « + ».
+   toujours : affichée même pour un compte Pro (ex. popup Pro). */
+export default function BadgePro({ enLigne = false, grand = false, surBouton = false, toujours = false }) {
   const { estPro } = useProfil()
-  if (estPro) return null
+  if (estPro && !toujours) return null
 
-  return (
-  <span style={{
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 25,
-    height: 25,
-    borderRadius: '50%',
-    background: 'var(--primary-light)',
-    flexShrink: 0,
-  }}>
-      <i className="ti ti-lock" style={{ fontSize: 16, color: 'var(--primary)' }}></i>
-    </span>
-  )
+  const classes = ['badge-pro']
+  if (enLigne) classes.push('badge-pro--ligne')
+  if (grand) classes.push('badge-pro--grand')
+  if (surBouton) classes.push('badge-pro--bouton')
+  return <span className={classes.join(' ')}>Pro</span>
 }

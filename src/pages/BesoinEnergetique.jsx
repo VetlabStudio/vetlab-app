@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { t, enAnglais } from '../lib/i18n'
+import SelecteurEspece from '../components/SelecteurEspece'
 
 function arrondir(val, decimales = 1) {
   return Math.round(val * Math.pow(10, decimales)) / Math.pow(10, decimales)
@@ -189,22 +190,7 @@ export default function BesoinEnergetique() {
         {/* ─── ESPÈCE ─────────────────────────── */}
         <div className="champ">
           <label>{t('Choisir l\'espèce')}</label>
-          <div className="espece-toggle">
-            <span className={`espece-label ${espece === 'chien' ? 'active' : ''}`}>
-              <img src="/icone-chien.svg" alt={t('Chien')} className="espece-icone" />
-              {t('Chien')}
-            </span>
-            <div
-              className={`toggle-slider ${espece === 'chat' ? 'droite' : ''}`}
-              onClick={() => handleEspece(espece === 'chien' ? 'chat' : 'chien')}
-            >
-              <div className="toggle-thumb"></div>
-            </div>
-            <span className={`espece-label ${espece === 'chat' ? 'active' : ''}`}>
-              <img src="/icone-chat.svg" alt={t('Chat')} className="espece-icone" />
-              {t('Chat')}
-            </span>
-          </div>
+          <SelecteurEspece valeur={espece} onChange={handleEspece} />
         </div>
 
         {/* ─── POIDS ──────────────────────────── */}

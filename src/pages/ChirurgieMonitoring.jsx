@@ -10,6 +10,7 @@ import {
   titreSection, tableau, dureeEntre, finaliser, ouvrir,
 } from '../lib/pdfadjuvet'
 import { t, tn, enAnglais, locale, chiffres } from '../lib/i18n'
+import SelecteurEspece from '../components/SelecteurEspece'
 
 const ESPECES = [
   { id: 'chien',        label: t('Chien'),              icone: '/icone-chien.svg' },
@@ -1736,35 +1737,27 @@ export default function ChirurgieMonitoring() {
 
             <div className="form-groupe">
               <label className="form-label">{t('Espèce')}</label>
-              <div className="examen-especes-rapides">
-                <button type="button" className={`examen-espece-btn ${form.espece === 'chien' ? 'actif' : ''}`} onClick={() => modifierChamp('espece', 'chien')}>
-                  <img src="/icone-chien.svg" alt="" /> {t('Chien')}
-                </button>
-                <button type="button" className={`examen-espece-btn ${form.espece === 'chat' ? 'actif' : ''}`} onClick={() => modifierChamp('espece', 'chat')}>
-                  <img src="/icone-chat.svg" alt="" /> {t('Chat')}
-                </button>
-                <button
-                  type="button"
-                  className={`examen-espece-btn ${form.espece && form.espece !== 'chien' && form.espece !== 'chat' ? 'actif' : ''}`}
-                  onClick={() => setPopupEspece(true)}
-                >
-                  {form.espece && form.espece !== 'chien' && form.espece !== 'chat'
-                    ? <>
-                        <img src={ESPECES.find(e => e.id === form.espece)?.icone} alt="" />
-                        {ESPECES.find(e => e.id === form.espece)?.label}
-                      </>
-                    : t('Autre espèce')}
-                </button>
-              </div>
+              <SelecteurEspece
+                valeur={form.espece}
+                onChange={id => modifierChamp('espece', id)}
+                options={['chien', 'chat', {
+                  id: 'autre',
+                  actif: !!form.espece && form.espece !== 'chien' && form.espece !== 'chat',
+                  label: form.espece && form.espece !== 'chien' && form.espece !== 'chat'
+                    ? ESPECES.find(e => e.id === form.espece)?.label
+                    : t('Autre'),
+                  onClick: () => setPopupEspece(true),
+                }]}
+              />
             </div>
 
             <div className="form-groupe">
               <label className="form-label">{t('Poids')}</label>
               <div style={{ display: 'flex', gap: 8 }}>
                 <input type="text" inputMode="decimal" className="form-input" style={{ flex: 1 }} value={form.poids} onChange={e => modifierChamp('poids', e.target.value.replace(',', '.'))} placeholder={t('Ex. : 12.5')} />
-                <div className="toggle-groupe" style={{ flexShrink: 0 }}>
-                  <button type="button" className={`toggle-btn ${form.poidsUnite === 'kg' ? 'actif' : ''}`} onClick={() => modifierChamp('poidsUnite', 'kg')}>kg</button>
-                  <button type="button" className={`toggle-btn ${form.poidsUnite === 'lb' ? 'actif' : ''}`} onClick={() => modifierChamp('poidsUnite', 'lb')}>lb</button>
+                <div className="radio-groupe" style={{ alignSelf: 'center' }}>
+                  <button type="button" className={`radio-btn ${form.poidsUnite === 'kg' ? 'active' : ''}`} onClick={() => modifierChamp('poidsUnite', 'kg')}>kg</button>
+                  <button type="button" className={`radio-btn ${form.poidsUnite === 'lb' ? 'active' : ''}`} onClick={() => modifierChamp('poidsUnite', 'lb')}>lb</button>
                 </div>
               </div>
               {poidsKg != null && form.poidsUnite === 'lb' && (

@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { compterSignalementsEnAttente } from '../lib/signalementsAttente'
-import { tn } from '../lib/i18n'
+import { t, tn, locale } from '../lib/i18n'
+import { texteActivite, ilYa } from '../lib/activiteEquipe'
+import PastilleMembre from '../components/PastilleMembre'
 
 export default function Notifications() {
   const navigate = useNavigate()
@@ -40,14 +42,18 @@ export default function Notifications() {
     setNotifs([])
   }
 
+  // Activité de la clinique : le lien est gardé dans donnees (absent si l'élément a été retiré).
+  const lienDe = n => (n.type === 'activite_equipe' ? n.donnees?.lien || null : n.reference_type)
+
   function naviguerNotif(notif) {
-    if (notif.reference_type === 'babillard') navigate('/equipe?tab=babillard')
+    if (notif.type === 'activite_equipe') { if (notif.donnees?.lien) navigate(notif.donnees.lien) }
+    else if (notif.reference_type === 'babillard') navigate('/equipe?tab=babillard')
     else if (notif.reference_type === 'tache') navigate('/equipe?tab=taches')
     else if (notif.reference_type === 'transfert') navigate('/equipe/transfert')
     else if (notif.reference_type === 'signalements') navigate('/admin/signalements')
   }
 
-  if (loading) return <div className="admin-loading">Chargement...</div>
+  if (loading) return <div className="admin-loading">{t('Chargement...')}</div>
 
   return (
     <div className="notifs-page">
@@ -68,7 +74,7 @@ export default function Notifications() {
               <p className="notif-item-message" style={{ fontWeight: 600 }}>
                 {tn(signalementsAttente, '{n} signalement d\'erreur en attente', '{n} signalements d\'erreurs en attente')}
               </p>
-              <p className="notif-item-date">Panneau admin, à traiter</p>
+              <p className="notif-item-date">{t('Panneau admin, à traiter')}</p>
             </div>
           </div>
           <i className="ti ti-chevron-right" aria-hidden="true" style={{ color: 'var(--text-hint)', padding: '14px 16px' }}></i>
@@ -78,47 +84,64 @@ export default function Notifications() {
         signalementsAttente > 0 ? null : (
         <div className="notifs-vide">
           <i className="ti ti-bell notifs-vide-icone"></i>
-          <p className="notifs-vide-titre">Aucune notification</p>
-          <p className="notifs-vide-sous">Vous êtes à jour!</p>
+          <p className="notifs-vide-titre">{t('Aucune notification')}</p>
+          <p className="notifs-vide-sous">{t('Vous êtes à jour!')}</p>
         </div>
         )
       ) : (
         <>
           <div className="notifs-toolbar">
-            <span className="notifs-count">{notifs.length} notification{notifs.length > 1 ? 's' : ''}</span>
+            <span className="notifs-count">{tn(notifs.length, '{n} notification', '{n} notifications')}</span>
             <button className="notifs-tout-supprimer" onClick={supprimerToutes}>
-              Tout effacer
+              {t('Tout effacer')}
             </button>
           </div>
           <div className="notifs-liste">
-            {notifs.map(n => (
+            {notifs.map(n => {
+              const activite = n.type === 'activite_equipe' && n.donnees
+              return (
               <div
                 key={n.id}
                 className={`notif-item ${n.lu ? '' : 'non-lue'}`}
               >
                 <div
                   className="notif-item-contenu"
-                  onClick={() => n.reference_type && naviguerNotif(n)}
-                  style={{ cursor: n.reference_type ? 'pointer' : 'default' }}
+                  onClick={() => lienDe(n) && naviguerNotif(n)}
+                  style={{ cursor: lienDe(n) ? 'pointer' : 'default' }}
                 >
-                  <div className="notif-item-icone">
-                    <i className="ti ti-bell"></i>
-                  </div>
-                  <div className="notif-item-texte">
-                    <p className="notif-item-message">{n.message}</p>
-                    <p className="notif-item-date">
-                      {new Date(n.created_at).toLocaleString('fr-CA', {
-                        day: 'numeric', month: 'long',
-                        hour: '2-digit', minute: '2-digit',
-                      })}
-                    </p>
-                  </div>
+                  {activite ? (
+                    <>
+                      <PastilleMembre userId={n.donnees.auteur_id} nom={n.donnees.auteur} taille={36} />
+                      <div className="notif-item-texte">
+                        <p className="notif-item-auteur">
+                          {t('{nom}, {quand}', { nom: n.donnees.auteur || t('Un membre'), quand: ilYa(n.created_at) })}
+                        </p>
+                        <p className="notif-item-message">{texteActivite(n.donnees)}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="notif-item-icone">
+                        <i className="ti ti-bell"></i>
+                      </div>
+                      <div className="notif-item-texte">
+                        <p className="notif-item-message">{n.message}</p>
+                        <p className="notif-item-date">
+                          {new Date(n.created_at).toLocaleString(locale, {
+                            day: 'numeric', month: 'long',
+                            hour: '2-digit', minute: '2-digit',
+                          })}
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
-                <button className="notif-item-suppr" onClick={() => supprimer(n.id)}>
+                <button className="notif-item-suppr" onClick={() => supprimer(n.id)} aria-label={t('Supprimer la notification')}>
                   <i className="ti ti-x"></i>
                 </button>
               </div>
-            ))}
+              )
+            })}
           </div>
         </>
       )}

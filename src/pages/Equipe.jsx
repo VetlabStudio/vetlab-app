@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useProfil } from '../context/ProfilContext'
 import AvisRenseignementsClients from '../components/AvisRenseignementsClients'
 import { cleRecherche } from '../lib/recherche'
+import PastilleMembre from '../components/PastilleMembre'
 
 const COULEURS = ['#F8F6B8', '#BBE6D5', '#BCAADC', '#B8D4F5', '#EDECE9', '#F5C9B8']
 
@@ -733,7 +734,7 @@ function Taches() {
 
       const { data: mems } = await supabase
         .from('membres_equipe')
-        .select('user_id, profiles(nom)')
+        .select('user_id, profiles(nom, avatar_url)')
         .eq('equipe_id', teamId)
 
       if (!actif) return
@@ -908,68 +909,49 @@ function Taches() {
 
       {tachesParStatut.map(groupe => groupe.items.length > 0 && (
         <div key={groupe.id} style={{ marginBottom: 20 }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: groupe.couleur, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+          <p className="taches-groupe-titre">
             {groupe.label} ({groupe.items.length})
           </p>
-          {groupe.items.map(tache => {
-            const echeance = formatDate(tache.date_echeance)
-            const termine = tache.statut === 'termine'
-            return (
-              <div key={tache.id} style={{
-                background: 'var(--bg-card)', borderRadius: 12, padding: '12px 14px',
-                border: '1px solid var(--border)', marginBottom: 8,
-                display: 'flex', gap: 12, alignItems: 'flex-start',
-              }}>
-                {/* Checkbox circle */}
-                <button
-                  onClick={() => toggleTermine(tache)}
-                  style={{
-                    flexShrink: 0, width: 24, height: 24, borderRadius: '50%', border: 'none',
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 16, marginTop: 1,
-                    background: termine ? '#388E3C' : 'transparent',
-                    color: termine ? '#fff' : 'var(--text-hint)',
-                    outline: termine ? 'none' : '2px solid var(--border)',
-                  }}
-                >
-                  {termine && <i className="ti ti-check" style={{ fontSize: 13 }}></i>}
-                </button>
+          <div className="taches-carte">
+            {groupe.items.map(tache => {
+              const termine = tache.statut === 'termine'
+              // Une tâche terminée n'est plus « en retard » : on n'affiche plus son échéance.
+              const echeance = termine ? null : formatDate(tache.date_echeance)
+              const assigne = tache.assignee_id && membres.find(m => m.user_id === tache.assignee_id)
+              return (
+                <div key={tache.id} className={`tache-ligne ${termine ? 'faite' : ''}`}>
+                  <button
+                    type="button"
+                    className={`tache-case ${termine ? 'cochee' : ''}`}
+                    onClick={() => toggleTermine(tache)}
+                    aria-pressed={termine}
+                    aria-label={termine ? 'Marquer comme à faire' : 'Marquer comme terminée'}
+                  >
+                    {termine && <i className="ti ti-check"></i>}
+                  </button>
 
-                {/* Contenu cliquable */}
-                <div style={{ flex: 1, cursor: 'pointer', minWidth: 0 }} onClick={() => ouvrirEdit(tache)}>
-                  <p style={{
-                    fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', margin: 0,
-                    textDecoration: termine ? 'line-through' : 'none',
-                    opacity: termine ? 0.5 : 1,
-                  }}>
-                    {tache.titre}
-                  </p>
-                  {tache.description && (
-                    <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '3px 0 0', lineHeight: 1.4 }}>
-                      {tache.description}
-                    </p>
-                  )}
-                  <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                    <BadgeStatut statut={tache.statut} />
-                    {tache.assignee_id && membres.find(m => m.user_id === tache.assignee_id) && (
-                      <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-                        <i className="ti ti-user" style={{ marginRight: 3 }}></i>
-                        {membres.find(m => m.user_id === tache.assignee_id)?.profiles?.nom}
-                      </span>
-                    )}
-                    {echeance && (
-                      <span style={{
-                        fontSize: 11, fontWeight: 600,
-                        color: echeance.rouge ? 'var(--accent-red)' : echeance.orange ? '#F57C00' : 'var(--text-hint)',
-                      }}>
-                        <i className="ti ti-calendar" style={{ marginRight: 3 }}></i>{echeance.texte}
-                      </span>
-                    )}
+                  {/* Contenu cliquable : ouvre la modification */}
+                  <div className="tache-contenu" onClick={() => ouvrirEdit(tache)}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p className="tache-titre">{tache.titre}</p>
+                      {tache.description && <p className="tache-details">{tache.description}</p>}
+                      {!termine && (
+                        <div className="tache-statut">
+                          <BadgeStatut statut={tache.statut} />
+                          {echeance && (
+                            <span className={`tache-echeance ${echeance.rouge ? 'rouge' : echeance.orange ? 'orange' : ''}`}>
+                              <i className="ti ti-calendar" style={{ marginRight: 3 }}></i>{echeance.texte}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {assigne && <PastilleMembre userId={assigne.user_id} nom={assigne.profiles?.nom} avatarUrl={assigne.profiles?.avatar_url} taille={28} />}
                   </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       ))}
 

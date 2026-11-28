@@ -45,7 +45,7 @@ export default function Profil() {
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
   // Rafraîchit l'avatar affiché ailleurs (menu Plus).
-  const { chargerProfil: rafraichirContexte } = useProfil()
+  const { chargerProfil: rafraichirContexte, estEquipe } = useProfil()
   const [envoiAvatar, setEnvoiAvatar] = useState(false)
 
   const [profil, setProfil] = useState(null)
@@ -121,6 +121,19 @@ export default function Profil() {
     setSucces(msg)
     setErreur('')
     setTimeout(() => setSucces(''), 4000)
+  }
+
+  // ─── ACTIVITÉ DE LA CLINIQUE (notifications) ──
+  // Absent ou vrai : activé. Les tags et les tâches restent toujours actifs.
+  const activiteActive = profil?.notif_activite_equipe !== false
+
+  async function basculerActivite() {
+    const valeur = !activiteActive
+    setSaving(true)
+    const { error } = await supabase.from('profiles').update({ notif_activite_equipe: valeur }).eq('id', profil.id)
+    setSaving(false)
+    if (error) return setErreur(traduireErreur(error, "Le réglage n'a pas pu être enregistré."))
+    setProfil(prev => ({ ...prev, notif_activite_equipe: valeur }))
   }
 
   // ─── MODIFIER NOM ─────────────────────────────
@@ -378,6 +391,31 @@ export default function Profil() {
           <button className="profil-modifier" onClick={() => ouvrirModal('mdp')}>{t('Modifier')}</button>
         </div>
       </div>
+
+      {/* NOTIFICATIONS DE LA CLINIQUE */}
+      {estEquipe && (
+        <div className="profil-section">
+          <div className="profil-item" style={{ gap: 16 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p className="profil-item-label" id="reglage-activite">{t('Activité de la clinique')}</p>
+              <p style={{ margin: '2px 0 0', fontSize: 13, lineHeight: 1.45, color: 'var(--text-hint)' }}>
+                {t('Être averti quand un collègue ajoute ou modifie un médicament ou un protocole de la clinique.')}
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={activiteActive}
+              aria-labelledby="reglage-activite"
+              className={`interrupteur ${activiteActive ? 'actif' : ''}`}
+              onClick={basculerActivite}
+              disabled={saving}
+            >
+              <span></span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* PANNEAU ADMIN */}
       {profil?.email === 'info@vetlabstudio.ca' && (

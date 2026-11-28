@@ -58,7 +58,7 @@ export default function LaRadiologie() {
       {/* Un membre de la clinique consulte les protocoles sans en ajouter. */}
       {!lectureSeule && (
         <button className="labo-btn-ajouter" onClick={() => estPro ? navigate(`/labo/nouveau?categorie=${CATEGORIE_ID}`) : setShowProMsg(true)}>
-          {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-plus"></i>} {t('Ajouter un protocole')}
+          <i className="ti ti-plus"></i> {t('Ajouter un protocole')} <BadgePro enLigne />
         </button>
       )}
 
@@ -73,7 +73,7 @@ export default function LaRadiologie() {
           >
             <i className={`ti ${r.icone}`} style={{ fontSize: 20, color: 'var(--primary)', flexShrink: 0 }}></i>
             <span style={{ flex: 1 }}>{r.label}</span>
-            {r.pro && <BadgePro />}
+            {r.pro && <BadgePro enLigne />}
           </button>
         ))}
       </div>

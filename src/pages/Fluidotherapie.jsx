@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { t, decimal } from '../lib/i18n'
+import SelecteurEspece from '../components/SelecteurEspece'
 
 /* ─── TABLEAU DÉSHYDRATATION ──────────────────────────────
    resume : ligne courte affichée sous la valeur choisie
@@ -88,6 +89,20 @@ function ecrirePrefs(prefs) {
   } catch {
     /* stockage indisponible, sans conséquence */
   }
+}
+
+/* Chambre compte-gouttes : une goutte tombe au rythme calculé.
+   Au-delà de 4 gouttes par seconde, une goutte isolée devient
+   illisible : on montre un filet continu. */
+function ChambreGouttes({ gttsParMin }) {
+  const periode = 60 / gttsParMin
+  return (
+    <span className="chambre-gouttes" aria-hidden="true">
+      {periode < 0.25
+        ? <i className="filet" />
+        : <i key={periode.toFixed(2)} className="goutte" style={{ animationDuration: `${periode.toFixed(2)}s` }} />}
+    </span>
+  )
 }
 
 export default function Fluidotherapie() {
@@ -346,24 +361,7 @@ export default function Fluidotherapie() {
 
             <div className="champ">
               <label>{t('Choisir l\'espèce')}</label>
-              <div className="espece-toggle">
-                <span className={`espece-label ${espece === 'chien' ? 'active' : ''}`}>
-                  <img src="/icone-chien.svg" alt="" className="espece-icone" />
-                  {t('Chien')}
-                </span>
-                <button
-                  type="button"
-                  className={`toggle-slider ${espece === 'chat' ? 'droite' : ''}`}
-                  onClick={() => setEspece(espece === 'chien' ? 'chat' : 'chien')}
-                  aria-label={t('Espèce : {espece}. Changer d\'espèce', { espece: (espece === 'chat' ? t('Chat') : t('Chien')) })}
-                >
-                  <div className="toggle-thumb"></div>
-                </button>
-                <span className={`espece-label ${espece === 'chat' ? 'active' : ''}`}>
-                  <img src="/icone-chat.svg" alt="" className="espece-icone" />
-                  {t('Chat')}
-                </span>
-              </div>
+              <SelecteurEspece valeur={espece} onChange={setEspece} />
             </div>
 
             <div className="champ">
@@ -635,12 +633,7 @@ export default function Fluidotherapie() {
                     <span>{t('Rythme des gouttes')}</span>
                     {gttsParMin > 0 && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <style>{`@keyframes gtt-pulse{0%,100%{transform:scale(1);opacity:.2}8%{transform:scale(1.8);opacity:1}30%{transform:scale(1);opacity:.2}}`}</style>
-                        <span style={{
-                          display: 'inline-block', width: 13, height: 13, borderRadius: '50%',
-                          background: 'var(--primary)', flexShrink: 0,
-                          animation: `gtt-pulse ${(60 / gttsParMin).toFixed(2)}s ease-in-out infinite`,
-                        }} />
+                        <ChambreGouttes gttsParMin={gttsParMin} />
                         <button
                           onClick={() => setSonActif(v => !v)}
                           style={{

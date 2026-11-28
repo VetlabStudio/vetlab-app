@@ -144,7 +144,7 @@ export default function Dilution() {
               <p className="dilution-resultat-valeur">
                 <strong>{resultatConcentration ?? '—'} {uniteC2}</strong> {t('est la nouvelle concentration')}
               </p>
-              <div className="radio-groupe" style={{ justifyContent: 'center', marginTop: 8 }}>
+              <div className="radio-groupe" style={{ margin: '8px auto 0' }}>
                 <button className={`radio-btn ${uniteC2 === 'mg/mL' ? 'active' : ''}`} onClick={() => setUniteC2('mg/mL')}>mg/mL</button>
                 <button className={`radio-btn ${uniteC2 === '%' ? 'active' : ''}`} onClick={() => setUniteC2('%')}>%</button>
               </div>

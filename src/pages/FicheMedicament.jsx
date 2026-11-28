@@ -10,6 +10,7 @@ import { lireNombrePositif } from '../lib/nombres'
 import { arrondirDose, arrondirMcg, calculComprimes } from '../lib/doses'
 import { ChoixForme, ChampTeneur, ResultatComprimes } from '../components/Comprimes'
 import { ESPECES_EXOTIQUES, estExotiqueSeulement } from '../lib/especesExotiques'
+import BadgePro from '../components/BadgePro'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -378,7 +379,7 @@ useEffect(() => {
         {/* Un médicament de la clinique ne se modifie que par le propriétaire et les admins. */}
         {!(estMedCustom && medicament?.equipe_id && roleEquipe !== 'admin' && roleEquipe !== 'proprietaire') && (
         <button className="labo-btn-secondary-medicament" style={{ fontSize: 12, padding: '6px 12px' }} onClick={() => estPro ? navigate(`/drogues/fiche/${id}/personnaliser`) : setShowProMsg(true)}>
-  {!estPro ? <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i> : <i className="ti ti-edit" style={{ marginRight: 4 }}></i>}Modifier
+  <i className="ti ti-edit" style={{ marginRight: 4 }}></i>Modifier <BadgePro enLigne />
 </button>
         )}
       </div>

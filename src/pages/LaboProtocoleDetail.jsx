@@ -7,6 +7,7 @@ import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 import SignalerErreur from '../components/SignalerErreur'
 import { t, enAnglais, enLangue } from '../lib/i18n'
+import BadgePro from '../components/BadgePro'
 
 export default function LaboProtocoleDetail() {
   const navigate = useNavigate()
@@ -242,7 +243,7 @@ async function supprimerProtocole() {
   }
 }}>
   {type === 'base'
-    ? <>{!estPro && <i className="ti ti-lock" style={{ color: 'var(--accent-gold)', marginRight: 4 }}></i>}{t('Personnaliser ce protocole')}</>
+    ? <>{t('Personnaliser ce protocole')} <BadgePro enLigne /></>
     : t('Modifier le protocole')}
 </button>
           )

@@ -6,6 +6,7 @@ import { useProfil } from '../context/ProfilContext'
 import PopupPro from '../components/PopupPro'
 import { correspond } from '../lib/recherche'
 import { estExotiqueSeulement, NOMS_EXOTIQUES } from '../lib/especesExotiques'
+import BadgePro from '../components/BadgePro'
 
 /* Supabase renvoie au plus 1 000 lignes par requête : en mode espèce, on
    lit tout le catalogue par pages, puis on garde les fiches de l'espèce. */
@@ -281,11 +282,7 @@ export default function DroguesCategorie({ categorie, espece }) {
               : setShowProMsg(true)}
           >
             +
-            {!peutAjouter && (
-              <span aria-hidden="true" style={{ position: 'absolute', top: -3, right: -3, width: 22, height: 22, borderRadius: '50%', background: 'var(--primary)', color: '#fff', border: '2px solid var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <i className="ti ti-lock" style={{ fontSize: 12 }}></i>
-              </span>
-            )}
+            {!peutAjouter && !estEquipe && <BadgePro surBouton toujours />}
           </button>
         )
       })()}

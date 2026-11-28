@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { t } from '../lib/i18n'
+import SelecteurEspece from '../components/SelecteurEspece'
 
 /* ════════════════════════════════════════════════════════════
    TRANSFUSION SANGUINE
@@ -242,22 +243,7 @@ export default function TransfusionSanguine() {
         {/* ─── ESPÈCE ─────────────────────────── */}
         <div className="champ">
           <label>{t('Espèce')}</label>
-          <div className="espece-toggle">
-            <span className={`espece-label ${espece === 'chien' ? 'active' : ''}`}>
-              <img src="/icone-chien.svg" alt={t('Chien')} className="espece-icone" />
-              {t('Chien')}
-            </span>
-            <div
-              className={`toggle-slider ${espece === 'chat' ? 'droite' : ''}`}
-              onClick={() => setEspece(espece === 'chien' ? 'chat' : 'chien')}
-            >
-              <div className="toggle-thumb"></div>
-            </div>
-            <span className={`espece-label ${espece === 'chat' ? 'active' : ''}`}>
-              <img src="/icone-chat.svg" alt={t('Chat')} className="espece-icone" />
-              {t('Chat')}
-            </span>
-          </div>
+          <SelecteurEspece valeur={espece} onChange={setEspece} />
           {produit.avecHematocrite && (
             <p className="range-hint">
               {t('Volume sanguin utilisé :')} <strong>{VOLUME_SANGUIN[espece]} mL/kg</strong>
