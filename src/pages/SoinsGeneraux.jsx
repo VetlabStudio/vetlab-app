@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import BadgePro from '../components/BadgePro'
 import PopupPro from '../components/PopupPro'
 import { useProfil } from '../context/ProfilContext'
+import { t } from '../lib/i18n'
 
 const SOINS_GENERAUX = [
   { id: 'ecg', label: 'ECG', route: '/chirurgie/ecg', pro: true },
-  { id: 'dentisterie', label: 'Dentisterie', route: '/soins-generaux/dentisterie', pro: true },
-  { id: 'glasgow', label: 'Score de Glasgow modifié (MCGS)', route: '/soins-generaux/glasgow', pro: true },
-  { id: 'abreviations', label: 'Abréviations courantes', route: '/soins-generaux/abreviations', pro: true },
-  { id: 'termes-directionnels', label: 'Termes directionnels', route: '/soins-generaux/termes-directionnels', pro: true },
+  { id: 'dentisterie', label: t('Dentisterie'), route: '/soins-generaux/dentisterie', pro: true },
+  { id: 'glasgow', label: t('Score de Glasgow modifié (MCGS)'), route: '/soins-generaux/glasgow', pro: true },
+  { id: 'abreviations', label: t('Abréviations courantes'), route: '/soins-generaux/abreviations', pro: true },
+  { id: 'termes-directionnels', label: t('Termes directionnels'), route: '/soins-generaux/termes-directionnels', pro: true },
 ]
 
 export default function SoinsGeneraux() {

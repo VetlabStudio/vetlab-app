@@ -254,6 +254,20 @@ input {
   overflow: hidden;
 }
 
+/* Accueil : l'espace réservé à la barre du bas fait partie du fond
+   mauve. Sinon, une bande blanche apparaît entre le contenu et la barre
+   (l'espace réservé est un peu plus haut que la barre). */
+.app-layout-accueil .contenu-principal {
+  padding-bottom: 0;
+}
+
+.app-layout-accueil .accueil-v2 {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+}
+
 /* ─── HEADER ─────────────────────────────────── */
 
 .accueil-v2-header {
@@ -12470,4 +12484,380 @@ summary:focus-visible {
 
 .interrupteur:disabled {
   opacity: 0.6;
+}
+
+/* ─── ABONNEMENT : CARROUSEL DES FORFAITS ─────────── */
+/* Fond mauve pâle sur toute la page, jusqu'à la barre du bas. */
+.contenu-principal:has(.abonnement-page) {
+  background: var(--accent-light);
+}
+
+/* Mensuel / Annuel : piste blanche, pastille marine qui glisse */
+.abo-bascule {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-self: center;
+  width: min(100%, 340px);
+  padding: 5px;
+  border-radius: var(--radius-pill);
+  background: white;
+  box-shadow: 0 2px 10px rgba(33, 48, 88, 0.06);
+}
+
+.abo-bascule::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: calc(50% - 5px);
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  transform: translateX(calc(100% * var(--i, 1)));
+  transition: transform 0.25s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.abo-bascule button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-hint);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.abo-bascule button.actif {
+  color: white;
+}
+
+.abo-bascule-badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Les cartes partagent la même case de grille : la hauteur suit la
+   plus haute, et chacune est décalée vers la gauche ou la droite. */
+.abo-carrousel {
+  display: grid;
+  grid-template-columns: 100%;
+  margin-inline: -16px;
+  padding: 20px 0 6px;
+  overflow-x: clip;
+  touch-action: pan-y;
+  outline: none;
+}
+
+.abo-carrousel:focus-visible {
+  outline: 2px solid var(--accent-mauve);
+  outline-offset: -2px;
+}
+
+.abo-carte-place {
+  position: relative;
+  grid-area: 1 / 1;
+  justify-self: center;
+  align-self: start;
+  width: min(80%, 360px);
+  transform-origin: center top;
+  transition: transform 0.35s cubic-bezier(0.3, 0.7, 0.4, 1), opacity 0.35s;
+}
+
+.abo-carte-place:not(.actif) {
+  opacity: 0.6;
+}
+
+.abo-carte-place.loin {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.abo-carte-voile {
+  position: absolute;
+  inset: 0;
+  border: none;
+  border-radius: 28px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.abo-forfait {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 26px 22px 22px;
+  border: 2px solid transparent;
+  border-radius: 28px;
+  background: white;
+  box-shadow: 0 18px 40px -24px rgba(33, 48, 88, 0.35);
+}
+
+.abo-carte-place.actif .abo-forfait--pro {
+  border-color: #6E48B4;
+}
+
+.abo-forfait-ruban {
+  position: absolute;
+  top: -13px;
+  left: 22px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: #5E3A9E;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.abo-forfait-nom {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.abo-forfait-sous {
+  margin: -8px 0 0;
+  font-size: 14px;
+  color: var(--text-hint);
+}
+
+.abo-forfait-prix {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  margin: 4px 0 0;
+}
+
+.abo-forfait-prix strong {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.abo-forfait-prix span {
+  font-size: 14px;
+  color: var(--text-hint);
+}
+
+.abo-forfait-eco {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #1D6A54;
+}
+
+.abo-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.abo-liste li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.abo-liste li .ti {
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 16px;
+  color: #5E3A9E;
+}
+
+.abo-liste li.non {
+  color: #8A90A8;
+}
+
+.abo-liste li.non .ti {
+  color: #B4B8C9;
+}
+
+.abo-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.abo-forfait .abo-cta {
+  margin-top: 4px;
+  border-radius: var(--radius-pill);
+}
+
+.abo-forfait .abo-cta--contour {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.abo-forfait-actuel {
+  align-self: flex-start;
+  margin: 4px 0 0;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-light);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.abo-lien-quitter {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-red);
+  cursor: pointer;
+}
+
+/* Sièges du forfait Équipe */
+.abo-sieges-boite {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--bg-secondary);
+}
+
+.abo-sieges-tete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.abo-sieges-tete label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.abo-sieges-pas {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.abo-sieges-pas span {
+  min-width: 30px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.abo-sieges-pas button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.abo-sieges-pas button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.abo-sieges-curseur {
+  width: 100%;
+  margin: 0;
+  accent-color: #5E3A9E;
+}
+
+.abo-sieges-boite p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-hint);
+}
+
+/* Onglets Gratuit · Pro · Équipe, au-dessus des cartes. Soulignés,
+   pour ne pas se confondre avec le choix Mensuel / Annuel. */
+.abo-onglets {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: -8px;
+}
+
+.abo-onglets button {
+  position: relative;
+  padding: 8px 16px 10px;
+  border: none;
+  background: none;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-hint);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.abo-onglets button::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 2px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transition: transform 0.25s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.abo-onglets button.actif {
+  color: var(--primary);
+}
+
+.abo-onglets button.actif::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .abo-bascule::before,
+  .abo-onglets button::after,
+  .abo-carte-place { transition: none; }
 }

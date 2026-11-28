@@ -1,4 +1,4 @@
-import { useState, useEffect, useEffectEvent, useCallback } from 'react'
+import { useState, useEffect, useEffectEvent, useCallback, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { traduireErreur } from '../lib/messagesErreur'
@@ -104,39 +104,56 @@ function FenetreActivation({ activation, onFermer }) {
 
 const PRIX_PRO_ANNUEL = 59
 const PRIX_PRO_ANNUEL_PAR_MOIS = prix(Number((PRIX_PRO_ANNUEL / 12).toFixed(2)))
-const PRIX_PRO_MENSUEL = prix(7.99)
+const PRIX_PRO_MENSUEL_NOMBRE = 7.99
+const PRIX_PRO_MENSUEL = prix(PRIX_PRO_MENSUEL_NOMBRE)
+// Annuel comparé à 12 mois au prix mensuel : près de 37 $, soit 4 mois offerts.
+const ECONOMIE_ANNUELLE = Math.round(PRIX_PRO_MENSUEL_NOMBRE * 12 - PRIX_PRO_ANNUEL)
+const MOIS_OFFERTS = Math.floor((PRIX_PRO_MENSUEL_NOMBRE * 12 - PRIX_PRO_ANNUEL) / PRIX_PRO_MENSUEL_NOMBRE)
 const SIEGES_MIN = 2
 const SIEGES_MAX = 200
+// Le curseur couvre les cliniques courantes ; les boutons − et + vont plus loin.
+const SIEGES_CURSEUR_MAX = 30
 
-function economieEquipe(n) {
-  return Math.round(((PRIX_PRO_ANNUEL - prixParSiege(n)) / PRIX_PRO_ANNUEL) * 100)
-}
-
-const AVANTAGES_PRO = [
-  { icone: 'ti-pill', titre: t('Vos médicaments et protocoles'), texte: t('Créez vos propres fiches et protocoles, prêts à utiliser en clinique.') },
-  { icone: 'ti-flask', titre: t('Références labo complètes'), texte: t('Valeurs de référence, tubes, cytologie, microbiologie et plus.') },
-  { icone: 'ti-heart-rate-monitor', titre: t('Monitoring anesthésique et ECG'), texte: t('Suivez vos anesthésies et interprétez les tracés ECG.') },
-  { icone: 'ti-stethoscope', titre: t('Examen physique et toxicologie'), texte: t("Un aide-mémoire d'examen complet et des calculs de toxicité en quelques secondes.") },
-  { icone: 'ti-check', titre: t('Tout le forfait Gratuit inclus'), texte: t('Fiches médicaments et calculateurs de dosage.') },
+const LISTE_GRATUIT = [
+  { ok: true, texte: t('Fiches médicaments, toutes catégories') },
+  { ok: true, texte: t('Calculateurs de dosage') },
+  { ok: false, texte: t('Médicaments et protocoles personnalisés') },
+  { ok: false, texte: t('Références labo complètes') },
+  { ok: false, texte: t('Monitoring anesthésique et ECG') },
 ]
 
-const AVANTAGES_EQUIPE = [
-  { icone: 'ti-crown', titre: t('Tout Pro pour chaque membre'), texte: t('Chaque personne a accès à tous les outils de l\'application.') },
-  { icone: 'ti-messages', titre: t('Babillard et tâches partagées'), texte: t('Communiquez et répartissez le travail au sein de la clinique.') },
-  { icone: 'ti-share', titre: t('Protocoles et médicaments partagés'), texte: t('Les mêmes références pour toute l\'équipe, au même endroit.') },
-  { icone: 'ti-user-cog', titre: t('Gestion des membres'), texte: t('Invitez, attribuez les rôles et ajoutez le logo de la clinique.') },
-  { icone: 'ti-receipt', titre: t('Une seule facture'), texte: t('Seul le propriétaire paie : les membres n\'ont aucuns frais.') },
+const LISTE_PRO = [
+  { ok: true, texte: t('Tout le forfait Gratuit') },
+  { ok: true, texte: t('Médicaments et protocoles personnalisés') },
+  { ok: true, texte: t('Références labo complètes') },
+  { ok: true, texte: t('Monitoring anesthésique et ECG') },
+  { ok: true, texte: t('Toxicologie et examen physique') },
 ]
 
-function ListeAvantages({ items }) {
+const LISTE_EQUIPE = [
+  { ok: true, texte: t('Tout Pro, pour chaque membre') },
+  { ok: true, texte: t('Babillard et tâches partagées') },
+  { ok: true, texte: t('Protocoles et médicaments partagés') },
+  { ok: true, texte: t('Gestion des membres et des sièges') },
+  { ok: true, texte: t('Une seule facture pour la clinique') },
+]
+
+// Ordre des cartes du carrousel ; Pro annuel est au centre à l'ouverture.
+const CARTES = [
+  { id: 'gratuit', nom: t('Gratuit') },
+  { id: 'pro', nom: 'Pro' },
+  { id: 'equipe', nom: t('Équipe') },
+]
+
+function ListeForfait({ items }) {
   return (
-    <ul className="abo-avantages">
-      {items.map(a => (
-        <li key={a.titre}>
-          <span className="abo-avantage-icone"><i className={`ti ${a.icone}`}></i></span>
+    <ul className="abo-liste">
+      {items.map(item => (
+        <li key={item.texte} className={item.ok ? '' : 'non'}>
+          <i className={`ti ${item.ok ? 'ti-check' : 'ti-x'}`} aria-hidden="true"></i>
           <span>
-            <span className="abo-avantage-titre">{a.titre}</span>
-            <span className="abo-avantage-texte">{a.texte}</span>
+            {item.texte}
+            {!item.ok && <span className="abo-cache"> ({t('non inclus')})</span>}
           </span>
         </li>
       ))}
@@ -159,7 +176,10 @@ export default function Abonnement() {
   const [searchParams] = useSearchParams()
   const { profil, estPro, estEquipe, roleEquipe, teamId, chargerProfil } = useProfil()
 
-  const [onglet, setOnglet] = useState(profil?.plan === 'equipe' ? 'equipe' : 'personnel')
+  // Carte au centre du carrousel : 0 Gratuit, 1 Pro, 2 Équipe.
+  const [carte, setCarte] = useState(profil?.plan === 'equipe' ? 2 : 1)
+  // Forfait du paiement en cours, pour le titre de la fenêtre Stripe.
+  const [planCheckout, setPlanCheckout] = useState('pro')
   const [periode, setPeriode] = useState('annuel')
   const [nombreMembres, setNombreMembres] = useState(2)
   const [upgradeLoading, setUpgradeLoading] = useState(false)
@@ -182,11 +202,34 @@ export default function Abonnement() {
   // Fenêtre d'activation (voir FenetreActivation) : le webhook Stripe met le forfait à jour.
   const [activation, setActivation] = useState(null)
 
-  // L'onglet Équipe s'ouvre quand le forfait devient Équipe.
+  // La carte Équipe passe au centre quand le forfait devient Équipe.
   const [planAffiche, setPlanAffiche] = useState(profil?.plan)
   if (profil?.plan !== planAffiche) {
     setPlanAffiche(profil?.plan)
-    if (profil?.plan === 'equipe') setOnglet('equipe')
+    if (profil?.plan === 'equipe') setCarte(2)
+  }
+
+  /* Glisser à gauche ou à droite change de carte. Un geste qui commence
+     sur un bouton ou sur le curseur des sièges ne compte pas. */
+  const glisse = useRef(null)
+  function debutGlisse(e) {
+    glisse.current = e.target.closest('input, button, a, select, textarea')
+      ? null
+      : { x: e.clientX, y: e.clientY }
+  }
+  function finGlisse(e) {
+    const debut = glisse.current
+    glisse.current = null
+    if (!debut) return
+    const dx = e.clientX - debut.x
+    const dy = e.clientY - debut.y
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      setCarte(c => Math.max(0, Math.min(CARTES.length - 1, c + (dx < 0 ? 1 : -1))))
+    }
+  }
+  function toucheCarrousel(e) {
+    if (e.key === 'ArrowLeft') setCarte(c => Math.max(0, c - 1))
+    if (e.key === 'ArrowRight') setCarte(c => Math.min(CARTES.length - 1, c + 1))
   }
 
   /* Un membre d'une clinique n'a pas d'abonnement à lui : sans cette
@@ -397,7 +440,7 @@ export default function Abonnement() {
       return
     }
     if (chargerProfil) await chargerProfil()
-    setOnglet('personnel')
+    setCarte(1)
     afficherSucces(t("Vous avez quitté l'équipe. Votre compte est passé au forfait gratuit."))
   }
 
@@ -407,6 +450,161 @@ export default function Abonnement() {
   const nomForfait = estEquipe ? t('Équipe') : estPro ? 'Pro' : t('Gratuit')
   const couleurForfait = estEquipe ? 'var(--primary)' : estPro ? 'var(--accent-gold)' : 'var(--text-hint)'
   const bgForfait = estEquipe ? 'rgba(37,77,86,0.1)' : estPro ? 'rgba(215,163,92,0.15)' : 'var(--bg-secondary)'
+
+  /* ─── Contenu des cartes ─── */
+  function carteGratuit() {
+    return (
+      <>
+        <h2 className="abo-forfait-nom">{t('Gratuit')}</h2>
+        <p className="abo-forfait-sous">{t("Pour découvrir l'essentiel.")}</p>
+        <p className="abo-forfait-prix"><strong>{prix(0)}</strong> <span>{t('pour toujours')}</span></p>
+        <ListeForfait items={LISTE_GRATUIT} />
+        {estGratuit && <p className="abo-forfait-actuel">{t('Votre forfait')}</p>}
+      </>
+    )
+  }
+
+  function cartePro() {
+    return (
+      <>
+        <span className="abo-forfait-ruban">{estPro && !estEquipe ? t('Votre forfait') : t('Recommandé')}</span>
+        <h2 className="abo-forfait-nom">Pro</h2>
+        <p className="abo-forfait-sous">{t('Tout Adjuvet, pour vous.')}</p>
+        <p className="abo-forfait-prix">
+          <strong>{periode === 'annuel' ? prix(PRIX_PRO_ANNUEL) : PRIX_PRO_MENSUEL}</strong>{' '}
+          <span>{periode === 'annuel' ? t('par année') : t('par mois')}</span>
+        </p>
+        <p className="abo-forfait-eco">
+          {periode === 'annuel'
+            ? t('Soit {prix} par mois. Vous économisez près de {economie}.', { prix: PRIX_PRO_ANNUEL_PAR_MOIS, economie: prix(ECONOMIE_ANNUELLE) })
+            : t('Sans engagement, annulable en tout temps.')}
+        </p>
+        <ListeForfait items={LISTE_PRO} />
+        {estGratuit && (
+          <>
+            <button
+              className="abonnement-btn-abonner abo-cta"
+              onClick={() => {
+                sessionStorage.setItem('checkout_plan', 'pro')
+                setPlanCheckout('pro')
+                ouvrirCheckout(periode === 'annuel' ? PRICE_ANNUAL : PRICE_MONTHLY)
+              }}
+              disabled={checkoutLoading}
+            >
+              {checkoutLoading
+                ? t('Chargement...')
+                : essai ? t('Essayer {n} jours gratuitement', { n: essai.jours }) : t('Passer à Pro')}
+            </button>
+            {/* Essai appliqué par create-checkout : le prix et la date du premier paiement sont dits clairement. */}
+            {essai && (
+              <p className="abo-prix-detail" style={{ margin: 0 }}>
+                {periode === 'annuel' ? t('Puis {prix} par année.', { prix: prix(PRIX_PRO_ANNUEL) }) : t('Puis {prix} par mois.', { prix: PRIX_PRO_MENSUEL })}{' '}
+                {t('Aucun prélèvement avant le')} <strong style={{ whiteSpace: 'nowrap' }}>{formaterDate(essai.fin)}</strong>.
+              </p>
+            )}
+            <Rassurance />
+          </>
+        )}
+        {estEquipe && <p className="abo-forfait-actuel">{t('Inclus dans votre forfait Équipe')}</p>}
+      </>
+    )
+  }
+
+  function carteEquipe() {
+    if (estEquipe) {
+      return (
+        <>
+          <span className="abo-forfait-ruban">{t('Votre forfait')}</span>
+          <h2 className="abo-forfait-nom">{t('Équipe')}</h2>
+          <p className="abo-forfait-sous">{t('Accès partagé pour toute la clinique')}</p>
+          {subDetails?.quantity && (
+            <p className="abo-forfait-prix">
+              <strong>{prix(calculerPrixEquipe(subDetails.quantity))}</strong> <span>{t('par année')}</span>
+            </p>
+          )}
+          {subDetails?.quantity && (
+            <p className="abo-forfait-eco">{tn(subDetails.quantity, '{n} siège inclus', '{n} sièges inclus')}</p>
+          )}
+          <ListeForfait items={LISTE_EQUIPE} />
+          {roleEquipe === 'proprietaire' ? (
+            <button className="abonnement-btn-abonner abo-cta abo-cta--contour" onClick={() => setModalSieges(true)}>
+              <i className="ti ti-users-plus" aria-hidden="true"></i>
+              {t('Modifier les sièges')}
+            </button>
+          ) : (
+            <>
+              <p className="abo-prix-detail" style={{ margin: 0 }}>{t('Les sièges sont gérés par le propriétaire de la clinique.')}</p>
+              <button className="abo-lien-quitter" onClick={() => setModalQuitter(true)}>
+                {t("Quitter l'équipe")}
+              </button>
+            </>
+          )}
+        </>
+      )
+    }
+
+    return (
+      <>
+        <h2 className="abo-forfait-nom">{t('Équipe')}</h2>
+        <p className="abo-forfait-sous">{t('Pro pour toute votre clinique.')}</p>
+        <p className="abo-forfait-prix">
+          <strong>{prix(calculerPrixEquipe(nombreMembres))}</strong> <span>{t('par année')}</span>
+        </p>
+
+        <div className="abo-sieges-boite">
+          <div className="abo-sieges-tete">
+            <label htmlFor="abo-sieges">{t('Nombre de sièges')}</label>
+            <div className="abo-sieges-pas">
+              <button type="button" onClick={() => setNombreMembres(n => Math.max(SIEGES_MIN, n - 1))} disabled={nombreMembres <= SIEGES_MIN} aria-label={t('Retirer une personne')}>−</button>
+              <span>{nombreMembres}</span>
+              <button type="button" onClick={() => setNombreMembres(n => Math.min(SIEGES_MAX, n + 1))} disabled={nombreMembres >= SIEGES_MAX} aria-label={t('Ajouter une personne')}>+</button>
+            </div>
+          </div>
+          <input
+            id="abo-sieges"
+            type="range"
+            className="abo-sieges-curseur"
+            min={SIEGES_MIN}
+            max={SIEGES_CURSEUR_MAX}
+            value={Math.min(nombreMembres, SIEGES_CURSEUR_MAX)}
+            onChange={e => setNombreMembres(Number(e.target.value))}
+          />
+          <p>
+            {t('{prix} par siège.', { prix: prix(prixParSiege(nombreMembres)) })}{' '}
+            {t('{p6} dès 6 sièges, {p11} dès 11.', { p6: prix(TIERS_EQUIPE[1].prix), p11: prix(TIERS_EQUIPE[2].prix) })}
+          </p>
+        </div>
+
+        <ListeForfait items={LISTE_EQUIPE} />
+
+        {estPro ? (
+          <>
+            <button className="abonnement-btn-abonner abo-cta abo-cta--contour" onClick={() => setModalUpgrade(true)}>
+              {t('Passer à Équipe')}
+            </button>
+            <p className="abo-rassurance">{t('Votre crédit Pro non utilisé est déduit automatiquement.')}</p>
+          </>
+        ) : (
+          <>
+            <button
+              className="abonnement-btn-abonner abo-cta abo-cta--contour"
+              onClick={() => {
+                sessionStorage.setItem('checkout_plan', 'equipe')
+                setPlanCheckout('equipe')
+                ouvrirCheckout(PRICE_EQUIPE, nombreMembres)
+              }}
+              disabled={checkoutLoading}
+            >
+              {checkoutLoading ? t('Chargement...') : t('Équiper ma clinique')}
+            </button>
+            <Rassurance />
+          </>
+        )}
+      </>
+    )
+  }
+
+  const contenuCarte = { gratuit: carteGratuit, pro: cartePro, equipe: carteEquipe }
 
   return (
     <div className="abonnement-page">
@@ -466,203 +664,84 @@ export default function Abonnement() {
         </div>
       )}
 
-      {/* TOGGLE PERSONNEL / ÉQUIPE */}
-      <div className="abonnement-toggle">
-        <button
-          className={`abonnement-toggle-btn${onglet === 'personnel' ? ' actif-gold' : ''}`}
-          onClick={() => setOnglet('personnel')}
-        >
-          {t('Personnel')}
+      {/* ─── MENSUEL / ANNUEL ─── */}
+      <div
+        className="abo-bascule"
+        role="group"
+        aria-label={t('Période de facturation')}
+        style={{ '--i': periode === 'annuel' ? 1 : 0 }}
+      >
+        <button type="button" className={periode === 'mensuel' ? 'actif' : ''} aria-pressed={periode === 'mensuel'} onClick={() => setPeriode('mensuel')}>
+          {t('Mensuel')}
         </button>
-        <button
-          className={`abonnement-toggle-btn${onglet === 'equipe' ? ' actif-equipe' : ''}`}
-          onClick={() => setOnglet('equipe')}
-        >
-          {t('Clinique')}
+        <button type="button" className={periode === 'annuel' ? 'actif' : ''} aria-pressed={periode === 'annuel'} onClick={() => setPeriode('annuel')}>
+          {t('Annuel')}
+          <span className="abo-bascule-badge">{tn(MOIS_OFFERTS, '{n} mois offert', '{n} mois offerts')}</span>
         </button>
       </div>
 
-      {/* ─── ONGLET PERSONNEL ─── */}
-      {onglet === 'personnel' && (
-        <div className="abonnement-cartes">
-          <div className="abo-hero">
-            <span className="abo-ruban">{estPro && !estEquipe ? t('Votre forfait') : t('Recommandé')}</span>
-            <span className="abo-hero-icone"><i className="ti ti-crown"></i></span>
-            <h2 className="abo-hero-titre">{t('Tout Adjuvet, sans limite')}</h2>
-            <p className="abo-hero-sous">{t('Le forfait Pro débloque tous les outils cliniques de l\'application.')}</p>
+      {/* ─── ONGLETS DES FORFAITS ───
+          Les trois forfaits sont nommés au-dessus des cartes : on voit
+          qu'Équipe existe sans avoir à glisser. Synchronisés avec le carrousel. */}
+      <div className="abo-onglets" role="tablist" aria-label={t('Forfaits')}>
+        {CARTES.map((c, i) => (
+          <button
+            key={c.id}
+            type="button"
+            role="tab"
+            aria-selected={i === carte}
+            className={i === carte ? 'actif' : ''}
+            onClick={() => setCarte(i)}
+          >
+            {c.nom}
+          </button>
+        ))}
+      </div>
 
-            {estGratuit && (
-              <>
-                <div className="abo-periode" role="group" aria-label={t('Période de facturation')}>
-                  <button className={periode === 'mensuel' ? 'actif' : ''} onClick={() => setPeriode('mensuel')}>
-                    {t('Mensuel')}
-                  </button>
-                  <button className={periode === 'annuel' ? 'actif' : ''} onClick={() => setPeriode('annuel')}>
-                    {t('Annuel')} <span className="abo-periode-eco">{t('-37 %')}</span>
-                  </button>
-                </div>
-
-                <div className="abo-prix">
-                  <span className="abo-prix-montant">{periode === 'annuel' ? PRIX_PRO_ANNUEL_PAR_MOIS : PRIX_PRO_MENSUEL}</span>
-                  <span className="abo-prix-unite">{t('/mois')}</span>
-                </div>
-                <p className="abo-prix-detail">
-                  {periode === 'annuel'
-                    ? <>{t('Facturé {prix} par année', { prix: prix(PRIX_PRO_ANNUEL) })} · <strong>{t('économisez {n} %', { n: 37 })}</strong></>
-                    : t('Facturé chaque mois, sans engagement')}
-                </p>
-              </>
-            )}
-
-            {estEquipe && <span className="abo-badge-actuel">{t('Inclus dans votre forfait Équipe')}</span>}
-
-            <ListeAvantages items={AVANTAGES_PRO} />
-
-            {estGratuit && (
-              <>
+      {/* ─── CARROUSEL DES FORFAITS ───
+          Les cartes se superposent un peu : celle du centre est devant,
+          ses voisines dépassent sur les côtés. On glisse, on touche une
+          voisine ou un point pour changer de carte. */}
+      <div
+        className="abo-carrousel"
+        role="region"
+        aria-roledescription={t('carrousel')}
+        aria-label={t('Forfaits')}
+        tabIndex={0}
+        onPointerDown={debutGlisse}
+        onPointerUp={finGlisse}
+        onPointerCancel={() => { glisse.current = null }}
+        onKeyDown={toucheCarrousel}
+      >
+        {CARTES.map((c, i) => {
+          const decalage = i - carte
+          const actif = decalage === 0
+          const loin = Math.abs(decalage) > 1
+          return (
+            <div
+              key={c.id}
+              className={`abo-carte-place${actif ? ' actif' : ''}${loin ? ' loin' : ''}`}
+              style={{
+                // Les voisines reculent un peu : plus petites, plus basses, en retrait.
+                transform: `translateX(${decalage * 76}%) translateY(${actif ? 0 : 18}px) scale(${actif ? 1 : 0.88})`,
+                zIndex: 3 - Math.abs(decalage),
+              }}
+            >
+              <div className={`abo-forfait abo-forfait--${c.id}`} inert={!actif}>
+                {contenuCarte[c.id]()}
+              </div>
+              {!actif && !loin && (
                 <button
-                  className="abonnement-btn-abonner abo-cta"
-                  onClick={() => {
-                    sessionStorage.setItem('checkout_plan', 'pro')
-                    ouvrirCheckout(periode === 'annuel' ? PRICE_ANNUAL : PRICE_MONTHLY)
-                  }}
-                  disabled={checkoutLoading}
-                >
-                  {checkoutLoading
-                    ? t('Chargement...')
-                    : essai ? t('Essayer {n} jours gratuitement', { n: essai.jours }) : t('Passer à Pro')}
-                </button>
-                {/* Essai appliqué par create-checkout : le prix et la date du premier paiement sont dits clairement. */}
-                {essai && (
-                  <p className="abo-prix-detail" style={{ margin: 0 }}>
-                    {periode === 'annuel' ? t('Puis {prix} par année.', { prix: prix(PRIX_PRO_ANNUEL) }) : t('Puis {prix} par mois.', { prix: PRIX_PRO_MENSUEL })}{' '}
-                    {t('Aucun prélèvement avant le')} <strong style={{ whiteSpace: 'nowrap' }}>{formaterDate(essai.fin)}</strong>.
-                  </p>
-                )}
-                <Rassurance />
-              </>
-            )}
-          </div>
-
-          {estGratuit && (
-            <div className="abo-gratuit">
-              <p className="abo-gratuit-titre">
-                {t('Forfait Gratuit')}
-                <span className="abo-badge-actuel">{t('Votre forfait')}</span>
-              </p>
-              <p className="abo-gratuit-texte">{t('Fiches médicaments de toutes les catégories et calculateurs de dosage.')}</p>
+                  type="button"
+                  className="abo-carte-voile"
+                  onClick={() => setCarte(i)}
+                  aria-label={t('Voir le forfait {nom}', { nom: c.nom })}
+                />
+              )}
             </div>
-          )}
-        </div>
-      )}
-
-      {/* ─── ONGLET CLINIQUE ─── */}
-      {onglet === 'equipe' && estEquipe && (
-        <div className="abonnement-carte" style={{ borderColor: 'var(--primary)' }}>
-          <div className="abonnement-carte-entete">
-            <div>
-              <p className="abonnement-carte-titre" style={{ color: 'var(--primary)' }}>{t('Équipe')}</p>
-              <p className="abonnement-carte-sous-titre">{t('Accès partagé pour toute la clinique')}</p>
-            </div>
-            <span style={{
-              fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999,
-              color: 'var(--primary)', background: 'var(--primary-light)',
-            }}>{t('Actif')}</span>
-          </div>
-
-          {subDetails?.quantity && (
-            <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 16 }}>
-              <i className="ti ti-users" style={{ marginRight: 5 }}></i>
-              {tn(subDetails.quantity, '{n} siège inclus', '{n} sièges inclus')} · {t('{prix} / année', { prix: prix(calculerPrixEquipe(subDetails.quantity)) })}
-            </p>
-          )}
-          {roleEquipe === 'proprietaire' ? (
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <button className="profil-portal-btn" style={{ flex: 1 }}
-                onClick={() => setModalSieges(true)}>
-                <i className="ti ti-users-plus"></i>
-                {t('Modifier les sièges')}
-              </button>
-            </div>
-          ) : (
-            <>
-              <p style={{ fontSize: 13, color: 'var(--text-hint)' }}>
-                {t('Les sièges sont gérés par le propriétaire de la clinique.')}
-              </p>
-              <button
-                onClick={() => setModalQuitter(true)}
-                style={{ background: 'none', border: 'none', padding: 0, marginTop: 12, fontSize: 13, fontWeight: 600, color: 'var(--accent-red)', cursor: 'pointer' }}
-              >
-                {t("Quitter l'équipe")}
-              </button>
-            </>
-          )}
-        </div>
-      )}
-
-      {onglet === 'equipe' && !estEquipe && (
-        <div className="abo-hero abo-hero--equipe">
-          <span className="abo-ruban">{t('Pour les cliniques')}</span>
-          <span className="abo-hero-icone"><i className="ti ti-users"></i></span>
-          <h2 className="abo-hero-titre">{t('Toute la clinique sur Adjuvet')}</h2>
-          <p className="abo-hero-sous">{t('Chaque membre profite de Pro, avec des outils pour travailler ensemble.')}</p>
-
-          <div className="abo-sieges">
-            <span className="abo-sieges-label">{t('Nombre de personnes')}</span>
-            <div className="abo-sieges-controle">
-              <button onClick={() => setNombreMembres(n => Math.max(SIEGES_MIN, n - 1))} disabled={nombreMembres <= SIEGES_MIN} aria-label={t('Retirer une personne')}>−</button>
-              <span className="abo-sieges-nombre">{nombreMembres}</span>
-              <button onClick={() => setNombreMembres(n => Math.min(SIEGES_MAX, n + 1))} disabled={nombreMembres >= SIEGES_MAX} aria-label={t('Ajouter une personne')}>+</button>
-            </div>
-          </div>
-
-          <div className="abo-prix">
-            <span className="abo-prix-montant">{prix(prixParSiege(nombreMembres))}</span>
-            <span className="abo-prix-unite">{t('/personne/année')}</span>
-          </div>
-          <p className="abo-prix-detail">
-            {t('Total {prix} par année', { prix: prix(calculerPrixEquipe(nombreMembres)) })} · <strong>{t('économisez {n} %', { n: economieEquipe(nombreMembres) })}</strong> {t('par rapport à Pro')}
-          </p>
-
-          <div className="abo-paliers">
-            {TIERS_EQUIPE.map(palier => {
-              const actif = nombreMembres >= palier.min && (palier.max === null || nombreMembres <= palier.max)
-              return (
-                <span key={palier.min} className={`abo-palier${actif ? ' actif' : ''}`}>
-                  {palier.max === null ? t('{n} et +', { n: palier.min }) : t('{min} à {max}', { min: palier.min, max: palier.max })}
-                  <strong>{prix(palier.prix)}</strong>
-                </span>
-              )
-            })}
-          </div>
-
-          <ListeAvantages items={AVANTAGES_EQUIPE} />
-
-          {estPro ? (
-            <>
-              <button className="abonnement-btn-abonner abo-cta" onClick={() => setModalUpgrade(true)}>
-                <i className="ti ti-arrow-up-circle"></i>
-                {t('Passer à Équipe')}
-              </button>
-              <p className="abo-rassurance">{t('Votre crédit Pro non utilisé est déduit automatiquement.')}</p>
-            </>
-          ) : (
-            <>
-              <button
-                className="abonnement-btn-abonner abo-cta"
-                onClick={() => {
-                  sessionStorage.setItem('checkout_plan', 'equipe')
-                  ouvrirCheckout(PRICE_EQUIPE, nombreMembres)
-                }}
-                disabled={checkoutLoading}
-              >
-                {checkoutLoading ? t('Chargement...') : t('S\'abonner pour {prix} / année', { prix: prix(calculerPrixEquipe(nombreMembres)) })}
-              </button>
-              <Rassurance />
-            </>
-          )}
-        </div>
-      )}
+          )
+        })}
+      </div>
 
       {/* ─── MODAL UPGRADE PRO → ÉQUIPE ─── */}
       {modalUpgrade && (
@@ -789,7 +868,7 @@ export default function Abonnement() {
         <div className="popup-overlay" onClick={() => setModalCheckout(false)}>
           <div className="profil-checkout-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>{t('Passer au forfait {nom}', { nom: onglet === 'equipe' ? t('Équipe') : 'Pro' })}</span>
+              <span>{t('Passer au forfait {nom}', { nom: planCheckout === 'equipe' ? t('Équipe') : 'Pro' })}</span>
               <button className="popup-close" onClick={() => setModalCheckout(false)}>✕</button>
             </div>
             <EmbeddedCheckoutProvider stripe={stripePromise} options={{ fetchClientSecret, onComplete: paiementReussi }}>

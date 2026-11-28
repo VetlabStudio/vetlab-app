@@ -1,12 +1,15 @@
 import { useState, useMemo } from 'react'
+import { t, enAnglais } from '../lib/i18n'
 
-const SECTIONS = [
+/* Les abréviations ne se traduisent pas mot à mot : chaque langue a
+   sa propre liste, celle en usage dans les cliniques. */
+const SECTIONS_FR = [
   {
     titre: 'Généralités',
     items: [
       { abr: 'cap.', sign: 'Capsule' },
       { abr: 'co.', sign: 'Comprimé' },
-      { abr: 'Dx', sign: 'Diagnostique' },
+      { abr: 'Dx', sign: 'Diagnostic' },
       { abr: 'gtt.', sign: 'Goutte' },
       { abr: 'N', sign: 'Narcotique' },
       { abr: 'Px ou rx', sign: 'Prescription' },
@@ -62,6 +65,66 @@ const SECTIONS = [
   },
 ]
 
+// Usage nord-américain (cliniques vétérinaires du Canada et des États-Unis).
+const SECTIONS_EN = [
+  {
+    titre: 'General',
+    items: [
+      { abr: 'cap.', sign: 'Capsule' },
+      { abr: 'tab.', sign: 'Tablet' },
+      { abr: 'Dx', sign: 'Diagnosis' },
+      { abr: 'gtt.', sign: 'Drop' },
+      { abr: 'N', sign: 'Narcotic' },
+      { abr: 'Rx', sign: 'Prescription' },
+      { abr: 'Tx', sign: 'Treatment' },
+      { abr: 'Sx', sign: 'Surgery' },
+    ],
+  },
+  {
+    titre: 'Dosing schedule',
+    items: [
+      { abr: 'ad lib', sign: 'Free choice / as desired' },
+      { abr: 'SID', sign: 'Once a day' },
+      { abr: 'BID', sign: 'Twice a day' },
+      { abr: 'TID', sign: 'Three times a day' },
+      { abr: 'QID', sign: 'Four times a day' },
+      { abr: 'EOD', sign: 'Every other day' },
+      { abr: 'PRN', sign: 'As needed' },
+      { abr: 'Stat', sign: 'Immediately' },
+      { abr: 'h', sign: 'Hour' },
+      { abr: 'q1h', sign: 'Every hour' },
+      { abr: 'q4h', sign: 'Every 4 hours' },
+      { abr: 'q8h', sign: 'Every 8 hours' },
+    ],
+  },
+  {
+    titre: 'Routes and sites of administration',
+    items: [
+      { abr: 'AD', sign: 'Right ear' },
+      { abr: 'AS', sign: 'Left ear' },
+      { abr: 'AU', sign: 'Both ears' },
+      { abr: 'OD', sign: 'Right eye' },
+      { abr: 'OS', sign: 'Left eye' },
+      { abr: 'OU', sign: 'Both eyes' },
+      { abr: 'ID', sign: 'Intradermal' },
+      { abr: 'IM', sign: 'Intramuscular' },
+      { abr: 'IN', sign: 'Intranasal' },
+      { abr: 'IP', sign: 'Intraperitoneal' },
+      { abr: 'IT', sign: 'Intratracheal' },
+      { abr: 'IV', sign: 'Intravenous' },
+      { abr: 'PO', sign: 'By mouth' },
+      { abr: 'SC or SQ', sign: 'Subcutaneous' },
+      { abr: 'MDI', sign: 'Metered-dose inhaler' },
+      { abr: 'RF', sign: 'Right forelimb' },
+      { abr: 'LF', sign: 'Left forelimb' },
+      { abr: 'RH', sign: 'Right hind limb' },
+      { abr: 'LH', sign: 'Left hind limb' },
+    ],
+  },
+]
+
+const SECTIONS = enAnglais ? SECTIONS_EN : SECTIONS_FR
+
 export default function AbreviationsCourantes() {
   const [recherche, setRecherche] = useState('')
 
@@ -82,7 +145,7 @@ export default function AbreviationsCourantes() {
         <input
           type="text"
           className="recherche-input"
-          placeholder="Rechercher une abréviation..."
+          placeholder={t('Rechercher une abréviation...')}
           value={recherche}
           onChange={e => setRecherche(e.target.value)}
         />
@@ -97,8 +160,8 @@ export default function AbreviationsCourantes() {
         <div className="labo-ref-section">
           <div className="labo-ref-tableau">
             <div className="labo-ref-header labo-ref-header--2col-abrev">
-              <span>Abréviation</span>
-              <span>Signification</span>
+              <span>{t('Abréviation')}</span>
+              <span>{t('Signification')}</span>
             </div>
             {resultats.length > 0 ? resultats.map((item, i) => (
               <div key={i} className="labo-ref-ligne labo-ref-ligne--2col">
@@ -107,7 +170,7 @@ export default function AbreviationsCourantes() {
               </div>
             )) : (
               <div className="labo-ref-ligne labo-ref-ligne--2col">
-                <span style={{ gridColumn: '1 / -1', color: 'var(--text-hint)' }}>Aucun résultat</span>
+                <span style={{ gridColumn: '1 / -1', color: 'var(--text-hint)' }}>{t('Aucun résultat')}</span>
               </div>
             )}
           </div>
@@ -118,10 +181,10 @@ export default function AbreviationsCourantes() {
             <h2 className="labo-ref-titre">{section.titre}</h2>
             <div className="labo-ref-tableau">
               <div className="labo-ref-header labo-ref-header--4col-abrev">
-                <span>Abréviation</span>
-                <span>Signification</span>
-                <span>Abréviation</span>
-                <span>Signification</span>
+                <span>{t('Abréviation')}</span>
+                <span>{t('Signification')}</span>
+                <span>{t('Abréviation')}</span>
+                <span>{t('Signification')}</span>
               </div>
               {Array.from({ length: Math.ceil(section.items.length / 2) }).map((_, rowIndex) => {
                 const a = section.items[rowIndex * 2]

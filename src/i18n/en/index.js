@@ -8,5 +8,6 @@ import outils from './outils'
 import labo from './labo'
 import chirurgie from './chirurgie'
 import equipe from './equipe'
+import soins from './soins'
 
-export default { ...commun, ...navigation, ...compte, ...sources, ...outils, ...labo, ...chirurgie, ...equipe }
+export default { ...commun, ...navigation, ...compte, ...sources, ...outils, ...labo, ...chirurgie, ...equipe, ...soins }

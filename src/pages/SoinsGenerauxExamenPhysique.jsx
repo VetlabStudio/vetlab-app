@@ -7,62 +7,68 @@ import {
   titreSection, tableau, finaliser, ouvrir,
 } from '../lib/pdfadjuvet'
 import SelecteurEspece from '../components/SelecteurEspece'
+import { t, tn, enAnglais, locale, decimal } from '../lib/i18n'
 
 /* ─── SYSTÈMES, DANS L'ORDRE DE L'EXAMEN ───────────────── */
 const SYSTEMES = [
   {
-    id: 'yeux', titre: 'Yeux', icone: '/examen-yeux.png',
+    id: 'yeux', titre: t('Yeux'), icone: '/examen-yeux.png',
     constats: ['Écoulement ou infection', 'Inflammation', 'Opacité du cristallin', 'Problème de vision', 'Déformation des paupières'],
   },
   {
-    id: 'oreilles', titre: 'Oreilles', icone: '/examen-oreilles.png',
+    id: 'oreilles', titre: t('Oreilles'), icone: '/examen-oreilles.png',
     constats: ['Écoulement ou infection', 'Cérumen', 'Démangeaisons', 'Mites', 'Enflure', 'Odeur'],
   },
   {
-    id: 'nez-gorge', titre: 'Nez et gorge', icone: '/examen-respiratoire.png',
+    id: 'nez-gorge', titre: t('Nez et gorge'), icone: '/examen-respiratoire.png',
     constats: ['Écoulement nasal', 'Ganglions ou amygdales enflammés'],
   },
   {
-    id: 'buccal', titre: 'Cavité buccale et muqueuses', icone: '/examen-muqueuses.png',
+    id: 'buccal', titre: t('Cavité buccale et muqueuses'), icone: '/examen-muqueuses.png',
     constats: ['Gingivite', 'Tartre', 'Dent brisée', 'Dent retenue', 'Dent mobile', 'Muqueuses pâles', 'Muqueuses ictériques', 'Muqueuses cyanosées', 'Muqueuses sèches', 'Halitose'],
   },
   {
-    id: 'tegumentaire', titre: 'Tégumentaire', icone: '/examen-tegumentaire.png',
+    id: 'tegumentaire', titre: t('Tégumentaire'), icone: '/examen-tegumentaire.png',
     constats: ['Poil terne', 'Gras', 'Sec ou squameux', 'Emmêlé', 'Alopécie', 'Pustules', 'Rougeur ou inflammation', 'Masse', 'Puces', 'Autres parasites', 'Plaie', 'Pli cutané persistant'],
   },
   {
-    id: 'lymphatique', titre: 'Système lymphatique', icone: '/examen-lymphatique.png',
+    id: 'lymphatique', titre: t('Système lymphatique'), icone: '/examen-lymphatique.png',
     constats: ['Ganglion augmenté', 'Consistance anormale', 'Douleur à la palpation'],
   },
   {
-    id: 'cardiovasculaire', titre: 'Cardiovasculaire', icone: '/examen-cardiovasculaire.png',
+    id: 'cardiovasculaire', titre: t('Cardiovasculaire'), icone: '/examen-cardiovasculaire.png',
     constats: ['Souffle', 'Arythmie', 'Pouls faible', 'Pouls irrégulier', 'Déficit de pouls', 'TRC supérieur à 2 s', "Intolérance à l'effort"],
   },
   {
-    id: 'respiratoire', titre: 'Respiratoire', icone: '/examen-respiratoire.png',
+    id: 'respiratoire', titre: t('Respiratoire'), icone: '/examen-respiratoire.png',
     constats: ['Toux', 'Éternuements', 'Respiration rapide', 'Difficulté respiratoire', 'Bruits anormaux'],
   },
   {
-    id: 'digestif', titre: 'Digestif', icone: '/examen-digestif.png',
+    id: 'digestif', titre: t('Digestif'), icone: '/examen-digestif.png',
     constats: ['Vomissements ou régurgitation', 'Diarrhée', 'Constipation', 'Selles anormales', 'Sacs anaux', 'Douleur abdominale', 'Abdomen tendu', 'Abdomen distendu'],
   },
   {
-    id: 'genito-urinaire', titre: 'Génito-urinaire', icone: '/examen-genito-urinaire.png',
+    id: 'genito-urinaire', titre: t('Génito-urinaire'), icone: '/examen-genito-urinaire.png',
     constats: ['Écoulement vulvaire ou préputial', 'Testicules anormaux', 'Gestation', 'Lactation', 'Miction anormale'],
   },
   {
-    id: 'musculosquelettique', titre: 'Musculosquelettique', icone: '/examen-musculosquelettique.png',
+    id: 'musculosquelettique', titre: t('Musculosquelettique'), icone: '/examen-musculosquelettique.png',
     constats: ['Boiterie', 'Douleur ou enflure articulaire', 'Faiblesse', 'Atrophie musculaire', 'Démarche anormale', 'Ongles à tailler'],
   },
   {
-    id: 'nerveux', titre: 'Système nerveux', icone: '/examen-nerveux.png',
+    id: 'nerveux', titre: t('Système nerveux'), icone: '/examen-nerveux.png',
     constats: ['Tremblements', 'Convulsions', 'Mouvements anormaux', 'Ataxie', 'Réflexes diminués', "Changement d'état mental"],
   },
 ]
 
+/* Les constats et les choix (attitude, appétit...) sont enregistrés
+   en français dans l'examen et traduits à l'affichage avec t() :
+   un examen commencé dans une langue se relit dans l'autre. */
+
 /* ─── PLAGES PHYSIOLOGIQUES ─────────────────────────────
    Chien et chat seulement. Pour les autres espèces, aucun
-   repère n'est affiché.                                   */
+   repère n'est affiché. Chat : température et fréquence
+   respiratoire selon le Merck Veterinary Manual.          */
 const PLAGES = {
   chien: {
     temperature: [38.3, 39.2],
@@ -70,14 +76,14 @@ const PLAGES = {
     freqRespiratoire: [18, 34],
   },
   chat: {
-    temperature: [38.0, 38.5],
+    temperature: [38.1, 39.2],
     freqCardiaque: [110, 200],
-    freqRespiratoire: [10, 20],
+    freqRespiratoire: [16, 40],
   },
 }
 
 const NOTE_PLAGE = {
-  freqCardiaque: 'La plage varie selon le format de l\'animal.',
+  freqCardiaque: t('La plage varie selon le format de l\'animal.'),
 }
 
 const ATTITUDE_OPTIONS = ['Alerte et réactif', 'Calme et réactif', 'Abattu (léthargique)']
@@ -90,32 +96,32 @@ const MUSCLE_OPTIONS = ['Normale', 'Perte légère', 'Perte modérée', 'Perte s
 
 /* Score de condition corporelle sur 9 */
 const BCS_LIBELLES = {
-  1: 'Cachectique', 2: 'Très maigre', 3: 'Maigre',
-  4: 'Sous le poids idéal', 5: 'Idéale',
-  6: 'Léger surpoids', 7: 'Surpoids',
-  8: 'Obèse', 9: 'Obésité sévère',
+  1: t('Cachectique'), 2: t('Très maigre'), 3: t('Maigre'),
+  4: t('Sous le poids idéal'), 5: t('Idéale'),
+  6: t('Léger surpoids'), 7: t('Surpoids'),
+  8: t('Obèse'), 9: t('Obésité sévère'),
 }
 const BCS_ANCIEN = { 'Maigre': 3, 'Idéale': 5, 'Surpoids': 7, 'Obèse': 9 }
 
 const ESPECES = [
-  { id: 'chien',        label: 'Chien',              icone: '/icone-chien.svg' },
-  { id: 'chat',         label: 'Chat',               icone: '/icone-chat.svg' },
-  { id: 'cheval',       label: 'Cheval',             icone: '/icone-cheval.png' },
-  { id: 'vache',        label: 'Vache',              icone: '/icone-vache.png' },
-  { id: 'mouton',       label: 'Mouton',             icone: '/icone-mouton.png' },
-  { id: 'lama',         label: 'Lama',               icone: '/icone-lama.png' },
-  { id: 'lapin',        label: 'Lapin',              icone: '/icone-lapin.png' },
-  { id: 'furet',        label: 'Furet',              icone: '/icone-furet.png' },
-  { id: 'oiseau',       label: 'Oiseau',             icone: '/icone-oiseau.png' },
-  { id: 'serpent',      label: 'Serpent',            icone: '/icone-serpent.png' },
-  { id: 'lezard',       label: 'Lézard',             icone: '/icone-lezard.png' },
-  { id: 'tortue',       label: 'Tortue',             icone: '/icone-tortue.png' },
-  { id: 'poisson',      label: 'Poisson',            icone: '/icone-poisson.png' },
-  { id: 'amphibien',    label: 'Amphibien',          icone: '/icone-grenouille.png' },
-  { id: 'rongeur',      label: 'Rongeur',            icone: '/icone-rongeurs.png' },
-  { id: 'chinchilla',   label: 'Chinchilla',         icone: '/icone-chinchilla.png' },
-  { id: 'cobaye',       label: "Cochon d'Inde",      icone: '/icone-cobaye.png' },
-  { id: 'herisson',     label: 'Hérisson',           icone: '/icone-herisson.png' },
+  { id: 'chien',        label: t('Chien'),              icone: '/icone-chien.svg' },
+  { id: 'chat',         label: t('Chat'),               icone: '/icone-chat.svg' },
+  { id: 'cheval',       label: t('Cheval'),             icone: '/icone-cheval.png' },
+  { id: 'vache',        label: t('Vache'),              icone: '/icone-vache.png' },
+  { id: 'mouton',       label: t('Mouton'),             icone: '/icone-mouton.png' },
+  { id: 'lama',         label: t('Lama'),               icone: '/icone-lama.png' },
+  { id: 'lapin',        label: t('Lapin'),              icone: '/icone-lapin.png' },
+  { id: 'furet',        label: t('Furet'),              icone: '/icone-furet.png' },
+  { id: 'oiseau',       label: t('Oiseau'),             icone: '/icone-oiseau.png' },
+  { id: 'serpent',      label: t('Serpent'),            icone: '/icone-serpent.png' },
+  { id: 'lezard',       label: t('Lézard'),             icone: '/icone-lezard.png' },
+  { id: 'tortue',       label: t('Tortue'),             icone: '/icone-tortue.png' },
+  { id: 'poisson',      label: t('Poisson'),            icone: '/icone-poisson.png' },
+  { id: 'amphibien',    label: t('Amphibien'),          icone: '/icone-grenouille.png' },
+  { id: 'rongeur',      label: t('Rongeur'),            icone: '/icone-rongeurs.png' },
+  { id: 'chinchilla',   label: t('Chinchilla'),         icone: '/icone-chinchilla.png' },
+  { id: 'cobaye',       label: t("Cochon d'Inde"),      icone: '/icone-cobaye.png' },
+  { id: 'herisson',     label: t('Hérisson'),           icone: '/icone-herisson.png' },
 ]
 
 function etatInitial() {
@@ -239,9 +245,9 @@ function LigneSysteme({ systeme, valeur, ouvert, evalue, onOuvrir, onConstat, on
   const resume = useMemo(() => {
     const anomalies = valeur.constats.filter(c => c !== 'Normal' && c !== 'Autre')
     if (valeur.constats.includes('Normal')) {
-      return valeur.note.trim() ? 'Normal, avec note' : 'Normal'
+      return valeur.note.trim() ? t('Normal, avec note') : t('Normal')
     }
-    if (anomalies.length) return anomalies.join(', ')
+    if (anomalies.length) return anomalies.map(c => t(c)).join(', ')
     if (valeur.note.trim()) return valeur.note.trim()
     return ''
   }, [valeur])
@@ -273,7 +279,7 @@ function LigneSysteme({ systeme, valeur, ouvert, evalue, onOuvrir, onConstat, on
           className={`examen-constat normal ${valeur.constats.includes('Normal') ? 'actif' : ''}`}
           onClick={() => onConstat('Normal')}
         >
-          Normal
+          {t('Normal')}
         </button>
         {systeme.constats.map(c => (
           <button
@@ -281,14 +287,14 @@ function LigneSysteme({ systeme, valeur, ouvert, evalue, onOuvrir, onConstat, on
             className={`examen-constat ${valeur.constats.includes(c) ? 'actif' : ''}`}
             onClick={() => onConstat(c)}
           >
-            {c}
+            {t(c)}
           </button>
         ))}
         <button
           className={`examen-constat ${valeur.constats.includes('Autre') ? 'actif' : ''}`}
           onClick={() => onConstat('Autre')}
         >
-          Autre
+          {t('Autre')}
         </button>
       </div>
 
@@ -296,7 +302,7 @@ function LigneSysteme({ systeme, valeur, ouvert, evalue, onOuvrir, onConstat, on
         <textarea
           className="form-textarea"
           rows={2}
-          placeholder="Préciser..."
+          placeholder={t('Préciser...')}
           value={valeur.note}
           onChange={e => onNote(e.target.value)}
         />
@@ -335,7 +341,7 @@ export default function SoinsGenerauxExamenPhysique() {
   const premierRendu = useRef(true)
 
   useEffect(() => {
-    setTitreCustom(vue === 'formulaire' ? (currentId ? "Modifier l'examen" : 'Nouvel examen') : 'Démarrer un examen')
+    setTitreCustom(vue === 'formulaire' ? (currentId ? t("Modifier l'examen") : t('Nouvel examen')) : t('Démarrer un examen'))
     return () => setTitreCustom('')
   }, [vue, currentId, setTitreCustom])
 
@@ -370,7 +376,7 @@ export default function SoinsGenerauxExamenPhysique() {
     const t = setTimeout(() => {
       supabase
         .from('examens_physiques')
-        .update({ animal_nom: form.animalNom || 'Sans nom', donnees: form, updated_at: new Date().toISOString() })
+        .update({ animal_nom: form.animalNom || t('Sans nom'), donnees: form, updated_at: new Date().toISOString() })
         .eq('id', currentId)
         .then(() => {
           setSauvegarde('ok')
@@ -381,7 +387,7 @@ export default function SoinsGenerauxExamenPhysique() {
   }, [form, currentId, vue])
 
   const date = new Date()
-  const dateAffichee = date.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' })
+  const dateAffichee = date.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
 
   /* Rechargé à l'ouverture, quand le profil arrive (clinique) et à
      chaque nouvelle version ; « actif » écarte une réponse périmée. */
@@ -479,22 +485,20 @@ export default function SoinsGenerauxExamenPhysique() {
   /* ─── Complétude ─────────────────────────────────────── */
   const manquants = useMemo(() => {
     const liste = []
-    if (!form.animalNom.trim()) liste.push({ section: 'identification', label: "Nom de l'animal" })
-    if (!form.espece) liste.push({ section: 'identification', label: 'Espèce' })
-    if (!form.temperature) liste.push({ section: 'vitaux', label: 'Température' })
-    if (!form.freqCardiaque) liste.push({ section: 'vitaux', label: 'Fréquence cardiaque' })
-    if (!form.freqRespiratoire) liste.push({ section: 'vitaux', label: 'Fréquence respiratoire' })
-    if (!form.attitude) liste.push({ section: 'general', label: 'Attitude générale' })
-    if (!form.niveauEnergie) liste.push({ section: 'general', label: "Niveau d'énergie" })
-    if (!form.conditionCorporelle) liste.push({ section: 'general', label: 'Condition corporelle' })
-    if (!form.comportement) liste.push({ section: 'general', label: 'Comportement' })
+    if (!form.animalNom.trim()) liste.push({ section: 'identification', label: t("Nom de l'animal") })
+    if (!form.espece) liste.push({ section: 'identification', label: t('Espèce') })
+    if (!form.temperature) liste.push({ section: 'vitaux', label: t('Température') })
+    if (!form.freqCardiaque) liste.push({ section: 'vitaux', label: t('Fréquence cardiaque') })
+    if (!form.freqRespiratoire) liste.push({ section: 'vitaux', label: t('Fréquence respiratoire') })
+    if (!form.attitude) liste.push({ section: 'general', label: t('Attitude générale') })
+    if (!form.niveauEnergie) liste.push({ section: 'general', label: t("Niveau d'énergie") })
+    if (!form.conditionCorporelle) liste.push({ section: 'general', label: t('Condition corporelle') })
+    if (!form.comportement) liste.push({ section: 'general', label: t('Comportement') })
     const nonEvalues = SYSTEMES.filter(s => !estEvalue(form.systemes[s.id]))
     if (nonEvalues.length) {
       liste.push({
         section: 'systemes',
-        label: nonEvalues.length === 1
-          ? `1 système non évalué (${nonEvalues[0].titre})`
-          : `${nonEvalues.length} systèmes non évalués (${nonEvalues.map(s => s.titre).join(', ')})`,
+        label: tn(nonEvalues.length, '{n} système non évalué ({liste})', '{n} systèmes non évalués ({liste})', { liste: nonEvalues.map(s => s.titre).join(', ') }),
       })
     }
     return liste
@@ -561,13 +565,13 @@ export default function SoinsGenerauxExamenPhysique() {
         const bouts = [
           form.temperature ? `${form.temperature} °C` : null,
           form.freqCardiaque ? `${form.freqCardiaque} bpm` : null,
-          form.freqRespiratoire ? `${form.freqRespiratoire} rpm` : null,
+          form.freqRespiratoire ? `${form.freqRespiratoire} ${t('rpm')}` : null,
         ].filter(Boolean)
         return bouts.join(' · ')
       }
       case 'general': {
         const faits = [form.attitude, form.niveauEnergie, form.conditionCorporelle, form.comportement].filter(Boolean).length
-        return faits === 4 ? 'Complété' : `${faits} sur 4`
+        return faits === 4 ? t('Complété') : t('{n} sur {total}', { n: faits, total: 4 })
       }
       case 'systemes': {
         const faits = SYSTEMES.filter(s => estEvalue(form.systemes[s.id])).length
@@ -575,13 +579,14 @@ export default function SoinsGenerauxExamenPhysique() {
           const v = form.systemes[s.id]
           return estEvalue(v) && !v.constats.includes('Normal')
         }).length
-        if (faits === 0) return `0 sur ${SYSTEMES.length}`
-        return `${faits} sur ${SYSTEMES.length}${anormaux ? `, ${anormaux} anormal${anormaux > 1 ? 'aux' : ''}` : ''}`
+        const compte = t('{n} sur {total}', { n: faits, total: SYSTEMES.length })
+        if (faits === 0) return compte
+        return anormaux ? `${compte}, ${tn(anormaux, '{n} anormal', '{n} anormaux')}` : compte
       }
       case 'anamnese':
-        return etatSection('anamnese') === 'complet' ? 'Renseignée' : 'Facultatif'
+        return etatSection('anamnese') === 'complet' ? t('Renseignée') : t('Facultatif')
       case 'complements':
-        return etatSection('complements') === 'complet' ? 'Renseignés' : 'Facultatif'
+        return etatSection('complements') === 'complet' ? t('Renseignés') : t('Facultatif')
       default:
         return ''
     }
@@ -636,7 +641,7 @@ export default function SoinsGenerauxExamenPhysique() {
         await supabase.from('examens_physiques').delete().eq('id', item.id)
       }
     }
-    const payload = { user_id: user.id, animal_nom: 'Sans nom', resume: '', donnees: nouveauForm }
+    const payload = { user_id: user.id, animal_nom: t('Sans nom'), resume: '', donnees: nouveauForm }
     if (estEquipe && teamId) payload.equipe_id = teamId
     const { data } = await supabase.from('examens_physiques').insert(payload).select().single()
     if (data) {
@@ -647,54 +652,59 @@ export default function SoinsGenerauxExamenPhysique() {
 
   function genererResume() {
     const lignes = []
+    // « Animal : Max » en français, « Patient: Max » en anglais.
+    const deux = enAnglais ? ': ' : ' : '
+    const ligne = (libelle, valeur, prefixe = '') => lignes.push(`${prefixe}${t(libelle)}${deux}${valeur}`)
+    const titre = libelle => lignes.push(`${t(libelle)}${enAnglais ? ':' : ' :'}`)
+    const choix = v => (v ? t(v) : '—')
     const especeLabel = ESPECES.find(e => e.id === form.espece)?.label
-    lignes.push('EXAMEN PHYSIQUE - PRÉCONSULTATION')
-    lignes.push(`Animal : ${form.animalNom || '—'}`)
-    lignes.push(`Espèce : ${especeLabel || '—'}`)
-    lignes.push(`Race : ${form.race?.trim() || '—'}`)
-    lignes.push(`Sexe : ${form.sexe === 'femelle' ? 'Femelle' : form.sexe === 'male' ? 'Mâle' : '—'}${form.sexe && form.sterilise ? ' (stérilisé(e))' : ''}`)
-    lignes.push(`Poids : ${form.poids ? form.poids + ' ' + (form.poidsUnite || 'kg') : '—'}`)
-    lignes.push(`Date : ${dateAffichee}`)
-    lignes.push(`Raison de la visite : ${form.raisonVisite?.trim() || '—'}`)
+    lignes.push(t('EXAMEN PHYSIQUE - PRÉCONSULTATION'))
+    ligne('Animal', form.animalNom || '—')
+    ligne('Espèce', especeLabel || '—')
+    ligne('Race', form.race?.trim() || '—')
+    ligne('Sexe', `${form.sexe === 'femelle' ? t('Femelle') : form.sexe === 'male' ? t('Mâle') : '—'}${form.sexe && form.sterilise ? ` (${t('stérilisé(e)')})` : ''}`)
+    ligne('Poids', form.poids ? form.poids + ' ' + (form.poidsUnite || 'kg') : '—')
+    ligne('Date', dateAffichee)
+    ligne('Raison de la visite', form.raisonVisite?.trim() || '—')
     lignes.push('')
-    lignes.push('Anamnèse :')
-    lignes.push(`- Appétit : ${form.anamnese.appetit || '—'}`)
-    lignes.push(`- Soif : ${form.anamnese.soif || '—'}`)
-    lignes.push(`- Exercice : ${form.anamnese.exercice || '—'}`)
-    lignes.push(`- Diète : ${form.anamnese.diete?.trim() || '—'}`)
-    lignes.push(`- Gâteries : ${form.anamnese.gateries?.trim() || '—'}`)
+    titre('Anamnèse')
+    ligne('Appétit', choix(form.anamnese.appetit), '- ')
+    ligne('Soif', choix(form.anamnese.soif), '- ')
+    ligne('Exercice', choix(form.anamnese.exercice), '- ')
+    ligne('Diète', form.anamnese.diete?.trim() || '—', '- ')
+    ligne('Gâteries', form.anamnese.gateries?.trim() || '—', '- ')
     lignes.push('')
-    lignes.push('Commentaires du propriétaire :')
+    titre('Commentaires du propriétaire')
     lignes.push(form.anamnese.commentaires?.trim() || '—')
     lignes.push('')
-    lignes.push('Paramètres vitaux :')
-    lignes.push(`- Température : ${form.temperature ? form.temperature + ' °C' : '—'}`)
-    lignes.push(`- Fréquence cardiaque : ${form.freqCardiaque ? form.freqCardiaque + ' bpm' : '—'}`)
-    lignes.push(`- Fréquence respiratoire : ${form.freqRespiratoire ? form.freqRespiratoire + ' rpm' : '—'}`)
+    titre('Paramètres vitaux')
+    ligne('Température', form.temperature ? form.temperature + ' °C' : '—', '- ')
+    ligne('Fréquence cardiaque', form.freqCardiaque ? form.freqCardiaque + ' bpm' : '—', '- ')
+    ligne('Fréquence respiratoire', form.freqRespiratoire ? form.freqRespiratoire + ' ' + t('rpm') : '—', '- ')
     lignes.push('')
-    lignes.push('État général :')
-    lignes.push(`- Attitude générale : ${form.attitude || '—'}`)
-    lignes.push(`- Niveau d'énergie : ${form.niveauEnergie || '—'}`)
-    lignes.push(`- Condition corporelle : ${form.conditionCorporelle ? `${form.conditionCorporelle}/9 (${BCS_LIBELLES[form.conditionCorporelle]})` : '—'}`)
-    lignes.push(`- Comportement : ${form.comportement || '—'}`)
+    titre('État général')
+    ligne('Attitude générale', choix(form.attitude), '- ')
+    ligne("Niveau d'énergie", choix(form.niveauEnergie), '- ')
+    ligne('Condition corporelle', form.conditionCorporelle ? `${form.conditionCorporelle}/9 (${BCS_LIBELLES[form.conditionCorporelle]})` : '—', '- ')
+    ligne('Comportement', choix(form.comportement), '- ')
     lignes.push('')
-    lignes.push('Observation par système :')
+    titre('Observation par système')
     SYSTEMES.forEach(s => {
-      lignes.push(`- ${s.titre} : ${texteSysteme(form.systemes[s.id])}`)
+      lignes.push(`- ${s.titre}${deux}${texteSysteme(form.systemes[s.id])}`)
     })
 
     const c = form.complements
     const aDesComplements = c.micropuce || [c.vaccination, c.parasitaire, c.scoreMusculaire, c.pressionArterielle, c.analyseUrine, c.autresDiagnostics].some(v => String(v || '').trim())
     if (aDesComplements) {
       lignes.push('')
-      lignes.push('Compléments :')
-      if (c.vaccination?.trim()) lignes.push(`- Vaccination à prévoir : ${c.vaccination.trim()}`)
-      if (c.parasitaire?.trim()) lignes.push(`- Contrôle parasitaire : ${c.parasitaire.trim()}`)
-      if (c.micropuce) lignes.push('- Micropuce vérifiée : oui')
-      if (c.scoreMusculaire) lignes.push(`- Condition musculaire : ${c.scoreMusculaire}`)
-      if (c.pressionArterielle?.trim()) lignes.push(`- Pression artérielle : ${c.pressionArterielle.trim()}`)
-      if (c.analyseUrine?.trim()) lignes.push(`- Analyse d'urine : ${c.analyseUrine.trim()}`)
-      if (c.autresDiagnostics?.trim()) lignes.push(`- Autres diagnostics : ${c.autresDiagnostics.trim()}`)
+      titre('Compléments')
+      if (c.vaccination?.trim()) ligne('Vaccination à prévoir', c.vaccination.trim(), '- ')
+      if (c.parasitaire?.trim()) ligne('Contrôle parasitaire', c.parasitaire.trim(), '- ')
+      if (c.micropuce) ligne('Micropuce vérifiée', t('oui'), '- ')
+      if (c.scoreMusculaire) ligne('Condition musculaire', t(c.scoreMusculaire), '- ')
+      if (c.pressionArterielle?.trim()) ligne('Pression artérielle', c.pressionArterielle.trim(), '- ')
+      if (c.analyseUrine?.trim()) ligne("Analyse d'urine", c.analyseUrine.trim(), '- ')
+      if (c.autresDiagnostics?.trim()) ligne('Autres diagnostics', c.autresDiagnostics.trim(), '- ')
     }
 
     return lignes.join('\n')
@@ -704,11 +714,12 @@ export default function SoinsGenerauxExamenPhysique() {
     if (!valeur) return '—'
     const anomalies = valeur.constats.filter(c => c !== 'Normal' && c !== 'Autre')
     const note = valeur.note?.trim()
+    const liste = anomalies.map(c => t(c)).join(', ')
     if (valeur.constats.includes('Normal')) {
-      return note ? `Normal, avec note : ${note}` : 'Normal'
+      return note ? t('Normal, avec note : {note}', { note }) : t('Normal')
     }
     if (anomalies.length) {
-      return note ? `${anomalies.join(', ')}. ${note}` : anomalies.join(', ')
+      return note ? `${liste}. ${note}` : liste
     }
     if (note) return note
     return '—'
@@ -722,51 +733,52 @@ export default function SoinsGenerauxExamenPhysique() {
     const bcs = dp.conditionCorporelle
 
     const ctx = await creerDocument({
-      titre: 'Examen physique',
-      sousTitre: 'Préconsultation',
+      titre: t('Examen physique'),
+      sousTitre: t('Préconsultation'),
       date: dateDoc,
       clinique: clinique.nom,
       logoClinique: clinique.logo,
     })
 
-    const sexeTexte = dp.sexe === 'femelle' ? 'Femelle' : dp.sexe === 'male' ? 'Mâle' : null
+    const sexeTexte = dp.sexe === 'femelle' ? t('Femelle') : dp.sexe === 'male' ? t('Mâle') : null
     const poidsTexte = dp.poids ? `${dp.poids} ${dp.poidsUnite || 'kg'}` : null
     bandeauPatient(
       ctx,
-      dp.animalNom || 'Animal',
+      dp.animalNom || t('Animal'),
       [especeLabel, dp.race?.trim(), sexeTexte, poidsTexte, dp.raisonVisite?.trim()].filter(Boolean).join(' · ')
     )
 
-    sectionGrille(ctx, 'Identification', [
-      ['Espèce', especeLabel],
-      ['Race', dp.race],
-      ['Sexe', sexeTexte ? `${sexeTexte}${dp.sterilise ? ', stérilisé(e)' : ''}` : null],
-      ['Poids', poidsTexte],
-      ['Raison de la visite', dp.raisonVisite],
-      ['Date', dateDoc],
+    sectionGrille(ctx, t('Identification'), [
+      [t('Espèce'), especeLabel],
+      [t('Race'), dp.race],
+      [t('Sexe'), sexeTexte ? `${sexeTexte}${dp.sterilise ? `, ${t('stérilisé(e)')}` : ''}` : null],
+      [t('Poids'), poidsTexte],
+      [t('Raison de la visite'), dp.raisonVisite],
+      [t('Date'), dateDoc],
     ])
 
     const a = dp.anamnese || {}
-    sectionGrille(ctx, 'Anamnèse', [
-      ['Appétit', a.appetit],
-      ['Soif', a.soif],
-      ['Exercice', a.exercice],
-      ['Diète', a.diete],
-      ['Gâteries', a.gateries],
-      ['Commentaires', a.commentaires],
+    const choix = v => (v ? t(v) : v)
+    sectionGrille(ctx, t('Anamnèse'), [
+      [t('Appétit'), choix(a.appetit)],
+      [t('Soif'), choix(a.soif)],
+      [t('Exercice'), choix(a.exercice)],
+      [t('Diète'), a.diete],
+      [t('Gâteries'), a.gateries],
+      [t('Commentaires'), a.commentaires],
     ])
 
-    sectionGrille(ctx, 'Paramètres vitaux', [
-      ['Température', dp.temperature ? `${dp.temperature} °C` : null],
-      ['Fréq. cardiaque', dp.freqCardiaque ? `${dp.freqCardiaque} bpm` : null],
-      ['Fréq. respiratoire', dp.freqRespiratoire ? `${dp.freqRespiratoire} rpm` : null],
+    sectionGrille(ctx, t('Paramètres vitaux'), [
+      [t('Température'), dp.temperature ? `${dp.temperature} °C` : null],
+      [t('Fréq. cardiaque'), dp.freqCardiaque ? `${dp.freqCardiaque} bpm` : null],
+      [t('Fréq. respiratoire'), dp.freqRespiratoire ? `${dp.freqRespiratoire} ${t('rpm')}` : null],
     ])
 
-    sectionGrille(ctx, 'État général', [
-      ['Attitude', dp.attitude],
-      ["Niveau d'énergie", dp.niveauEnergie],
-      ['Condition corporelle', bcs ? `${bcs} / 9, ${BCS_LIBELLES[bcs]}` : null],
-      ['Comportement', dp.comportement],
+    sectionGrille(ctx, t('État général'), [
+      [t('Attitude'), choix(dp.attitude)],
+      [t("Niveau d'énergie"), choix(dp.niveauEnergie)],
+      [t('Condition corporelle'), bcs ? `${bcs} / 9, ${BCS_LIBELLES[bcs]}` : null],
+      [t('Comportement'), choix(dp.comportement)],
     ])
 
     const anormaux = SYSTEMES.filter(s => {
@@ -775,12 +787,12 @@ export default function SoinsGenerauxExamenPhysique() {
     }).length
     titreSection(
       ctx,
-      'Observation par système',
-      anormaux > 0 ? `${anormaux} système${anormaux > 1 ? 's' : ''} avec anomalie` : 'Aucune anomalie notée',
+      t('Observation par système'),
+      anormaux > 0 ? tn(anormaux, '{n} système avec anomalie', '{n} systèmes avec anomalie') : t('Aucune anomalie notée'),
       6 * 5.5 + 8
     )
     tableau(ctx, {
-      head: ['Système', 'Observation'],
+      head: [t('Système'), t('Observation')],
       body: SYSTEMES.map(s => [s.titre, texteSystemePdf(dp.systemes?.[s.id])]),
       columnStyles: {
         0: { cellWidth: 52, fontStyle: 'bold', textColor: COULEUR_PRIMAIRE },
@@ -791,18 +803,18 @@ export default function SoinsGenerauxExamenPhysique() {
     const c = dp.complements || {}
     const aDesComplements = c.micropuce || [c.vaccination, c.parasitaire, c.scoreMusculaire, c.pressionArterielle, c.analyseUrine, c.autresDiagnostics].some(v => String(v || '').trim())
     if (aDesComplements) {
-      sectionGrille(ctx, 'Compléments', [
-        ['Vaccination', c.vaccination],
-        ['Contrôle parasitaire', c.parasitaire],
-        ['Micropuce', c.micropuce ? 'Vérifiée' : 'Non vérifiée'],
-        ['Condition musculaire', c.scoreMusculaire],
-        ['Pression artérielle', c.pressionArterielle],
-        ["Analyse d'urine", c.analyseUrine],
-        ['Autres diagnostics', c.autresDiagnostics],
+      sectionGrille(ctx, t('Compléments'), [
+        [t('Vaccination'), c.vaccination],
+        [t('Contrôle parasitaire'), c.parasitaire],
+        [t('Micropuce'), c.micropuce ? t('Vérifiée') : t('Non vérifiée')],
+        [t('Condition musculaire'), choix(c.scoreMusculaire)],
+        [t('Pression artérielle'), c.pressionArterielle],
+        [t("Analyse d'urine"), c.analyseUrine],
+        [t('Autres diagnostics'), c.autresDiagnostics],
       ])
     }
 
-    finaliser(ctx, { sujet: `${dp.animalNom || 'Animal'} · ${dateDoc}` })
+    finaliser(ctx, { sujet: `${dp.animalNom || t('Animal')} · ${dateDoc}` })
     ouvrir(ctx)
   }
 
@@ -810,8 +822,9 @@ export default function SoinsGenerauxExamenPhysique() {
     if (!valeur) return '—'
     const anomalies = (valeur.constats || []).filter(c => c !== 'Normal' && c !== 'Autre')
     const note = valeur.note?.trim()
-    if ((valeur.constats || []).includes('Normal')) return note ? `Normal, avec note : ${note}` : 'Normal'
-    if (anomalies.length) return note ? `${anomalies.join(', ')}. ${note}` : anomalies.join(', ')
+    const liste = anomalies.map(c => t(c)).join(', ')
+    if ((valeur.constats || []).includes('Normal')) return note ? t('Normal, avec note : {note}', { note }) : t('Normal')
+    if (anomalies.length) return note ? `${liste}. ${note}` : liste
     if (note) return note
     return '—'
   }
@@ -836,7 +849,7 @@ export default function SoinsGenerauxExamenPhysique() {
     if (!user) return
 
     const { data: profilFrais } = await supabase.from('profiles').select('nom').eq('id', user.id).single()
-    const nomUtilisateur = profilFrais?.nom || user.user_metadata?.nom || user.email || 'Membre'
+    const nomUtilisateur = profilFrais?.nom || user.user_metadata?.nom || user.email || t('Membre')
 
     const maintenant = new Date().toISOString()
     const entreeModif = { nom: nomUtilisateur, timestamp: maintenant }
@@ -847,7 +860,7 @@ export default function SoinsGenerauxExamenPhysique() {
       const modifs = [...(currentRec?.historique_modifs || []), entreeModif]
       await supabase
         .from('examens_physiques')
-        .update({ animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form, updated_at: maintenant, historique_modifs: modifs })
+        .update({ animal_nom: form.animalNom || t('Sans nom'), resume: texte, donnees: form, updated_at: maintenant, historique_modifs: modifs })
         .eq('id', currentId)
     } else {
       if (historique.length >= MAX_HISTORIQUE) {
@@ -858,7 +871,7 @@ export default function SoinsGenerauxExamenPhysique() {
           await supabase.from('examens_physiques').delete().eq('id', item.id)
         }
       }
-      const payload = { user_id: user.id, animal_nom: form.animalNom || 'Sans nom', resume: texte, donnees: form, historique_modifs: [entreeModif] }
+      const payload = { user_id: user.id, animal_nom: form.animalNom || t('Sans nom'), resume: texte, donnees: form, historique_modifs: [entreeModif] }
       if (estEquipe && teamId) payload.equipe_id = teamId
       const { data } = await supabase.from('examens_physiques').insert(payload).select().single()
       if (data) setCurrentId(data.id)
@@ -908,7 +921,7 @@ export default function SoinsGenerauxExamenPhysique() {
   }
 
   function formaterDate(d) {
-    return new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    return new Date(d).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
   }
 
   function cleJour(d) {
@@ -918,7 +931,7 @@ export default function SoinsGenerauxExamenPhysique() {
 
   function formaterJour(cle) {
     const [a, m, j] = cle.split('-').map(Number)
-    return new Date(a, m - 1, j).toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+    return new Date(a, m - 1, j).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
   }
 
   const historiqueFiltre = useMemo(() => {
@@ -958,12 +971,12 @@ export default function SoinsGenerauxExamenPhysique() {
         <div className="postop-intro">
           <i className="ti ti-clipboard-check postop-intro-icone"></i>
           <p className="postop-intro-texte">
-            Un aide-mémoire pour ne rien oublier : les 12 systèmes un par un, les constats à vérifier et les plages normales des signes vitaux chez le chien et le chat. Idéal en préconsultation. Vos anciens examens sont plus bas.
+            {t('Un aide-mémoire pour ne rien oublier : les 12 systèmes un par un, les constats à vérifier et les plages normales des signes vitaux chez le chien et le chat. Idéal en préconsultation. Vos anciens examens sont plus bas.')}
           </p>
         </div>
 
         <button className="labo-btn-primary" style={{ width: '100%', margin: '0 0 16px' }} onClick={commencerNouvelExamen}>
-          <i className="ti ti-plus"></i> Commencer un nouvel examen
+          <i className="ti ti-plus"></i> {t('Commencer un nouvel examen')}
         </button>
 
         <div className="postop-section">
@@ -971,11 +984,11 @@ export default function SoinsGenerauxExamenPhysique() {
             <div className="postop-section-icone" style={{ background: 'rgba(37,77,86,0.1)', color: 'var(--primary)' }}>
               <i className="ti ti-history"></i>
             </div>
-            <h2 className="postop-section-titre">Historique ({historique.length}/{MAX_HISTORIQUE})</h2>
+            <h2 className="postop-section-titre">{t('Historique')} ({historique.length}/{MAX_HISTORIQUE})</h2>
           </div>
           {historique.length === 0 ? (
             <p style={{ fontSize: 14, color: 'var(--text-hint)', padding: '0 16px 16px' }}>
-              Aucun examen enregistré pour le moment.
+              {t('Aucun examen enregistré pour le moment.')}
             </p>
           ) : (
             <>
@@ -987,7 +1000,7 @@ export default function SoinsGenerauxExamenPhysique() {
                     className="recherche-input"
                     value={rechercheHistorique}
                     onChange={e => setRechercheHistorique(e.target.value)}
-                    placeholder="Rechercher par nom, espèce ou date..."
+                    placeholder={t('Rechercher par nom, espèce ou date...')}
                   />
                   {rechercheHistorique && (
                     <button className="recherche-clear" onClick={() => setRechercheHistorique('')}>✕</button>
@@ -998,7 +1011,7 @@ export default function SoinsGenerauxExamenPhysique() {
               {rechercheHistorique.trim() ? (
                 <div className="examen-historique-liste" style={{ padding: '0 16px 16px' }}>
                   {historiqueFiltre.length === 0 ? (
-                    <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>Aucun résultat.</p>
+                    <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>{t('Aucun résultat.')}</p>
                   ) : historiqueFiltre.map(item => (
                     <div key={item.id} className="examen-historique-item" onClick={() => consulter(item)}>
                       <div className="examen-historique-info">
@@ -1072,20 +1085,20 @@ export default function SoinsGenerauxExamenPhysique() {
               ) : (
                 <div style={{ padding: '20px 0', textAlign: 'center' }}>
                   <i className="ti ti-file-description" style={{ fontSize: 36, color: 'var(--text-hint)', display: 'block', marginBottom: 10 }}></i>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>Examen en cours</p>
-                  <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 16 }}>Aucun résumé généré, l'examen n'a pas encore été finalisé.</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4 }}>{t('Examen en cours')}</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 16 }}>{t("Aucun résumé généré, l'examen n'a pas encore été finalisé.")}</p>
                   {itemConsulte.donnees && (
                     <div style={{ textAlign: 'left', background: 'var(--bg-secondary)', borderRadius: 10, padding: '12px 14px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                      {itemConsulte.donnees.espece && <div><strong>Espèce :</strong> {ESPECES.find(e => e.id === itemConsulte.donnees.espece)?.label || itemConsulte.donnees.espece}</div>}
-                      {itemConsulte.donnees.race && <div><strong>Race :</strong> {itemConsulte.donnees.race}</div>}
-                      {itemConsulte.donnees.poids && <div><strong>Poids :</strong> {itemConsulte.donnees.poids} {itemConsulte.donnees.poidsUnite || 'kg'}</div>}
-                      {itemConsulte.donnees.raisonVisite && <div><strong>Raison :</strong> {itemConsulte.donnees.raisonVisite}</div>}
+                      {itemConsulte.donnees.espece && <div><strong>{t('Espèce :')}</strong> {ESPECES.find(e => e.id === itemConsulte.donnees.espece)?.label || itemConsulte.donnees.espece}</div>}
+                      {itemConsulte.donnees.race && <div><strong>{t('Race :')}</strong> {itemConsulte.donnees.race}</div>}
+                      {itemConsulte.donnees.poids && <div><strong>{t('Poids :')}</strong> {itemConsulte.donnees.poids} {itemConsulte.donnees.poidsUnite || 'kg'}</div>}
+                      {itemConsulte.donnees.raisonVisite && <div><strong>{t('Raison :')}</strong> {itemConsulte.donnees.raisonVisite}</div>}
                     </div>
                   )}
                 </div>
               )}
               <button className="labo-btn-primary" style={{ width: '100%', marginTop: 12 }} onClick={() => modifier(itemConsulte)}>
-                Modifier
+                {t('Modifier')}
               </button>
               {itemConsulte.historique_modifs?.length > 0 && (
                 <div style={{ marginTop: 10, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
@@ -1094,7 +1107,7 @@ export default function SoinsGenerauxExamenPhysique() {
                     style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', background: 'var(--bg-secondary)', border: 'none', cursor: 'pointer' }}
                   >
                     <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-hint)', textTransform: 'uppercase', letterSpacing: 1 }}>
-                      Historique des modifications ({itemConsulte.historique_modifs.length})
+                      {t('Historique des modifications')} ({itemConsulte.historique_modifs.length})
                     </span>
                     <i className={`ti ti-chevron-${showModifs ? 'up' : 'down'}`} style={{ fontSize: 14, color: 'var(--text-hint)' }}></i>
                   </button>
@@ -1102,7 +1115,7 @@ export default function SoinsGenerauxExamenPhysique() {
                     <div style={{ padding: '8px 12px 10px', background: 'var(--bg-card)', maxHeight: 220, overflowY: 'auto' }}>
                       {[...itemConsulte.historique_modifs].reverse().map((m, i) => (
                         <p key={i} style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
-                          <strong>{m.nom}</strong> · {new Date(m.timestamp).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long' })} à {new Date(m.timestamp).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' })}
+                          <strong>{m.nom}</strong> · {t('{date} à {heure}', { date: new Date(m.timestamp).toLocaleDateString(locale, { day: 'numeric', month: 'long' }), heure: new Date(m.timestamp).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) })}
                         </p>
                       ))}
                     </div>
@@ -1111,17 +1124,17 @@ export default function SoinsGenerauxExamenPhysique() {
               )}
               <div className="popup-actions-centrees" style={{ marginTop: 8 }}>
                 <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => copierResume(itemConsulte.resume)}>
-                  {copie ? 'Copié !' : 'Copier'}
+                  {copie ? t('Copié !') : t('Copier')}
                 </button>
                 <button
                   className="labo-btn-secondary"
                   style={{ flex: 1 }}
-                  onClick={() => genererPDF(itemConsulte.donnees, new Date(itemConsulte.created_at).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }))}
+                  onClick={() => genererPDF(itemConsulte.donnees, new Date(itemConsulte.created_at).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))}
                 >
                   <i className="ti ti-file-download"></i> PDF
                 </button>
                 <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => setShowConfirmSupprimer(itemConsulte)}>
-                  Supprimer
+                  {t('Supprimer')}
                 </button>
               </div>
             </div>
@@ -1133,21 +1146,23 @@ export default function SoinsGenerauxExamenPhysique() {
           <div className="popup-overlay" onClick={() => setShowConfirmSupprimer(null)}>
             <div className="popup-card" onClick={e => e.stopPropagation()}>
               <div className="popup-header">
-                <span>Supprimer cet examen</span>
+                <span>{t('Supprimer cet examen')}</span>
                 <button className="popup-close" onClick={() => setShowConfirmSupprimer(null)}>✕</button>
               </div>
               <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
                 <i className="ti ti-alert-triangle" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
                 <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  Avez-vous bien noté ces informations dans le dossier de <strong>{showConfirmSupprimer.animal_nom}</strong> avant de supprimer ?
+                  {enAnglais
+                    ? <>Have you recorded this information in <strong>{showConfirmSupprimer.animal_nom}</strong>'s medical record before deleting?</>
+                    : <>Avez-vous bien noté ces informations dans le dossier de <strong>{showConfirmSupprimer.animal_nom}</strong> avant de supprimer ?</>}
                 </p>
               </div>
               <div className="popup-actions-centrees">
                 <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setShowConfirmSupprimer(null)}>
-                  Annuler
+                  {t('Annuler')}
                 </button>
                 <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={() => supprimerHistorique(showConfirmSupprimer.id)}>
-                  Supprimer
+                  {t('Supprimer')}
                 </button>
               </div>
             </div>
@@ -1166,10 +1181,10 @@ export default function SoinsGenerauxExamenPhysique() {
 
       <div className="examen-topbar">
         <button className="examen-retour" onClick={() => setVue('liste')}>
-          <i className="ti ti-arrow-left"></i> Historique
+          <i className="ti ti-arrow-left"></i> {t('Historique')}
         </button>
         <span className={`examen-sauvegarde ${sauvegarde}`}>
-          {sauvegarde === 'encours' ? 'Enregistrement...' : sauvegarde === 'ok' ? 'Enregistré' : ''}
+          {sauvegarde === 'encours' ? t('Enregistrement...') : sauvegarde === 'ok' ? t('Enregistré') : ''}
         </span>
         <button className="examen-reset" onClick={() => setShowReinit(true)}>
           <i className="ti ti-refresh"></i>
@@ -1181,7 +1196,7 @@ export default function SoinsGenerauxExamenPhysique() {
         {/* ═══ IDENTIFICATION ═══ */}
         <SectionAccordeon
           ancre="section-identification"
-          titre="Identification"
+          titre={t('Identification')}
           icone="ti-clipboard-text"
           resume={resumeSection('identification')}
           etat={etatSection('identification')}
@@ -1189,18 +1204,18 @@ export default function SoinsGenerauxExamenPhysique() {
           onToggle={() => ouvrirSection('identification')}
         >
           <div className="form-groupe">
-            <label className="form-label">Nom de l'animal</label>
+            <label className="form-label">{t("Nom de l'animal")}</label>
             <input
               type="text"
               className="form-input"
               value={form.animalNom}
               onChange={e => modifierChamp('animalNom', e.target.value)}
-              placeholder="Ex. : Charlie"
+              placeholder={t('Ex. : Charlie')}
             />
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Espèce</label>
+            <label className="form-label">{t('Espèce')}</label>
             <SelecteurEspece
               valeur={form.espece}
               onChange={id => modifierChamp('espece', id)}
@@ -1209,37 +1224,37 @@ export default function SoinsGenerauxExamenPhysique() {
                 actif: !!form.espece && form.espece !== 'chien' && form.espece !== 'chat',
                 label: form.espece && form.espece !== 'chien' && form.espece !== 'chat'
                   ? ESPECES.find(e => e.id === form.espece)?.label
-                  : 'Autre',
+                  : t('Autre'),
                 onClick: () => setPopupEspece(true),
               }]}
             />
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Race</label>
+            <label className="form-label">{t('Race')}</label>
             <input
               type="text"
               className="form-input"
               value={form.race || ''}
               onChange={e => modifierChamp('race', e.target.value)}
-              placeholder="Ex. : Labrador, Persan..."
+              placeholder={t('Ex. : Labrador, Persan...')}
             />
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Sexe</label>
+            <label className="form-label">{t('Sexe')}</label>
             <div className="toggle-groupe">
-              <button type="button" className={`toggle-btn ${form.sexe === 'femelle' ? 'actif' : ''}`} onClick={() => modifierChamp('sexe', form.sexe === 'femelle' ? '' : 'femelle')}>Femelle</button>
-              <button type="button" className={`toggle-btn ${form.sexe === 'male' ? 'actif' : ''}`} onClick={() => modifierChamp('sexe', form.sexe === 'male' ? '' : 'male')}>Mâle</button>
+              <button type="button" className={`toggle-btn ${form.sexe === 'femelle' ? 'actif' : ''}`} onClick={() => modifierChamp('sexe', form.sexe === 'femelle' ? '' : 'femelle')}>{t('Femelle')}</button>
+              <button type="button" className={`toggle-btn ${form.sexe === 'male' ? 'actif' : ''}`} onClick={() => modifierChamp('sexe', form.sexe === 'male' ? '' : 'male')}>{t('Mâle')}</button>
             </div>
             <label className="voie-item" style={{ marginTop: 8 }}>
-              <span>Stérilisé(e)</span>
+              <span>{t('Stérilisé(e)')}</span>
               <input type="checkbox" checked={form.sterilise} onChange={e => modifierChamp('sterilise', e.target.checked)} />
             </label>
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Poids</label>
+            <label className="form-label">{t('Poids')}</label>
             <div style={{ display: 'flex', gap: 8 }}>
               <input
                 type="text"
@@ -1248,7 +1263,7 @@ export default function SoinsGenerauxExamenPhysique() {
                 style={{ flex: 1 }}
                 value={form.poids}
                 onChange={e => modifierChamp('poids', e.target.value.replace(',', '.'))}
-                placeholder="Ex. : 12.5"
+                placeholder={t('Ex. : 12.5')}
               />
               <div className="radio-groupe" style={{ alignSelf: 'center' }}>
                 <button type="button" className={`radio-btn ${form.poidsUnite === 'kg' ? 'active' : ''}`} onClick={() => modifierChamp('poidsUnite', 'kg')}>kg</button>
@@ -1258,42 +1273,42 @@ export default function SoinsGenerauxExamenPhysique() {
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Date</label>
+            <label className="form-label">{t('Date')}</label>
             <div className="form-input" style={{ background: 'var(--bg)', color: 'var(--text-secondary)' }}>{dateAffichee}</div>
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Raison de la visite</label>
+            <label className="form-label">{t('Raison de la visite')}</label>
             <input
               type="text"
               className="form-input"
               value={form.raisonVisite || ''}
               onChange={e => modifierChamp('raisonVisite', e.target.value)}
-              placeholder="Ex. : vaccination, suivi post-opératoire, bilan annuel..."
+              placeholder={t('Ex. : vaccination, suivi post-opératoire, bilan annuel...')}
             />
           </div>
 
           <button className="examen-suivant" onClick={() => ouvrirSection('anamnese')}>
-            Suivant : anamnèse <i className="ti ti-arrow-right"></i>
+            {t('Suivant : anamnèse')} <i className="ti ti-arrow-right"></i>
           </button>
         </SectionAccordeon>
 
         {/* ═══ ANAMNÈSE ═══ */}
         <SectionAccordeon
           ancre="section-anamnese"
-          titre="Anamnèse"
+          titre={t('Anamnèse')}
           icone="ti-message-circle"
           resume={resumeSection('anamnese')}
           etat={etatSection('anamnese')}
           ouvert={sectionOuverte === 'anamnese'}
           onToggle={() => ouvrirSection('anamnese')}
         >
-          <p className="examen-aide">Rapporté par le propriétaire, avant l'examen.</p>
+          <p className="examen-aide">{t("Rapporté par le propriétaire, avant l'examen.")}</p>
 
           {[
-            { champ: 'appetit', label: 'Appétit', options: APPETIT_OPTIONS },
-            { champ: 'soif', label: 'Soif', options: SOIF_OPTIONS },
-            { champ: 'exercice', label: 'Exercice', options: EXERCICE_OPTIONS },
+            { champ: 'appetit', label: t('Appétit'), options: APPETIT_OPTIONS },
+            { champ: 'soif', label: t('Soif'), options: SOIF_OPTIONS },
+            { champ: 'exercice', label: t('Exercice'), options: EXERCICE_OPTIONS },
           ].map(({ champ, label, options }) => (
             <div className="form-groupe" key={champ}>
               <label className="form-label">{label}</label>
@@ -1305,7 +1320,7 @@ export default function SoinsGenerauxExamenPhysique() {
                     className={`toggle-btn ${form.anamnese[champ] === opt ? 'actif' : ''}`}
                     onClick={() => modifierAnamnese(champ, form.anamnese[champ] === opt ? '' : opt)}
                   >
-                    {opt}
+                    {t(opt)}
                   </button>
                 ))}
               </div>
@@ -1313,47 +1328,47 @@ export default function SoinsGenerauxExamenPhysique() {
           ))}
 
           <div className="form-groupe">
-            <label className="form-label">Diète</label>
+            <label className="form-label">{t('Diète')}</label>
             <input
               type="text"
               className="form-input"
               value={form.anamnese.diete}
               onChange={e => modifierAnamnese('diete', e.target.value)}
-              placeholder="Marque, type, quantité par jour..."
+              placeholder={t('Marque, type, quantité par jour...')}
             />
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Gâteries</label>
+            <label className="form-label">{t('Gâteries')}</label>
             <input
               type="text"
               className="form-input"
               value={form.anamnese.gateries}
               onChange={e => modifierAnamnese('gateries', e.target.value)}
-              placeholder="Type et fréquence..."
+              placeholder={t('Type et fréquence...')}
             />
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Commentaires du propriétaire</label>
+            <label className="form-label">{t('Commentaires du propriétaire')}</label>
             <textarea
               className="form-textarea"
               rows={3}
-              placeholder="Ex. : le propriétaire mentionne que l'animal a moins d'appétit depuis 2 jours..."
+              placeholder={t("Ex. : le propriétaire mentionne que l'animal a moins d'appétit depuis 2 jours...")}
               value={form.anamnese.commentaires}
               onChange={e => modifierAnamnese('commentaires', e.target.value)}
             />
           </div>
 
           <button className="examen-suivant" onClick={() => ouvrirSection('vitaux')}>
-            Suivant : paramètres vitaux <i className="ti ti-arrow-right"></i>
+            {t('Suivant : paramètres vitaux')} <i className="ti ti-arrow-right"></i>
           </button>
         </SectionAccordeon>
 
         {/* ═══ PARAMÈTRES VITAUX ═══ */}
         <SectionAccordeon
           ancre="section-vitaux"
-          titre="Paramètres vitaux"
+          titre={t('Paramètres vitaux')}
           icone="ti-heartbeat"
           resume={resumeSection('vitaux')}
           etat={etatSection('vitaux')}
@@ -1361,9 +1376,9 @@ export default function SoinsGenerauxExamenPhysique() {
           onToggle={() => ouvrirSection('vitaux')}
         >
           {[
-            { champ: 'temperature', label: 'Température corporelle', unite: '°C', placeholder: 'Ex. : 38.5' },
-            { champ: 'freqCardiaque', label: 'Fréquence cardiaque', unite: 'bpm', placeholder: 'Ex. : 100' },
-            { champ: 'freqRespiratoire', label: 'Fréquence respiratoire', unite: 'rpm', placeholder: 'Ex. : 24' },
+            { champ: 'temperature', label: t('Température corporelle'), unite: '°C', placeholder: t('Ex. : 38.5') },
+            { champ: 'freqCardiaque', label: t('Fréquence cardiaque'), unite: 'bpm', placeholder: t('Ex. : 100') },
+            { champ: 'freqRespiratoire', label: t('Fréquence respiratoire'), unite: t('rpm'), placeholder: t('Ex. : 24') },
           ].map(({ champ, label, unite, placeholder }) => {
             const info = infoPlage(champ)
             return (
@@ -1380,8 +1395,14 @@ export default function SoinsGenerauxExamenPhysique() {
                 {info && (
                   <p className={`examen-plage ${info.horsPlage ? 'hors' : ''}`}>
                     {info.horsPlage && <i className="ti ti-info-circle"></i>}
-                    Plage {form.espece} : {String(info.plage[0]).replace('.', ',')} à {String(info.plage[1]).replace('.', ',')} {unite}
-                    {info.horsPlage ? ', valeur hors plage' : ''}
+                    {t('Plage {espece} : {min} à {max} {unite}', {
+                      // « Plage chien : ... » en français, « Dog range: ... » en anglais.
+                      espece: enAnglais
+                        ? ESPECES.find(e => e.id === form.espece)?.label || ''
+                        : (ESPECES.find(e => e.id === form.espece)?.label || '').toLowerCase(),
+                      min: decimal(info.plage[0]), max: decimal(info.plage[1]), unite,
+                    })}
+                    {info.horsPlage ? t(', valeur hors plage') : ''}
                     {NOTE_PLAGE[champ] ? ` · ${NOTE_PLAGE[champ]}` : ''}
                   </p>
                 )}
@@ -1390,14 +1411,14 @@ export default function SoinsGenerauxExamenPhysique() {
           })}
 
           <button className="examen-suivant" onClick={() => ouvrirSection('general')}>
-            Suivant : état général <i className="ti ti-arrow-right"></i>
+            {t('Suivant : état général')} <i className="ti ti-arrow-right"></i>
           </button>
         </SectionAccordeon>
 
         {/* ═══ ÉTAT GÉNÉRAL ═══ */}
         <SectionAccordeon
           ancre="section-general"
-          titre="État général"
+          titre={t('État général')}
           icone="ti-paw"
           resume={resumeSection('general')}
           etat={etatSection('general')}
@@ -1405,29 +1426,29 @@ export default function SoinsGenerauxExamenPhysique() {
           onToggle={() => ouvrirSection('general')}
         >
           <div className="form-groupe">
-            <label className="form-label">Attitude générale</label>
+            <label className="form-label">{t('Attitude générale')}</label>
             <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
               {ATTITUDE_OPTIONS.map(opt => (
                 <button key={opt} type="button" className={`toggle-btn ${form.attitude === opt ? 'actif' : ''}`} onClick={() => modifierChamp('attitude', form.attitude === opt ? '' : opt)}>
-                  {opt}
+                  {t(opt)}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Niveau d'énergie</label>
+            <label className="form-label">{t("Niveau d'énergie")}</label>
             <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
               {ENERGIE_OPTIONS.map(opt => (
                 <button key={opt} type="button" className={`toggle-btn ${form.niveauEnergie === opt ? 'actif' : ''}`} onClick={() => modifierChamp('niveauEnergie', form.niveauEnergie === opt ? '' : opt)}>
-                  {opt}
+                  {t(opt)}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Condition corporelle</label>
+            <label className="form-label">{t('Condition corporelle')}</label>
             <div className="examen-bcs">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
                 <button
@@ -1443,16 +1464,16 @@ export default function SoinsGenerauxExamenPhysique() {
             <p className="examen-aide">
               {form.conditionCorporelle
                 ? `${form.conditionCorporelle}/9 · ${BCS_LIBELLES[form.conditionCorporelle]}`
-                : '1 à 3 maigre · 4 à 5 idéale · 6 à 7 surpoids · 8 à 9 obèse'}
+                : t('1 à 3 maigre · 4 à 5 idéale · 6 à 7 surpoids · 8 à 9 obèse')}
             </p>
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Comportement</label>
+            <label className="form-label">{t('Comportement')}</label>
             <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
               {COMPORTEMENT_OPTIONS.map(opt => (
                 <button key={opt} type="button" className={`toggle-btn ${form.comportement === opt ? 'actif' : ''}`} onClick={() => modifierChamp('comportement', form.comportement === opt ? '' : opt)}>
-                  {opt}
+                  {t(opt)}
                 </button>
               ))}
             </div>
@@ -1466,14 +1487,14 @@ export default function SoinsGenerauxExamenPhysique() {
               setSystemeOuvert(premier ? premier.id : null)
             }}
           >
-            Suivant : systèmes <i className="ti ti-arrow-right"></i>
+            {t('Suivant : systèmes')} <i className="ti ti-arrow-right"></i>
           </button>
         </SectionAccordeon>
 
         {/* ═══ SYSTÈMES ═══ */}
         <SectionAccordeon
           ancre="section-systemes"
-          titre="Systèmes"
+          titre={t('Systèmes')}
           icone="ti-stethoscope"
           resume={resumeSection('systemes')}
           etat={etatSection('systemes')}
@@ -1496,14 +1517,14 @@ export default function SoinsGenerauxExamenPhysique() {
           </div>
 
           <button className="examen-suivant" onClick={() => ouvrirSection('complements')}>
-            Suivant : compléments <i className="ti ti-arrow-right"></i>
+            {t('Suivant : compléments')} <i className="ti ti-arrow-right"></i>
           </button>
         </SectionAccordeon>
 
         {/* ═══ COMPLÉMENTS ═══ */}
         <SectionAccordeon
           ancre="section-complements"
-          titre="Compléments"
+          titre={t('Compléments')}
           icone="ti-notes"
           resume={resumeSection('complements')}
           etat={etatSection('complements')}
@@ -1511,24 +1532,24 @@ export default function SoinsGenerauxExamenPhysique() {
           onToggle={() => ouvrirSection('complements')}
         >
           <div className="form-groupe">
-            <label className="form-label">Vaccination à prévoir</label>
-            <input type="text" className="form-input" value={form.complements.vaccination} onChange={e => modifierComplement('vaccination', e.target.value)} placeholder="Ex. : rappel DHPP en mars" />
+            <label className="form-label">{t('Vaccination à prévoir')}</label>
+            <input type="text" className="form-input" value={form.complements.vaccination} onChange={e => modifierComplement('vaccination', e.target.value)} placeholder={t('Ex. : rappel DHPP en mars')} />
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Contrôle parasitaire</label>
-            <input type="text" className="form-input" value={form.complements.parasitaire} onChange={e => modifierComplement('parasitaire', e.target.value)} placeholder="Produit et dernière administration" />
+            <label className="form-label">{t('Contrôle parasitaire')}</label>
+            <input type="text" className="form-input" value={form.complements.parasitaire} onChange={e => modifierComplement('parasitaire', e.target.value)} placeholder={t('Produit et dernière administration')} />
           </div>
 
           <div className="form-groupe">
             <label className="voie-item">
-              <span>Micropuce vérifiée</span>
+              <span>{t('Micropuce vérifiée')}</span>
               <input type="checkbox" checked={form.complements.micropuce} onChange={e => modifierComplement('micropuce', e.target.checked)} />
             </label>
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Condition musculaire</label>
+            <label className="form-label">{t('Condition musculaire')}</label>
             <div className="toggle-groupe" style={{ flexWrap: 'wrap' }}>
               {MUSCLE_OPTIONS.map(opt => (
                 <button
@@ -1537,25 +1558,25 @@ export default function SoinsGenerauxExamenPhysique() {
                   className={`toggle-btn ${form.complements.scoreMusculaire === opt ? 'actif' : ''}`}
                   onClick={() => modifierComplement('scoreMusculaire', form.complements.scoreMusculaire === opt ? '' : opt)}
                 >
-                  {opt}
+                  {t(opt)}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Pression artérielle</label>
-            <input type="text" className="form-input" value={form.complements.pressionArterielle} onChange={e => modifierComplement('pressionArterielle', e.target.value)} placeholder="Ex. : 140 mmHg" />
+            <label className="form-label">{t('Pression artérielle')}</label>
+            <input type="text" className="form-input" value={form.complements.pressionArterielle} onChange={e => modifierComplement('pressionArterielle', e.target.value)} placeholder={t('Ex. : 140 mmHg')} />
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Analyse d'urine</label>
-            <input type="text" className="form-input" value={form.complements.analyseUrine} onChange={e => modifierComplement('analyseUrine', e.target.value)} placeholder="Résultats ou prélèvement effectué" />
+            <label className="form-label">{t("Analyse d'urine")}</label>
+            <input type="text" className="form-input" value={form.complements.analyseUrine} onChange={e => modifierComplement('analyseUrine', e.target.value)} placeholder={t('Résultats ou prélèvement effectué')} />
           </div>
 
           <div className="form-groupe">
-            <label className="form-label">Autres diagnostics</label>
-            <textarea className="form-textarea" rows={2} value={form.complements.autresDiagnostics} onChange={e => modifierComplement('autresDiagnostics', e.target.value)} placeholder="Prises de sang, radiographies..." />
+            <label className="form-label">{t('Autres diagnostics')}</label>
+            <textarea className="form-textarea" rows={2} value={form.complements.autresDiagnostics} onChange={e => modifierComplement('autresDiagnostics', e.target.value)} placeholder={t('Prises de sang, radiographies...')} />
           </div>
         </SectionAccordeon>
 
@@ -1567,10 +1588,10 @@ export default function SoinsGenerauxExamenPhysique() {
           <div className="examen-barre-jauge">
             <div className="examen-barre-remplissage" style={{ width: `${Math.round((nbComplets / totalRequis) * 100)}%` }}></div>
           </div>
-          <span className="examen-barre-texte">{nbComplets} sur {totalRequis}</span>
+          <span className="examen-barre-texte">{t('{n} sur {total}', { n: nbComplets, total: totalRequis })}</span>
         </div>
         <button className={`examen-barre-btn ${complet ? 'complet' : ''}`} onClick={handleTermine}>
-          Terminé
+          {t('Terminé')}
         </button>
       </div>
 
@@ -1579,7 +1600,7 @@ export default function SoinsGenerauxExamenPhysique() {
         <div className="popup-overlay" onClick={() => setPopupEspece(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Choisir une espèce</span>
+              <span>{t('Choisir une espèce')}</span>
               <button className="popup-close" onClick={() => setPopupEspece(false)}>✕</button>
             </div>
             <div className="popup-especes">
@@ -1591,7 +1612,7 @@ export default function SoinsGenerauxExamenPhysique() {
                 </label>
               ))}
             </div>
-            <button className="btn-sauvegarder" onClick={() => setPopupEspece(false)}>Confirmer</button>
+            <button className="btn-sauvegarder" onClick={() => setPopupEspece(false)}>{t('Confirmer')}</button>
           </div>
         </div>
       )}
@@ -1601,7 +1622,7 @@ export default function SoinsGenerauxExamenPhysique() {
         <div className="popup-overlay" onClick={fermerResume}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Résumé de l'examen</span>
+              <span>{t("Résumé de l'examen")}</span>
               <button className="popup-close" onClick={fermerResume}>✕</button>
             </div>
             <textarea
@@ -1612,13 +1633,13 @@ export default function SoinsGenerauxExamenPhysique() {
             />
             <div className="popup-actions-centrees" style={{ marginTop: 12 }}>
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => copierResume(showResume)}>
-                {copie ? 'Copié !' : 'Copier'}
+                {copie ? t('Copié !') : t('Copier')}
               </button>
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => genererPDF(form)}>
                 <i className="ti ti-file-download"></i> PDF
               </button>
               <button className="labo-btn-primary" style={{ flex: 1 }} onClick={fermerResume}>
-                Terminer
+                {t('Terminer')}
               </button>
             </div>
           </div>
@@ -1630,7 +1651,7 @@ export default function SoinsGenerauxExamenPhysique() {
         <div className="popup-overlay" onClick={() => setShowIncomplet(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Il reste des éléments à remplir</span>
+              <span>{t('Il reste des éléments à remplir')}</span>
               <button className="popup-close" onClick={() => setShowIncomplet(false)}>✕</button>
             </div>
             <div className="examen-manquants">
@@ -1643,10 +1664,10 @@ export default function SoinsGenerauxExamenPhysique() {
             </div>
             <div className="popup-actions-centrees" style={{ marginTop: 12 }}>
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setShowIncomplet(false)}>
-                Revenir
+                {t('Revenir')}
               </button>
               <button className="labo-btn-primary" style={{ flex: 1 }} onClick={finaliserExamen}>
-                Poursuivre
+                {t('Poursuivre')}
               </button>
             </div>
           </div>
@@ -1658,21 +1679,21 @@ export default function SoinsGenerauxExamenPhysique() {
         <div className="popup-overlay" onClick={() => setShowReinit(false)}>
           <div className="popup-card" onClick={e => e.stopPropagation()}>
             <div className="popup-header">
-              <span>Réinitialiser le formulaire</span>
+              <span>{t('Réinitialiser le formulaire')}</span>
               <button className="popup-close" onClick={() => setShowReinit(false)}>✕</button>
             </div>
             <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
               <i className="ti ti-refresh" style={{ fontSize: 40, color: 'var(--accent-red)', marginBottom: 12, display: 'block' }}></i>
               <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                Toutes les informations saisies seront effacées. Continuer ?
+                {t('Toutes les informations saisies seront effacées. Continuer ?')}
               </p>
             </div>
             <div className="popup-actions-centrees">
               <button className="labo-btn-secondary" style={{ flex: 1 }} onClick={() => setShowReinit(false)}>
-                Annuler
+                {t('Annuler')}
               </button>
               <button className="btn-supprimer-medicament" style={{ flex: 1 }} onClick={reinitialiser}>
-                Réinitialiser
+                {t('Réinitialiser')}
               </button>
             </div>
           </div>

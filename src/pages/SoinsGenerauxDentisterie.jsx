@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom'
+import { t } from '../lib/i18n'
 
 const SOUS_PAGES = [
-  { id: 'charte-chien', label: 'Charte dentaire - Chien', icone: 'ti-clipboard-list', route: '/soins-generaux/dentisterie/charte-chien' },
-  { id: 'charte-chat', label: 'Charte dentaire - Chat', icone: 'ti-clipboard-list', route: '/soins-generaux/dentisterie/charte-chat' },
-  { id: 'termes-directionnels', label: 'Termes directionnels', icone: 'ti-list-check', route: '/soins-generaux/dentisterie/termes-directionnels' },
+  { id: 'charte-chien', label: t('Charte dentaire - Chien'), icone: 'ti-clipboard-list', route: '/soins-generaux/dentisterie/charte-chien' },
+  { id: 'charte-chat', label: t('Charte dentaire - Chat'), icone: 'ti-clipboard-list', route: '/soins-generaux/dentisterie/charte-chat' },
+  { id: 'termes-directionnels', label: t('Termes directionnels'), icone: 'ti-list-check', route: '/soins-generaux/dentisterie/termes-directionnels' },
 ]
 
 export default function SoinsGenerauxDentisterie() {
